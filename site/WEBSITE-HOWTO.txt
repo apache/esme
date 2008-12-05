@@ -1,0 +1,5 @@
+To update the website, commit the content here and run
+svn up in /www/incubator.apache.org/esme on people.apache.org.
+
+There is a delay (4 hours IIRC) for http://incubator.apache.org/sling/esme
+to be updated once that happens.
