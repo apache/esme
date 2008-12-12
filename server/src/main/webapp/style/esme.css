@@ -1,0 +1,65 @@
+@import url(print.css);
+@import url(layout.css);
+
+@import url(l-page.css);
+@import url(l-page-login.css);
+@import url(l-page-content.css);
+@import url(l-page-message.css);
+
+@import url(l-top.css);
+
+@import url(b-sign-on.css);
+@import url(b-open.css);
+@import url(b-content.css);
+@import url(b-primary.css);
+@import url(b-back.css);
+@import url(b-menu.css);
+
+@import url(b-list.css);
+@import url(b-view-menu.css);
+@import url(b-view.css);
+@import url(b-popup.css);
+@import url(b-popup-c.css);
+@import url(b-edit.css);
+
+/* Head (begin) */ /**/
+    .head .logo img
+    {
+        margin: 5px 0 0 14px;
+
+    }
+/* Head (end) */ /**/
+
+.title
+{
+    font-size: 118%;
+    font-weight: bold;
+
+    color: #233e5e;
+}
+
+.foot .def
+{
+    float: left;
+
+    vertical-align: middle;
+
+    border: 1px solid #fa801f;
+}
+
+.foot a
+{
+    text-decoration: none;
+
+    color: #233e5e;
+}
+
+.foot a:hover
+{
+    text-decoration: underline;
+}
+
+
+
+
+
