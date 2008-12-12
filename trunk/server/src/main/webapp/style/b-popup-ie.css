@@ -1,0 +1,32 @@
+/* Shadows (begin) */ /**/
+    * html  .b-popup .b
+    {
+        h: expression((this.h != parentNode.offsetHeight) && (this.h = parentNode.offsetHeight, style.left = this.h % 0 ? 0 : -1) );
+    }
+
+    * html .b-popup .rt i
+    {
+        h: expression((this.h != parentNode.offsetHeight) && (this.h = parentNode.offsetHeight, style.right = this.h % 0 ? -1 : -2) );
+    }
+
+    * html .b-popup .rb
+    {
+        h: expression((this.h != parentNode.offsetHeight) && (this.h = parentNode.offsetHeight, style.right = this.h % 0 ? -1 : -2) );
+    }
+
+    * html .b-popup .rb i
+    {
+        h: expression((this.h != parentNode.offsetHeight) && (this.h = parentNode.offsetHeight, style.bottom = this.h % 0 ? 0 : -1) );
+    }
+
+    * html .b-popup .lb i
+    {
+        h: expression((this.h != parentNode.offsetHeight) && (this.h = parentNode.offsetHeight, style.bottom = this.h % 0 ? 0 : -1) );
+    }
+
+    * html .b-popup .lb
+    {
+        h: expression((this.h != parentNode.offsetHeight) && (this.h = parentNode.offsetHeight, style.left = this.h % 0 ? 0 : -1) );
+    }
+
+/* Shadows (end) */ /**/

@@ -1,0 +1,30 @@
+/* Layout (begin) */ /**/
+    .container
+    {
+        width: 912px;
+        margin: 0 auto;
+
+        border-top: 4px solid #fff;
+        border-bottom: 4px solid #fff;
+    }
+
+    .head
+    {
+        position: relative;
+
+        height: 50px;
+
+        background: #7fa3ce;
+        border-bottom: 4px solid #fff;
+    }
+
+    .foot
+    {
+        height: 20px;
+        padding: 0 12px;
+
+        color: #fff;
+        background: #7fa3ce;
+        border-top: 4px solid #fff;
+    }
+/* Layout (end) */ /**/

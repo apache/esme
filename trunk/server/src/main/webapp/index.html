@@ -1,0 +1,19 @@
+<lift:UserSnip.loggedIn>
+  <logged:in>
+    <lift:surround with="message" at="content">
+
+    </lift:surround>
+  </logged:in>
+  <logged:out>
+    <lift:surround with="default" at="content">
+      <div>
+	<fieldset>
+          <legend>Conversation</legend>
+	  <div style="height: 500px; overflow: auto">
+	    <lift:comet type="PublicTimeline"/>
+	  </div>
+	</fieldset>
+      </div>
+    </lift:surround>
+  </logged:out>
+</lift:UserSnip.loggedIn>

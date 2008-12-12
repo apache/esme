@@ -1,0 +1,23 @@
+/*  List messages (begin) */ /**/
+    .b-list .message .outer
+    {
+        min-height: 55px;
+        height: auto !important;
+        height: 55px;
+    }
+
+    .b-list .message .inner
+    {
+        min-height: 33px;
+        height: auto !important;
+        height: 33px;
+    }
+/*  List messages (end) */ /**/
+
+/* Images (begin) */ /**/
+    * html .b-list .image .shadow i
+    {
+        background: none;
+        filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src=../images/bg-i.png);
+    }
+/* Images (end) */ /**/
