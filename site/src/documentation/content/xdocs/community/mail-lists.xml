@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<!--
+Copyright 2003-2004 The Apache Software Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+<tr>
+            <td><a href="document-v20.xml">XML</a>
+            </td>
+
+-->
+<document> 
+  <header> 
+    <title>ESME mailing list</title> 
+  </header> 
+  <body> 
+    <section>
+      <title>ESME mailing list</title>
+      <p> 
+	     esme-user : This list is for developers that are using ESME in their own projects to ask questions, 
+	     share knowledge, and discuss issues related to using ESME.
+	  </p>
+	   <p> 
+	     esme-dev : This is the list where developers of the ESME project discuss code changes, 
+	     milestone progress, schedules, etc.
+	  </p>
+	  <p>
+	    esme-commits: This list is for those who wish to be notified whenever files are committed to the ESME SVN repository.
+	  </p>
+      <table>
+          <caption>Mailing Lists</caption>
+	   <tr>
+            <th>Name</th>
+            <th>Subscribe</th>
+            <th>Unsubscribe</th>
+            <th>Post</th>
+          </tr>
+          <tr>
+            <td>esme-dev</td>
+            <td><a href="mailto:esme-dev-subscribe@incubator.apache.org">esme-dev-subscribe</a> </td>
+            <td><a href="mailto:esme-dev-unsubscribe@incubator.apache.org"> esme-dev-unsubscribe </a></td>
+            <td><a href="mailto:esme-dev@incubator.apache.org">esme-dev</a></td>
+          </tr>
+	   <tr>
+            <td>esme-commits</td>
+            <td><a href="mailto:esme-commits-subscribe@incubator.apache.org">esme-commits-subscribe</a> </td>
+            <td><a href="mailto:esme-commits-unsubscribe@incubator.apache.org"> esme-commits-unsubscribe </a></td>
+            <td><a href="mailto:esme-commits@incubator.apache.org">esme-commits</a></td>
+          </tr>
+          <tr>
+              <td>esme-user</td>
+              <td><a href="mailto:esme-user-subscribe@incubator.apache.org">esme-user-subscribe</a></td>
+              <td><a href="mailto:esme-user-unsubscribe@incubator.apache.org">esme-user-unsubscribe</a></td>
+              <td><a href="mailto:esme-user@incubator.apache.org">esme-user</a></td>
+          </tr>
+        </table>
+
+
+     </section>
+     </body>
+</document>
