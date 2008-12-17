@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+<document>
+  <header>
+    <title>Getting Started</title>
+  </header>
+  <body>
+  	<section id="desktop_client">
+		<title>ESME Desktop Flex/AIR  Client </title>
+		<p>ESME Desktop is a desktop client for ESME API built with Adobe Flex and Adobe AIR technologies.</p>
+		<section id="prereq_desktopclient">
+		<title>Installation </title>
+		<p> Here's how you can install it 
+    <ol>
+			<li> Download and install the latest Adobe AIR runtime from http://get.adobe.com/air/  </li>
+			<li> Download the latest released version of ESMEDesktop.air from http://code.google.com/p/esmeproject/downloads/list</li>
+			<li> 	Follow the installation wizard to install</li>
+		</ol>
+		</p>
+	</section>
+	<section id="using_desktopclient">
+		<title>First Steps</title>
+		<p> Please watch this 5 min screencast http://screencast.com/t/DGKsxpJxN8
+		</p>
+	</section>
+	</section>
+	<section id="web_client">
+		<title>ESME Web  Client </title>
+		<p>Coming Soon</p>
+
+	<section id="using_webclient">
+		<title>First Steps</title>
+		<p>Coming Soon</p>
+	</section>
+		</section>
+    <section id="Getting your own ESME Server Installation Up and Running">
+      <title>Installing a Server</title>
+        <p>Coming Soon</p>
+	<section id="prereq_javaspl">
+		<title>Prerequisites </title>
+		<p>Coming Soon</p>
+	</section>
+	    </section>  
+  </body>
+</document>
