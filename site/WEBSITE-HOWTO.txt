@@ -8,12 +8,14 @@ To update the ESME website:
 3. The generated website can be checked from build/site/en/index.html,
    or use "forrest run" to check it interactively while editing.
 
-4. Use "svn add" and "svn delete" as needed to take into account files
+4. Check build/site/en/broken-links.xml as well.
+
+5. Use "svn add" and "svn delete" as needed to take into account files
    created or removed by Forrest in the build folder.
 
-5. Commit your changes.
+6. Commit your changes.
 
-6. Run svn up in /www/incubator.apache.org/esme on people.apache.org
+7. Run "svn up" in /www/incubator.apache.org/esme on people.apache.org
    to activate the live copy of the website. Note that there is a 
-   delay (4 hours IIRC) for http://incubator.apache.org/sling/esme
+   delay (4 hours IIRC) for http://incubator.apache.org/esme
    to be updated once that happens.
