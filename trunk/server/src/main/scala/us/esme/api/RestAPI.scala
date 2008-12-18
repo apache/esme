@@ -249,7 +249,7 @@ object RestAPI extends XMLApiHelper {
   }
 
   def waitForMsgs(): LiftResponse = {
-    val seq: Long = CometActor.next
+    val seq: Long = Helpers.nextNum
 
     def waitForAnswer: Can[List[(Message, MailboxReason)]] = 
     receiveWithin(6L * 60L * 1000L) {
