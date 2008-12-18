@@ -60,19 +60,17 @@ class Boot {
                         Group, Relationship, MessageTag, AuthToken, 
                         UrlStore, Tracking, Action, DidPerform)
     
-    LiftRules.prependTemplate(User.templates)
-    
-    LiftRules.appendStatelessDispatch {
+    LiftRules.statelessDispatchTable.append {
       case r @ Req("api" :: "send_msg" :: Nil, "", PostRequest) 
         if r.param("token").isDefined  => 
         () => RestAPI.sendMsgWithToken(r)
     }
     
-    LiftRules.appendDispatch(ESMEOpenIDVendor.dispatchPF)
+    LiftRules.dispatch.append(ESMEOpenIDVendor.dispatchPF)
     
     LiftRules.siteMapFailRedirectLocation = List("static", "about")
     
-    LiftRules.prependRewrite {
+    LiftRules.rewrite.prepend {
       case RewriteRequest(ParsePath("user" :: user :: Nil,"", _,_), _, _) =>
         RewriteResponse( List("user_view", "index"), Map("uid" -> user))
       case RewriteRequest(ParsePath("tag" :: tag :: Nil,"", _,_), _, _) =>
@@ -86,7 +84,7 @@ class Boot {
         RewriteResponse( List("user_view", "search"), Map("term" -> term))
     }
 
-    LiftRules.appendDispatch(UrlStore.redirectizer)
+    LiftRules.dispatch.append(UrlStore.redirectizer)
 
 
     LiftRules.siteMapFailRedirectLocation = List("static", "about")
@@ -105,16 +103,16 @@ class Boot {
     ActionView.menuItems
 
     LiftRules.setSiteMap(SiteMap(entries:_*))
-    S.addAround(User.requestLoans)
+    
     S.addAround(ExtSession.requestLoans)
 
-    LiftRules.appendViewDispatch {
-      case "user_view" :: _ => UserView
+    LiftRules.viewDispatch.append {
+      case "user_view" :: _ => Right(UserView)
     }
 
-    LiftRules.prependDispatch(RestAPI.dispatch)
+    LiftRules.dispatch.prepend(RestAPI.dispatch)
     
-    LiftRules.appendEarly(makeUtf8)
+    LiftRules.early.append(makeUtf8)
 
     Distributor.touch
 
