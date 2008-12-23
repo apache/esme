@@ -33,7 +33,7 @@ import java.text._
 
 class Timeline extends CometActor with MsgFormat {
 
-  def defaultPrefix = "timeline"
+  override def defaultPrefix = Full("timeline")
 
   private var messages: List[Long] = Nil
   

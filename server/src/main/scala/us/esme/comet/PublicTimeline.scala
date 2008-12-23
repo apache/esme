@@ -34,7 +34,7 @@ import java.text._
 
 class PublicTimeline extends CometActor with MsgFormat {
 
-  def defaultPrefix = "timeline"
+  override def defaultPrefix = Full("timeline")
 
   private var messages: List[Long] = Nil
   private var lastRender = millis

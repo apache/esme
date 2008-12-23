@@ -33,7 +33,7 @@ import java.text._
 
 class TagCloud extends CometActor with MsgFormat {
 
-  def defaultPrefix = "tagcloud"
+  override def defaultPrefix = Full("tagcloud")
 
   private var messages: List[Long] = Nil
   
