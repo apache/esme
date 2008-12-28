@@ -48,8 +48,8 @@ object UserView extends LiftView with MsgFormat {
   Menu(Loc("userView", List("user_view", "index"), "View User", Hidden)) ::
   Nil
 
-  implicit def fToO(in: () => NodeSeq): Can[() => NodeSeq] = Full(in)
-  implicit def fToO2(in: Elem): Can[NodeSeq] = Full(in)
+  implicit def fToO(in: () => NodeSeq): Box[() => NodeSeq] = Full(in)
+  implicit def fToO2(in: Elem): Box[NodeSeq] = Full(in)
 
   val dispatch = 
   Map("index" -> index _,
@@ -58,7 +58,7 @@ object UserView extends LiftView with MsgFormat {
       "all" -> allUsers _,
       "conversation" -> conversation _)
 
-  def conversation(): Can[NodeSeq] =   {
+  def conversation(): Box[NodeSeq] =   {
     val cid = S.param("cid").map(toLong).openOr(-1L)
 
     val msgs = Message.findAndPrime(By(Message.conversation, cid),
@@ -103,7 +103,7 @@ object UserView extends LiftView with MsgFormat {
     </lift:surround>
   }
 
-  def index(): Can[NodeSeq] =
+  def index(): Box[NodeSeq] =
   (<lift:surround with="default" at="content">
       {
         val ui = for (uid <- S.param("uid");
@@ -204,7 +204,7 @@ object UserView extends LiftView with MsgFormat {
       }
    </lift:surround>)
   
-  def search(): Can[NodeSeq] =
+  def search(): Box[NodeSeq] =
   for (user <- User.currentUser;
        term <- S.param("term")) yield
   <lift:surround with="default" at="content">
@@ -221,7 +221,7 @@ object UserView extends LiftView with MsgFormat {
     </div>
   </lift:surround>
   
-  def displayTag(): Can[NodeSeq] =
+  def displayTag(): Box[NodeSeq] =
   (<lift:surround with="default" at="content">
       {
         val ui = for (tagText <- S.param("tag").map(_.trim);
@@ -243,7 +243,7 @@ object UserView extends LiftView with MsgFormat {
       }
    </lift:surround>)
   
-  def allUsers(): Can[NodeSeq] = 
+  def allUsers(): Box[NodeSeq] = 
   <lift:surround with="default" at="content">
     <fieldset>
       <legend>Users</legend>

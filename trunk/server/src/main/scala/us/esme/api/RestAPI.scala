@@ -93,7 +93,7 @@ object RestAPI extends XMLApiHelper {
       deleteAction _
   }
 
-  def findAction: Can[Action] =
+  def findAction: Box[Action] =
   for (user <- User.currentUser ?~ "Not Logged In";
        id <- S.param("actionid") ?~ "id param not supplied";
        action <- Action.find(By(Action.user, user),
@@ -101,7 +101,7 @@ object RestAPI extends XMLApiHelper {
                              By(Action.removed, false))) yield action
 
   def addAction(): LiftResponse = {
-    val ret: Can[NodeSeq] =
+    val ret: Box[NodeSeq] =
     for (user <- User.currentUser ?~ "Not logged in";
          name <- S.param("name") ?~ "'name' param not supplied";
          test <- S.param("test") ?~ "'test' param not supplied";
@@ -114,7 +114,7 @@ object RestAPI extends XMLApiHelper {
   }
 
   def getActions(): LiftResponse = {
-    val ret: Can[NodeSeq] =
+    val ret: Box[NodeSeq] =
     for (user <- User.currentUser ?~ "Not logged in")
     yield user.performing.flatMap(_.toXml)
 
@@ -122,7 +122,7 @@ object RestAPI extends XMLApiHelper {
   }
 
   def enableAction(): LiftResponse = {
-    val ret: Can[Boolean] =
+    val ret: Box[Boolean] =
     for (action <- findAction;
          enabled <- S.param("enabled").map(toBoolean) ?~ "enabled param not supplied")
     yield action.disabled(!enabled).save
@@ -131,26 +131,26 @@ object RestAPI extends XMLApiHelper {
   }
 
   def deleteAction(): LiftResponse = {
-    val ret: Can[Boolean] =
+    val ret: Box[Boolean] =
     for (action <- findAction) 
     yield action.removed(true).save
     
     ret
   }
   
-  private def calcUser: Can[User] =
+  private def calcUser: Box[User] =
   S.param("user").flatMap(User.findFromWeb) or
   User.currentUser
   
   def getTracking(): LiftResponse = {
-    val ret: Can[NodeSeq] =
+    val ret: Box[NodeSeq] =
     for (user <- User.currentUser ?~ "Not logged in")
     yield Tracking.findAll(By(Tracking.user, user)).flatMap(_.toXml)
     ret
   }
 
   def getConversation(): LiftResponse = {
-    val ret: Can[NodeSeq] =
+    val ret: Box[NodeSeq] =
     for (user <- User.currentUser ?~ "Not logged in";
          id <- S.param("conversationid").map(toLong) ?~ "id param missing"
     ) yield <conversation id={id.toString}>{
@@ -162,7 +162,7 @@ object RestAPI extends XMLApiHelper {
   }
 
   def removeTracking(): LiftResponse = {
-    val ret: Can[Boolean] =
+    val ret: Box[Boolean] =
     for (user <- User.currentUser ?~ "Not logged in";
          id <- S.param("trackid") ?~ "id param missing";
          track <- Tracking.find(By(Tracking.id, id.toLong),
@@ -173,7 +173,7 @@ object RestAPI extends XMLApiHelper {
   }
 
   def addTracking(): LiftResponse = {
-    val ret: Can[Boolean] =
+    val ret: Box[Boolean] =
     for (user <- User.currentUser ?~ "Not logged in";
          toTrack <- (S.param("track") ?~ "No track param") if toTrack.trim.length > 0)
     yield
@@ -184,7 +184,7 @@ object RestAPI extends XMLApiHelper {
 
   def status(): LiftResponse =
   {
-    val ret: Can[NodeSeq] = User.currentUser.map(_.toXml)
+    val ret: Box[NodeSeq] = User.currentUser.map(_.toXml)
     ret
   }
 
@@ -192,22 +192,22 @@ object RestAPI extends XMLApiHelper {
   for (user <- User.findAll) yield user.toXml
 
 
-  def following(muser: Can[User])(): LiftResponse = {
-    val r: Can[NodeSeq] = for (user <- muser) yield
+  def following(muser: Box[User])(): LiftResponse = {
+    val r: Box[NodeSeq] = for (user <- muser) yield
     user.following().map(_.toXml)
     
     r
   }
   
-  def followers(muser: Can[User])(): LiftResponse = {
-    val r: Can[NodeSeq] = for (user <- muser) yield
+  def followers(muser: Box[User])(): LiftResponse = {
+    val r: Box[NodeSeq] = for (user <- muser) yield
     user.followers().map(_.toXml)
     
     r
   }
   
-  def performFollow(userName: Can[String])(): LiftResponse = {
-    val r: Can[Boolean] =
+  def performFollow(userName: Box[String])(): LiftResponse = {
+    val r: Box[Boolean] =
     for (user <- User.currentUser;
          userName <- userName;
          other <- User.findFromWeb(userName)
@@ -216,8 +216,8 @@ object RestAPI extends XMLApiHelper {
     r
   }
   
-  def performUnfollow(userName: Can[String])(): LiftResponse = {
-    val r: Can[Boolean] =
+  def performUnfollow(userName: Box[String])(): LiftResponse = {
+    val r: Box[Boolean] =
     for (user <- User.currentUser;
          userName <- userName;
          other <- User.findFromWeb(userName)
@@ -227,7 +227,7 @@ object RestAPI extends XMLApiHelper {
   }
 
   def login(): LiftResponse = {
-    val res: Can[Boolean] = if (User.loggedIn_?) Empty else
+    val res: Box[Boolean] = if (User.loggedIn_?) Empty else
     for (token <- S.param("token") ?~ "No 'token' param";
          auth <- AuthToken.find(By(AuthToken.uniqueId, token))
          ?~ "Token not found";
@@ -251,7 +251,7 @@ object RestAPI extends XMLApiHelper {
   def waitForMsgs(): LiftResponse = {
     val seq: Long = Helpers.nextNum
 
-    def waitForAnswer: Can[List[(Message, MailboxReason)]] = 
+    def waitForAnswer: Box[List[(Message, MailboxReason)]] = 
     receiveWithin(6L * 60L * 1000L) {
       case (s2, ret: List[(Message, MailboxReason)]) if s2 == seq =>
         Full(ret)
@@ -259,7 +259,7 @@ object RestAPI extends XMLApiHelper {
       case _ => Empty
     }
 
-    var r: Can[NodeSeq] = 
+    var r: Box[NodeSeq] = 
     for (act <- restActor.is ?~ "No REST actor";
          val ignore = act ! ListenFor(self, 5 minutes, seq);
          answer <- waitForAnswer ?~ "Didn't get an answer")
@@ -268,21 +268,21 @@ object RestAPI extends XMLApiHelper {
     r
   }
 
-  def sendMsgWithToken(req: Req): Can[LiftResponse] = {
+  def sendMsgWithToken(req: Req): Box[LiftResponse] = {
     for (token <- req.param("token");
          auth <- AuthToken.find(By(AuthToken.uniqueId, token));
          userId <- auth.user.can;
          ret <- sendMsg(Full(userId), req))  yield ret
   }
   
-  def sendMsg(theUser: Can[Long], params: HasParams): LiftResponse = {
-    val r: Can[Boolean] =
+  def sendMsg(theUser: Box[Long], params: HasParams): LiftResponse = {
+    val r: Box[Boolean] =
     for (user <- theUser ?~ "User not found";
          msg <- params.param("message") ?~ "Message not included")
     yield {
       val from: String = params.param("via") openOr "api"
 
-      val xml: Can[Elem] = params.param("metadata").flatMap(md =>
+      val xml: Box[Elem] = params.param("metadata").flatMap(md =>
         tryo(XML.loadString(md)))
 
       Distributor !
@@ -299,12 +299,12 @@ object RestAPI extends XMLApiHelper {
   }
 
   def getMsgs(): LiftResponse = {
-    val t: Can[NodeSeq] =
+    val t: Box[NodeSeq] =
     for (tagName <- S.param("tag");
          tag <- Tag.find(By(Tag.name, tagName)))
     yield tag.findMessages.map(_.toXml)
         
-    val r: Can[NodeSeq] = 
+    val r: Box[NodeSeq] = 
     t or (for (user <- calcUser ?~ "User not found";
                val lst = Mailbox.mostRecentMessagesFor(user.id, 40))
           yield lst.flatMap{ case (msg, why) => msg.toXml % why.attr})
@@ -317,7 +317,7 @@ object RestAPI extends XMLApiHelper {
     val numTags = (params.param("numTags") openOr "20").toInt
     val numMsgs = 40 //(params.param("numMsgs") openOr "40").toInt
 
-    val r: Can[NodeSeq] = 
+    val r: Box[NodeSeq] = 
     for (user <- calcUser ?~ "User not found";
          val lst = Mailbox.mostRecentMessagesFor(user.id, numMsgs).map(_._1))
     yield
@@ -344,15 +344,15 @@ object RestAPI extends XMLApiHelper {
     ret
   }
 
-  object restActor extends SessionVar[Can[RestActor]](Empty) {
-    override def cleanupFunc: Can[() => Unit] = Full(() => this.is.map(_ ! ByeBye))
+  object restActor extends SessionVar[Box[RestActor]](Empty) {
+    override def cleanupFunc: Box[() => Unit] = Full(() => this.is.map(_ ! ByeBye))
   }
   
 
   class RestActor extends Actor {
     private var userId: Long = _
     private var msgs: List[(Message, MailboxReason)] = Nil
-    private var listener: Can[(Actor, Long)] = Empty
+    private var listener: Box[(Actor, Long)] = Empty
     
     def act = loop {
       react {

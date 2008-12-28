@@ -136,7 +136,7 @@ object Compass {
 
 object RequestAnalyzer {
 
-  def analyze(req: Can[Req], time: Long, queries: List[(String, Long)]): Unit = {
+  def analyze(req: Box[Req], time: Long, queries: List[(String, Long)]): Unit = {
     val longQueries = (queries.filter(_._2 > 30))
     if (time > 50 || longQueries.?) {
       Log.info("Request "+req.map(_.uri).openOr("No Request")+
@@ -150,7 +150,7 @@ object DBVendor extends ConnectionManager {
   private var poolSize = 0
   private val maxPoolSize = 4
   
-  private def createOne: Can[Connection] = try {
+  private def createOne: Box[Connection] = try {
     if (Props.getBool("use_prod_psql", false)) {
       Class.forName("org.postgresql.Driver")
       val dm = DriverManager.
@@ -179,7 +179,7 @@ object DBVendor extends ConnectionManager {
     case e : Exception => e.printStackTrace; Empty
   }
   
-  def newConnection(name: ConnectionIdentifier): Can[Connection] = synchronized {
+  def newConnection(name: ConnectionIdentifier): Box[Connection] = synchronized {
     pool match {
       case Nil if poolSize < maxPoolSize => val ret = createOne
         poolSize = poolSize + 1
