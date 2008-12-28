@@ -64,7 +64,7 @@ class ActionView extends LiftView {
       val toSave = Action.create.name(nameText).user(user)
       DB.use(toSave.connectionIdentifier) {
         ignore =>
-        val act: Can[List[FieldError]] =
+        val act: Box[List[FieldError]] =
         for (a1 <- toSave.setAction(actionText);
              a2 <- a1.setTest(testText))
         yield a2.validate

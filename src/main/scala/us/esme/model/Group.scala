@@ -24,7 +24,7 @@ import util._
 object Group extends Group with LongKeyedMetaMapper[Group] {
   override def dbTableName = "a_group" // define the DB table name
 
-  def findGroup(name: String): Can[Group] = find(By(this.name, name))
+  def findGroup(name: String): Box[Group] = find(By(this.name, name))
 }
 
 class Group extends LongKeyedMapper[Group] {

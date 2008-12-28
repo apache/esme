@@ -84,7 +84,7 @@ object uniqueId extends MappedUniqueId(this, 24) {
       what(i2)
     }
 
-    def matcher: Can[TrackingMatcher] = {
+    def matcher: Box[TrackingMatcher] = {
       who.can match {
         case Full(whoId) =>
           Full(new PersonTrackingMatcher(id, whoId))

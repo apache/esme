@@ -32,10 +32,10 @@ import java.text.SimpleDateFormat
 object IsIE7 extends SessionVar[Boolean]({
     // "Firefox/3"
     // "MSIE 7"
-    def findUserAgent(in: List[(String, String)]): Can[String] =
+    def findUserAgent(in: List[(String, String)]): Box[String] =
     in.filter(_._1.equalsIgnoreCase("User-Agent")).map(_._2).firstOption
 
-  val r: Can[Boolean] =
+  val r: Box[Boolean] =
   for (session <- S.session;
        agent <- findUserAgent(session.initialHeaders)) yield
   agent.indexOf("MSIE 7") >= 0
@@ -49,12 +49,12 @@ trait MsgFormat {
   formatMsg(in, showReply, showConv, Empty)
 
   def formatMsg(in: Message, showReply: Boolean, showConv: Boolean,
-                inside: Can[() => NodeSeq]): NodeSeq =
+                inside: Box[() => NodeSeq]): NodeSeq =
   <div class="b-list">
     <table>
       <tr>
         <td class="image">{
-            val r: Can[NodeSeq] =
+            val r: Box[NodeSeq] =
             for (user <- in.author.obj;
                  image <- user.image if !IsIE7.is) yield <img src={image} alt={user.niceName}/>
 

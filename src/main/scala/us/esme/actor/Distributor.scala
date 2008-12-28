@@ -89,9 +89,9 @@ object Distributor extends Actor {
 
   case class UserCreatedMessage(user: Long, text: String, tags: List[String],
                                 when: Long,
-                                metaData: Can[Elem],
+                                metaData: Box[Elem],
                                 source: String,
-                                replyTo: Can[Long])
+                                replyTo: Box[Long])
   case class AddMessageToMailbox(user: Long, message: Message, reason: MailboxReason)
   case class Listen(user: Long, who: Actor)
   case class Unlisten(user: Long, who: Actor)

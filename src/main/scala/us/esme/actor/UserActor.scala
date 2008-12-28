@@ -35,9 +35,9 @@ import scala.xml.{Elem}
 object UserActor {
   private[actor] case class StartMeUp(user: Long)
   private[actor] case class CreateMessage(text: String, tags: List[String],
-                                          when: Long, metaData: Can[Elem],
+                                          when: Long, metaData: Box[Elem],
                                           source: String,
-                                          replyTo: Can[Long])
+                                          replyTo: Box[Long])
   private[actor] case class AddToMailbox(msg: Message, reason: MailboxReason)
   private[actor] case class Listen(who: Actor)
   private[actor] case class Unlisten(who: Actor)
