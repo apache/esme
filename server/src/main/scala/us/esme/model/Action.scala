@@ -147,7 +147,7 @@ class Action extends LongKeyedMapper[Action] {
   }
   import MsgParser._
 
-  def setTest(in: String): Can[Action] = testExpr(in) match {
+  def setTest(in: String): Box[Action] = testExpr(in) match {
     case Success(v, _) => Full(this.theTest(v.toStr))
     case Failure(m, _) => net.liftweb.util.Failure(m, Empty, Empty)
     case Error(m, _) => net.liftweb.util.Failure(m, Empty, Empty)
@@ -157,7 +157,7 @@ class Action extends LongKeyedMapper[Action] {
 
   def actionText = theAction.is
   
-  def setAction(in: String): Can[Action] = _perform(in) match {
+  def setAction(in: String): Box[Action] = _perform(in) match {
     case Success(_, _) => Full(this.theAction(in))
     case Failure(m, _) => net.liftweb.util.Failure(m, Empty, Empty)
     case Error(m, _) => net.liftweb.util.Failure(m, Empty, Empty)

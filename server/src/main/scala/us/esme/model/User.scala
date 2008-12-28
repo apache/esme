@@ -50,7 +50,7 @@ object User extends User with MetaOpenIDProtoUser[User] {
   }
 
 
-  def findFromWeb(uid: String): Can[User] = 
+  def findFromWeb(uid: String): Box[User] = 
   User.find(By(User.nickname, uid)) or User.find(uid)
 
   override def dbTableName = "users" // define the DB table name
@@ -65,7 +65,7 @@ object User extends User with MetaOpenIDProtoUser[User] {
   /**
    * The menu item for editing the user (make this "Empty" to disable)
    */
-  override def editUserMenuLoc: Can[Menu] =
+  override def editUserMenuLoc: Box[Menu] =
   Full(Menu(Loc("EditUser", editPath, "Profile", testLogginIn)))
   
   
@@ -108,7 +108,7 @@ object User extends User with MetaOpenIDProtoUser[User] {
       )
     }
     
-    def logUserIn(openid: Can[Identifier], fo: Can[VerificationResult], exp: Can[Exception]): LiftResponse = {
+    def logUserIn(openid: Box[Identifier], fo: Box[VerificationResult], exp: Box[Exception]): LiftResponse = {
       (openid, exp) match {
         case (Full(id), _) =>
           val user = User.findOrCreate(id.getIdentifier)
@@ -155,7 +155,7 @@ object ESMEOpenIDVendor extends OpenIdVendor {
   
   def currentUser = User.currentUser
   
-  def postLogin(id: Can[Identifier],res: VerificationResult): Unit = {
+  def postLogin(id: Box[Identifier],res: VerificationResult): Unit = {
     id match {
       case Full(id) =>
         val user = User.findOrCreate(id.getIdentifier())

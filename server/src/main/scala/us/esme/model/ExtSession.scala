@@ -25,7 +25,7 @@ object ExtSession extends ExtSession with MetaProtoExtendedSession[ExtSession] {
 
   def logUserIdIn(uid: String): Unit = User.logUserIdIn(uid)
 
-  def recoverUserId: Can[String] = User.currentUserId
+  def recoverUserId: Box[String] = User.currentUserId
 
   type UserType = User
 }

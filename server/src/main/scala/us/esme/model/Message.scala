@@ -320,7 +320,7 @@ class Message extends LongKeyedMapper[Message] {
     tags.map(x => x.split(" ").mkString("_")) mkString " "
   }
 
-  def setTextAndTags(in: String, tags: List[Tag], metaData: Can[Elem]): Can[Message] = {
+  def setTextAndTags(in: String, tags: List[Tag], metaData: Box[Elem]): Box[Message] = {
     MsgParser.parseMessage(in).map{
       lst =>
       val xml = <message><body>{

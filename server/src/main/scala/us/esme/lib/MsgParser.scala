@@ -23,14 +23,14 @@ import net.liftweb._
 import util._
 import mapper._
 import Helpers._
-import net.liftweb.util.{Failure => CanFailure}
+import net.liftweb.util.{Failure => BoxFailure}
 import scala.util.parsing.input.Reader
 import scala.xml.{XML, NodeSeq, Node, Text}
 import us.esme._
 import model._
 
 object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers {
-  def parseMessage(in: String): Can[List[MsgInfo]] = begin(in) match {
+  def parseMessage(in: String): Box[List[MsgInfo]] = begin(in) match {
     case Success(xs, _) => Full(xs)
     case _ => Empty
   }
@@ -174,7 +174,7 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
 
   lazy val EOF: Parser[Elem] = elem("EOF", isEof _)
 
-  def perform(in: String): Can[Performances] = _perform(in) match {
+  def perform(in: String): Box[Performances] = _perform(in) match {
     case Success(p, _) => Full(p)
     case _ => Empty
   }
@@ -192,7 +192,7 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
     case name ~ _ ~ value => (name.mkString, value.mkString)
   }
 
-  def testMessage(in: String): Can[TestAction] = _testMessage(in) match {
+  def testMessage(in: String): Box[TestAction] = _testMessage(in) match {
     case Success(ta, _) => Full(ta)
     case _ => Empty
   }
@@ -297,7 +297,7 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
     case re => StringAction(re.mkString)
   }
 
-  def validRegex(in: String): Can[Regex] = tryo(in.r)
+  def validRegex(in: String): Box[Regex] = tryo(in.r)
 
   lazy val testTag: Parser[TestAction] = whiteSpace ~ '#' ~> rep1(tagChar) <~ whiteSpace ^^ {
     case xs => HashAction(Tag.findOrCreate(xs.mkString).id, xs.mkString)

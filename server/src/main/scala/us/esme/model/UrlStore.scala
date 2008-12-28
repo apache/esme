@@ -28,7 +28,7 @@ object UrlStore extends UrlStore with LongKeyedMetaMapper[UrlStore] {
       serve(id)
   }
 
-  private def serve(id: String)(): Can[LiftResponse] = 
+  private def serve(id: String)(): Box[LiftResponse] = 
   for (url <- find(By(uniqueId, id)))
   yield RedirectResponse(url.url)
 

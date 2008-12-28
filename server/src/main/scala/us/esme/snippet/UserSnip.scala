@@ -34,9 +34,9 @@ import scala.xml.{NodeSeq, Text, Node}
 object JsonPoster extends SessionVar(S.buildJsonFunc{
     case JsonCmd("post", _, map: Map[String, Any], _) =>
       for (msgObj <- map.get("msg");
-           msg <- Can.isA(msgObj, classOf[String]).map(_.trim) if msg.length > 0;
+           msg <- Box.isA(msgObj, classOf[String]).map(_.trim) if msg.length > 0;
            tagObj <- map.get("tags");
-           tags <- Can.isA(tagObj, classOf[String]);
+           tags <- Box.isA(tagObj, classOf[String]);
            user <- User.currentUser) {
         
         val replyTo = map.get("reply-to").map(toLong) match {
@@ -79,7 +79,7 @@ class UserSnip extends DispatchSnippet {
   def userFmt(u: User): Node = 
   <li><a href={"/user/"+urlEncode(u.nickname.is)}>{u.niceName}</a> {u.firstName} {u.lastName}</li>
 
-  def calcUser: Can[User] =
+  def calcUser: Box[User] =
   S.attr("userId").flatMap(s => User.find(toLong(s))) or User.currentUser
 
   def followers(in: NodeSeq): NodeSeq = 
