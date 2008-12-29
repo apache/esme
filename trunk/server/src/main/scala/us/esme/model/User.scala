@@ -66,7 +66,10 @@ object User extends User with MetaOpenIDProtoUser[User] {
    * The menu item for editing the user (make this "Empty" to disable)
    */
   override def editUserMenuLoc: Box[Menu] =
-  Full(Menu(Loc("EditUser", editPath, "Profile", testLogginIn)))
+  Full(Menu(Loc("EditUser", editPath, "Profile",
+                Template(() => wrapIt(editFunc.map(_()) openOr edit)),
+                testLogginIn)))
+
   
   
   override def signupFields: List[BaseOwnedMappedField[User]] = nickname ::
