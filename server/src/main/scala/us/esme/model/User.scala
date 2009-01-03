@@ -88,7 +88,6 @@ object User extends User with MetaOpenIDProtoUser[User] {
       <p class="input"><label>Open ID</label><user:openid /></p>
       <p class="button">
         <img onclick="document.getElementById('openid_submit').submit()" src="/images/sign-on.png" alt="Sign On" />
-        <span class="note">...if you dare...</span>
       </p>
     </div>
     {

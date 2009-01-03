@@ -31,10 +31,7 @@ import lib._
 
 import java.text._
 
-class Timeline extends CometActor with MsgFormat {
-
-  override def defaultPrefix = Full("timeline")
-
+class Timeline extends CometActor {
   private var messages: List[Long] = Nil
   
   override def localSetup() {
@@ -51,29 +48,25 @@ class Timeline extends CometActor with MsgFormat {
   override def localShutdown() {
     super.localShutdown()
     for (user <- User.currentUser) {
-    Distributor ! Distributor.Unlisten(user.id, this)
+      Distributor ! Distributor.Unlisten(user.id, this)
     }
   }
   
   def render = {
     val msgMap = Message.findMessages(messages)
     val toDisplay = messages.flatMap(msgMap.get)
-  
-  <xml:group>
-    {
-      toDisplay.map(m => <xml:group>{formatMsg(m, true, true)}</xml:group>)
-    }
-  </xml:group>
+
+    OnLoad(JsCrVar("timeline_messages", JsArray(
+        toDisplay.map(_.asJs) :_*)) &
+    JsFunc("displayMessages", JsVar("timeline_messages"), uniqueId).cmd)
   }
   
-  override implicit def xmlToXmlOrJsCmd(in: NodeSeq): RenderOut = new RenderOut(Full(in), fixedRender, Empty, Empty, false)
-
   override def lowPriority = {
     case UserActor.MessageReceived(msg, _) =>
       messages = (msg.id.is :: messages).take(40)
       reRender(false)
       
-      case Distributor.UserUpdated(_) =>
-        reRender(false)
+    case Distributor.UserUpdated(_) =>
+      reRender(false)
   }
 }

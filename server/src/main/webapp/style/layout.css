@@ -5,7 +5,7 @@
         margin: 0 auto;
 
         border-top: 4px solid #fff;
-        border-bottom: 4px solid #fff;
+        /* border-bottom: 4px solid #fff; */
     }
 
     .head
