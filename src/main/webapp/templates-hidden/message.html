@@ -13,145 +13,129 @@
   <body>
     <div class="container">
       <div class="head">
-	<img src="/images/esme-blue.png" alt="ESME" />
+        <img src="/images/esme-blue.png" alt="ESME" />
         <ul class="b-primary">
           <li><lift:Menu.item name="EditUser"/></li>
-	  <li><lift:Menu.item name="about"/></li>
-	  <li><lift:Menu.item name="authToken"/></li>
+          <li><lift:Menu.item name="about"/></li>
+          <li><lift:Menu.item name="list_users"/></li>
+          <li><lift:Menu.item name="trackMgt"/></li>
+          <li><lift:Menu.item name="actionMgt"/></li>
+          <li><lift:Menu.item name="authToken"/></li>
           <li><lift:Menu.item name="Logout"/></li>
         </ul>
       </div>
 
       <table class="l-page l-page-massage">
-	<tbody>
+        <tbody>
           <tr>
-            <td class="l-page-l">
-              <div class="b-edit">
-                <h2 class="title">Welcome<span class="name"><lift:UserSnip.name /></span></h2>
-                <div class="b-popup"><i class="rt"><i>&nbsp;</i></i>
-                  <i class="rb"><i>&nbsp;</i></i>
-                  <i class="lb"><i>&nbsp;</i></i>
-                  <i class="b">&nbsp;</i>
-		  <div class="b-popup-c">
-                    <div class="row clear">
-                      <label>What are you working on?</label>
-                      <textarea rows="4" cols="20" id="textdude"
-                      style="width: 90%"></textarea
-								    >
-                    </div>
-		    <div class="row clear"
-			 style="display: none;"
-                         id="reply-to-div">
-		      Replying to <span id="reply-to-span">&nbsp;</span>
-		      <button onclick="clearReplyTo()">remove reply</button>
-		    </div>
-		    
-                    <div class="row clear">
-                      <label>Tag your message</label>
-                      <input id="tagdude" style="width: 90%"/>
-                      <div class="note clear">
-                        <span class="l">use commas to 
-			  separate tags</span>
-			<span class="r">not required</span>
-                      </div>
-                    </div>
-		    
-                    <div class="row clear"><a class="btn" href="javascript:post_msg();"><img src="/images/send-message.png" alt="Send Message" /></a></div>
-
-<script>
-// <![CDATA[
-var currentConvNumber = 0;
-
-function setReplyTo(id, text) {
-  currentConvNumber = id;
-  document.getElementById('reply-to-div').style.display = "block";
-  jQuery('#reply-to-span').text(text);
-}
-
-function clearReplyTo() {
-  currentConvNumber = 0;
-  document.getElementById('reply-to-div').style.display = "none";
-}
-// ]]>
-</script>
-<lift:UserSnip.postScript />
-		  </div>
-		</div>
-
-		<div class="b-cloud">
-                  <lift:comet type="TagCloud"/>
-                </div>
-		
-                <div class="bugs">
- 		  <form action="/user_view/search"
-			class="b-primay"><input style="height: 20px; background: #c9d8ea;"
-						name="term"/>
- 		    <input style="height: 22px; background: #233e5e; color: #c9d8ea;" type="submit" value="Search"/>
- 		  </form>
-                </div>
-              </div>
-            </td>
-            <td class="l-page-c"></td>
             <td class="l-page-r">
               <div class="l-top">
-                <div id="tabs" class="b-view tab1">
+                <div id="tabs" >
                   <dl class="messages">
-		    <dt class="caption">Your timeline</dt>
-                    <dd class="b-view-menu clear">
-                      <ul>
-                        <li class="current"><b>Messages</b></li>
-                        <li><a href="javascript:" onclick="document.getElementById('tabs').className='b-view tab2';return false">Timeline</a></li>
-                        <li><a href="javascript:" onclick="document.getElementById('tabs').className='b-view tab3';return false">Contacts</a></li>
-                      </ul>
+                    <dt class="caption">Your timeline</dt>
+
+                    <dd>
+                      <lift:comet type="Timeline"/>
                     </dd>
-		    <dd>
-		      <lift:comet type="Timeline"/>
-		    </dd>
                   </dl>
-		  
+
                   <dl class="tagclouds">
                     <dt class="caption">
                       Public Timeline
                     </dt>
-                    <dd class="b-view-menu clear">
-                      <ul>
-                        <li><a href="javascript:" onclick="document.getElementById('tabs').className='b-view tab1';return false">Messages</a></li>
-                        <li class="current"><b>Timeline</b></li>
-                        <li><a href="javascript:" onclick="document.getElementById('tabs').className='b-view tab3';return false">Contacts</a></li>
-                      </ul>
-                    </dd>
+
                     <dd class="b-clouds">
-		      <lift:comet type="PublicTimeline" />
+                      <lift:comet type="PublicTimeline" />
                     </dd>
                   </dl>
                   <dl class="contacts">
                     <dt class="caption">
                       Contacts
                     </dt>
-                    <dd class="b-view-menu clear">
-                      <ul>
-                        <li><a href="javascript:" onclick="document.getElementById('tabs').className='b-view tab1';return false">Messages</a></li>
-                        <li><a href="javascript:" onclick="document.getElementById('tabs').className='b-view tab2';return false">Timeline</a></li>
-                        <li class="current"><b>Contacts</b></li>
-                      </ul>
+
+                    <dd class="b-contacts" style="height: 240px; overflow: auto">
+                      Following:
+                      <lift:UserSnip.following/>
                     </dd>
                     <dd class="b-contacts" style="height: 240px; overflow: auto">
-		      Following:
-		      <lift:UserSnip.following/>
-                    </dd>
-                    <dd class="b-contacts" style="height: 240px; overflow: auto">
-		      Followers:
-		      <lift:UserSnip.followers/>
+                      Followers:
+                      <lift:UserSnip.followers/>
                     </dd>
                   </dl>
                 </div>
               </div>
             </td>
+            <td class="l-page-l">
+              <div class="b-edit">
+                <h2 class="title">Welcome<span class="name"><lift:UserSnip.name /></span></h2>
+
+                <div class="b-popup-c">
+                  <div class="row clear">
+                    <label>What are you working on?</label>
+                    <textarea rows="4" cols="20" id="textdude"
+                              style="width: 90%"></textarea
+                    >
+                  </div>
+                  <div class="row clear"
+                       style="display: none;"
+                       id="reply-to-div">
+                    Replying to <span id="reply-to-span">&nbsp;</span>
+                    <button onclick="clearReplyTo()">remove reply</button>
+                  </div>
+
+                  <div class="row clear">
+                    <label>Tag your message</label>
+                    <input id="tagdude" style="width: 90%"/>
+                    <div class="note clear">
+                      <span class="l">use commas to
+                      separate tags</span>
+                      <span class="r">not required</span>
+                    </div>
+                  </div>
+
+                  <div class="row clear"><a class="btn" href="javascript:post_msg();"><img src="/images/send-message.png" alt="Send Message" /></a></div>
+
+                  <script>
+                    // <![CDATA[
+                    var currentConvNumber = 0;
+
+                    function setReplyTo(id, text) {
+                      currentConvNumber = id;
+                      document.getElementById('reply-to-div').style.display = "block";
+                      jQuery('#reply-to-span').text(text);
+                    }
+
+                    function clearReplyTo() {
+                      currentConvNumber = 0;
+                      document.getElementById('reply-to-div').style.display = "none";
+                    }
+                    // ]]>
+                  </script>
+                  <lift:UserSnip.postScript />
+                </div>
+
+
+                <div class="b-cloud">
+                  <lift:comet type="TagCloud"/>
+                </div>
+
+                <div class="bugs">
+                  <form action="/user_view/search"
+                        class="b-primay"><input style="height: 20px; background: #c9d8ea;"
+                                            name="term"/>
+                    <input style="height: 22px; background: #233e5e; color: #c9d8ea;" type="submit" value="Search"/>
+                  </form>
+                </div>
+              </div>
+            </td>
+
+
           </tr>
-	</tbody>
+        </tbody>
       </table>
-      
-      <lift:embed what="/templates-hidden/menu_footer"/>
+    </div>
+    <div class="foot">
+      <center>ESME</center>
     </div>
   </body>
 </html>

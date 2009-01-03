@@ -31,9 +31,7 @@ import lib._
 
 import java.text._
 
-class TagCloud extends CometActor with MsgFormat {
-
-  override def defaultPrefix = Full("tagcloud")
+class TagCloud extends CometActor /* with MsgFormat*/ {
 
   private var messages: List[Long] = Nil
   

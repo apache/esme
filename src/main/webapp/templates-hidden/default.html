@@ -16,37 +16,36 @@
 
       <div class="head">
         <a class="logo" href="/"><img src="/images/esme-blue.png" alt="ESME" /></a>
-          
+
         <ul class="b-primary">
           <li><lift:Menu.item name="EditUser"/></li>
           <li><lift:Menu.item name="about"/></li>
+          <li><lift:Menu.item name="list_users"/></li>
+          <li><lift:Menu.item name="trackMgt"/></li>
+          <li><lift:Menu.item name="actionMgt"/></li>
+          <li><lift:Menu.item name="authToken"/></li>
           <li><lift:Menu.item name="Logout"/></li>
         </ul>
       </div>
 
-      <table class="l-page l-page-content">
+      <table>
         <tr>
-          <td class="l-page-l">
-	    <div class="b-open">
-              <lift:UserSnip.loginForm />
-	    </div>
-          </td>
-          <td class="l-page-c">
-            <div class="b-back">
-              <lift:Menu.item name="Home">&lt;- Messages</lift:Menu.item>
+          <td width="75%">
+            <div>
+              <lift:bind name="content" />
             </div>
+          </td>
+          <td>
+            <lift:UserSnip.loginForm />
             <lift:msgs/>
-          </td>
-          <td class="l-page-r">
-            <div class="l-top">
-                <lift:bind name="content" />
-            </div>
           </td>
         </tr>
       </table>
 
-      <lift:embed what="/templates-hidden/menu_footer"/>
     </div>
 
+    <div class="foot">
+      <center>ESME</center>
+    </div>
   </body>
 </html>
