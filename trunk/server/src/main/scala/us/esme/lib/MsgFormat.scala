@@ -43,6 +43,7 @@ object IsIE7 extends SessionVar[Boolean]({
   r openOr false
 })
 
+/*
 trait MsgFormat {
   
   def formatMsg(in: Message, showReply: Boolean, showConv: Boolean): NodeSeq =
@@ -109,3 +110,4 @@ trait MsgFormat {
     }
   }
 }
+*/

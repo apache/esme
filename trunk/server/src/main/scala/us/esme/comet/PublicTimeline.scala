@@ -32,10 +32,7 @@ import lib._
 
 import java.text._
 
-class PublicTimeline extends CometActor with MsgFormat {
-
-  override def defaultPrefix = Full("timeline")
-
+class PublicTimeline extends CometActor {
   private var messages: List[Long] = Nil
   private var lastRender = millis
   private var scheduled = false
@@ -58,14 +55,10 @@ class PublicTimeline extends CometActor with MsgFormat {
     val msgMap = Message.findMessages(messages)
     val toDisplay = messages.flatMap(msgMap.get)
   
-    <xml:group>
-      {
-        toDisplay.map(m => formatMsg(m, true, true))
-      }
-    </xml:group>
+    OnLoad(JsCrVar("public_timeline_messages", JsArray(
+        toDisplay.map(_.asJs) :_*)) &
+    JsFunc("displayMessages", JsVar("public_timeline_messages"), uniqueId).cmd)
   }
-  
-  override implicit def xmlToXmlOrJsCmd(in: NodeSeq): RenderOut = new RenderOut(Full(in), fixedRender, Empty, Empty, false)
 
   override def lowPriority = {
     case ForceRender =>

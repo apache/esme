@@ -37,7 +37,7 @@ import scala.xml.{NodeSeq, Text, Elem}
 
 import java.util.logging._
 
-object UserView extends LiftView with MsgFormat {
+object UserView extends LiftView /* with MsgFormat */ {
   val logger: Logger = Logger.getLogger("us.esme.view")
   logger.setLevel(Level.INFO)
   def loggedIn_? = User.loggedIn_?
@@ -79,12 +79,13 @@ object UserView extends LiftView with MsgFormat {
         case _ =>
           <ul>
             {
-              what.map(m =>
-                <li>{formatMsg(m,
-                               false, false,
-                               Full(() =>
-                        show(replyMap.getOrElse(m.id, Nil).reverse)
-                      ))}</li>)
+              what.zipWithIndex.map{
+                case (m, idx) =>
+                  <span id={"m_"+idx}>
+                    {Script(OnLoad(JsFunc("displayMessages", JsArray(m.asJs), "m_"+idx).cmd))
+                    }
+                  </span>
+              }
             }
           </ul>
       }
@@ -125,20 +126,20 @@ object UserView extends LiftView with MsgFormat {
             <div id="tabs" class="b-view tab1">
               <dl class="messages">
                 <dt class="caption">{user.niceName}'s Timeline 
-                <span id="following">{followOrNot}</span></dt>
-                <dd class="b-view-menu clear">
-                  <ul>
-                    <li class="current"><b>Timeline</b></li>
-                    <li><a href="javascript:" onclick="document.getElementById('tabs').className='b-view tab2';return false">Messages</a></li>
-                    <li><a href="javascript:" onclick="document.getElementById('tabs').className='b-view tab3';return false">Contacts</a></li>
-                  </ul>
-                </dd>
+                  <span id="following">{followOrNot}</span></dt>
                 <dd>
                   {
                     val lst: List[Message] =
                     Mailbox.mostRecentMessagesFor(user.id, 50).map(_._1)
                     //  user.latestMessages(50) openOr Nil
-                    lst.map(m => formatMsg(m, false, true))
+                    lst.zipWithIndex.map{
+                      case (m, idx) =>
+                        <span id={"m2_"+idx}>
+                          {
+                            Script(OnLoad(JsFunc("displayMessages", JsArray(m.asJs), "m2_"+idx).cmd))
+                          }
+                        </span>
+                    }
                   }
                 </dd>
               </dl>
@@ -146,18 +147,18 @@ object UserView extends LiftView with MsgFormat {
               <dl class="tagclouds">
                 <dt class="caption">{user.niceName}'s Messages</dt>
                
-                <dd class="b-view-menu clear">
-                  <ul>
-                    <li><a href="javascript:" onclick="document.getElementById('tabs').className='b-view tab1';return false">Timeline</a></li>
-                    <li class="current"><b>Messages</b></li>
-                    <li><a href="javascript:" onclick="document.getElementById('tabs').className='b-view tab3';return false">Contacts</a></li>
-                  </ul>
-                </dd>
                 <dd class="b-clouds">
                   {
                     val lst: List[Message] =
                     Message.findAll(By(Message.author, user), MaxRows(50), OrderBy(Message.id, Descending))
-                    lst.map(m => formatMsg(m, false, true))
+                    lst.zipWithIndex.map{
+                      case (m, idx) =>
+                        <span id={"m3_"+idx}>
+                          {
+                            Script(OnLoad(JsFunc("displayMessages", JsArray(m.asJs), "m3_"+idx).cmd))
+                          }
+                        </span>
+                    }
                   }
                 </dd>
               </dl>
@@ -165,13 +166,7 @@ object UserView extends LiftView with MsgFormat {
                 <dt class="caption">
                   Contacts
                 </dt>
-                <dd class="b-view-menu clear">
-                  <ul>
-                    <li><a href="javascript:" onclick="document.getElementById('tabs').className='b-view tab1';return false">Timeline</a></li>
-                    <li><a href="javascript:" onclick="document.getElementById('tabs').className='b-view tab2';return false">Messages</a></li>
-                    <li class="current"><b>Contacts</b></li>
-                  </ul>
-                </dd>
+
                 <dd class="b-contacts" style="height: 240px; overflow: auto">
                   Following:
                   <lift:UserSnip.following userId={user.id.toString}/>
@@ -183,22 +178,6 @@ object UserView extends LiftView with MsgFormat {
               </dl>
             </div>
           </div>
-          /*
-           (<div>
-           <fieldset>
-           <legend>{user.niceName}</legend>
-           <span id="following">{followOrNot}</span>
-           <ul>
-           {
-           val lst: List[Message] =
-           Mailbox.mostRecentMessagesFor(user.id, 50).map(_._1)
-           //  user.latestMessages(50) openOr Nil
-           lst.map(m => <li>{formatMsg(m, false, true)}</li>)
-           }
-           </ul>
-           </fieldset>
-           </div>)
-           */
         }
         ui openOr (<span>User Not Found</span>)
       }
@@ -214,7 +193,14 @@ object UserView extends LiftView with MsgFormat {
         <ul>
           {
             val lst: List[Message] = Message.search(term, user.following, 50)
-            lst.map(m => <li>{formatMsg(m, false, true)}</li>)
+            lst.zipWithIndex.map{
+              case (m, idx) =>
+                <span id={"m4_"+idx}>
+                  {
+                    Script(OnLoad(JsFunc("displayMessages", JsArray(m.asJs), "m4_"+idx).cmd))
+                  }
+                </span>
+            }
           }
         </ul>
       </fieldset>
@@ -233,7 +219,14 @@ object UserView extends LiftView with MsgFormat {
                 <legend>{tag.name}</legend>
                 <ul>
                   {
-                    lst.map(m => <li>{formatMsg(m, false, true)}</li>)
+                    lst.zipWithIndex.map{
+                      case (m, idx) =>
+                        <span id={"m5_"+idx}>
+                          {
+                            Script(OnLoad(JsFunc("displayMessages", JsArray(m.asJs), "m5_"+idx).cmd))
+                          }
+                        </span>
+                    }
                   }
                 </ul>
               </fieldset>
