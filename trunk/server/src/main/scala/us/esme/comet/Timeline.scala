@@ -55,10 +55,11 @@ class Timeline extends CometActor {
   def render = {
     val msgMap = Message.findMessages(messages)
     val toDisplay = messages.flatMap(msgMap.get)
+    val jsId = "timeline_messages";
 
-    OnLoad(JsCrVar("timeline_messages", JsArray(
+    OnLoad(JsCrVar(jsId, JsArray(
         toDisplay.map(_.asJs) :_*)) &
-    JsFunc("displayMessages", JsVar("timeline_messages"), uniqueId).cmd)
+    JsFunc("displayMessages", JsVar(jsId), jsId).cmd)
   }
   
   override def lowPriority = {
