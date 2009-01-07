@@ -61,7 +61,7 @@ object User extends User with MetaOpenIDProtoUser[User] {
     case _ => Full(<lift:surround with="default" at="content">
           <lift:bind /></lift:surround>)
   }
-  
+
   /**
    * The menu item for editing the user (make this "Empty" to disable)
    */
