@@ -41,7 +41,7 @@ import org.compass.core.config.CompassConfiguration
  */
 class Boot {
   def boot {
-    DefaultConnectionIdentifier.jndiName = "esme"
+    DefaultConnectionIdentifier.jndiName = Props.get("jndi.name") openOr "esme"
     
     if (!DB.jndiJdbcConnAvailable_?) DB.defineConnectionManager(DefaultConnectionIdentifier, DBVendor)
     // where to search snippet
