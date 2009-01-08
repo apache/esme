@@ -1,0 +1,24 @@
+/* Basic layout (begin) */ /**/
+    .l-page
+    {
+        width: 100%;
+        height: 350px;
+    }
+
+    .l-page-l
+    {
+        padding: 10px 12px;
+    }
+
+    .l-page-c
+    {
+        width: 130px;
+        
+        border-right: 4px solid #fff;
+    }
+
+    .l-page-r
+    {
+        width: 550px;
+    }
+/* Basic layout (end) */ /**/

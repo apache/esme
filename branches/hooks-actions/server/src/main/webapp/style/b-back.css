@@ -1,0 +1,18 @@
+/* Back link (begin) */ /**/
+    .b-back
+    {
+        padding: 8px 0;
+
+        background: #fff;
+    }
+
+    .b-back a
+    {
+        text-decoration: none;
+    }
+
+    .b-back a:hover
+    {
+        font-weight: bold;
+    }
+/* Back link (end) */ /**/

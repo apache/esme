@@ -1,0 +1,20 @@
+/* This file skins resizables */
+
+.ui-resizable { position: relative; }
+
+/* Global handle styles */
+.ui-resizable-handle { position: absolute; display: none; font-size: 0.1px; }
+.ui-resizable .ui-resizable-handle { display: block; }
+body .ui-resizable-disabled .ui-resizable-handle { display: none; } /* use 'body' to make it more specific (css order) */
+body .ui-resizable-autohide .ui-resizable-handle { display: none; } /* use 'body' to make it more specific (css order) */
+
+.ui-resizable-n { cursor: n-resize; height: 3px; width: 100%; top: 0px; left: 0px; background: #61b4d6; }
+.ui-resizable-s { cursor: s-resize; height: 3px; width: 100%; bottom: 0px; left: 0px; background: #4c99b8;}
+
+.ui-resizable-e { cursor: e-resize; width: 3px; right: 0px; top: 0px; height: 100%; background: #4c99b8;}
+.ui-resizable-w { cursor: w-resize; width: 3px; left: 0px; top: 0px; height: 100%; background: #4c99b8;}
+
+.ui-resizable-se { cursor: se-resize; width: 3px; height: 3px; right: 0px; bottom: 0px; background: transparent url(i/resizable-se.gif); }
+.ui-resizable-sw { cursor: sw-resize; width: 3px; height: 3px; left: 0px; bottom: 0px; background: transparent url(i/resizable-sw.gif); }
+.ui-resizable-nw { cursor: nw-resize; width: 3px; height: 3px; left: 0px; top: 0px; background: transparent;}
+.ui-resizable-ne { cursor: ne-resize; width: 3px; height: 3px; right: 0px; top: 0px; background: transparent; }
