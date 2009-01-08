@@ -31,6 +31,9 @@ import model._
 import lib._
 
 import org.apache.commons.httpclient._
+import org.apache.commons.httpclient.auth._
+import methods._
+import java.io.OutputStream
 
 object HttpSender extends Actor with GetPoster {
   def act = loop {
@@ -39,30 +42,89 @@ object HttpSender extends Actor with GetPoster {
         link(ActorWatcher)
         
 
-      case SendAMessage(action, msg, token) =>
-        send(action, msg, token)
+      case SendAMessage(action, msg, user, reason, token) =>
+        send(action, msg, user, reason, token)
 
       case _ =>
     }
   }
 
   private case object StartMeUp
-  case class SendAMessage(action: Performances, msg: Message, token: String)
+  case class SendAMessage(action: Performances, msg: Message, user: User, reason: MailboxReason, token: String)
 
-  private def send(action: Performances, msg: Message, token: String) {
+  private def send(action: Performances, msg: Message, user: User, reason: MailboxReason, token: String) {
     import Mailer._
     
     action match {
-      case MailTo(who) => Mailer.sendMail(From("i@esme.us"), Subject("msg"),
-                                          To(who),
-                                          XHTMLMailBodyType(msg.digestedXHTML))
-      case HttpTo(url, headers) =>
+      case MailTo(who, text) =>
+        val body = text match {
+          case None => XHTMLMailBodyType(msg.digestedXHTML)
+          case Some(t) => PlainMailBodyType(expandText(t, msg, user, reason))
+        }
+        Mailer.sendMail(From("i@esme.us"), Subject("msg"),
+                        To(who), body)
+          
+      case HttpTo(url, username, password, headers, data) =>
+        val load = data match {
+          case None => ""
+          case Some(d) => expandText(d, msg, user, reason)
+        }
         post(url, httpClient,
              ("X-ESME-Token" -> token) :: headers,
-             msg.toXml)
+             username, password,
+             load)
         
       case PerformResend | PerformFilter => // IGNORE
       
+    }
+  }
+  
+  private def expandText(text: String, msg: Message, user: User, reason: MailboxReason) = {
+    val followerId = reason match {
+      case FollowedReason(followerId) => Some(followerId)
+      case UnfollowedReason(followerId) => Some(followerId)
+      case _ => None
+    }
+    
+    val followerName = followerId match {
+      case Some(followerId) => User.find(followerId).map[String](_ nickname).openOr("N/A")
+      case None => "N/A"
+    }
+    
+    text.replace("%u", user.nickname).
+    replace("%f", followerName).
+    replace("%i", user.imageUrl).
+    replace("%w", user.wholeName).
+    replace("%s", msg.getText)
+  }
+
+  // Overloaded method from GetPoster
+  private def post(url: String, httpClient: HttpClient,
+       headers: List[(String, String)],
+       username: String, password: String,
+       body: String) {
+    val poster = new PostMethod(baseUrl + url)
+    for ((name, value) <- headers) poster.setRequestHeader(name, value)
+    poster.setRequestEntity(new RequestEntity {
+      private val bytes = body.toString.getBytes("UTF-8")
+
+      def getContentLength() = bytes.length
+      def getContentType() = "application/x-www-form-urlencoded"
+      def isRepeatable() = true
+      def writeRequest(out: OutputStream) {
+    out.write(bytes)
+      }
+    })
+
+    httpClient.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password))
+    poster.setDoAuthentication(true)
+
+    try {
+      httpClient.executeMethod(poster)
+      Log.info(poster.getStatusText)
+      Log.info(poster.getResponseBodyAsString)
+    } finally {
+      poster.releaseConnection
     }
   }
   

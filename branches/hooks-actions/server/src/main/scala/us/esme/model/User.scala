@@ -36,6 +36,7 @@ import scala.xml.{NodeSeq, Text}
 
 import us.esme._
 import actor._
+import view._
 import java.net.URL
 import java.util.logging._
 
@@ -43,12 +44,23 @@ object User extends User with MetaOpenIDProtoUser[User] {
   val logger: Logger = Logger.getLogger("us.esme.model.User")
   logger.setLevel(Level.INFO)
 
-  override def afterSave = notifyActors _ :: super.afterSave
+  override def afterSave = profileChanged _ :: notifyActors _ :: super.afterSave
 
   private def notifyActors(in: User) {
     Distributor ! Distributor.UserUpdated(in.id)
   }
 
+  private def profileChanged(in: User) {
+    Message.create.author(in.id).
+                   when(Helpers.timeNow.getTime).
+                   source("profile").
+                   setTextAndTags("User " + in.nickname + " changed profile. Name: " + in.wholeName + ", Image: " + in.imageUrl, Nil, Empty).
+                   foreach{ msg => 
+                     if (msg.save) {
+                       Distributor ! Distributor.AddMessageToMailbox(in.id, msg, ProfileReason(in.id)) 
+                     }
+                   }
+  }
 
   def findFromWeb(uid: String): Box[User] = 
   User.find(By(User.nickname, uid)) or User.find(uid)
@@ -116,6 +128,17 @@ object User extends User with MetaOpenIDProtoUser[User] {
           val user = User.findOrCreate(id.getIdentifier)
           User.logUserIn(user)
           S.notice("Welcome "+user.niceName)
+
+          Message.create.author(user.id).
+                         when(Helpers.timeNow.getTime).
+                         source("login").
+                         setTextAndTags("User " + user.nickname + " logged in.", Nil, Empty).
+                         foreach{ msg => 
+                           if (msg.save) {
+                             Distributor ! Distributor.AddMessageToMailbox(user.id, msg, LoginReason(user.id)) 
+                           }
+                         }
+
           RedirectResponse("/", S responseCookies :_*)
           
         case (_, Full(exp)) =>
@@ -214,15 +237,35 @@ class User extends OpenIDProtoUser[User] {
     Relationship.find(By(Relationship.owner, this),
                       By(Relationship.target, who)) match {
       case Full(x) => true
-      case Empty => Relationship.create.owner(this).
-        target(who).save
+      case Empty => { if (Relationship.create.owner(this).target(who).save)
+        Message.create.author(who.id).
+                       when(Helpers.timeNow.getTime).
+                       source("followed").
+                       setTextAndTags("User " + this.nickname + " followed " + who.nickname + ".", Nil, Empty).
+                       foreach { msg =>
+                         if (msg.save) {
+                           Distributor ! Distributor.AddMessageToMailbox(who.id, msg, FollowedReason(this.id))
+                         }
+                       }
+        true
+      }
       case _ => false
     }
   }
 
   def unfollow(who: User): Boolean = {
     Relationship.findAll(By(Relationship.owner, this),
-                         By(Relationship.target, who)).foreach(_.delete_!)
+                         By(Relationship.target, who)).foreach{ r =>
+                           if (r.delete_!) Message.create.author(who.id).
+                                           when(Helpers.timeNow.getTime).
+                                           source("unfollowed").
+                                           setTextAndTags("User " + this.nickname + " unfollowed " + who.nickname + ".", Nil, Empty).
+                                           foreach{ msg =>
+                                             if (msg.save) {
+                                               Distributor ! Distributor.AddMessageToMailbox(who.id, msg, UnfollowedReason(this.id))
+                                             }
+                                           }
+                         }
     true
   }
 
