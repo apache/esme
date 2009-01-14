@@ -8,7 +8,7 @@
   <name>ESME</name>
   <inceptionYear>2008</inceptionYear>
   <properties>
-    <scala.version>2.7.2</scala.version>
+    <scala.version>2.7.3</scala.version>
     <lucene.version>2.3.2</lucene.version>
     <netbeans.hint.deploy.server>gfv3</netbeans.hint.deploy.server>
   </properties>
@@ -49,27 +49,27 @@
     <dependency>
       <groupId>net.liftweb</groupId>
       <artifactId>lift-util</artifactId>
-      <version>0.10-SNAPSHOT</version>
+      <version>0.10</version>
     </dependency>
     <dependency>
       <groupId>net.liftweb</groupId>
       <artifactId>lift-webkit</artifactId>
-      <version>0.10-SNAPSHOT</version>
+      <version>0.10</version>
     </dependency>
     <dependency>
       <groupId>net.liftweb</groupId>
       <artifactId>lift-mapper</artifactId>
-      <version>0.10-SNAPSHOT</version>
+      <version>0.10</version>
     </dependency>
         <dependency>
       <groupId>net.liftweb</groupId>
       <artifactId>lift-testkit</artifactId>
-      <version>0.10-SNAPSHOT</version>
+      <version>0.10</version>
     </dependency>
     <dependency>
       <groupId>net.liftweb</groupId>
       <artifactId>lift-openid</artifactId>
-      <version>0.10-SNAPSHOT</version>
+      <version>0.10</version>
     </dependency>
     <!--
     <dependency>
