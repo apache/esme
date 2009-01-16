@@ -138,7 +138,12 @@ class ActionView extends LiftView {
                   day = (0,1) -- sent on Sunday or Monday<br/>
                   #moo -- contains the #moo tag<br/>
                   50% -- success 50% of the time<br/>
-                  @foo &amp; 50% -- half the time, something sent by @foo
+                  @foo &amp; 50% -- half the time, something sent by @foo<br/>
+                  login -- user has logged in<br/>
+                  followed -- user is being followed<br/>
+                  unfollowed -- user is being unfollowed<br/>
+                  profile -- user changed profile<br/>
+                  every N mins -- repeat action, N is an integer
                 </td>
               </tr>
 
@@ -149,7 +154,9 @@ class ActionView extends LiftView {
                   filter -- not put in your timeline<br />
                   resend -- sends the message to all your followers<br />
                   mailto:foo@bar.com -- sends the message to foo@bar.com<br/>
-                  http://foo.com/message/in -- makes an HTTP post with the message
+                  http://foo.com/message/in -- HTTP post, %s expands to message<br/>
+                  atom:http://blog.com/feed.atom -- posts new messages from Atom feed<br/>
+                  rss:http://blog.com/feed.rss -- posts new messages from RSS feed
                   </td>
               </tr>
               <input type="submit" value="Add" />

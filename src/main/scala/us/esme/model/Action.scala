@@ -25,6 +25,7 @@ import util._
 import us.esme._
 import lib._
 import actor._
+import external._
 
 import java.util.Calendar
 import scala.xml.{Text, Node, Elem => XmlElem}
@@ -36,64 +37,134 @@ object Action extends Action with LongKeyedMetaMapper[Action] {
     Distributor ! Distributor.UpdateTrackingFor(in.user, 
                                                 Distributor.PerformTrackingType)
   }
+
+  override def afterSave = startStopActors _ :: super.afterSave
   
-  type TestFunc = (Message, Long, Calendar) => Boolean
+  private def startStopActors(in: Action)  {
+    if (!in.removed.is && in.enabled) {
+      in.startActors()
+    } else {
+      SchedulerActor ! SchedulerActor.StopRegular(in.id)
+      MessagePullActor ! MessagePullActor.StopPullActor(in.id)
+    }
+  }
+  
+  type TestFunc = (Message, Long, Calendar, MailboxReason) => Boolean
   
   lazy val TrueFunc: TestFunc = {case _ => true}
-  lazy val SentToMe: TestFunc = (m, u, c) => m.sentToIds.contains(u)
+  lazy val SentToMe: TestFunc = (m, u, c, r) => m.sentToIds.contains(u)
   
   def toFunc(in: TestAction): TestFunc = in match {
     case AnyAction => TrueFunc
 
     case NotAction(action) =>
       val f: TestFunc = this.toFunc(action)
-      (m, u, c) => !f(m,u,c)
+      (m, u, c, r) => !f(m,u,c,r)
 
     case OrAction(left, right) =>
       val f1 = toFunc(left)
       val f2 = toFunc(right)
-      (m, u, c) => f1(m, u, c) || f2(m, u, c)
+      (m, u, c, r) => f1(m, u, c, r) || f2(m, u, c, r)
   
     case AndAction(left, right) =>
       val f1 = toFunc(left)
       val f2 = toFunc(right)
-      (m, u, c) => f1(m, u, c) && f2(m, u, c)
+      (m, u, c, r) => f1(m, u, c, r) && f2(m, u, c, r)
   
+    case LoginAction() =>
+      (m, u, c, r) => r.isInstanceOf[LoginReason]
+
+    case FollowedAction() =>
+      (m, u, c, r) => r.isInstanceOf[FollowedReason]
+
+    case UnfollowedAction() =>
+      (m, u, c, r) => r.isInstanceOf[UnfollowedReason]
+      
+    case RegularAction(mins) =>
+      (m, u, c, r) => r.isInstanceOf[RegularReason]
+      
+    case ProfileAction() =>
+      (m, u, c, r) => r.isInstanceOf[ProfileReason]
+      
     case AtUserAction(userId) =>
-      (m, u, c) => m.author.is == userId 
+      (m, u, c, r) => m.author.is == userId 
         
     case SentToMeAction =>
       SentToMe
       
     case RegexAction(re) =>
       val r = re.r
-      (m, u, c) => r.findFirstIn(m.getText).isDefined
+      (m, u, c, reason) => r.findFirstIn(m.getText).isDefined
         
     case StringAction(s) =>
       val str = s.toLowerCase.trim
-      (m, u, c) => m.getText.toLowerCase.indexOf(str) >= 0
+      (m, u, c, r) => m.getText.toLowerCase.indexOf(str) >= 0
         
     case HashAction(id, _) =>
-      (m, u, c) => m.tagIds.contains(id)
+      (m, u, c, r) => m.tagIds.contains(id)
         
     case ParenAction(a) =>
       toFunc(a)
         
     case PercentAction(percent) =>
-      (m, u, c) => Helpers.randomInt(100) <= percent
+      (m, u, c, r) => Helpers.randomInt(100) <= percent
       
     case  AtSendAction(users, EqOpr) =>
-      (m, u, c) => !m.sentToIds.intersect(users).isEmpty
+      (m, u, c, r) => !m.sentToIds.intersect(users).isEmpty
 
     case  AtSendAction(users, NeOpr) =>
-      (m, u, c) => m.sentToIds.intersect(users).isEmpty
+      (m, u, c, r) => m.sentToIds.intersect(users).isEmpty
       
     case DateTestAction(dt, ot, what) =>
-      (m, u, c) => ot.buildFunc(dt.buildFunc(c), what)
+      (m, u, c, r) => ot.buildFunc(dt.buildFunc(c), what)
+  }
+  
+  def regularActions(in: TestAction): List[RegularAction] = in match {
+    case NotAction(a) => regularActions(a)
+
+    case ParenAction(a) => regularActions(a)
+    
+    case OrAction(left, right) => regularActions(left) ::: regularActions(right)
+  
+    case AndAction(left, right) => regularActions(left) ::: regularActions(right)
+
+    case a @ RegularAction(mins) => List(a)
+        
+    case _ => Nil
   }
 }
 
 class Action extends LongKeyedMapper[Action] {
+
+  def startActors() {
+    for(regular <- regularActions) regular match { 
+      case RegularAction(mins) => SchedulerActor ! SchedulerActor.StartRegular(this, mins * 60)
+    }
+    val urlSourcePrefix = "url:"
+    theAction.actionFunc match {
+      case a @ (FetchFeed(url)) => {
+        User.find(user) match {
+          case Full(u) =>
+            val msgList = Message.findAll(By(Message.source, urlSourcePrefix + url.uniqueId),
+                                          OrderBy(Message.id, Descending),
+                                          MaxRows(1))
+            val lastMsg = if (msgList.isEmpty) None 
+              else {
+                val m = msgList.first
+                Some(Distributor.UserCreatedMessage(user, m.text, m.tags, m.when, Empty, m.source, Full(m.replyTo)))
+              }
+
+            val feed = a match {
+              case FetchAtom(_) => new AtomFeed(u, url.url, urlSourcePrefix + url.uniqueId, 0, Nil)
+              case FetchRss(_) => new RssFeed(u, url.url, urlSourcePrefix + url.uniqueId, 0, Nil)
+            }
+            MessagePullActor ! MessagePullActor.StartPullActor(id, lastMsg, feed)
+        }
+      }
+      case _ =>
+    }
+  }
+
   def getSingleton = Action // what's the "meta" server
   def primaryKeyField = id
 
@@ -155,6 +226,10 @@ class Action extends LongKeyedMapper[Action] {
 
   def testText = theTest.is
 
+  def regularActions: List[RegularAction] = testExpr(testText) match {
+    case Success(v, _) => Action.regularActions(v)
+  }
+
   def actionText = theAction.is
   
   def setAction(in: String): Box[Action] = _perform(in) match {
@@ -183,8 +258,8 @@ class Action extends LongKeyedMapper[Action] {
 
 class PerformMatcher(val func: Action.TestFunc, val performId: Long,
                      val uniqueId: String, val whatToDo: Performances) {
-  def doesMatch(msg: Message, userId: Long, cal: Calendar): Boolean =
-  func(msg, userId, cal)
+  def doesMatch(msg: Message, userId: Long, cal: Calendar, reason: MailboxReason): Boolean =
+  func(msg, userId, cal, reason)
 
   def filter_? = whatToDo == PerformFilter
 }
@@ -270,6 +345,26 @@ case class AtSendAction(users: List[Long], opr: EqOprType) extends TestAction {
     })
 }
 
+case class LoginAction extends TestAction {
+  def toStr = "login"
+}
+
+case class FollowedAction extends TestAction {
+  def toStr = "followed"
+}
+
+case class UnfollowedAction extends TestAction {
+  def toStr = "unfollowed"
+}
+
+case class ProfileAction extends TestAction {
+  def toStr = "profile"
+}
+
+case class RegularAction(mins: Int) extends TestAction {
+  def toStr = "every " + mins + " mins"
+}
+
 case class DateTestAction(dateType: DateType, opt: OprType, what: List[Int]) extends TestAction {
   def toStr = dateType.toStr + " " + opt.toStr + " " + (
     what match {
@@ -336,7 +431,10 @@ case object MinuteDateType extends DateType {
 }
 
 sealed trait Performances
-case class MailTo(who: String) extends Performances
-case class HttpTo(url: String, headers: List[(String, String)]) extends Performances
+case class MailTo(who: String, text: Option[String]) extends Performances
+case class HttpTo(url: String, user: String, password: String, headers: List[(String, String)], data: Option[String]) extends Performances
+case class FetchFeed(url: UrlStore) extends Performances
+case class FetchAtom(override val url: UrlStore) extends FetchFeed(url)
+case class FetchRss(override val url: UrlStore) extends FetchFeed(url)
 case object PerformResend extends Performances
 case object PerformFilter extends Performances
