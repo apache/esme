@@ -115,6 +115,12 @@ class Boot {
     LiftRules.early.append(makeUtf8)
 
     Distributor.touch
+    SchedulerActor.touch
+    MessagePullActor.touch
+
+    Action.findAll(By(Action.disabled, false), By(Action.removed, false)).foreach {
+      _.startActors
+    }
 
     DB.addLogFunc(S.logQuery _)
     S.addAnalyzer(RequestAnalyzer.analyze _)

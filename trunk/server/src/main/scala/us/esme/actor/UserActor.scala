@@ -168,7 +168,7 @@ class UserActor extends Actor {
       
       // get all the performance things
       val cal = buildCalendar
-      val toDo = perform.filter(_.func(msg, userId, cal))
+      val toDo = perform.filter(_.func(msg, userId, cal, reason))
 
       // is one of those reasons rejection of the message
       val reject = toDo.exists(_.filter_?)
@@ -181,6 +181,11 @@ class UserActor extends Actor {
           case DirectReason(fromId) => mb.directlyFrom(fromId)
           case ConversationReason(convId) => mb.conversation(convId)
           case ResendReason(resender) => mb.resentBy(resender)
+          case LoginReason(loggedId) => mb.login(loggedId)
+          case FollowedReason(followerId) => mb.followed(followerId)
+          case UnfollowedReason(unfollowerId) => mb.unfollowed(unfollowerId)
+          case ProfileReason(moduserId) => mb.profile(moduserId)
+          case RegularReason(actionId) => mb.regular(actionId)
           case NoReason =>
         }
         mb.saveMe
@@ -193,16 +198,21 @@ class UserActor extends Actor {
           td =>
 
           td.whatToDo match {
-            case m @ MailTo(_) =>
-              HttpSender ! HttpSender.SendAMessage(m, msg, td.uniqueId)
+            case m @ MailTo(_, _) =>
+              User.find(userId).foreach( u =>
+                HttpSender ! HttpSender.SendAMessage(m, msg, u, reason, td.uniqueId))
              
-            case h @ HttpTo(_, _) =>
-              HttpSender ! HttpSender.SendAMessage(h, msg, td.uniqueId)
+            case h @ HttpTo(_, _, _, _, _) =>
+              User.find(userId).foreach( u =>
+                HttpSender ! HttpSender.SendAMessage(h, msg, u, reason, td.uniqueId))
 
             case PerformResend =>
+              if (! msg.saved_?) msg.save
               for (id <- followers)
               Distributor !
               Distributor.AddMessageToMailbox(id, msg, ResendReason(userId))
+
+            case FetchFeed(url) => MessagePullActor ! MessagePullActor.Fetch(td.performId)
 
             case PerformFilter => // IGNORE
           }

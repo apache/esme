@@ -58,10 +58,16 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
   
   // def ip_schemepart = (accept("//") ~> login) ~> opt( '/' ~> urlpath)
 
-  lazy val login: Parser[String] = 
-  opt(user ~ opt( ':' ~>  password ) <~ '@' ) ~ hostport ^^ {
-    case None ~ hostport => hostport
-    case Some(user ~ pwd) ~ hostport => user+(pwd.map(p => ":"+p))+"@"+hostport
+  lazy val login: Parser[String] = userPass ^^ {
+    case ("", _) => ""
+    case (user, "") => user + "@"
+    case (user, password) => user + ":" + password + "@"
+  }
+  
+  lazy val userPass: Parser[(String, String)] =
+  opt(user ~ opt( ':' ~>  password ) <~ '@' ) ^^ {
+    case None => ("", "")
+    case Some(user ~ pwd) => (user, pwd.getOrElse(""))
   }
 
   lazy val hostport: Parser[String] = host ~ opt( ':' ~> port ) ^^ {
@@ -102,13 +108,18 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
     case xs => xs.mkString
   }
 
+  lazy val scheme: Parser[String] = (accept("http://") | accept("https://")) ^^ {_ mkString}
 
-  lazy val httpUrl: Parser[String] = (accept("http://") | accept("https://")) ~ hostport ~ 
-  opt( '/' ~> hpath ~ opt('?' ~> search )) ^^ {
-    case front ~ hp ~ None => front.mkString + hp
-    case front ~ hp ~ Some(pth ~ None) => front.mkString + hp + "/" + pth
-    case front ~ hp ~ Some(pth ~ Some(search)) =>
-      front.mkString + hp + "/" + pth + "?" + search
+  lazy val httpUrl: Parser[String] = scheme ~ login ~ urlpart ^^ {
+    case front ~ login ~ urlpart => front + login + urlpart
+  }
+
+  lazy val urlpart: Parser[String] = 
+  hostport ~ opt( '/' ~> hpath ~ opt('?' ~> search )) ^^ {
+    case hp ~ None => hp
+    case hp ~ Some(pth ~ None) => hp + "/" + pth
+    case hp ~ Some(pth ~ Some(search)) =>
+      hp + "/" + pth + "?" + search
   }
 
   lazy val hpath: Parser[String] = hsegment ~ rep('/' ~> hsegment) ^^ {
@@ -182,15 +193,22 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
   lazy val _perform: Parser[Performances] =
   (acceptCI("filter") ~ lineSpace ~ EOF ^^^ PerformFilter) |
   (acceptCI("resend") ~ lineSpace ~ EOF ^^^ PerformResend) |
-  (mailtoUrl <~ EOF ^^ {case mt => MailTo(mt)}) |
-  (httpUrl ~ rep(httpHeader) <~ EOF ^^ {
-      case http ~ hdrs => HttpTo(http, hdrs)
-    })
+  (mailtoUrl ~ opt(rep(EOL) ~> rep1(anyChar)) <~ EOF ^^ {
+    case mt ~ text => MailTo(mt, text.map(_ mkString))
+  }) |
+  (scheme ~ userPass ~ urlpart ~ rep(httpHeader) ~ httpData <~ EOF ^^ {
+      case protocol ~ userPass ~ urlpart ~ hdrs ~ data =>
+        HttpTo(protocol + urlpart, userPass._1, userPass._2, hdrs, data)
+    }) |
+  (acceptCI("atom:") ~> httpUrl <~ EOF ^^ {url => FetchAtom(UrlStore.make(url))}) |
+  (acceptCI("rss:") ~> httpUrl <~ EOF ^^ {url => FetchRss(UrlStore.make(url))})
 
   lazy val httpHeader: Parser[(String, String)] = EOL ~ accept("header:") ~
   lineSpace ~> rep1(uchar) ~ '=' ~ rep1(uchar) ^^ {
     case name ~ _ ~ value => (name.mkString, value.mkString)
   }
+
+  lazy val httpData: Parser[Option[String]] = opt(EOL ~> rep1(anyChar)) ^^ { _ map(_ mkString) }
 
   def testMessage(in: String): Box[TestAction] = _testMessage(in) match {
     case Success(ta, _) => Full(ta)
@@ -212,7 +230,9 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
   testAt | testRegex | testString |
   testTag | 
   testParen | testPercent |
-  testDates |
+  testDates | testLogin |
+  testFollowed | testUnfollowed |
+  testProfile | testRegular |
   anyMsg | testToMe) <~ whiteSpace
 
   lazy val toOpr: Parser[EqOprType] =
@@ -239,6 +259,18 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
   whiteSpace ~ '(' ~ whiteSpace ~> number ~ rep(whiteSpace ~ ',' ~ whiteSpace ~> number) <~
   whiteSpace ~ ')' ~ whiteSpace ^^ {
     case x ~ xs => x :: xs
+  }
+
+  lazy val testLogin: Parser[TestAction] = acceptCI("login") ^^^ LoginAction()
+
+  lazy val testFollowed: Parser[TestAction] = acceptCI("followed") ^^^ FollowedAction()
+
+  lazy val testUnfollowed: Parser[TestAction] = acceptCI("unfollowed") ^^^ UnfollowedAction()
+
+  lazy val testProfile: Parser[TestAction] = acceptCI("profile") ^^^ ProfileAction()
+
+  lazy val testRegular: Parser[TestAction] = acceptCI("every") ~ whiteSpace ~> number <~ whiteSpace ~ acceptCI("mins") ^^ {
+    case mins => RegularAction(mins)
   }
 
   lazy val testDates: Parser[TestAction] =
