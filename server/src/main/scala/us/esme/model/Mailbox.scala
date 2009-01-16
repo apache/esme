@@ -52,6 +52,11 @@ class Mailbox extends LongKeyedMapper[Mailbox] {
   object directlyFrom extends MappedLongForeignKey(this, User)
   object conversation extends MappedLongForeignKey(this, Message)
   object resentBy extends MappedLongForeignKey(this, User)
+  object login extends MappedLongForeignKey(this, User)
+  object followed extends MappedLongForeignKey(this, User)
+  object unfollowed extends MappedLongForeignKey(this, User)
+  object profile extends MappedLongForeignKey(this, User)
+  object regular extends MappedLongForeignKey(this, Action)
 
   lazy val reason: MailboxReason =
   viaTrack.can.map(TrackReason) or directlyFrom.can.map(DirectReason)  or
@@ -75,4 +80,19 @@ case class DirectReason(fromUserId: Long) extends MailboxReason {
 }
 case class ConversationReason(conversationId: Long) extends MailboxReason {
   def attr = new UnprefixedAttribute("conversation", conversationId.toString, Null)
+}
+case class LoginReason(userId: Long) extends MailboxReason {
+  def attr = new UnprefixedAttribute("login", userId.toString, Null)
+}
+case class FollowedReason(userId: Long) extends MailboxReason {
+  def attr = new UnprefixedAttribute("followed", userId.toString, Null)
+}
+case class UnfollowedReason(userId: Long) extends MailboxReason {
+  def attr = new UnprefixedAttribute("unfollowed", userId.toString, Null)
+}
+case class ProfileReason(userId: Long) extends MailboxReason {
+  def attr = new UnprefixedAttribute("profile", userId.toString, Null)
+}
+case class RegularReason(actionId: Long) extends MailboxReason {
+  def attr = new UnprefixedAttribute("regular", actionId.toString, Null)
 }
