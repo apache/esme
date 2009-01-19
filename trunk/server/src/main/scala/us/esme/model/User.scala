@@ -51,15 +51,16 @@ object User extends User with MetaOpenIDProtoUser[User] {
   }
 
   private def profileChanged(in: User) {
-    Message.create.author(in.id).
-                   when(Helpers.timeNow.getTime).
-                   source("profile").
-                   setTextAndTags("User " + in.nickname + " changed profile. Name: " + in.wholeName + ", Image: " + in.imageUrl, Nil, Empty).
-                   foreach{ msg => 
-                     if (msg.save) {
-                       Distributor ! Distributor.AddMessageToMailbox(in.id, msg, ProfileReason(in.id)) 
+    if (!in.needsChange_?)
+      Message.create.author(in.id).
+                     when(Helpers.timeNow.getTime).
+                     source("profile").
+                     setTextAndTags("User " + in.nickname + " changed profile. Name: " + in.wholeName + ", Image: " + in.imageUrl, Nil, Empty).
+                     foreach{ msg => 
+                       if (msg.save) {
+                         Distributor ! Distributor.AddMessageToMailbox(in.id, msg, ProfileReason(in.id)) 
+                       }
                      }
-                   }
   }
 
   def findFromWeb(uid: String): Box[User] = 
