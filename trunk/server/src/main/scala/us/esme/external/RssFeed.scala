@@ -20,6 +20,10 @@ import java.text._
 import java.util.Locale.US
 
 import us.esme.model.User
+import us.esme.model.Message
+import us.esme.actor.Distributor.{UserCreatedMessage=>Msg}
+
+import net.liftweb.util.Empty
 
 object RssFeed {
   val dateFormats = List(new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", US))
@@ -60,5 +64,17 @@ class RssFeed(user: User, rssURL: String, source: String, truncateChars: Int, ta
       parseInternetDate(date text).getTime
   }
   
+  // need to compare by text since a pubDate is not mandatory and indeed, often is missing
+  override def getLastSortedMessages(msgs: List[Msg], lastMessage: Option[Msg]): List[Msg] = {
+    lastMessage match {
+      case Some(message: Msg) =>
+        msgs.reverse.takeWhile{ msg =>
+          // a hack to format text identically- difference in urls & trailing whitespace
+          Message.setTextAndTags(msg.text, Nil, Empty).get.getText !=
+          Message.setTextAndTags(message.text, Nil, Empty).get.getText
+        }
+      case None => msgs
+    }
+  }.reverse
 }
 
