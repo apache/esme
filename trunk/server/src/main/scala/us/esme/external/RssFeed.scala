@@ -68,10 +68,13 @@ class RssFeed(user: User, rssURL: String, source: String, truncateChars: Int, ta
   override def getLastSortedMessages(msgs: List[Msg], lastMessage: Option[Msg]): List[Msg] = {
     lastMessage match {
       case Some(message: Msg) =>
-        msgs.reverse.takeWhile{ msg =>
-          // a hack to format text identically- difference in urls & trailing whitespace
-          Message.setTextAndTags(msg.text, Nil, Empty).get.getText !=
-          Message.setTextAndTags(message.text, Nil, Empty).get.getText
+        // a hack to format text identically- difference in urls & trailing whitespace
+        val lastMessageText = 
+          Message.create.setTextAndTags(message.text, Nil, Empty).
+            get.getText.trim
+        msgs.takeWhile{ msg =>
+          Message.create.setTextAndTags(msg.text, Nil, Empty).
+            get.getText.trim != lastMessageText
         }
       case None => msgs
     }
