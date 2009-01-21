@@ -151,7 +151,7 @@ class Action extends LongKeyedMapper[Action] {
             val lastMsg = if (msgList.isEmpty) None 
               else {
                 val m = msgList.first
-                Some(Distributor.UserCreatedMessage(user, m.text, m.tags, m.when, Empty, m.source, Full(m.replyTo)))
+                Some(Distributor.UserCreatedMessage(user, m.getText, m.tags, m.when, Empty, m.source, Full(m.replyTo)))
               }
 
             val feed = a match {
