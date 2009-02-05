@@ -1,5 +1,6 @@
 package org.apache.esme.api;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.esme.api.EsmeRestApi;
@@ -9,8 +10,8 @@ import org.apache.esme.model.Status;
 public class RestTest extends TestCase {
 
     private static Logger logger = Logger.getLogger("org.apache.esme.api");
-
     private static String token = TestProperties.getProperty("esme-token");
+    private static String esmeServer = TestProperties.getProperty("esme-server");
 
     public void testStatus() throws Exception
     {
@@ -18,10 +19,13 @@ public class RestTest extends TestCase {
 
         logger.log(Level.INFO, "Testing message status");
 
-        EsmeRestApi esme = new EsmeRestApi("http://localhost:8080/api");
+        EsmeRestApi esme = new EsmeRestApi(esmeServer);
         Status status = esme.getStatus();
+
         logger.log(Level.INFO, "API status is "+status);
-    }
+
+        assertNull(status); // status is null because we have not logged in
+}
 
 	public void testSendMsg() throws Exception
     {
@@ -38,14 +42,39 @@ public class RestTest extends TestCase {
 
         logger.log(Level.INFO, "Testing message sending");
 
-        EsmeRestApi esme = new EsmeRestApi("http://localhost:8080/api");
+        EsmeRestApi esme = new EsmeRestApi(esmeServer);
+
+        logger.log(Level.INFO, "Login with token "+token);
         esme.login(token);
 
         Status status = esme.getStatus();
+        assertNotNull(status);
         logger.log(Level.INFO, "API status is "+status);
 
         esme.sendMsg("Hello World, from Java - the status was "+status);
         
+        logger.log(Level.INFO, "Logout");
+        esme.logout();
+    }
+
+	public void testGetMessages() throws Exception
+    {
+        EsmeRestApi.debugMode = true;
+
+        logger.log(Level.INFO, "Testing getMessages");
+
+        EsmeRestApi esme = new EsmeRestApi(esmeServer);
+        esme.login(token);
+
+        Status status = esme.getStatus();
+        assertNotNull(status);
+        logger.log(Level.INFO, "API status is "+status);
+
+        List messages = esme.getMessages();
+        assertNotNull(messages);
+
+        logger.info("Got "+messages.size()+" messages from server.");
+
         esme.logout();
     }
 

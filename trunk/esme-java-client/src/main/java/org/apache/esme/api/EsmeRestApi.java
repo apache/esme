@@ -8,38 +8,20 @@ package org.apache.esme.api;
 
 import java.io.ByteArrayInputStream;
 import org.apache.esme.model.Message;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.ProxyClient;
-import org.apache.commons.httpclient.ProxyHost;
+import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.esme.model.Status;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
 /**
@@ -69,7 +51,7 @@ public class EsmeRestApi {
 
 	public void sendMsg(String message) {
 		Message msg = new Message();
-		msg.setText(message);
+		msg.setBody(message);
 		sendMsg(msg);
 	}
 
@@ -112,7 +94,8 @@ public class EsmeRestApi {
                 throw new EsmeException(statusCode);
             }
             byte[] responseBody = method.getResponseBody();
-            logger.log(Level.INFO, "Got body, convert to BAIS");
+            logger.log(Level.INFO, "Got body: "+new String(responseBody,"utf-8"));
+            
             // Parse the resulting XML into a DOM
             ByteArrayInputStream statusStream = new ByteArrayInputStream(responseBody);
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -120,6 +103,7 @@ public class EsmeRestApi {
             db = dbf.newDocumentBuilder();
             logger.log(Level.INFO, "Parse & create Document");
             result = db.parse(statusStream);
+            logger.log(Level.INFO,"Parsed.");
 		} catch (IOException e) {
 			logger.log(Level.SEVERE,"Fatal transport error or XML error",e);
         } catch (SAXException e) {
@@ -140,6 +124,7 @@ public class EsmeRestApi {
 
 		PostMethod method = new PostMethod(apiUrl + "/login");
 		NameValuePair[] data = { new NameValuePair("token", token) };
+        method.setRequestBody(data);
 		try {
             Document document = executeHttp(method);
 		} finally {
@@ -180,11 +165,12 @@ public class EsmeRestApi {
 			tags+=(message.getTags()[i]);
 		}
 		NameValuePair[] data = {
-			new NameValuePair("message", message.getText()),
-			new NameValuePair("via", message.getVia()),
+			new NameValuePair("message", message.getBody()),
+			new NameValuePair("via", message.getSource()),
 			new NameValuePair("tags", tags),
 		};
 		try {
+            method.setRequestBody(data);
             Document document = executeHttp(method);
 		} finally {
 			// Release the connection.
@@ -248,7 +234,10 @@ public class EsmeRestApi {
 //                <body>
 //                        Woohoo - got through the rest of the slides quite quickly. I can go home now.
 //                </body>
-//                <tags/>
+//                <tags>
+//                       <tag id="12" name="Tags"/>
+//                       <tag id="11" name="Compass"/>
+//                </tags>
 //        </message>
 //  </esme_api>
 
@@ -260,6 +249,8 @@ public class EsmeRestApi {
 		try {
             Document document = executeHttp(method);
 
+            logger.info("Check success");
+
             String success = document.getDocumentElement().getAttribute("success");
             if ("false".equals(success))
             {
@@ -269,9 +260,48 @@ public class EsmeRestApi {
 
             NodeList messages =  document.getElementsByTagName("message");
 
-            // *************************************************************
-            // Major TODO - complete the parsing and the setting of messages
-            // *************************************************************
+            for (int i=0; i<messages.getLength(); i++)
+            {
+                Message msg = new Message();
+                Element nodeMessage = (Element)messages.item(i);
+
+                msg.setMessageId(nodeMessage.getAttribute("id"));
+                msg.setSource(nodeMessage.getAttribute("source"));
+                msg.setDate(nodeMessage.getAttribute("date"));
+
+                logger.info("Got message basics, now get author info");
+
+                Element nodeAuthor = (Element)nodeMessage.getElementsByTagName("author").item(0);
+                if (nodeAuthor != null)
+                {
+                    msg.setAuthorId(nodeAuthor.getAttribute("id"));
+                    msg.setAuthorName(nodeAuthor.getAttribute("name"));
+                    msg.setAuthorImage(nodeAuthor.getAttribute("image"));
+                }
+
+                logger.info("Got author, now get body");
+
+                Element nodeBody = (Element)nodeMessage.getElementsByTagName("body").item(0);
+                if (nodeBody != null)
+                {
+                    msg.setBody(nodeBody.getTextContent());
+                }
+
+                logger.info("Got body, now get tags");
+
+                NodeList nodeTags = (NodeList)nodeMessage.getElementsByTagName("tags");
+                ArrayList tagList = new ArrayList();
+                for (int j=0; j<nodeTags.getLength(); j++)
+                {
+                    Element nodeTag = (Element)nodeTags.item(j);
+                    tagList.add((String)nodeTag.getAttribute("name"));
+                }
+                msg.setTags((String[])tagList.toArray(msg.getTags()));
+
+                logger.info("Message: "+msg.toString());
+
+                messageList.add(msg);
+            }
 
         } finally {
 			// Release the connection.
