@@ -226,6 +226,16 @@ public class EsmeRestApi {
 
     public List getMessages()
     {
+        return getMessagesHelper("/get_msgs");
+    }
+
+    public List waitForMessages()
+    {
+        return getMessagesHelper("/wait_for_msgs");
+    }
+
+    private List getMessagesHelper(String apiCall)
+    {
 //  GET /api/get_msgs
 //
 //  <esme_api operation="get_msgs" success="true">
@@ -242,7 +252,7 @@ public class EsmeRestApi {
 //  </esme_api>
 
         // TODO
-        GetMethod method = new GetMethod(apiUrl + "/get_msgs");
+        GetMethod method = new GetMethod(apiUrl + apiCall);
 
         List messageList = new ArrayList();
 
