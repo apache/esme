@@ -23,6 +23,7 @@ package bootstrap.liftweb
 
 import net.liftweb.util._
 import net.liftweb.http._
+import net.liftweb.http.auth._
 import net.liftweb.sitemap._
 import net.liftweb.sitemap.Loc._
 import Helpers._
@@ -116,6 +117,15 @@ class Boot {
     }
 
     LiftRules.dispatch.prepend(RestAPI.dispatch)
+
+    LiftRules.httpAuthProtectedResource.prepend {
+     case (ParsePath(TwitterAPI.ApiPath :: _, _, _, _)) => Full(AuthRole("user"))
+    }
+    
+    LiftRules.authentication = TwitterAPI.twitterAuth
+
+    LiftRules.statelessDispatchTable.append(TwitterXmlAPI.dispatch)
+    LiftRules.statelessDispatchTable.append(TwitterJsonAPI.dispatch)
     
     LiftRules.early.append(makeUtf8)
 
