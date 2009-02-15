@@ -49,7 +49,7 @@ import scala.collection.mutable.ListBuffer
 import java.util.logging._
 
 object TwitterAPI {
-  val ApiPath = "twitter"
+  val ApiPath = Props.get("twitter.prefix", "twitter")
   
   def twitterAuth = HttpBasicAuthentication("esme") {
     case (user: String, password: String, _) =>
