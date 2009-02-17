@@ -79,7 +79,7 @@ abstract class TwitterAPI {
     case req @ Req(ApiPath :: "statuses" :: "friends_timeline" :: Nil, this.method, GetRequest) => () => friendsTimeline(req)
     case req @ Req(ApiPath :: "statuses" :: "user_timeline" :: Nil, this.method, GetRequest) => () => userTimeline(req)
     // case Req(ApiPath :: "statuses" :: "show" :: Nil, this.method, GetRequest) => showStatus
-    // case Req(ApiPath :: "statuses" :: "update" :: Nil, this.method, GetRequest) => () => update(S)
+    case req @ Req(ApiPath :: "statuses" :: "update" :: Nil, this.method, PostRequest) => () => update(S, req)
 
     // case Req(ApiPath :: "statuses" :: "friends" :: Nil, this.method, GetRequest) => friends
     // case Req(ApiPath :: "statuses" :: "followers" :: Nil, this.method, GetRequest) => followers
@@ -118,7 +118,7 @@ abstract class TwitterAPI {
     "favorited" -> false,
     "in_reply_to_status_id" -> None,
     "in_reply_to_user_id" -> None,
-    "in_reply_to_screen_name" -> None,
+    "in_reply_to_screen_name" -> None
     )
   }
   
@@ -176,6 +176,26 @@ abstract class TwitterAPI {
     Full(Right(Map("statuses" -> ("status", statusList) )))
   }
   
+  def update(params: HasParams, req: Req): Box[TwitterResponse] = {
+    for (user <- calcUser(req) ?~ "User not found";
+         msg <- req.param("status") ?~ "Message not included")
+    yield {
+      val from: String = req.param("source") openOr "twitterapi"
+
+      Distributor !
+      Distributor.UserCreatedMessage(user.id.is, msg, Nil,
+                                     millis,
+                                     Empty,
+                                     from,
+                                     req.param("replyto").map(toLong))
+      Right(Map("status" ->
+        msgData(Message.create.author(user.id.is).when(millis).
+          source(from).
+          setTextAndTags(msg, Nil, None).get)
+      ))
+    }
+  }
+
   private def calcUser(req: Req): Box[User] = 
     LiftRules.authentication match {
       case basicAuth: HttpBasicAuthentication =>
