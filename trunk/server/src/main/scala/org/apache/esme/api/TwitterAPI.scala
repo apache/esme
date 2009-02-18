@@ -178,21 +178,13 @@ abstract class TwitterAPI {
   
   def update(params: HasParams, req: Req): Box[TwitterResponse] = {
     for (user <- calcUser(req) ?~ "User not found";
-         msg <- req.param("status") ?~ "Message not included")
+         text <- req.param("status") ?~ "Message not included";
+         msg <- Message.create.author(user.id.is).when(millis).
+                               source(req.param("source") openOr "twitterapi").
+                               setTextAndTags(text, Nil, None))
     yield {
-      val from: String = req.param("source") openOr "twitterapi"
-
-      Distributor !
-      Distributor.UserCreatedMessage(user.id.is, msg, Nil,
-                                     millis,
-                                     Empty,
-                                     from,
-                                     req.param("replyto").map(toLong))
-      Right(Map("status" ->
-        msgData(Message.create.author(user.id.is).when(millis).
-          source(from).
-          setTextAndTags(msg, Nil, None).get)
-      ))
+      Distributor ! Distributor.AddMessageToMailbox(user.id.is, msg.saveMe, NoReason)
+      Right(Map("status" -> msgData(msg)))
     }
   }
 
