@@ -32,6 +32,7 @@ import net.liftweb._
 import http._
 import auth._
 import js._
+import JE._
 import rest._
 import util._
 import mapper._
@@ -41,7 +42,7 @@ import org.apache.esme._
 import model._
 import actor._
 
-import scala.xml.{NodeSeq, Text, Elem, XML}
+import scala.xml._
 import scala.actors.Actor
 import Actor._
 
@@ -200,20 +201,23 @@ object TwitterXmlAPI extends TwitterAPI with XMLApiHelper {
   
   override val method = "xml"
   
-  // TODO: construct typed objects instead of strings
-  def toXml(o:Any): String= { o match {
-    case m: Map[Any,Any] =>  m.foldRight{""} { (e: (_, _), str: String) =>
-      "<" + e._1.toString + ">" + toXml(e._2) + "</" + e._1.toString + ">" + str }
-    case (label: String, list: List[Any]) => list.foldRight{""} { (e: Any, str: String) =>
-      "<" + label + ">" + toXml(e) + "</" + label + ">" + str }
-    case None => ""
-    case a: Any => a.toString}
+  def toXml(o:Any): NodeSeq = { o match {
+    case m: Map[Any,Any] =>  NodeSeq.fromSeq(
+      m.foldRight(Nil: List[Node]) { (e: (_, _), ns: List[Node]) =>
+        Elem(null, e._1.toString, Null, TopScope, toXml(e._2): _*) :: ns } 
+    )
+    case (label: String, list: List[Any]) => NodeSeq.fromSeq(
+      list.map { e =>
+        Elem(null, label.toString, Null, TopScope, toXml(e): _*) }
+    )
+    case None => Text("")
+    case a: Any => Text(a.toString)}
   }
 
   override def dispatch: LiftRules.DispatchPF = {
     // modify the returned function to one which converts the result to XML
     dispatchMethod.andThen(x =>
-      {() => Full(nodeSeqToResponse(XML.loadString(toXml(Either.merge(x().get))))) }
+      {() => Full(nodeSeqToResponse(toXml(Either.merge(x().get)))) }
     )
   }
 
@@ -230,28 +234,26 @@ object TwitterJsonAPI extends TwitterAPI {
   override def dispatch: LiftRules.DispatchPF = {
     // modify the returned function to one which converts the result to JSON
     dispatchMethod.andThen(x =>
-      {() => Full(PlainTextResponse(jsonAttributes(Either.merge(x().get)),
-                                    ("Content-Type", "application/json") :: Nil,
-                                    200)) }
+      {() => Full(JsonResponse(jsonAttributes(Either.merge(x().get)))) }
     )
   }
   
-  def jsonAttributes(o: Any): String = { o match {
+  def jsonAttributes(o: Any): JsExp = { o match {
     case m: Map[String, Any] => toJson(m.values.next)
     case o => toJson(o)}
   }
 
-  // TODO: construct typed objects instead of strings
-  def toJson(o:Any): String= { o match {
+  def toJson(o:Any): JsExp= { o match {
     case (label: String, list: List[Any]) =>
-      list map{ toJson } mkString("[", ",", "]")
+      new JE.JsArray(list map{ toJson })
     case m: Map[Any,Any] =>
-      m map { e => '"' + e._1.toString + '"' + ": " + toJson(e._2) } mkString("{", ",", "}")
-    case i: Int => i toString
-    case l: Long => l toString
-    case b: Boolean => b toString
-    case None => "null"
-    case a: Any => '"' + a.toString + '"'}
+      JE.JsObj(m.map{ e => (e._1.toString, toJson(e._2)) } toSeq : _* )
+    case None => JE.JsNull
+    case b: Boolean => b
+    case i: Int => i
+    case l: Long => l
+    case a: Any => a.toString
+    }
   }
   
 }
