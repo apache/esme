@@ -50,7 +50,7 @@ import scala.collection.mutable.ListBuffer
 import java.util.logging._
 
 object TwitterAPI {
-  val ApiPath = Props.get("twitter.prefix", "twitter")
+  val ApiPath = Props.get("twitter.prefix", "twitter") split "/" toList
   
   def twitterAuth = HttpBasicAuthentication("esme") {
     case (user: String, password: String, _) =>
@@ -74,13 +74,13 @@ abstract class TwitterAPI {
   
   def dispatch: LiftRules.DispatchPF
   protected def dispatchMethod: PartialFunction[Req, () => Box[TwitterResponse]] = {
-    case Req(ApiPath :: "statuses" :: "public_timeline" :: Nil, this.method, GetRequest) => publicTimeline
-    case Req(ApiPath :: "statuses" :: "replies" :: Nil, this.method, GetRequest) => replies
-    case Req(ApiPath :: "direct_messages" :: Nil, this.method, GetRequest) => directMessages
-    case Req(ApiPath :: "statuses" :: "friends_timeline" :: Nil, this.method, GetRequest) => friendsTimeline
-    case Req(ApiPath :: "statuses" :: "user_timeline" :: Nil, this.method, GetRequest) => userTimeline
+    case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "public_timeline" :: Nil => publicTimeline
+    case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "replies" :: Nil => replies
+    case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "direct_messages" :: Nil => directMessages
+    case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "friends_timeline" :: Nil => friendsTimeline
+    case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "user_timeline" :: Nil => userTimeline
     // case Req(ApiPath :: "statuses" :: "show" :: Nil, this.method, GetRequest) => showStatus
-    case Req(ApiPath :: "statuses" :: "update" :: Nil, this.method, PostRequest) => update
+    case Req(l: List[String], this.method, PostRequest) if l == ApiPath ::: "statuses" :: "update" :: Nil => update
 
     // case Req(ApiPath :: "statuses" :: "friends" :: Nil, this.method, GetRequest) => friends
     // case Req(ApiPath :: "statuses" :: "followers" :: Nil, this.method, GetRequest) => followers
@@ -90,7 +90,7 @@ abstract class TwitterAPI {
     // case Req(ApiPath :: "friendships" :: "destroy" :: Nil, this.method, GetRequest) => destroyFriendship(S.param("user"))
     // case Req(ApiPath :: "friendships" :: "exists" :: Nil, this.method, GetRequest) => existsFriendship
 
-    case Req(ApiPath :: "account" :: "verify_credentials" :: Nil, this.method, GetRequest) => verifyCredentials
+    case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "account" :: "verify_credentials" :: Nil => verifyCredentials
     // case Req(ApiPath :: "account" :: "end_session" :: Nil, this.method, GetRequest) => endSession
     // case Req(ApiPath :: "account" :: "rate_limit_status" :: Nil, this.method, GetRequest) => rateLimitStatus
     // case Req(ApiPath :: "update_profile" :: Nil, this.method, GetRequest) => updateProfile
