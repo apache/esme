@@ -124,8 +124,8 @@ class Boot {
     
     LiftRules.authentication = TwitterAPI.twitterAuth
 
-    LiftRules.statelessDispatchTable.append(TwitterXmlAPI.dispatch)
-    LiftRules.statelessDispatchTable.append(TwitterJsonAPI.dispatch)
+    LiftRules.dispatch.append(TwitterXmlAPI.dispatch)
+    LiftRules.dispatch.append(TwitterJsonAPI.dispatch)
     
     LiftRules.early.append(makeUtf8)
 
