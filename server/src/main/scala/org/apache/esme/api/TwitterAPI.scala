@@ -75,12 +75,12 @@ abstract class TwitterAPI {
   def dispatch: LiftRules.DispatchPF
   protected def dispatchMethod: PartialFunction[Req, () => Box[TwitterResponse]] = {
     case Req(ApiPath :: "statuses" :: "public_timeline" :: Nil, this.method, GetRequest) => publicTimeline
-    case req @ Req(ApiPath :: "statuses" :: "replies" :: Nil, this.method, GetRequest) => () => replies(req)
+    case Req(ApiPath :: "statuses" :: "replies" :: Nil, this.method, GetRequest) => replies
     case Req(ApiPath :: "direct_messages" :: Nil, this.method, GetRequest) => directMessages
-    case req @ Req(ApiPath :: "statuses" :: "friends_timeline" :: Nil, this.method, GetRequest) => () => friendsTimeline(req)
-    case req @ Req(ApiPath :: "statuses" :: "user_timeline" :: Nil, this.method, GetRequest) => () => userTimeline(req)
+    case Req(ApiPath :: "statuses" :: "friends_timeline" :: Nil, this.method, GetRequest) => friendsTimeline
+    case Req(ApiPath :: "statuses" :: "user_timeline" :: Nil, this.method, GetRequest) => userTimeline
     // case Req(ApiPath :: "statuses" :: "show" :: Nil, this.method, GetRequest) => showStatus
-    case req @ Req(ApiPath :: "statuses" :: "update" :: Nil, this.method, PostRequest) => () => update(S, req)
+    case Req(ApiPath :: "statuses" :: "update" :: Nil, this.method, PostRequest) => update
 
     // case Req(ApiPath :: "statuses" :: "friends" :: Nil, this.method, GetRequest) => friends
     // case Req(ApiPath :: "statuses" :: "followers" :: Nil, this.method, GetRequest) => followers
@@ -90,7 +90,7 @@ abstract class TwitterAPI {
     // case Req(ApiPath :: "friendships" :: "destroy" :: Nil, this.method, GetRequest) => destroyFriendship(S.param("user"))
     // case Req(ApiPath :: "friendships" :: "exists" :: Nil, this.method, GetRequest) => existsFriendship
 
-    case req @ Req(ApiPath :: "account" :: "verify_credentials" :: Nil, this.method, GetRequest) => () => verifyCredentials(req)
+    case Req(ApiPath :: "account" :: "verify_credentials" :: Nil, this.method, GetRequest) => verifyCredentials
     // case Req(ApiPath :: "account" :: "end_session" :: Nil, this.method, GetRequest) => endSession
     // case Req(ApiPath :: "account" :: "rate_limit_status" :: Nil, this.method, GetRequest) => rateLimitStatus
     // case Req(ApiPath :: "update_profile" :: Nil, this.method, GetRequest) => updateProfile
@@ -137,12 +137,12 @@ abstract class TwitterAPI {
       (("user", userAttributes(msgUser)))
   }
   
-  def verifyCredentials(req: Req): Box[TwitterResponse] = {
-    calcUser(req) map { user => Right(Map("user" -> userData(user))) }
+  def verifyCredentials(): Box[TwitterResponse] = {
+    calcUser map { user => Right(Map("user" -> userData(user))) }
   }
 
-  def friendsTimeline(req: Req): Box[TwitterResponse] = {
-    calcUser(req) map { user => 
+  def friendsTimeline(): Box[TwitterResponse] = {
+    calcUser map { user => 
       val statusList =
         for ((msg, why) <- Mailbox.mostRecentMessagesFor(user.id, 20))
           yield { msgData(msg) }
@@ -150,8 +150,8 @@ abstract class TwitterAPI {
     }
   }
   
-  def userTimeline(req: Req): Box[TwitterResponse] = {
-    calcUser(req) map { user => 
+  def userTimeline(): Box[TwitterResponse] = {
+    calcUser map { user => 
       val statusList = 
         Message.findAll(By(Message.author, user),
                         MaxRows(20),
@@ -161,8 +161,8 @@ abstract class TwitterAPI {
     }
   }
   
-  def replies(req: Req): Box[TwitterResponse] = {
-    userTimeline(req)
+  def replies(): Box[TwitterResponse] = {
+    userTimeline
   }
 
   def directMessages(): Box[TwitterResponse] = {
@@ -177,8 +177,9 @@ abstract class TwitterAPI {
     Full(Right(Map("statuses" -> ("status", statusList) )))
   }
   
-  def update(params: HasParams, req: Req): Box[TwitterResponse] = {
-    for (user <- calcUser(req) ?~ "User not found";
+  def update(): Box[TwitterResponse] = {
+    for (req <- S.request;
+         user <- calcUser ?~ "User not found";
          text <- req.param("status") ?~ "Message not included";
          msg <- Message.create.author(user.id.is).when(millis).
                                source(req.param("source") openOr "twitterapi").
@@ -189,10 +190,13 @@ abstract class TwitterAPI {
     }
   }
 
-  private def calcUser(req: Req): Box[User] = 
+  private def calcUser(): Box[User] = 
     LiftRules.authentication match {
       case basicAuth: HttpBasicAuthentication =>
-        basicAuth.credentials(req).flatMap(cred => User.findFromWeb(cred._1))
+        for (req <- S.request;
+             cred <- basicAuth.credentials(req);
+             user <- User.findFromWeb(cred._1))
+        yield user
     }
 
 }
