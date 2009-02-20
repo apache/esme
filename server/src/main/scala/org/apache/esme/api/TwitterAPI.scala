@@ -79,21 +79,21 @@ abstract class TwitterAPI {
     case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "direct_messages" :: Nil => directMessages
     case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "friends_timeline" :: Nil => friendsTimeline
     case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "user_timeline" :: Nil => userTimeline
-    // case Req(ApiPath :: "statuses" :: "show" :: Nil, this.method, GetRequest) => showStatus
+    // case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "show" :: Nil => showStatus
     case Req(l: List[String], this.method, PostRequest) if l == ApiPath ::: "statuses" :: "update" :: Nil => update
 
-    // case Req(ApiPath :: "statuses" :: "friends" :: Nil, this.method, GetRequest) => friends
-    // case Req(ApiPath :: "statuses" :: "followers" :: Nil, this.method, GetRequest) => followers
-    // case Req(ApiPath :: "users" :: "show" :: Nil, this.method, GetRequest) => showUser
+    case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "friends" :: Nil => friends
+    case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "followers" :: Nil => followers
+    // case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "users" :: "show" :: Nil => showUser
 
-    // case Req(ApiPath :: "friendships" :: "create" :: Nil, this.method, GetRequest) => createFriendship(S.param("user"))
-    // case Req(ApiPath :: "friendships" :: "destroy" :: Nil, this.method, GetRequest) => destroyFriendship(S.param("user"))
-    // case Req(ApiPath :: "friendships" :: "exists" :: Nil, this.method, GetRequest) => existsFriendship
+    // case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "friendships" :: "create" :: Nil => createFriendship(S.param("user"))
+    // case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "friendships" :: "destroy" :: Nil => destroyFriendship(S.param("user"))
+    // case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "friendships" :: "exists" :: Nil => existsFriendship
 
     case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "account" :: "verify_credentials" :: Nil => verifyCredentials
-    // case Req(ApiPath :: "account" :: "end_session" :: Nil, this.method, GetRequest) => endSession
-    // case Req(ApiPath :: "account" :: "rate_limit_status" :: Nil, this.method, GetRequest) => rateLimitStatus
-    // case Req(ApiPath :: "update_profile" :: Nil, this.method, GetRequest) => updateProfile
+    // case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "account" :: "end_session" :: Nil => endSession
+    // case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "account" :: "rate_limit_status" :: Nil => rateLimitStatus
+    // case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "update_profile" :: Nil => updateProfile
 
   }
 
@@ -189,6 +189,21 @@ abstract class TwitterAPI {
       Right(Map("status" -> msgData(msg)))
     }
   }
+
+  def friends(): Box[TwitterResponse] = {
+    for (user <- calcUser ?~ "User not found")
+    yield {
+      Right(Map("users" -> ("user", user.following().map(userData)) ))
+    }
+  }
+  
+  def followers(): Box[TwitterResponse] = {
+    for (user <- calcUser ?~ "User not found")
+    yield {
+      Right(Map("users" -> ("user", user.followers().map(userData)) ))
+    }
+  }
+  
 
   private def calcUser(): Box[User] = 
     LiftRules.authentication match {
