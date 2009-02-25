@@ -84,7 +84,7 @@ abstract class TwitterAPI {
 
     case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "friends" :: Nil => friends
     case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "followers" :: Nil => followers
-    // case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "users" :: "show" :: Nil => showUser
+    case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "users" :: "show" :: l.last :: Nil => () => showUser(l last)
 
     // case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "friendships" :: "create" :: Nil => createFriendship(S.param("user"))
     // case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "friendships" :: "destroy" :: Nil => destroyFriendship(S.param("user"))
@@ -123,6 +123,27 @@ abstract class TwitterAPI {
     )
   }
   
+  def extendedAttributes(user: User) = {
+    Map(
+      "profile_background_color" -> None,
+      "profile_text_color" -> None,
+      "profile_link_color" -> None,
+      "profile_sidebar_fill_color" -> None,
+      "profile_sidebar_border_color" -> None,
+      "friends_count" -> user.following.size,
+      "created_at" -> None,
+      "favourites_count" -> 0,
+      "utc_offset" -> 0,
+      "time_zone" -> user.timezone,
+      "profile_background_image_url" -> None,
+      "profile_background_tile" -> false,
+      "following" -> calcUser.map(_.following_?(user)).getOrElse(false),
+      "notifications" -> false,
+      "statuses_count " -> Message.count(By(Message.author, user))
+    )
+  }
+  
+  
   def userData(user: User) = {
     val lastMsg = Message.findAll(By(Message.author, user),
                                   OrderBy(Message.id, Descending),
@@ -130,6 +151,9 @@ abstract class TwitterAPI {
     userAttributes(user) +
       (("status", lastMsg.map(msgAttributes _).firstOption.getOrElse("")))
   }
+  
+  def extendedUserData(user: User) =
+    userData(user) ++ extendedAttributes(user)
   
   def msgData(msg: Message) = {
     val msgUser = User.find(msg.author).get
@@ -204,6 +228,10 @@ abstract class TwitterAPI {
     }
   }
   
+  def showUser(name: String): Box[TwitterResponse] = {
+    for (user <- User.findFromWeb(name) ?~ "User not found")
+    yield Right(Map("user" -> extendedUserData(user)))
+  }
 
   private def calcUser(): Box[User] = 
     LiftRules.authentication match {
