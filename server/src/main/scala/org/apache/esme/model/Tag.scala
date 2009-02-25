@@ -73,5 +73,5 @@ class Tag extends ProtoTag[Tag] {
   Message.findAndPrime(In.fk(MessageTag.message, By(MessageTag.tag, this)),
 		       OrderBy(Message.id, Descending))
 
-  override def toXml = <tag id={id.is.toString} name={name.is}/>
+  override def toXml = <tag id={id.is.toString} name={name.is}>{"#" + name.is}</tag>
 }
