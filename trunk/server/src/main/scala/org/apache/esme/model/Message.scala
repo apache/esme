@@ -331,10 +331,10 @@ class Message extends LongKeyedMapper[Message] {
             lst map {
               case HashTag(t) => t.toXml
               case AtName(user) => <at_name id={user.id.toString}
-                  nickname={user.nickname.is} />
+                  nickname={user.nickname.is} >{"@" + user.nickname.is}</at_name>
               case MsgText(text) => Text(text)
               case URL(url) => <url id={url.id.toString}
-                  url={url.url.toString} uniqueId={url.uniqueId.is} />
+                  url={url.url.toString} uniqueId={url.uniqueId.is} >{url.url.toString}</url>
             }
           }</body>
         <tags>{
