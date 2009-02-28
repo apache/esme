@@ -79,7 +79,7 @@ abstract class TwitterAPI {
     case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "direct_messages" :: Nil => directMessages
     case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "friends_timeline" :: Nil => friendsTimeline
     case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "user_timeline" :: Nil => userTimeline
-    // case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "show" :: Nil => showStatus
+    case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "show" :: l.last :: Nil => () => showStatus(l last)
     case Req(l: List[String], this.method, PostRequest) if l == ApiPath ::: "statuses" :: "update" :: Nil => update
 
     case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "friends" :: Nil => friends
@@ -231,6 +231,11 @@ abstract class TwitterAPI {
   def showUser(name: String): Box[TwitterResponse] = {
     for (user <- User.findFromWeb(name) ?~ "User not found")
     yield Right(Map("user" -> extendedUserData(user)))
+  }
+
+  def showStatus(statusId: String): Box[TwitterResponse] = {
+    for (status <- Message.find(statusId) ?~ "Message not found")
+    yield Right(Map("status" -> msgData(status)))
   }
 
   private def calcUser(): Box[User] = 
