@@ -86,8 +86,8 @@ abstract class TwitterAPI {
     case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "followers" :: Nil => followers
     case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "users" :: "show" :: l.last :: Nil => () => showUser(l last)
 
-    // case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "friendships" :: "create" :: Nil => createFriendship(S.param("user"))
-    // case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "friendships" :: "destroy" :: Nil => destroyFriendship(S.param("user"))
+    case Req(l: List[String], this.method, PostRequest) if l == ApiPath ::: "friendships" :: "create" :: l.last :: Nil => () => createFriendship(l last)
+    case Req(l: List[String], this.method, PostRequest) if l == ApiPath ::: "friendships" :: "destroy" :: l.last :: Nil => () => destroyFriendship(l last)
     // case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "friendships" :: "exists" :: Nil => existsFriendship
 
     case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "account" :: "verify_credentials" :: Nil => verifyCredentials
@@ -238,6 +238,28 @@ abstract class TwitterAPI {
     yield Right(Map("status" -> msgData(status)))
   }
 
+  def createFriendship(other: String): Box[TwitterResponse] = {
+    for (user <- calcUser;
+         other <- User.findFromWeb(other))
+    yield {
+      if (user follow other)
+        Right(Map("user" -> userData(other)))
+      else
+        Right(Map("hash" -> Map("error" -> "Could not follow user")))
+    }
+  }
+  
+  def destroyFriendship(other: String): Box[TwitterResponse] = {
+    for (user <- calcUser;
+         other <- User.findFromWeb(other))
+    yield {
+      if (user unfollow other)
+        Right(Map("user" -> userData(other)))
+      else
+        Right(Map("hash" -> Map("error" -> "Could not unfollow user")))
+    }
+  }
+  
   private def calcUser(): Box[User] = 
     LiftRules.authentication match {
       case basicAuth: HttpBasicAuthentication =>
