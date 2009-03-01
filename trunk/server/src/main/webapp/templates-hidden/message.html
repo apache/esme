@@ -51,7 +51,7 @@
                 var msgDateStr = msgDateObj.toLocaleDateString() +
                     ' ' + msgDateObj.toLocaleTimeString();
                 var msgSource = cometMsg.source;
-                var msgTags = jQuery(cometMsg.text).find('tag').get();
+                var msgTags = jQuery(cometMsg.text).find('tags > tag').get();
                 for (var tagIndex=0; tagIndex < msgTags.length; tagIndex++) {
                     // Replace each tag element with the plain tag text
                     msgTags[tagIndex] = jQuery(msgTags[tagIndex]).attr('name');
