@@ -88,7 +88,7 @@ abstract class TwitterAPI {
 
     case Req(l: List[String], this.method, PostRequest) if l == ApiPath ::: "friendships" :: "create" :: l.last :: Nil => () => createFriendship(l last)
     case Req(l: List[String], this.method, PostRequest) if l == ApiPath ::: "friendships" :: "destroy" :: l.last :: Nil => () => destroyFriendship(l last)
-    // case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "friendships" :: "exists" :: Nil => existsFriendship
+    case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "friendships" :: "exists" :: Nil => existsFriendship
 
     case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "account" :: "verify_credentials" :: Nil => verifyCredentials
     // case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "account" :: "end_session" :: Nil => endSession
@@ -258,6 +258,15 @@ abstract class TwitterAPI {
       else
         Right(Map("hash" -> Map("error" -> "Could not unfollow user")))
     }
+  }
+  
+  def existsFriendship(): Box[TwitterResponse] = {
+    for (req <- S.request;
+         param_a <- req.param("user_a") ?~ "User A not specified";
+         param_b <- req.param("user_b") ?~ "User B not specified";
+         user_a <- User.findFromWeb(param_a) ?~ "User A not found";
+         user_b <- User.findFromWeb(param_b) ?~ "User B not found")
+    yield Right(Map("friends" -> user_a.following_?(user_b)))
   }
   
   private def calcUser(): Box[User] = 
