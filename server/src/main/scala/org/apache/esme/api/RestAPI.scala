@@ -351,7 +351,7 @@ object RestAPI extends XMLApiHelper {
   }
 
   object restActor extends SessionVar[Box[RestActor]](Empty) {
-    override def cleanupFunc: Box[() => Unit] = Full(() => this.is.map(_ ! ByeBye))
+    override def onShutdown(session: LiftSession) = this.is.map(_ ! ByeBye)
   }
   
 
