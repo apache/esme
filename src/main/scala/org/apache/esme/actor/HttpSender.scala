@@ -132,7 +132,7 @@ object HttpSender extends Actor with GetPoster {
   }
   
   def httpClient = {
-    val ret = new HttpClient(new SimpleHttpConnectionManager(false))
+    val ret = new HttpClient(new SimpleHttpConnectionManager())
 
     for (host <- Props.get("http.proxyHost"))
     ret.getHostConfiguration.setProxy(host,
