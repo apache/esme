@@ -94,8 +94,7 @@ abstract class TwitterAPI {
     case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "friendships" :: "exists" :: Nil => existsFriendship
 
     case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "account" :: "verify_credentials" :: Nil => verifyCredentials
-    // case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "account" :: "end_session" :: Nil => endSession
-    // case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "account" :: "rate_limit_status" :: Nil => rateLimitStatus
+    case Req(l: List[String], this.method, PostRequest) if l == ApiPath ::: "account" :: "end_session" :: Nil => endSession
     // case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "update_profile" :: Nil => updateProfile
 
   }
@@ -286,6 +285,13 @@ abstract class TwitterAPI {
          user_a <- User.findFromWeb(param_a) ?~ "User A not found";
          user_b <- User.findFromWeb(param_b) ?~ "User B not found")
     yield Right(Map("friends" -> user_a.following_?(user_b)))
+  }
+  
+  def endSession(): Box[TwitterResponse] = {
+    calcUser map { _ =>
+      User.logUserOut
+      Right(Map("hash" -> Map("error" -> "User logged out.")))
+    }
   }
   
   private def calcUser(): Box[User] = 
