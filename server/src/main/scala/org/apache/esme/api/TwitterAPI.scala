@@ -79,6 +79,7 @@ abstract class TwitterAPI {
     case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "direct_messages" :: Nil => directMessages
     case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "friends_timeline" :: Nil => friendsTimeline
     case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "user_timeline" :: Nil => userTimeline
+    case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "user_timeline" :: l.last :: Nil => () => userTimeline(l last)
     case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "show" :: l.last :: Nil => () => showStatus(l last)
     case Req(l: List[String], this.method, PostRequest) if l == ApiPath ::: "statuses" :: "update" :: Nil => update
 
@@ -174,15 +175,21 @@ abstract class TwitterAPI {
     }
   }
   
+  def userTimeline(user: User): TwitterResponse = {
+    val statusList = 
+      Message.findAll(By(Message.author, user),
+                      MaxRows(20),
+                      OrderBy(Message.id, Descending)).
+        map(msgData _)
+    Right(Map("statuses" -> ("status", statusList) ))
+  }
+  
+  def userTimeline(userName: String): Box[TwitterResponse] = {
+    User.findFromWeb(userName) map (userTimeline(_))
+  }
+  
   def userTimeline(): Box[TwitterResponse] = {
-    calcUser map { user => 
-      val statusList = 
-        Message.findAll(By(Message.author, user),
-                        MaxRows(20),
-                        OrderBy(Message.id, Descending)).
-          map(msgData _)
-      Right(Map("statuses" -> ("status", statusList) ))
-    }
+    calcUser map (userTimeline(_))
   }
   
   def replies(): Box[TwitterResponse] = {
