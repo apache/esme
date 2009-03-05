@@ -84,7 +84,9 @@ abstract class TwitterAPI {
     case Req(l: List[String], this.method, PostRequest) if l == ApiPath ::: "statuses" :: "update" :: Nil => update
 
     case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "friends" :: Nil => friends
+    case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "friends" :: l.last :: Nil => () => friends(l last)
     case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "followers" :: Nil => followers
+    case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "followers" :: l.last :: Nil => () => followers(l last)
     case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "users" :: "show" :: l.last :: Nil => () => showUser(l last)
 
     case Req(l: List[String], this.method, PostRequest) if l == ApiPath ::: "friendships" :: "create" :: l.last :: Nil => () => createFriendship(l last)
@@ -185,11 +187,11 @@ abstract class TwitterAPI {
   }
   
   def userTimeline(userName: String): Box[TwitterResponse] = {
-    User.findFromWeb(userName) map (userTimeline(_))
+    User.findFromWeb(userName) map (userTimeline)
   }
   
   def userTimeline(): Box[TwitterResponse] = {
-    calcUser map (userTimeline(_))
+    calcUser map (userTimeline)
   }
   
   def replies(): Box[TwitterResponse] = {
@@ -221,18 +223,28 @@ abstract class TwitterAPI {
     }
   }
 
+  def friends(user: User): TwitterResponse = {
+    Right(Map("users" -> ("user", user.following().map(userData)) ))
+  }
+  
+  def friends(userName: String): Box[TwitterResponse] = {
+    User.findFromWeb(userName) map(friends)
+  }
+  
   def friends(): Box[TwitterResponse] = {
-    for (user <- calcUser ?~ "User not found")
-    yield {
-      Right(Map("users" -> ("user", user.following().map(userData)) ))
-    }
+    calcUser map(friends)
+  }
+  
+  def followers(user: User): TwitterResponse = {
+    Right(Map("users" -> ("user", user.followers().map(userData)) ))
+  }
+  
+  def followers(userName: String): Box[TwitterResponse] = {
+    User.findFromWeb(userName) map(followers)
   }
   
   def followers(): Box[TwitterResponse] = {
-    for (user <- calcUser ?~ "User not found")
-    yield {
-      Right(Map("users" -> ("user", user.followers().map(userData)) ))
-    }
+    calcUser map(followers)
   }
   
   def showUser(name: String): Box[TwitterResponse] = {
