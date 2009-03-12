@@ -119,9 +119,17 @@ abstract class TwitterAPI {
     "source" -> msg.source,
     "truncated" -> false,
     "favorited" -> false,
-    "in_reply_to_status_id" -> None,
-    "in_reply_to_user_id" -> None,
-    "in_reply_to_screen_name" -> None
+    "in_reply_to_status_id" ->
+      Message.find(msg.conversation).
+        map(_.id.is).getOrElse(None),
+    "in_reply_to_user_id" ->
+      Message.find(msg.conversation).
+        map(_.author.is).getOrElse(None),
+    "in_reply_to_screen_name" ->
+      Message.find(msg.conversation).
+        map(msg => 
+            User.find(msg.author).get.nickname
+        ).getOrElse(None)
     )
   }
   
@@ -193,8 +201,18 @@ abstract class TwitterAPI {
     calcUser map (userTimeline)
   }
   
+  def replies(user: User): TwitterResponse = {
+    val statusList = 
+      Message.findAll(By(Message.author, user),
+                      NotNullRef(Message.conversation),
+                      MaxRows(20),
+                      OrderBy(Message.id, Descending)).
+        map(msgData _)
+    Right(Map("statuses" -> ("status", statusList) ))
+  }
+  
   def replies(): Box[TwitterResponse] = {
-    userTimeline
+    calcUser map (replies)
   }
 
   def directMessages(): Box[TwitterResponse] = {
