@@ -194,7 +194,7 @@ abstract class TwitterAPI {
   }
   
   def userTimeline(userName: String): Box[TwitterResponse] = {
-    User.findFromWeb(userName) map (userTimeline)
+    User.findFromWeb(userName).map(userTimeline) ?~ "User not found"
   }
   
   def userTimeline(): Box[TwitterResponse] = {
@@ -245,7 +245,7 @@ abstract class TwitterAPI {
   }
   
   def friends(userName: String): Box[TwitterResponse] = {
-    User.findFromWeb(userName) map(friends)
+    User.findFromWeb(userName).map(friends) ?~ "User not found"
   }
   
   def friends(): Box[TwitterResponse] = {
@@ -257,7 +257,7 @@ abstract class TwitterAPI {
   }
   
   def followers(userName: String): Box[TwitterResponse] = {
-    User.findFromWeb(userName) map(followers)
+    User.findFromWeb(userName).map(followers) ?~ "User not found"
   }
   
   def followers(): Box[TwitterResponse] = {
@@ -276,7 +276,7 @@ abstract class TwitterAPI {
 
   def createFriendship(other: String): Box[TwitterResponse] = {
     for (user <- calcUser;
-         other <- User.findFromWeb(other))
+         other <- User.findFromWeb(other) ?~ "User not found")
     yield {
       if (user follow other)
         Right(Map("user" -> userData(other)))
@@ -287,7 +287,7 @@ abstract class TwitterAPI {
   
   def destroyFriendship(other: String): Box[TwitterResponse] = {
     for (user <- calcUser;
-         other <- User.findFromWeb(other))
+         other <- User.findFromWeb(other) ?~ "User not found")
     yield {
       if (user unfollow other)
         Right(Map("user" -> userData(other)))
@@ -312,15 +312,29 @@ abstract class TwitterAPI {
     }
   }
   
-  private def calcUser(): Box[User] = 
-    LiftRules.authentication match {
-      case basicAuth: HttpBasicAuthentication =>
-        for (req <- S.request;
-             cred <- basicAuth.credentials(req);
-             user <- User.findFromWeb(cred._1))
-        yield user
-    }
-
+  private def calcUser(): Box[User] = {
+    val userBox =
+      LiftRules.authentication match {
+        case basicAuth: HttpBasicAuthentication =>
+          for (req <- S.request;
+               cred <- basicAuth.credentials(req);
+               user <- User.findFromWeb(cred._1))
+          yield user
+      }
+    userBox ?~ "User authentication failed"
+  }
+  
+  protected def unbox(x: () => Box[TwitterResponse]) = {
+    Either.merge(
+      x() match {
+        case Full(res) => res
+        case Empty => 
+          Right(Map("response" -> Nil))
+        case failMsg: Failure => 
+          Right(Map("hash" -> Map("error" -> failMsg.messageChain)))
+      }
+    )
+  }
 }
 
 object TwitterXmlAPI extends TwitterAPI with XMLApiHelper {
@@ -343,7 +357,7 @@ object TwitterXmlAPI extends TwitterAPI with XMLApiHelper {
   override def dispatch: LiftRules.DispatchPF = {
     // modify the returned function to one which converts the result to XML
     dispatchMethod.andThen(x =>
-      {() => Full(nodeSeqToResponse(toXml(Either.merge(x().get)))) }
+      {() => Full(nodeSeqToResponse(toXml(unbox(x)))) }
     )
   }
 
@@ -360,7 +374,7 @@ object TwitterJsonAPI extends TwitterAPI {
   override def dispatch: LiftRules.DispatchPF = {
     // modify the returned function to one which converts the result to JSON
     dispatchMethod.andThen(x =>
-      {() => Full(JsonResponse(jsonAttributes(Either.merge(x().get)))) }
+      {() => Full(JsonResponse(jsonAttributes(unbox(x)))) }
     )
   }
   
