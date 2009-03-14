@@ -69,7 +69,7 @@
                     newTag.find('a')
                         .attr('href','tag/'+msgTags[tagIndex])
                         .text(msgTags[tagIndex]);
-                    newTag.insertBefore(newMsg.find('#tag'));
+                    newTag.insertBefore(newMsg.find('#tag:first'));
                 }
 
                 // Remove any old tags from the template
