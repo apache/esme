@@ -2,12 +2,19 @@
 <compass-core-config xmlns="http://www.compass-project.org/schema/core-config"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.compass-project.org/schema/core-config
-  http://www.compass-project.org/schema/compass-core-config-2.0.xsd">
+  http://www.compass-project.org/schema/compass-core-config-2.1.xsd">
 
   <compass name="default">
 
     <connection>
-      <file path="compass-index"/>
+      <jdbc>
+          <dataSourceProvider>
+              <driverManager  url="jdbc:mysql://localhost/esme"
+                              username="esme" password="esme"
+                              driverClass="com.mysql.jdbc.Driver" />
+          </dataSourceProvider>
+      </jdbc>
+
     </connection>
     <searchEngine >
       <analyzer name="default" type="Stop" />

@@ -145,7 +145,10 @@ class Boot {
 
 object Compass {
   // Set up Compass for search
-  val conf = new CompassConfiguration().configure("/props/compass.cfg.xml").addClass((new Message).clazz)
+  val conf = new CompassConfiguration()
+    .configure(Props.get("compass_config_file") openOr "/props/compass.cfg.xml")
+    .addClass((new Message).clazz)
+    
   val compass = conf.buildCompass()
   if (!compass.getSearchEngineIndexManager.indexExists)
   {

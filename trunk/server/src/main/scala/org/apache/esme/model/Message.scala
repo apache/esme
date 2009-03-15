@@ -34,7 +34,7 @@ import bootstrap.liftweb.Compass.compass
 import org.compass.core._
 import lucene.util._
 import org.apache.lucene.index.TermFreqVector
-import net.sf.snowball.ext._
+import org.tartarus.snowball.ext.PorterStemmer
 
 import org.apache.esme._
 import lib._
