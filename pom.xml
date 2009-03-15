@@ -8,8 +8,10 @@
   <name>ESME</name>
   <inceptionYear>2008</inceptionYear>
   <properties>
+    <lift.version>1.0</lift.version>
     <scala.version>2.7.3</scala.version>
-    <lucene.version>2.3.2</lucene.version>
+    <compass.version>2.1.1</compass.version>
+    <lucene.version>2.4.0</lucene.version>
     <netbeans.hint.deploy.server>gfv3</netbeans.hint.deploy.server>
   </properties>
 
@@ -83,27 +85,27 @@
     <dependency>
       <groupId>net.liftweb</groupId>
       <artifactId>lift-util</artifactId>
-      <version>1.0</version>
+      <version>${lift.version}</version>
     </dependency>
     <dependency>
       <groupId>net.liftweb</groupId>
       <artifactId>lift-webkit</artifactId>
-      <version>1.0</version>
+      <version>${lift.version}</version>
     </dependency>
     <dependency>
       <groupId>net.liftweb</groupId>
       <artifactId>lift-mapper</artifactId>
-      <version>1.0</version>
+      <version>${lift.version}</version>
     </dependency>
     <dependency>
       <groupId>net.liftweb</groupId>
       <artifactId>lift-testkit</artifactId>
-      <version>1.0</version>
+      <version>${lift.version}</version>
     </dependency>
     <dependency>
       <groupId>net.liftweb</groupId>
       <artifactId>lift-openid</artifactId>
-      <version>1.0</version>
+      <version>${lift.version}</version>
     </dependency>
     <!--
 	<dependency>
@@ -115,7 +117,7 @@
     <dependency>
       <groupId>org.compass-project</groupId>
       <artifactId>compass</artifactId>
-      <version>2.0.2</version>
+      <version>${compass.version}</version>
     </dependency>
 
     <dependency>
