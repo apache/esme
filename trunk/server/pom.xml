@@ -219,6 +219,9 @@
           </execution>
         </executions>
         <configuration>
+          <jvmArgs>
+            <jvmArg>-Xmx1024m</jvmArg>
+          </jvmArgs>
           <scalaVersion>${scala.version}</scalaVersion>
         </configuration>
       </plugin>
@@ -272,6 +275,10 @@
         <groupId>org.scala-tools</groupId>
         <artifactId>maven-scala-plugin</artifactId>
         <configuration>
+          <jvmArgs>
+            <jvmArg>-Xmx1024m</jvmArg>
+          </jvmArgs>
+
           <scalaVersion>${scala.version}</scalaVersion>
         </configuration>
       </plugin>
