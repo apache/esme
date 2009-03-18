@@ -24,6 +24,7 @@ package org.apache.esme.model
 import net.liftweb._
 import mapper._
 import util._
+import http.js._
 import Helpers._
 import java.util.logging._
 
@@ -166,7 +167,15 @@ class Message extends LongKeyedMapper[Message] {
 
   object id extends MappedLongIndex(this)
 
-  object author extends MappedLongForeignKey(this, User)
+  object author extends MappedLongForeignKey(this, User) {
+    override def asJs = {
+      val user = User.find(this.is) match {
+        case Full(u) => u.asJs
+        case Empty => JE.JsNull
+      }
+      List(("author", user))
+    }
+  }
 
   object viaGroup extends MappedLongForeignKey(this, Group)
 

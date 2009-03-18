@@ -60,7 +60,11 @@
                 // Put the marshalled data into a copy of the template
                 var newMsg = msgTemplate.clone(true).attr('id',msgId);
 
-                newMsg.find('#author').text(msgAuthor);
+                var author = newMsg.find('#author');
+                author.html('<div>' + msgAuthor.nickname + '</div>');
+                author.prepend('<img src="' + msgAuthor.imageurl +
+                                  '" alt="' + msgAuthor.firstname +
+                                        ' ' + msgAuthor.lastname + '" width="50px"/>');
                 newMsg.find('#body').html(msgBody);
                 newMsg.find('#source').text(msgSource);
                 newMsg.find('#when').text(msgDateStr);
