@@ -60,11 +60,12 @@
                 // Put the marshalled data into a copy of the template
                 var newMsg = msgTemplate.clone(true).attr('id',msgId);
 
-                var author = newMsg.find('#author');
-                author.html('<div>' + msgAuthor.nickname + '</div>');
-                author.prepend('<img src="' + msgAuthor.imageurl +
-                                  '" alt="' + msgAuthor.firstname +
-                                        ' ' + msgAuthor.lastname + '" width="50px"/>');
+                newMsg.find('#author').text(msgAuthor.nickname);
+
+                var avatar = newMsg.find('#avatar')
+                        .attr('src', msgAuthor.imageurl)
+                        .attr('alt',msgAuthor.firstname + ' ' + msgAuthor.lastname);
+
                 newMsg.find('#body').html(msgBody);
                 newMsg.find('#source').text(msgSource);
                 newMsg.find('#when').text(msgDateStr);
@@ -127,7 +128,9 @@
                         <lift:comet type="Timeline"/>
                         <tbody id="timeline_messages">
                           <tr id="message">
-                              <td id="author">dhague</td>
+<!--                              <td><img id="msgAuthor" src="" alt="" width="50px"/><div id="author">dhague</div></td>
+-->
+                              <td><img id="avatar" src="http://www.chinposin.com/avatars/twitter_vdichev2008-08-25-18-40-11_100.jpg" alt="Darren S. Hague" width="50px"/><div id="author">dhague</div></td>
                               <td class="message">
                                 <div class="outer"><div class="inner clear">
                                     <p class="text" id="body">This is a test message in the HTML for designers.</p>
