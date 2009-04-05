@@ -97,6 +97,9 @@ object RestAPI extends XMLApiHelper {
         
     case Req("api" :: "delete_action" :: Nil, "", PostRequest) =>
       deleteAction _
+
+    case Req("api" :: "add_pool" :: poolName :: Nil, "", PostRequest) =>
+      () => addPool(poolName)
   }
 
   def findAction: Box[Action] =
@@ -340,6 +343,16 @@ object RestAPI extends XMLApiHelper {
     r
   }
 
+  def addPool(poolName: String): LiftResponse = {
+    val r: Box[Boolean] =
+    for (user <- User.currentUser;
+         pool = AccessPool.create.name(poolName).saveMe;
+         privilegeSaved = Privilege.create.pool(pool).user(user).permission(Privilege.Admin.toStr).save
+    ) yield privilegeSaved
+    
+    r
+  }
+  
   def createTag(in: NodeSeq) = <esme_api>{in}</esme_api>
 
   

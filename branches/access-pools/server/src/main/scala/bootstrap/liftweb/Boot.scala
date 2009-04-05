@@ -58,13 +58,15 @@ class Boot {
                                   Message, Mailbox, Tag,
                                   Group, Relationship, MessageTag, 
                                   AuthToken, UrlStore, Tracking,
-                                  Action, DidPerform)
+                                  Action, DidPerform, AccessPool,
+                                  Privilege)
     }
     
     Schemifier.schemify(true, Log.infoF _, User, ExtSession, Message,
                         Mailbox, Tag,
                         Group, Relationship, MessageTag, AuthToken, 
-                        UrlStore, Tracking, Action, DidPerform)
+                        UrlStore, Tracking, Action, DidPerform,
+                        AccessPool, Privilege)
     
     LiftRules.statelessDispatchTable.append {
       case r @ Req("api" :: "send_msg" :: Nil, "", PostRequest) 
