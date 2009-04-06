@@ -347,7 +347,7 @@ object RestAPI extends XMLApiHelper {
     val r: Box[Boolean] =
     for (user <- User.currentUser;
          pool = AccessPool.create.name(poolName).saveMe;
-         privilegeSaved = Privilege.create.pool(pool).user(user).permission(Privilege.Admin.toStr).save
+         privilegeSaved = Privilege.create.pool(pool).user(user).permission(Permission.Admin).save
     ) yield privilegeSaved
     
     r

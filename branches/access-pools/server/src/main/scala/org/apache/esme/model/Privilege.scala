@@ -36,16 +36,13 @@ class Privilege extends LongKeyedMapper[Privilege] {
   object id extends MappedLongIndex(this)
   object pool extends MappedLongForeignKey(this, AccessPool)
   object user extends MappedLongForeignKey(this, User)
-  object permission extends MappedString(this, 256) with Permission
+  object permission extends MappedEnum(this, Permission)
   
-  sealed trait Permission
-  case object Read extends Permission {
-    def toStr = "Read"
-  }
-  case object Write extends Permission {
-    def toStr = "Write"
-  }
-  case object Admin extends Permission {
-    def toStr = "Admin"
-  }
 }
+
+object Permission extends Enumeration {
+  val Read = Value(0, "Read")
+  val Write = Value(1, "Write")
+  val Admin = Value(2, "Admin")
+}
+
