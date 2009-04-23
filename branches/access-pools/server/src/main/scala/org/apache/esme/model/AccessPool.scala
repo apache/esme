@@ -23,16 +23,41 @@ package org.apache.esme.model
 
 import net.liftweb._
 import mapper._
+import http._
 import util._
+
+import scala.xml.Text
 
 object AccessPool extends AccessPool with LongKeyedMetaMapper[AccessPool] {
 
 }
 
 class AccessPool extends LongKeyedMapper[AccessPool] {
-  def getSingleton = AccessPool // what's the "meta" server
+  def getSingleton = AccessPool
   def primaryKeyField = id
 
+  private def sameName(name: String) = 
+    AccessPool.findAll(By(AccessPool.name, name)).
+      filter(_.realm.is.equalsIgnoreCase(this.realm.is))
+  
   object id extends MappedLongIndex(this)
-  object name extends MappedText(this)
+
+  private[model] object name extends MappedString(this, 256) {
+    
+    override def validations = checkDuplicate _ :: super.validations
+    
+    def checkDuplicate(in: String): List[FieldError] = 
+      sameName(in).map(p =>
+        FieldError(this, Text("Duplicate pool: " + in + " in realm " + p.realm.is ))
+      )
+    
+  }
+  
+  def setName(in: String) = sameName(in) match {
+    case Nil => Full(this.name(in))
+    case List(_,_*) => Failure("Duplicate access pool name!")
+  }
+
+  object realm extends MappedString(this, 256)
+
 }

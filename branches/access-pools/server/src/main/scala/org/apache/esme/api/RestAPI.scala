@@ -346,8 +346,9 @@ object RestAPI extends XMLApiHelper {
   def addPool(poolName: String): LiftResponse = {
     val r: Box[Boolean] =
     for (user <- User.currentUser;
-         pool = AccessPool.create.name(poolName).saveMe;
-         privilegeSaved = Privilege.create.pool(pool).user(user).permission(Permission.Admin).save
+         pool <- AccessPool.create.realm("Native").setName(poolName);
+         privilegeSaved = Privilege.create.pool(pool.saveMe).user(user).
+           permission(Permission.Admin).save
     ) yield privilegeSaved
     
     r
