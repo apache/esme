@@ -100,6 +100,9 @@ object RestAPI extends XMLApiHelper {
 
     case Req("api" :: "add_pool" :: poolName :: Nil, "", PostRequest) =>
       () => addPool(poolName)
+
+    case Req("api" :: "add_user_pool" :: Nil, "", PostRequest) =>
+      addUserToPool
   }
 
   def findAction: Box[Action] =
@@ -350,6 +353,24 @@ object RestAPI extends XMLApiHelper {
          privilegeSaved = Privilege.create.pool(pool.saveMe).user(user).
            permission(Permission.Admin).save
     ) yield privilegeSaved
+    
+    r
+  }
+  
+  def addUserToPool(): LiftResponse = {
+    val r: Box[Boolean] = 
+    for (adminUser <- User.currentUser;
+         poolName <- S.param("pool") ?~ "Pool not specified";
+         realm <- (S.param("realm") or Full("Native"));
+         pool <- AccessPool.findPool(poolName, realm) ?~ "Pool not found";
+         _ <- Privilege.find(By(Privilege.pool, pool),
+                             By(Privilege.user, adminUser),
+                             By(Privilege.permission, Permission.Admin)) ?~ "User has no permission to administer pool";
+         userName <- S.param("user") ?~ "User to add to pool not specified";
+         user <- User.findFromWeb(userName) ?~ "User not found";
+         permissionName <- (S.param("permission") or Full("Write"));
+         permission <- Box(Permission.valueOf(permissionName)) ?~ "Unknown permission type"
+    ) yield Privilege.create.user(user).pool(pool).permission(permission).save
     
     r
   }

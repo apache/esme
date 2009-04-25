@@ -30,17 +30,19 @@ import scala.xml.Text
 
 object AccessPool extends AccessPool with LongKeyedMetaMapper[AccessPool] {
 
+  def findPool(name: String, realm: String): Box[AccessPool] = 
+    AccessPool.find(By(AccessPool.name,  name),
+                    By(AccessPool.realm, realm))
+
 }
 
 class AccessPool extends LongKeyedMapper[AccessPool] {
   def getSingleton = AccessPool
   def primaryKeyField = id
 
-  private def sameName(name: String) = 
-    AccessPool.findAll(By(AccessPool.name, name)).
-      filter(_.realm.is.equalsIgnoreCase(this.realm.is))
-  
   object id extends MappedLongIndex(this)
+
+  object realm extends MappedString(this, 256)
 
   private[model] object name extends MappedString(this, 256) {
     
@@ -58,6 +60,8 @@ class AccessPool extends LongKeyedMapper[AccessPool] {
     case List(_,_*) => Failure("Duplicate access pool name!")
   }
 
-  object realm extends MappedString(this, 256)
-
+  private def sameName(name: String) = 
+    AccessPool.findAll(By(AccessPool.name, name)).
+      filter(_.realm.is.equalsIgnoreCase(this.realm.is))
+  
 }

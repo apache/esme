@@ -26,7 +26,14 @@ import mapper._
 import util._
 
 object Privilege extends Privilege with LongKeyedMetaMapper[Privilege] {
+  
+  override def beforeSave = deleteExisting _ :: super.beforeSave
 
+  private def deleteExisting(in: Privilege) {
+    findAll(By(pool, in.pool),
+            By(user, in.user)).
+    foreach(_.delete_!)
+  }
 }
 
 class Privilege extends LongKeyedMapper[Privilege] {
