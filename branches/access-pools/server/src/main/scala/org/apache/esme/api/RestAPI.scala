@@ -293,6 +293,10 @@ object RestAPI extends XMLApiHelper {
          msg <- params.param("message") ?~ "Message not included")
     yield {
       val from: String = params.param("via") openOr "api"
+      val pool = for (poolName <- params.param("pool");
+                      p <- AccessPool.findPool(poolName,
+                        params.param("realm") openOr "Native")
+                      ) yield p.id.is
 
       val xml: Box[Elem] = params.param("metadata").flatMap(md =>
         tryo(XML.loadString(md)))
@@ -304,7 +308,8 @@ object RestAPI extends XMLApiHelper {
                                      millis,
                                      xml,
                                      from,
-                                     params.param("replyto").map(toLong))
+                                     params.param("replyto").map(toLong),
+                                     pool)
       true
     }
     r
@@ -363,14 +368,15 @@ object RestAPI extends XMLApiHelper {
          poolName <- S.param("pool") ?~ "Pool not specified";
          realm <- (S.param("realm") or Full("Native"));
          pool <- AccessPool.findPool(poolName, realm) ?~ "Pool not found";
-         _ <- Privilege.find(By(Privilege.pool, pool),
-                             By(Privilege.user, adminUser),
-                             By(Privilege.permission, Permission.Admin)) ?~ "User has no permission to administer pool";
          userName <- S.param("user") ?~ "User to add to pool not specified";
          user <- User.findFromWeb(userName) ?~ "User not found";
          permissionName <- (S.param("permission") or Full("Write"));
          permission <- Box(Permission.valueOf(permissionName)) ?~ "Unknown permission type"
-    ) yield Privilege.create.user(user).pool(pool).permission(permission).save
+    ) yield if(Privilege.hasPermission(adminUser.id.is, pool.id.is, Permission.Admin)) {
+      val result = Privilege.create.user(user).pool(pool).permission(permission).save
+      if (result) Distributor ! Distributor.AllowUserInPool(user.id.is, pool.id.is)
+      result
+    } else false // "User has no permission to administer pool"
     
     r
   }

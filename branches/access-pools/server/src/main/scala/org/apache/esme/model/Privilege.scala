@@ -34,6 +34,10 @@ object Privilege extends Privilege with LongKeyedMetaMapper[Privilege] {
             By(user, in.user)).
     foreach(_.delete_!)
   }
+  
+  def findViewablePools(userId: Long) = Privilege.findMap(
+    By(Privilege.user, userId)
+  )(p => Full(p.pool.is))
 }
 
 class Privilege extends LongKeyedMapper[Privilege] {
@@ -45,6 +49,10 @@ class Privilege extends LongKeyedMapper[Privilege] {
   object user extends MappedLongForeignKey(this, User)
   object permission extends MappedEnum(this, Permission)
   
+  def hasPermission(userId: Long, poolId: Long, permission: Permission.Value) = Privilege.find(
+    By(user, userId),
+    By(pool, poolId)
+  ).map(_.permission.is >= permission).getOrElse(false)
 }
 
 object Permission extends Enumeration {

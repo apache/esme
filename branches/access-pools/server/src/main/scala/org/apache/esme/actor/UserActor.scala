@@ -42,13 +42,15 @@ object UserActor {
   private[actor] case class CreateMessage(text: String, tags: List[String],
                                           when: Long, metaData: Box[Elem],
                                           source: String,
-                                          replyTo: Box[Long])
+                                          replyTo: Box[Long],
+                                          pool: Box[Long])
   private[actor] case class AddToMailbox(msg: Message, reason: MailboxReason)
   private[actor] case class Listen(who: Actor)
   private[actor] case class Unlisten(who: Actor)
   private[actor] case class LatestMessages(cnt: Int)
   private[actor] case class TestForTracking(msg: Message)
   private[actor] case class UpdateTracking(ttype: Distributor.TrackingType)
+  private[actor] case class AllowPool(poolId: Long)
   
   case class MessageReceived(msg: Message, reason: MailboxReason)
   
@@ -69,8 +71,12 @@ class UserActor extends Actor {
   private var perform: List[PerformMatcher] = Nil
   
   private var _mailbox: Array[Long] = Array()
+  
+  private var pools: List[Long] = List()
 
   private def followers: List[Long] = User.followerIdsForUserId(userId)
+  
+  private def canReadPool_?(poolId: Long) = pools contains poolId
 
   private case class RunFunc(f: () => Unit)
 
@@ -89,23 +95,38 @@ class UserActor extends Actor {
 
         _mailbox = Mailbox.mostRecentMessagesFor(userId, 500).
         map(_._1.id.is).toArray
+        
+        pools = Privilege.findViewablePools(userId)
 
         this ! UpdateTracking(Distributor.TrackTrackingType)
         this ! UpdateTracking(Distributor.PerformTrackingType)
 
       case RunFunc(f) => f()
         
-      case CreateMessage(text, tags, when, metaData, source, replyTo) =>
-        val tagLst = tags.removeDuplicates.map(Tag.findOrCreate)
+      case CreateMessage(text, tags, when, metaData, source, replyTo, pool) =>
+        val tagLst = if (pool == None) 
+                       tags.removeDuplicates.map(Tag.findOrCreate)
+                     else Nil
 
         Message.create.author(userId).when(when).
         source(source).
-        setTextAndTags(text, tagLst, metaData).map{msg =>
+        setTextAndTags(text, tagLst, metaData).filter{ m =>
+          pool match {
+            case Full(p) => 
+              m.pool(p)
+              Privilege.hasPermission(userId, p, Permission.Write)
+            case _ => true
+          }
+        }.map{msg =>
           // do some security... only reply to messages
           // that are in our mailbox
           for (rt <- replyTo;
                mb <- Mailbox.find(By(Mailbox.message, rt),
-                                  By(Mailbox.user, userId))) msg.replyTo(rt)
+                                  By(Mailbox.user, userId));
+               rtm <- Message.find(mb.message.is)) 
+                 if (rtm.pool == msg.pool) msg.replyTo(rt)
+                 // workaround for compiler bug:
+                 else null
 
           msg.saveMe
 
@@ -130,12 +151,14 @@ class UserActor extends Actor {
         }
 
       case AddToMailbox(msg, reason) => 
-        addToMailbox(msg, reason)
+        if (!msg.pool.defined_? || canReadPool_?(msg.pool.is))
+          addToMailbox(msg, reason)
         
         
       case TestForTracking(msg) =>
-        for (t <- tracking.find(_.doesMatch_?(msg)))
-        this ! AddToMailbox(msg, TrackReason(t.trackId))
+        if (!msg.pool.defined_? || canReadPool_?(msg.pool.is))
+          for (t <- tracking.find(_.doesMatch_?(msg)))
+          this ! AddToMailbox(msg, TrackReason(t.trackId))
          
           
       case UpdateTracking(ttype) =>
@@ -158,6 +181,8 @@ class UserActor extends Actor {
       case Unlisten(who) => listeners = listeners.filter(_ ne who)
     
       case LatestMessages(cnt) => reply(_mailbox.take(cnt).toList)
+      
+      case AllowPool(poolId) => pools ::= poolId
     }
   }
 
