@@ -242,6 +242,14 @@
                     </div>
                   </div>
 
+                  <div class="row clear">
+                    <label>Access pool</label>
+                    <select id="access_pool">
+                      <option id="0">--public--</option>
+                      <lift:UserSnip.accessPools />
+                    </select>
+                  </div>
+
                   <div class="row clear"><a class="btn" href="javascript:post_msg();"><img src="/images/send-message.png" alt="Send Message" /></a></div>
 
                   <script>

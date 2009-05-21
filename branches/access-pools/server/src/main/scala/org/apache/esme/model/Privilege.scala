@@ -38,6 +38,11 @@ object Privilege extends Privilege with LongKeyedMetaMapper[Privilege] {
   def findViewablePools(userId: Long) = Privilege.findMap(
     By(Privilege.user, userId)
   )(p => Full(p.pool.is))
+
+  def findWritablePools(userId: Long) = Privilege.findMap(
+    By(Privilege.user, userId),
+    NotBy(Privilege.permission, Permission.Read)
+  )(p => Full(p.pool.is))
 }
 
 class Privilege extends LongKeyedMapper[Privilege] {
