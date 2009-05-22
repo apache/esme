@@ -1,7 +1,8 @@
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
-import org.mortbay.jetty.webapp.WebAppContext;
+// import org.mortbay.jetty.webapp.WebAppContext;
 
+/*
 object RunWebApp extends Application {
   val server = new Server(8080);
   val context = new WebAppContext()
@@ -26,3 +27,4 @@ object RunWebApp extends Application {
     }
   }
 }
+*/

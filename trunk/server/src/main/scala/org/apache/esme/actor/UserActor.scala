@@ -21,7 +21,7 @@
 
 package org.apache.esme.actor
 
-import scala.actors.Actor
+import scala.actors.{Actor, Exit}
 import Actor._
 
 import net.liftweb._
@@ -55,6 +55,7 @@ object UserActor {
   val logger: Logger = Logger.getLogger("org.apache.esme.actor")
 }
 
+
 class UserActor extends Actor {
   import UserActor._
   
@@ -76,6 +77,9 @@ class UserActor extends Actor {
 
   def act = loop {
     react {
+      case RelinkToActorWatcher =>
+        link(ActorWatcher)
+
       case m @ Distributor.UserUpdated(_) =>
         User.find(userId).
         foreach(u => userTimezone = TimeZone.getTimeZone(u.timezone))
@@ -93,7 +97,8 @@ class UserActor extends Actor {
         this ! UpdateTracking(Distributor.TrackTrackingType)
         this ! UpdateTracking(Distributor.PerformTrackingType)
 
-      case RunFunc(f) => f()
+      case RunFunc(f) =>
+        f()
         
       case CreateMessage(text, tags, when, metaData, source, replyTo) =>
         val tagLst = tags.removeDuplicates.map(Tag.findOrCreate)
@@ -129,7 +134,7 @@ class UserActor extends Actor {
           Distributor ! Distributor.NewMessage(msg)
         }
 
-      case AddToMailbox(msg, reason) => 
+      case AddToMailbox(msg, reason) =>
         addToMailbox(msg, reason)
         
         
@@ -157,7 +162,8 @@ class UserActor extends Actor {
     
       case Unlisten(who) => listeners = listeners.filter(_ ne who)
     
-      case LatestMessages(cnt) => reply(_mailbox.take(cnt).toList)
+      case LatestMessages(cnt) =>
+        reply(_mailbox.take(cnt).toList)
     }
   }
 

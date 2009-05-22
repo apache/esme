@@ -203,7 +203,7 @@ object ESMEOpenIDVendor extends OpenIdVendor {
   def createAConsumer = new ESMEOpenIDConsumer
 }
 
-class ESMEOpenIDConsumer extends OpenIDConsumer[User]
+class ESMEOpenIDConsumer extends OpenIdConsumer[User]
 {
   override val manager = {
 
