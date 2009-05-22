@@ -1,0 +1,75 @@
+<lift:surround with="default" at="content">
+  Manage your Actions items: <br/>
+  <span id="TokenSpan">
+    <lift:ignore>
+      <!--
+      The displayActions snippet *MUST* appear on the page before
+      the main snippet
+      -->
+    </lift:ignore>
+    <lift:dispayActions the_id="TokenSpan">
+      <table>
+        <tr>
+          <td>Name</td>
+          <td>Enabled</td>
+          <td>Test</td>
+          <td>Action</td>
+          <td>Remove</td>
+        </tr>
+        <disp:item>
+          <tr>
+            <td><item:name/></td>
+            <td>Enabled: <item:enabled/></td>
+            <td><pre><item:test/></pre></td>
+            <td><pre><item:action/></pre></td>
+            <td>
+              <item:remove>Remove</item:remove>
+            </td>
+          </tr>
+        </disp:item>
+      </table>
+    </lift:dispayActions>
+  </span>
+
+  <lift:form>
+    <lift:main>
+    <table>
+      <tr><td colspan="3">New Action</td></tr>
+      <tr>
+        <td>Name</td>
+        <td><main:name/></td>
+      </tr>
+      <tr>
+        <td>Test</td>
+        <td><main:test/></td>
+        <td>
+          @foo -- sender is @foo<br />
+          day = (0,1) -- sent on Sunday or Monday<br/>
+          #moo -- contains the #moo tag<br/>
+          50% -- success 50% of the time<br/>
+          @foo &amp; 50% -- half the time, something sent by @foo<br/>
+          login -- user has logged in<br/>
+          followed -- user is being followed<br/>
+          unfollowed -- user is being unfollowed<br/>
+          profile -- user changed profile<br/>
+          every N mins -- repeat action, N is an integer
+        </td>
+      </tr>
+
+      <tr>
+        <td>Action</td>
+        <td><main:action/></td>
+        <td>
+          filter -- not put in your timeline<br />
+          resend -- sends the message to all your followers<br />
+          mailto:foo@bar.com -- sends the message to foo@bar.com<br/>
+          http://foo.com/message/in -- HTTP post, %s expands to message<br/>
+          atom:http://blog.com/feed.atom -- posts new messages from Atom feed<br/>
+          rss:http://blog.com/feed.rss -- posts new messages from RSS feed
+        </td>
+      </tr>
+      <input type="submit" value="Add" />
+    </table>
+    </lift:main>
+  </lift:form>
+</lift:surround>

@@ -2,7 +2,7 @@ package org.apache.esme.model
 
 /**
  * Copyright 2008-2009 WorldWide Conferencing, LLC
- * 
+ *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
@@ -64,12 +64,12 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
     val il = in.toList
     val (r1, left) = il.foldLeft[(Map[Long, Message], List[Long])](
       (Map.empty, Nil)) {
-      case ((map, left), id) => 
+      case ((map, left), id) =>
         if (idCache.contains(id)) {
           (map + (id -> idCache(id)), left)
         } else (map, id :: left)
     }
-    
+
 
     val r2 = left match {
       case Nil => r1
@@ -90,7 +90,7 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
     idCache.remove(msg.id)
   }
 
-  
+
   override def afterCommit = super.afterCommit
 
   private def saveTags(msg: Message) {
@@ -121,7 +121,7 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
 
     logger.info("Inside Message.search() with user list "+(users.mkString(", ")))
 
-    val session = compass.openSession()
+    (for(session <- compass.map(_.openSession()); user <- User.currentUser) yield {
     var tx:CompassTransaction = null
     var returnValue:List[Message] = Nil
 
@@ -129,7 +129,7 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
       tx = session.beginTransaction()
       val queryBuilder: CompassQueryBuilder = session.queryBuilder()
 
-      val followingQuery = queryBuilder.bool().addShould(queryBuilder.term("author", User.currentUser.open_!.id))
+      val followingQuery = queryBuilder.bool().addShould(queryBuilder.term("author", user.id))
       for (user <- following) followingQuery.addShould(queryBuilder.term("author", user.id))
 
       val query: CompassQuery = queryBuilder.bool()
@@ -147,7 +147,7 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
 
       val resourceList = hitlist.getResources.toList.asInstanceOf[List[Resource]]
 
-      returnValue = resourceList.map(x => Message.find(x.getId).open_!)
+      returnValue = resourceList.flatMap(x => Message.find(x.getId))
       tx.commit();
     } catch  {
       case ce: CompassException =>
@@ -157,6 +157,7 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
     }
 
     returnValue
+  }) openOr Nil
   }
 }
 
@@ -366,7 +367,8 @@ class Message extends LongKeyedMapper[Message] {
 
   // Get the term (i.e. word) frequencies for the word cloud from the message text
   lazy val wordFrequencies: List[(String, Int)] = {
-    val session = compass.openSession()
+    try {
+    (for {session <- compass.map(_.openSession())} yield {
     var tx:CompassTransaction = null
     var returnValue:List[(String, Int)] = Nil
 
@@ -380,7 +382,7 @@ class Message extends LongKeyedMapper[Message] {
 
         case x => x
       }
-      
+
       val textTermFreqs:TermFreqVector = LuceneHelper.getTermFreqVector(session, msgResource, "textWords")
       Message.logger.info("textTermFreqs: "+textTermFreqs)
 
@@ -400,6 +402,11 @@ class Message extends LongKeyedMapper[Message] {
     }
 
     compoundStem(returnValue)
+    }) openOr Nil
+    } catch {
+      case e => e.printStackTrace; Nil
+    }
+
   }
 
   // Get the tag frequencies for the tag cloud from the message's tags
