@@ -21,6 +21,7 @@ package org.apache.esme.view
  * under the License.
  */
 
+/*
 import net.liftweb._
 import http._
 import js._
@@ -172,3 +173,4 @@ class ActionView extends LiftView {
     </lift:surround>
   }
 }
+*/

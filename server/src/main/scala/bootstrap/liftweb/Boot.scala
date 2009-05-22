@@ -2,7 +2,7 @@ package bootstrap.liftweb
 
 /**
  * Copyright 2008-2009 WorldWide Conferencing, LLC
- * 
+ *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
@@ -47,43 +47,46 @@ import org.compass.core.config.CompassConfiguration
  */
 class Boot {
   def boot {
+    // do this before any messages are sent or there's hell to pay
+    ActorSchedulerFixer.doActorSchedulerFix()
+
     DefaultConnectionIdentifier.jndiName = Props.get("jndi.name") openOr "esme"
-    
+
     if (!DB.jndiJdbcConnAvailable_?) DB.defineConnectionManager(DefaultConnectionIdentifier, DBVendor)
     // where to search snippet
     LiftRules.addToPackages("org.apache.esme")
-    
+
     if (Props.mode == Props.RunModes.Test) {
       Schemifier.destroyTables_!!(Log.infoF _, User, ExtSession,
                                   Message, Mailbox, Tag,
-                                  Group, Relationship, MessageTag, 
+                                  Group, Relationship, MessageTag,
                                   AuthToken, UrlStore, Tracking,
                                   Action, DidPerform)
     }
-    
+
     Schemifier.schemify(true, Log.infoF _, User, ExtSession, Message,
                         Mailbox, Tag,
-                        Group, Relationship, MessageTag, AuthToken, 
+                        Group, Relationship, MessageTag, AuthToken,
                         UrlStore, Tracking, Action, DidPerform)
-    
+
     LiftRules.statelessDispatchTable.append {
-      case r @ Req("api" :: "send_msg" :: Nil, "", PostRequest) 
-        if r.param("token").isDefined  => 
+      case r @ Req("api" :: "send_msg" :: Nil, "", PostRequest)
+        if r.param("token").isDefined  =>
         () => RestAPI.sendMsgWithToken(r)
     }
-    
+
     LiftRules.dispatch.append(ESMEOpenIDVendor.dispatchPF)
-    
+
     LiftRules.siteMapFailRedirectLocation = List("static", "about")
-    
+
     LiftRules.rewrite.prepend {
       case RewriteRequest(ParsePath("user" :: user :: Nil,"", _,_), _, _) =>
         RewriteResponse( List("user_view", "index"), Map("uid" -> user))
       case RewriteRequest(ParsePath("tag" :: tag :: Nil,"", _,_), _, _) =>
         RewriteResponse( List("user_view", "tag"), Map("tag" -> tag))
-        
+
       case RewriteRequest(ParsePath("conversation" :: cid :: Nil, "", _, _),
-                          _, _) => 
+                          _, _) =>
         RewriteResponse(List("user_view", "conversation"), Map("cid" -> cid))
 
       case RewriteRequest(ParsePath("search" :: term :: Nil,"", _,_), _, _) =>
@@ -106,10 +109,10 @@ class Boot {
     User.sitemap :::
     Track.menuItems :::
     Auth.menuItems :::
-    ActionView.menuItems
+    ActionMgr.menuItems
 
     LiftRules.setSiteMap(SiteMap(entries:_*))
-    
+
     S.addAround(ExtSession.requestLoans)
 
     LiftRules.viewDispatch.append {
@@ -119,14 +122,14 @@ class Boot {
     LiftRules.dispatch.prepend(RestAPI.dispatch)
 
     LiftRules.httpAuthProtectedResource.prepend {
-     case (ParsePath(TwitterAPI.ApiPath :: _, _, _, _)) => Full(AuthRole("user"))
+      case (ParsePath(TwitterAPI.ApiPath :: _, _, _, _)) => Full(AuthRole("user"))
     }
-    
+
     LiftRules.authentication = TwitterAPI.twitterAuth
 
     LiftRules.dispatch.append(TwitterXmlAPI.dispatch)
     LiftRules.dispatch.append(TwitterJsonAPI.dispatch)
-    
+
     LiftRules.early.append(makeUtf8)
 
     Distributor.touch
@@ -145,21 +148,18 @@ class Boot {
 
 object Compass {
   // Set up Compass for search
-  val conf = new CompassConfiguration()
-    .configure(Props.get("compass_config_file") openOr "/props/compass.cfg.xml")
-    .addClass((new Message).clazz)
-    
-  val compass = conf.buildCompass()
-  if (!compass.getSearchEngineIndexManager.indexExists)
-  {
-    // Create Index if one does not exist
-    compass.getSearchEngineIndexManager().createIndex()
-  }
+  val conf = tryo(new CompassConfiguration()
+  .configure(Props.get("compass_config_file") openOr "/props/compass.cfg.xml")
+  .addClass((new Message).clazz))
+
+  val compass = conf.map(_.buildCompass())
+
+  for (c <- compass if !c.getSearchEngineIndexManager.indexExists)
+    tryo(c.getSearchEngineIndexManager().createIndex())
 }
 
 
 object RequestAnalyzer {
-
   def analyze(req: Box[Req], time: Long, queries: List[(String, Long)]): Unit = {
     val longQueries = (queries.filter(_._2 > 30))
     if (time > 50 || longQueries.?) {
@@ -173,7 +173,7 @@ object DBVendor extends ConnectionManager {
   private var pool: List[Connection] = Nil
   private var poolSize = 0
   private val maxPoolSize = 4
-  
+
   private def createOne: Box[Connection] = try {
     if (Props.getBool("use_prod_psql", false)) {
       Class.forName("org.postgresql.Driver")
@@ -195,14 +195,14 @@ object DBVendor extends ConnectionManager {
         case Props.RunModes.Test => "jdbc:derby:esme_test_db;create=true"
         case _ => "jdbc:derby:esme_db;create=true"
       }
-      
+
       val dm = DriverManager.getConnection(driverName)
       Full(dm)
     }
   } catch {
     case e : Exception => e.printStackTrace; Empty
   }
-  
+
   def newConnection(name: ConnectionIdentifier): Box[Connection] = synchronized {
     pool match {
       case Nil if poolSize < maxPoolSize => val ret = createOne
@@ -226,7 +226,7 @@ object DBVendor extends ConnectionManager {
         }
     }
   }
-  
+
   def releaseConnection(conn: Connection): Unit = synchronized {
     pool = conn :: pool
     notify

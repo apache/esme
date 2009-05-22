@@ -75,19 +75,19 @@ object Action extends Action with LongKeyedMetaMapper[Action] {
       val f2 = toFunc(right)
       (m, u, c, r) => f1(m, u, c, r) && f2(m, u, c, r)
   
-    case LoginAction() =>
+    case LoginAction =>
       (m, u, c, r) => r.isInstanceOf[LoginReason]
 
-    case FollowedAction() =>
+    case FollowedAction =>
       (m, u, c, r) => r.isInstanceOf[FollowedReason]
 
-    case UnfollowedAction() =>
+    case UnfollowedAction =>
       (m, u, c, r) => r.isInstanceOf[UnfollowedReason]
       
     case RegularAction(mins) =>
       (m, u, c, r) => r.isInstanceOf[RegularReason]
       
-    case ProfileAction() =>
+    case ProfileAction =>
       (m, u, c, r) => r.isInstanceOf[ProfileReason]
       
     case AtUserAction(userId) =>
@@ -349,19 +349,19 @@ case class AtSendAction(users: List[Long], opr: EqOprType) extends TestAction {
     })
 }
 
-case class LoginAction extends TestAction {
+case object LoginAction extends TestAction {
   def toStr = "login"
 }
 
-case class FollowedAction extends TestAction {
+case object FollowedAction extends TestAction {
   def toStr = "followed"
 }
 
-case class UnfollowedAction extends TestAction {
+case object UnfollowedAction extends TestAction {
   def toStr = "unfollowed"
 }
 
-case class ProfileAction extends TestAction {
+case object ProfileAction extends TestAction {
   def toStr = "profile"
 }
 

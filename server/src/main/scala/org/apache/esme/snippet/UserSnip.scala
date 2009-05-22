@@ -47,7 +47,7 @@ object JsonPoster extends SessionVar(S.buildJsonFunc{
           case Some(x) if x > 0L => Full(x)
           case _ => Empty
         }
-        
+
         Distributor ! 
         Distributor.UserCreatedMessage(user.id, msg, 
                                        Tag.split(tags),
@@ -55,7 +55,6 @@ object JsonPoster extends SessionVar(S.buildJsonFunc{
                                        Empty,
                                        "web",
                                        replyTo)
-                                       
       }
       Noop
 

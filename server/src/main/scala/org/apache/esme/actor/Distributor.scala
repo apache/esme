@@ -43,6 +43,9 @@ import scala.xml.{Elem}
 object Distributor extends Actor {
   def act = loop {
     react {
+           case RelinkToActorWatcher =>
+        link(ActorWatcher)
+
       case StartMeUp =>
         link(ActorWatcher)
         User.findAll.map(_.id.is).foreach(findOrCreateUser)
@@ -52,9 +55,10 @@ object Distributor extends Actor {
                               metaData,
                               source,
                               inReplyTo) =>
-        findOrCreateUser(user) ! 
-        UserActor.CreateMessage(text, tags,
-                                when, metaData, source, inReplyTo)
+        val toact = findOrCreateUser(user)
+        toact ! UserActor.CreateMessage(text, tags,
+                                        when, metaData, source, inReplyTo)
+        toact ! text
 
       case AddMessageToMailbox(user, message, reason) =>
         findOrCreateUser(user) ! UserActor.AddToMailbox(message, reason)

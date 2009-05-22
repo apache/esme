@@ -266,13 +266,13 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
     case x ~ xs => x :: xs
   }
 
-  lazy val testLogin: Parser[TestAction] = acceptCI("login") ^^^ LoginAction()
+  lazy val testLogin: Parser[TestAction] = acceptCI("login") ^^^ LoginAction
 
-  lazy val testFollowed: Parser[TestAction] = acceptCI("followed") ^^^ FollowedAction()
+  lazy val testFollowed: Parser[TestAction] = acceptCI("followed") ^^^ FollowedAction
 
-  lazy val testUnfollowed: Parser[TestAction] = acceptCI("unfollowed") ^^^ UnfollowedAction()
+  lazy val testUnfollowed: Parser[TestAction] = acceptCI("unfollowed") ^^^ UnfollowedAction
 
-  lazy val testProfile: Parser[TestAction] = acceptCI("profile") ^^^ ProfileAction()
+  lazy val testProfile: Parser[TestAction] = acceptCI("profile") ^^^ ProfileAction
 
   lazy val testRegular: Parser[TestAction] = acceptCI("every") ~ whiteSpace ~> number <~ whiteSpace ~ acceptCI("mins") ^^ {
     case mins => RegularAction(mins)
