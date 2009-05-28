@@ -10,7 +10,8 @@
     /* Shadows (begin) */ /**/
         .b-popup-c
         {
-            background: #233e5e;
+            background: #EEE;
+            border: 1px solid black;
         }
 
         .b-popup i

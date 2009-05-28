@@ -1,0 +1,54 @@
+<lift:surround with="default" at="content">
+  <lift:user_info>
+    <div>
+      <div id="tabs" class="b-view tab1">
+        <dl class="messages">
+          <dt class="caption"><user:nicename/>'s Timeline
+          <span id="following"><user:followButton/></span></dt>
+          <dd>
+            <table>
+              <user:timeline>
+                <tr>
+                  <td><item:author/></td>
+                  <td><item:body/></td>
+                  <td><item:date/></td>
+                </tr>
+              </user:timeline>
+            </table>
+
+          </dd>
+        </dl>
+
+        <dl class="">
+          <dt class="caption"><user:nicename/>'s Messages</dt>
+
+          <dd class="b-clouds">
+            <table>
+              <user:messages>
+                <tr>
+                  <td><item:author/></td>
+                  <td><item:body/></td>
+                  <td><item:date/></td>
+                </tr>
+              </user:messages>
+            </table>
+          </dd>
+        </dl>
+        <dl class="">
+          <dt class="caption">
+            Contacts
+          </dt>
+
+          <dd class="b-contacts" style="height: 240px; overflow: auto">
+            Following:
+            <lift:UserSnip.following user:userId=""/>
+          </dd>
+          <dd class="b-contacts" style="height: 240px; overflow: auto">
+            Followers:
+            <lift:UserSnip.followers user:userId=""/>
+          </dd>
+        </dl>
+      </div>
+    </div>
+  </lift:user_info>
+</lift:surround>

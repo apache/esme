@@ -31,9 +31,10 @@ import net.liftweb.mapper.{DB, ConnectionManager, Schemifier, DefaultConnectionI
 import java.sql.{Connection, DriverManager}
 import org.apache.esme._
 import model._
-import actor._
+import org.apache.esme.actor._
 import lib._
 import view._
+import snippet._
 import api._
 import net.liftweb._
 import mapper._
@@ -81,9 +82,9 @@ class Boot {
 
     LiftRules.rewrite.prepend {
       case RewriteRequest(ParsePath("user" :: user :: Nil,"", _,_), _, _) =>
-        RewriteResponse( List("user_view", "index"), Map("uid" -> user))
+        RewriteResponse( List("info_view", "user"), Map("uid" -> user))
       case RewriteRequest(ParsePath("tag" :: tag :: Nil,"", _,_), _, _) =>
-        RewriteResponse( List("user_view", "tag"), Map("tag" -> tag))
+        RewriteResponse( List("info_view", "tag"), Map("tag" -> tag))
 
       case RewriteRequest(ParsePath("conversation" :: cid :: Nil, "", _, _),
                           _, _) =>
@@ -101,10 +102,11 @@ class Boot {
     // Build SiteMap
     val entries = Menu(Loc("Home", List("index"), "Home")) ::
     Menu(Loc("list_users", List("user_view", "all"), "List Users")) ::
-    Menu(Loc("user", List("user_view", "index"), "User Info", Hidden)) ::
+    Menu(Loc("user", List("info_view", "user"), "User Info", Hidden,
+      Loc.Snippet("user_info", TagDisplay.userInfo))) ::
     Menu(Loc("conv", List("user_view", "conversation"), "Conversation", Hidden)) ::
     Menu(Loc("about", List("static", "about"), "About", Hidden)) ::
-    Menu(Loc("tag", List("user_view", "tag"), "Tag", Hidden)) ::
+    Menu(Loc("tag", List("info_view", "tag"), "Tag", Hidden, Loc.Snippet("tag_display", TagDisplay.display))) ::
     Menu(Loc("search", List("user_view", "search"), "Search", Hidden)) ::
     User.sitemap :::
     Track.menuItems :::
@@ -142,6 +144,18 @@ class Boot {
 
     DB.addLogFunc(S.logQuery _)
     S.addAnalyzer(RequestAnalyzer.analyze _)
+
+    /*
+     * Show the spinny image when an Ajax call starts
+     */
+    LiftRules.ajaxStart =
+    Full(() => LiftRules.jsArtifacts.show("ajax-loader").cmd)
+
+    /*
+     * Make the spinny image go away when it ends
+     */
+    LiftRules.ajaxEnd =
+    Full(() => LiftRules.jsArtifacts.hide("ajax-loader").cmd)
   }
   private def makeUtf8(req: HttpServletRequest): Unit = {req.setCharacterEncoding("UTF-8")}
 }
@@ -149,13 +163,13 @@ class Boot {
 object Compass {
   // Set up Compass for search
   val conf = tryo(new CompassConfiguration()
-  .configure(Props.get("compass_config_file") openOr "/props/compass.cfg.xml")
-  .addClass((new Message).clazz))
+                  .configure(Props.get("compass_config_file") openOr "/props/compass.cfg.xml")
+                  .addClass((new Message).clazz))
 
   val compass = conf.map(_.buildCompass())
 
   for (c <- compass if !c.getSearchEngineIndexManager.indexExists)
-    tryo(c.getSearchEngineIndexManager().createIndex())
+  tryo(c.getSearchEngineIndexManager().createIndex())
 }
 
 

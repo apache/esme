@@ -30,7 +30,7 @@ import JsCmds._
 import JE._
 
 import org.apache.esme._
-import actor._
+import org.apache.esme.actor._
 import model._
 import lib._
 
@@ -77,6 +77,7 @@ class TagCloud extends CometActor /* with MsgFormat*/ {
         }
       </p>
       <p/>
+      {/*
       <p id="word-para">Words</p>
       <p>
         {
@@ -86,6 +87,8 @@ class TagCloud extends CometActor /* with MsgFormat*/ {
                 name}</a> </xml:group>
         }
       </p>
+      */
+      }
     </div>
   }
 

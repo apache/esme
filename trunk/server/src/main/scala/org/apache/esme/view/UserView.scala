@@ -57,7 +57,7 @@ object UserView extends LiftView /* with MsgFormat */ {
 
   val dispatch = 
   Map("index" -> index _,
-      "tag" -> displayTag _,
+      // "tag" -> displayTag _,
       "search" -> search _,
       "all" -> allUsers _,
       "conversation" -> conversation _)
@@ -210,7 +210,8 @@ object UserView extends LiftView /* with MsgFormat */ {
       </fieldset>
     </div>
   </lift:surround>
-  
+
+  /*
   def displayTag(): Box[NodeSeq] =
   (<lift:surround with="default" at="content">
       {
@@ -239,7 +240,7 @@ object UserView extends LiftView /* with MsgFormat */ {
         ui openOr (<span>Tag Not Found</span>)
       }
    </lift:surround>)
-  
+  */
   def allUsers(): Box[NodeSeq] = 
   <lift:surround with="default" at="content">
     <fieldset>

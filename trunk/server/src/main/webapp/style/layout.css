@@ -14,8 +14,8 @@
 
         height: 50px;
 
-        background: #7fa3ce;
-        border-bottom: 4px solid #fff;
+        /* background: #7fa3ce; */
+        border-bottom: 4px solid #000;
     }
 
     .foot
@@ -23,8 +23,8 @@
         height: 20px;
         padding: 0 12px;
 
-        color: #fff;
-        background: #7fa3ce;
-        border-top: 4px solid #fff;
+        color: #000;
+        background: #FFF;
+        border-top: 4px solid #111;
     }
 /* Layout (end) */ /**/

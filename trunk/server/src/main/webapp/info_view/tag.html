@@ -1,0 +1,18 @@
+<lift:surround with="default" at="content">
+  <lift:tag_display>
+    <div>
+      <fieldset>
+        <legend><tag:name/></legend>
+        <table>
+          <tag:each>
+            <tr>
+              <td><item:author/></td>
+              <td><item:body/></td>
+              <td><item:date/></td>
+            </tr>
+          </tag:each>
+        </table>
+      </fieldset>
+    </div>
+  </lift:tag_display>
+</lift:surround>
