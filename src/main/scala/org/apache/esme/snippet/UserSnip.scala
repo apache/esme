@@ -23,7 +23,7 @@ package org.apache.esme.snippet
 
 import org.apache.esme._
 import model._
-import actor._
+import org.apache.esme.actor._
 
 import net.liftweb._
 import http._
@@ -37,16 +37,14 @@ import scala.xml.{NodeSeq, Text, Node}
 
 object JsonPoster extends SessionVar(S.buildJsonFunc{
     case JsonCmd("post", _, map: Map[String, Any], _) =>
+      println("Posting "+map)
       for (msgObj <- map.get("msg");
-           msg <- Box.isA(msgObj, classOf[String]).map(_.trim) if msg.length > 0;
+           msg <- Box.asA[String](msgObj).map(_.trim) if msg.length > 0;
            tagObj <- map.get("tags");
-           tags <- Box.isA(tagObj, classOf[String]);
+           tags <- Box.asA[String](tagObj);
            user <- User.currentUser) {
-        
-        val replyTo = map.get("reply-to").map(toLong) match {
-          case Some(x) if x > 0L => Full(x)
-          case _ => Empty
-        }
+
+        val replyTo: Box[Long] = map.get("reply-to").map(toLong)
 
         Distributor ! 
         Distributor.UserCreatedMessage(user.id, msg, 
@@ -100,8 +98,8 @@ class UserSnip extends DispatchSnippet {
   </ul>
 
   def loginForm(in: NodeSeq): NodeSeq =
-    if (User.loggedIn_?) NodeSeq.Empty
-    else User.loginForm
+  if (User.loggedIn_?) NodeSeq.Empty
+  else User.loginForm
   
 
   def userName(in: NodeSeq) = {

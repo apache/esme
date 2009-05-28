@@ -9,28 +9,28 @@
     <script id="jquery" src="/classpath/jquery.js" type="text/javascript"/>
     <script id="json" src="/classpath/json.js" type="text/javascript"/>
     <script>
-// <![CDATA[
-    /*
-     * displayMessages called by lift:comet, type="Timeline" and type="PublicTimeline"
-     */
+      // <![CDATA[
+      /*
+       * displayMessages called by lift:comet, type="Timeline" and type="PublicTimeline"
+       */
 
-    function msgDateCompare(msg1, msg2)
-    {
+      function msgDateCompare(msg1, msg2)
+      {
         return parseInt(msg1.when) - parseInt(msg2.when);
-    }
+      }
 
-    function displayMessages(msgArray, elementId)
-    {
+      function displayMessages(msgArray, elementId)
+      {
         // Select the first element in table id="timeline_messages"
         //  with id="message" as the message template
         if (msgTemplate == null) {
-//                                    var msgTemplate = jQuery('span.'+spanId+' message:first');
-            var msgTemplate = jQuery('#'+elementId+' #message:first');
-            var tagTemplate = msgTemplate.find('#tag:first');
-            var msgInsertPt = jQuery('#'+elementId);
+          //                                    var msgTemplate = jQuery('span.'+spanId+' message:first');
+          var msgTemplate = jQuery('#'+elementId+' #message:first');
+          var tagTemplate = msgTemplate.find('#tag:first');
+          var msgInsertPt = jQuery('#'+elementId);
 
-            // Now we have the template, make the existing instances invisible
-            jQuery('#'+elementId+' *[id=message]').hide();
+          // Now we have the template, make the existing instances invisible
+          jQuery('#'+elementId+' *[id=message]').hide();
         }
 
         // Sort the messages into date order
@@ -38,61 +38,62 @@
 
         for (var msgIndex in msgArray)
         {
-            // Marshall the data from the Comet-supplied message
-            var cometMsg = msgArray[msgIndex];
-            var msgId = "message_"+cometMsg.id;
+          // Marshall the data from the Comet-supplied message
+          var cometMsg = msgArray[msgIndex];
+          var msgId = "message_"+cometMsg.id;
 
-            // Only do this if the message is not already in the table
-            if (jQuery('#'+elementId+' #'+msgId).size() == 0)
-            {
-                var msgAuthor = cometMsg.author;
-                var msgBody = jQuery(cometMsg.text).find('body').html();
-                var msgDateObj = new Date(parseInt(cometMsg.when));
-                var msgDateStr = msgDateObj.toLocaleDateString() +
-                    ' ' + msgDateObj.toLocaleTimeString();
-                var msgSource = cometMsg.source;
-                var msgTags = jQuery(cometMsg.text).find('tags > tag').get();
-                for (var tagIndex=0; tagIndex < msgTags.length; tagIndex++) {
-                    // Replace each tag element with the plain tag text
-                    msgTags[tagIndex] = jQuery(msgTags[tagIndex]).attr('name');
-                }
-
-                // Put the marshalled data into a copy of the template
-                var newMsg = msgTemplate.clone(true).attr('id',msgId);
-
-                newMsg.find('#author').text(msgAuthor.nickname);
-
-                var avatar = newMsg.find('#avatar')
-                        .attr('src', msgAuthor.imageurl)
-                        .attr('alt',msgAuthor.firstname + ' ' + msgAuthor.lastname);
-
-                newMsg.find('#body').html(msgBody);
-                newMsg.find('#source').text(msgSource);
-                newMsg.find('#when').text(msgDateStr);
-                for (var tagIndex=0; tagIndex < msgTags.length; tagIndex++) {
-                    var newTag = tagTemplate.clone(true).attr('id',msgTags[tagIndex]);
-                    newTag.find('a')
-                        .attr('href','tag/'+msgTags[tagIndex])
-                        .text(msgTags[tagIndex]);
-                    newTag.insertBefore(newMsg.find('#tag:first'));
-                }
-
-                // Remove any old tags from the template
-                newMsg.find('*[id=tag]').remove();
-
-                // Insert the updated copy of the message into the page
-                newMsg.prependTo(msgInsertPt).show();
+          // Only do this if the message is not already in the table
+          if (jQuery('#'+elementId+' #'+msgId).size() == 0)
+          {
+            var msgAuthor = cometMsg.author;
+            var msgBody = jQuery(cometMsg.text).find('body').html();
+            var msgDateObj = new Date(parseInt(cometMsg.when));
+            var msgDateStr = msgDateObj.toLocaleDateString() +
+              ' ' + msgDateObj.toLocaleTimeString();
+            var msgSource = cometMsg.source;
+            var msgTags = jQuery(cometMsg.text).find('tags > tag').get();
+            for (var tagIndex=0; tagIndex < msgTags.length; tagIndex++) {
+              // Replace each tag element with the plain tag text
+              msgTags[tagIndex] = jQuery(msgTags[tagIndex]).attr('name');
             }
+
+            // Put the marshalled data into a copy of the template
+            var newMsg = msgTemplate.clone(true).attr('id',msgId);
+
+            newMsg.find('#author').text(msgAuthor.nickname);
+
+            var avatar = newMsg.find('#avatar')
+            .attr('src', msgAuthor.imageurl)
+            .attr('alt',msgAuthor.firstname + ' ' + msgAuthor.lastname);
+
+            newMsg.find('#body').html(msgBody);
+            newMsg.find('#source').text(msgSource);
+            newMsg.find('#when').text(msgDateStr);
+            for (var tagIndex=0; tagIndex < msgTags.length; tagIndex++) {
+              var newTag = tagTemplate.clone(true).attr('id',msgTags[tagIndex]);
+              newTag.find('a')
+              .attr('href','tag/'+msgTags[tagIndex])
+              .text(msgTags[tagIndex]);
+              newTag.insertBefore(newMsg.find('#tag:first'));
+            }
+
+            // Remove any old tags from the template
+            newMsg.find('*[id=tag]').remove();
+
+            // Insert the updated copy of the message into the page
+            newMsg.prependTo(msgInsertPt).show();
+          }
         }
-    }
-// ]]>
+      }
+      // ]]>
     </script>
 
   </head>
   <body>
     <div class="container">
       <div class="head">
-        <img src="/images/esme-blue.png" alt="ESME" />
+        <img src="/images/esme.png" alt="ESME" />
+        <img src="/images/ajax-loader.gif" style="display: none" id="ajax-loader"/>
         <ul class="b-primary">
           <li><lift:Menu.item name="EditUser"/></li>
           <li><lift:Menu.item name="about"/></li>
@@ -115,19 +116,19 @@
 
                     <dd>
                       <div class="b-list">
-                      <table>
-                        <thead>
-                          <tr>
+                        <table>
+                          <thead>
+                            <tr>
                               <th>Author</th>
                               <th>Message</th>
                               <th>Tags</th>
                               <th>Source</th>
                               <th>Date</th>
-                          </tr>
-                        </thead>
-                        <lift:comet type="Timeline"/>
-                        <tbody id="timeline_messages">
-                          <tr id="message">
+                            </tr>
+                          </thead>
+                          <lift:comet type="Timeline"/>
+                          <tbody id="timeline_messages">
+                            <tr id="message">
                               <td><img id="avatar" src="http://static.twitter.com/images/default_profile_bigger.png" alt="Anonymous" width="50px"/><div id="author">anon</div></td>
                               <td class="message">
                                 <div class="outer"><div class="inner clear">
@@ -135,13 +136,13 @@
                                 </div></div>
                               </td>
                               <td id="tags" class="tag">
-                                  <p id="tag"><a href="tag/tag1">tag1</a></p>
-                                  <p id="tag"><a href="tag/tag2">tag2</a></p>
+                                <p id="tag"><a href="tag/tag1">tag1</a></p>
+                                <p id="tag"><a href="tag/tag2">tag2</a></p>
                               </td>
                               <td id="source">web</td>
                               <td id="when" class="date">Jan 1, 2009 12:00</td>
-                          </tr>
-                          <tr id="message">
+                            </tr>
+                            <tr id="message">
                               <td><img id="avatar" src="http://static.twitter.com/images/default_profile_bigger.png" alt="Anonymous" width="50px"/><div id="author">anon</div></td>
                               <td class="message">
                                 <div class="outer"><div class="inner clear">
@@ -149,14 +150,14 @@
                                 </div></div>
                               </td>
                               <td id="tags" class="tag">
-                                  <p id="tag"><a href="tag/tag1">tag1</a></p>
-                                  <p id="tag"><a href="tag/tag3">tag3</a></p>
+                                <p id="tag"><a href="tag/tag1">tag1</a></p>
+                                <p id="tag"><a href="tag/tag3">tag3</a></p>
                               </td>
                               <td id="source">web</td>
                               <td id="when" class="date">Jan 1, 2009 11:58</td>
-                          </tr>
-                        </tbody>
-                      </table>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </dd>
                   </dl>
@@ -166,19 +167,19 @@
 
                     <dd>
                       <div class="b-list">
-                      <table>
-                        <thead>
-                          <tr>
+                        <table>
+                          <thead>
+                            <tr>
                               <th>Author</th>
                               <th>Message</th>
                               <th>Tags</th>
                               <th>Source</th>
                               <th>Date</th>
-                          </tr>
-                        </thead>
-                        <lift:comet type="PublicTimeline"/>
-                        <tbody id="public_timeline_messages">
-                          <tr id="message">
+                            </tr>
+                          </thead>
+                          <lift:comet type="PublicTimeline"/>
+                          <tbody id="public_timeline_messages">
+                            <tr id="message">
                               <td id="author">dhague</td>
                               <td class="message">
                                 <div class="outer"><div class="inner clear">
@@ -186,14 +187,14 @@
                                 </div></div>
                               </td>
                               <td id="tags" class="tag">
-                                  <p id="tag"><a href="tag/tagA">tagA</a></p>
-                                  <p id="tag"><a href="tag/tagB">tagB</a></p>
+                                <p id="tag"><a href="tag/tagA">tagA</a></p>
+                                <p id="tag"><a href="tag/tagB">tagB</a></p>
                               </td>
                               <td id="source">web</td>
                               <td id="when" class="date">Jan 1, 2009 12:00</td>
-                          </tr>
-                        </tbody>
-                      </table>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </dd>
                   </dl>
@@ -232,7 +233,7 @@
                     <button onclick="clearReplyTo()">remove reply</button>
                   </div>
 
-                  <div class="row clear">
+                  <div class="row clear" style="display: none">
                     <label>Tag your message</label>
                     <input id="tagdude" style="width: 90%"/>
                     <div class="note clear">
@@ -242,7 +243,7 @@
                     </div>
                   </div>
 
-                  <div class="row clear"><a class="btn" href="javascript:post_msg();"><img src="/images/send-message.png" alt="Send Message" /></a></div>
+                  <div class="row clear"><button class="btn" onclick="javascript:post_msg();">Update<!--<img src="/images/send-message.png" alt="Send Message" />--></button></div>
 
                   <script>
                     // <![CDATA[
@@ -268,13 +269,16 @@
                   <lift:comet type="TagCloud"/>
                 </div>
 
-                <div class="bugs">
-                  <form action="/user_view/search"
-                        class="b-primay"><input style="height: 20px; background: #c9d8ea;"
-                                            name="term"/>
-                    <input style="height: 22px; background: #233e5e; color: #c9d8ea;" type="submit" value="Search"/>
-                  </form>
-                </div>
+                <lift:ignore>
+                  <div class="bugs">
+                    <form action="/user_view/search"
+                          class="b-primay"><input style="height: 20px; background: #c9d8ea;"
+                                              name="term"/>
+                      <input style="height: 22px; background: #233e5e; color: #c9d8ea;" type="submit" value="Search"/>
+                    </form>
+                  </div>
+                </lift:ignore>
+
               </div>
             </td>
 

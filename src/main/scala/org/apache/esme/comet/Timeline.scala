@@ -30,7 +30,7 @@ import JsCmds._
 import JE._
 
 import org.apache.esme._
-import actor._
+import org.apache.esme.actor._
 import model._
 import lib._
 
