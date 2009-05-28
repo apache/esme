@@ -106,11 +106,11 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
     val ret: List[Message] = this.findAll(params :_*)
 
 
-    val userIds = (ret.flatMap(_.author.can) :::
-                   ret.flatMap(_.sentToIds)).removeDuplicates
+    val userIds: List[Long] = (ret.flatMap(_.author.can) :::
+                               ret.flatMap(_.sentToIds)).removeDuplicates
 
-    val users = Map(User.findAll(InRaw(User.id, userIds.mkString(","),
-                                       IHaveValidatedThisSQL("dpp", "Aug 23, 2008"))).map(u => (u.id.is, u)) :_*)
+    val users:Map[Long, User] = Map(User.findAll(InRaw(User.id, userIds.mkString(","),
+                                                       IHaveValidatedThisSQL("dpp", "Aug 23, 2008"))).map(u => (u.id.is, u)) :_*)
 
     ret.foreach(_.preload(users))
     ret
@@ -122,42 +122,42 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
     logger.info("Inside Message.search() with user list "+(users.mkString(", ")))
 
     (for(session <- compass.map(_.openSession()); user <- User.currentUser) yield {
-    var tx:CompassTransaction = null
-    var returnValue:List[Message] = Nil
+        var tx:CompassTransaction = null
+        var returnValue:List[Message] = Nil
 
-    try {
-      tx = session.beginTransaction()
-      val queryBuilder: CompassQueryBuilder = session.queryBuilder()
+        try {
+          tx = session.beginTransaction()
+          val queryBuilder: CompassQueryBuilder = session.queryBuilder()
 
-      val followingQuery = queryBuilder.bool().addShould(queryBuilder.term("author", user.id))
-      for (user <- following) followingQuery.addShould(queryBuilder.term("author", user.id))
+          val followingQuery = queryBuilder.bool().addShould(queryBuilder.term("author", user.id))
+          for (user <- following) followingQuery.addShould(queryBuilder.term("author", user.id))
 
-      val query: CompassQuery = queryBuilder.bool()
-      .addMust( queryBuilder.term("text", stemWord(searchTerm)) )
-      .addMust( followingQuery.toQuery )
-      .toQuery()
+          val query: CompassQuery = queryBuilder.bool()
+          .addMust( queryBuilder.term("text", stemWord(searchTerm)) )
+          .addMust( followingQuery.toQuery )
+          .toQuery()
 
-      logger.info("query is "+query.toString)
+          logger.info("query is "+query.toString)
 
-      val hitlist = query
-      .addSort("when", CompassQuery.SortPropertyType.STRING, CompassQuery.SortDirection.REVERSE)
-      .hits().detach(0, numHits)
+          val hitlist = query
+          .addSort("when", CompassQuery.SortPropertyType.STRING, CompassQuery.SortDirection.REVERSE)
+          .hits().detach(0, numHits)
 
-      logger.info("Detached hits: "+hitlist.totalLength)
+          logger.info("Detached hits: "+hitlist.totalLength)
 
-      val resourceList = hitlist.getResources.toList.asInstanceOf[List[Resource]]
+          val resourceList = hitlist.getResources.toList.asInstanceOf[List[Resource]]
 
-      returnValue = resourceList.flatMap(x => Message.find(x.getId))
-      tx.commit();
-    } catch  {
-      case ce: CompassException =>
-        if (tx != null) tx.rollback();
-    } finally {
-      session.close();
-    }
+          returnValue = resourceList.flatMap(x => Message.find(x.getId))
+          tx.commit();
+        } catch  {
+          case ce: CompassException =>
+            if (tx != null) tx.rollback();
+        } finally {
+          session.close();
+        }
 
-    returnValue
-  }) openOr Nil
+        returnValue
+      }) openOr Nil
   }
 }
 
@@ -169,13 +169,8 @@ class Message extends LongKeyedMapper[Message] {
   object id extends MappedLongIndex(this)
 
   object author extends MappedLongForeignKey(this, User) {
-    override def asJs = {
-      val user = User.find(this.is) match {
-        case Full(u) => u.asJs
-        case Empty => JE.JsNull
-      }
-      List(("author", user))
-    }
+    override def asJs = 
+      List("author" -> (obj.map(_.asJs) openOr JE.JsNull))
   }
 
   object viaGroup extends MappedLongForeignKey(this, Group)
@@ -198,7 +193,11 @@ class Message extends LongKeyedMapper[Message] {
   object conversation extends MappedLongForeignKey(this, Message)
 
   private[model] def preload(users: Map[Long, User]) {
-    author.can.foreach(id => this.author.primeObj(users.get(id)))
+    author.can.foreach{
+      id =>
+      this.author.primeObj(users.get(id))
+    }
+
     primeNameMap(users)
   }
 
@@ -277,13 +276,13 @@ class Message extends LongKeyedMapper[Message] {
 
   lazy val sentToIds: List[Long] =
   (for (body <- originalXml \ "body";
-       at <- body \ "at_name";
-       id <- at.attribute("id")) yield id.text.toLong).toList
+        at <- body \ "at_name";
+        id <- at.attribute("id")) yield id.text.toLong).toList
 
   lazy val urlIds: List[Long] =
   (for (body <- originalXml \ "body";
-       at <- body \ "url";
-       id <- at.attribute("id")) yield id.text.toLong).toList
+        at <- body \ "url";
+        id <- at.attribute("id")) yield id.text.toLong).toList
 
   private var _atNameMap: Map[Long, User] = Map.empty
   private var _setNameMap = false
@@ -368,41 +367,41 @@ class Message extends LongKeyedMapper[Message] {
   // Get the term (i.e. word) frequencies for the word cloud from the message text
   lazy val wordFrequencies: List[(String, Int)] = {
     try {
-    (for {session <- compass.map(_.openSession())} yield {
-    var tx:CompassTransaction = null
-    var returnValue:List[(String, Int)] = Nil
+      (for {session <- compass.map(_.openSession())} yield {
+          var tx:CompassTransaction = null
+          var returnValue:List[(String, Int)] = Nil
 
-    try {
-      tx = session.beginTransaction()
+          try {
+            tx = session.beginTransaction()
 
-      val msgResource = session.getResource(clazz, id) match {
-        case null =>  Message.logger.info("Saving entity to lucene in wordFrequencies")
-          session.save(this)
-          session.loadResource(clazz, id)  // throws exception if not found
+            val msgResource = session.getResource(clazz, id) match {
+              case null =>  Message.logger.info("Saving entity to lucene in wordFrequencies")
+                session.save(this)
+                session.loadResource(clazz, id)  // throws exception if not found
 
-        case x => x
-      }
+              case x => x
+            }
 
-      val textTermFreqs:TermFreqVector = LuceneHelper.getTermFreqVector(session, msgResource, "textWords")
-      Message.logger.info("textTermFreqs: "+textTermFreqs)
+            val textTermFreqs:TermFreqVector = LuceneHelper.getTermFreqVector(session, msgResource, "textWords")
+            Message.logger.info("textTermFreqs: "+textTermFreqs)
 
-      def termsAndFreq(in: TermFreqVector) = in match {
-        case null => Nil
-        case tf => (tf.getTerms zip tf.getTermFrequencies).toList
-      }
+            def termsAndFreq(in: TermFreqVector) = in match {
+              case null => Nil
+              case tf => (tf.getTerms zip tf.getTermFrequencies).toList
+            }
 
-      returnValue = termsAndFreq(textTermFreqs)
+            returnValue = termsAndFreq(textTermFreqs)
 
-      tx.commit();
-    } catch  {
-      case ce: CompassException =>
-        if (tx != null) tx.rollback();
-    } finally {
-      session.close();
-    }
+            tx.commit();
+          } catch  {
+            case ce: CompassException =>
+              if (tx != null) tx.rollback();
+          } finally {
+            session.close();
+          }
 
-    compoundStem(returnValue)
-    }) openOr Nil
+          compoundStem(returnValue)
+        }) openOr Nil
     } catch {
       case e => e.printStackTrace; Nil
     }
