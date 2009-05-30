@@ -110,8 +110,8 @@ class Boot {
     Menu(Loc("search", List("user_view", "search"), "Search", Hidden)) ::
     User.sitemap :::
     Track.menuItems :::
-    Auth.menuItems :::
-    ActionMgr.menuItems
+    ActionMgr.menuItems :::
+    AuthMgr.menuItems
 
     LiftRules.setSiteMap(SiteMap(entries:_*))
 

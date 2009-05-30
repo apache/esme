@@ -1,0 +1,28 @@
+<lift:surround with="default" at="content">
+
+  Manage your external application authentication tokens: <br/>
+  <span id="TokenSpan">
+    <lift:ignore>
+      <!--
+      The displayTokens snippet *MUST* appear on the page before
+      the main snippet
+      -->
+    </lift:ignore>
+    <lift:dispayTokens the_id="TokenSpan">
+      <ul>
+        <disp:item>
+          <li><item:description/> token: <item:uniqueId/> <item:revoke>Revoke</item:revoke></li>
+        </disp:item>
+      </ul>
+    </lift:dispayTokens>
+  </span>
+
+  <lift:form>
+    <lift:main>
+      Create a new Authentication Token.<br />
+      Description: <main:token/>
+      <input type="submit" value="Add" />
+    </lift:main>
+  </lift:form>
+
+</lift:surround>

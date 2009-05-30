@@ -20,7 +20,7 @@ package org.apache.esme.view
  * specific language governing permissions and limitations
  * under the License.
  */
-
+/*
 import net.liftweb._
 import http._
 import js._
@@ -101,4 +101,4 @@ class Auth extends LiftView {
 
     </lift:surround>
   }
-}
+}*/
