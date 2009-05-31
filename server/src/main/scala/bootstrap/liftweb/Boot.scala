@@ -109,7 +109,7 @@ class Boot {
     Menu(Loc("tag", List("info_view", "tag"), "Tag", Hidden, Loc.Snippet("tag_display", TagDisplay.display))) ::
     Menu(Loc("search", List("user_view", "search"), "Search", Hidden)) ::
     User.sitemap :::
-    Track.menuItems :::
+    TrackMgr.menuItems :::
     ActionMgr.menuItems :::
     AuthMgr.menuItems
 
