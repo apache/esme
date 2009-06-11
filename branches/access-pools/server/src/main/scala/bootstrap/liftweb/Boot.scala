@@ -108,6 +108,7 @@ class Boot {
     User.sitemap :::
     Track.menuItems :::
     Auth.menuItems :::
+    AccessPoolMgr.menuItems :::
     ActionView.menuItems
 
     LiftRules.setSiteMap(SiteMap(entries:_*))

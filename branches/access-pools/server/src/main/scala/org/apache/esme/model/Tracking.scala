@@ -28,7 +28,7 @@ import Helpers._
 import http._
 
 import org.apache.esme._
-import actor.Distributor
+import org.apache.esme.actor.Distributor
 
 import scala.xml.{Node, Text, Elem}
 

@@ -3,13 +3,13 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.esme</groupId>
   <artifactId>esme-server</artifactId>
-  <version>0.2.3-SNAPSHOT</version>
+  <version>0.3.0-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>ESME</name>
   <inceptionYear>2008</inceptionYear>
   <properties>
-    <lift.version>1.0</lift.version>
-    <scala.version>2.7.3</scala.version>
+    <lift.version>1.1-SNAPSHOT</lift.version>
+    <scala.version>2.7.4</scala.version>
     <compass.version>2.1.1</compass.version>
     <lucene.version>2.4.0</lucene.version>
     <netbeans.hint.deploy.server>gfv3</netbeans.hint.deploy.server>
@@ -187,9 +187,9 @@
       <version>${lucene.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.specs</groupId>
+      <groupId>org.scala-tools.testing</groupId>
       <artifactId>specs</artifactId>
-      <version>1.3.1</version>
+      <version>1.5.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>

@@ -31,7 +31,7 @@ import Helpers._
 
 import org.apache.esme._
 import model._
-import actor._
+import org.apache.esme.actor._
 
 import scala.xml.{NodeSeq, Unparsed}
 

@@ -39,7 +39,7 @@ import org.openid4java.util._
 import scala.xml.{NodeSeq, Text}
 
 import org.apache.esme._
-import actor._
+import org.apache.esme.actor._
 import view._
 import java.net.URL
 import java.util.logging._
@@ -203,7 +203,7 @@ object ESMEOpenIDVendor extends OpenIdVendor {
   def createAConsumer = new ESMEOpenIDConsumer
 }
 
-class ESMEOpenIDConsumer extends OpenIDConsumer[User]
+class ESMEOpenIDConsumer extends OpenIdConsumer[User]
 {
   override val manager = {
 

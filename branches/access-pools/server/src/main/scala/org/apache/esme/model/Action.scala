@@ -28,7 +28,7 @@ import util._
 
 import org.apache.esme._
 import lib._
-import actor._
+import org.apache.esme.actor._
 import external._
 
 import java.util.Calendar
