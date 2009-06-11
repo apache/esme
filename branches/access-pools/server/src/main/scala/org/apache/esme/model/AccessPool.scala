@@ -42,6 +42,7 @@ class AccessPool extends LongKeyedMapper[AccessPool] {
 
   object id extends MappedLongIndex(this)
 
+  // is it worth having foreign key to another table?
   object realm extends MappedString(this, 256)
 
   private[model] object name extends MappedString(this, 256) {
