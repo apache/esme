@@ -1,91 +1,95 @@
 /* OpenId (begin) */ /**/
-    .b-open
-    {
-        margin-top: 60px;
-    }
+.b-open
+{
+  margin-top: 60px;
+}
 
-    .b-open form
-    {
-        padding: 20px 20px;
+.b-open form
+{
+  padding: 20px 20px;
 
-        background: #233e5e;
-    }
+  background: #233e5e;
+}
 
-    .b-open label
-    {
-        font-size: 110%;
-        font-weight: bold;
+.b-open label
+{
+  font-size: 110%;
+  font-weight: bold;
 
-        vertical-align: middle;
-    }
-    
-    .b-open input
-    {
-        width: 255px;
-        margin-left: 0.5em;
-        
-        vertical-align: middle;
-    }
+  vertical-align: middle;
+}
 
-    .b-open .button
-    {
-        margin-top: 20px;
-    }
+.b-open input
+{
+  width: 255px;
+  margin-left: 0.5em;
 
-    .b-open .sign-in
-    {
-        float: left;
+  vertical-align: middle;
+}
 
-        margin: -6px 0 0 4.4em;
-    }
+.b-open .button
+{
+  margin-top: 20px;
+}
 
-    .b-open .note
-    {
-        font-weight: bold;
+.b-open .sign-in
+{
+  float: left;
 
-        margin-left: 1em;
-    }
+  margin: -6px 0 0 4.4em;
+}
 
-    .b-open-l
-    {
-        float: left;
+.b-open .note
+{
+  font-weight: bold;
 
-        margin-right: 20px;
-    }
+  margin-left: 1em;
+}
 
-    .b-open-r
-    {
-        float: left;
+.b-open-l
+{
+  float: left;
 
-        width: 12em;
+  margin-right: 20px;
+}
 
-        color: #fa801f;
-    }
+.b-open-l input {
+  border: 1px solid black;
+}
 
-    .b-open h3
-    {
-        font-size: 110%;
-        font-weight: bold;
-    }
+.b-open-r
+{
+  float: left;
 
-    .b-open .open-id
-    {
-        margin: 20px 0 0 6.1em;
-    }
-    
-    .b-open .open-id p
-    {
-        margin-top: 0.4em;
-    }
+  width: 12em;
 
-    .b-open .open-id a
-    {
-        text-decoration: none;
-    }
+  color: #fa801f;
+}
 
-    .b-open .open-id a:hover
-    {
-        text-decoration: underline;
-    }
+.b-open h3
+{
+  font-size: 110%;
+  font-weight: bold;
+}
+
+.b-open .open-id
+{
+  margin: 20px 0 0 6.1em;
+}
+
+.b-open .open-id p
+{
+  margin-top: 0.4em;
+}
+
+.b-open .open-id a
+{
+  text-decoration: none;
+}
+
+.b-open .open-id a:hover
+{
+  text-decoration: underline;
+}
 
 /* OpenId (end) */ /**/
