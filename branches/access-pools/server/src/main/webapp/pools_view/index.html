@@ -9,13 +9,35 @@
     </lift:addPool>
   </lift:form>
   
+  <span id="PoolSpan">
+    <lift:ignore>
+      <!--
+      The poolUsers snippet *MUST* appear on the page before
+      the editPool snippet
+      -->
+    </lift:ignore>
+    <lift:poolUsers the_id="PoolSpan">
+      <table>
+        <thead>
+          <tr> <th>User</th>  <th>Privilege</th> </tr>
+        </thead>
+        
+        <tbody>
+          <pool:user>
+            <tr> <td><user:name/></td>  <td><user:privilege/></td> </tr>
+          </pool:user>
+        </tbody>
+      </table>
+    </lift:poolUsers>
+  </span>
+
+
   <lift:form>
     <lift:editPool>
-      Edit user permissions within pool: <edit:pool/>
-      User name: <edit:username/> <edit:permission/>
+      Edit user permissions within pool: <edit:pool/> <br/>
+      User name: <edit:username/> <edit:permission/> <br/>
       <input type="submit" value="Edit" />
     </lift:editPool>
   </lift:form>
   
-
 </lift:surround>

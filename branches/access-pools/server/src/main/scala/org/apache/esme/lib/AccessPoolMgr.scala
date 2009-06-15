@@ -52,8 +52,12 @@ object AccessPoolMgr {
   val menuItems =
   Menu(Loc("accessPools", List("pools_view", "index"), "Manage Access Pools", ifIsLoggedIn,
            Loc.Snippet("addPool", addPool),
-           Loc.Snippet("editPool", editPool))) ::
+           Loc.Snippet("editPool", editPool),
+           Loc.Snippet("poolUsers", displayPoolUsers))) ::
   Nil
+
+  object updatePool extends RequestVar[() => JsCmd](() => Noop)
+  object poolId extends RequestVar[Long](0)
 
   def addPool(in: NodeSeq): NodeSeq = {
     val theInput = "new_pool"
@@ -72,6 +76,7 @@ object AccessPoolMgr {
                 S.notice("New pool added")
               else
                 S.error("Could not add pool!")
+            case _ => S.error("Could not add pool!")
           }
         }
       }
@@ -85,6 +90,8 @@ object AccessPoolMgr {
   }
 
   def editPool(in: NodeSeq): NodeSeq = {
+    val redisplayPool = updatePool.is
+    
     var pool = ""
     var username = ""
     val editPoolName = "edit_pool"
@@ -92,15 +99,16 @@ object AccessPoolMgr {
     val editPermission = "edit_permission"
     val adminUser = User.currentUser
     
-    val adminPools = adminUser match {
+    val adminPools = ("0", "--choose pool--") ::
+    (adminUser match {
       case Full(u)=> Privilege.findAdminPools(u.id).map(
         p => (p.toString, AccessPool.find(p).get.getName))
       case _ => Nil
-    }
+    })
       
     val permissions = Permission.map(perm => (perm.id.toString, perm.toString)).collect
     
-    def addUserPool(permission: String) = {
+    def addPoolUser(permission: String): JsCmd = {
       val r: Box[Boolean] = 
       for (admin <- adminUser;
            p <- AccessPool.find(pool) ?~ "Pool not found";
@@ -113,15 +121,45 @@ object AccessPoolMgr {
       r match {
         case Failure(m,_,_) => S.error(m)
         case Full(true) => S.notice("Successfully set user privileges in pool")
-        case Full(false) => S.error("Could not set user privileges in pool")
+        case _ => S.error("Could not set user privileges in pool")
       }
+      
+      poolId.set(pool.toLong)
+      redisplayPool() & SetValById(editUsername, "")
     }
 
     bind("edit", in,
-         "pool" -> select(adminPools, Empty, pool = _, "id" -> editPoolName),
+         "pool" -> ajaxSelect(adminPools, Empty, p => {pool = p;
+                                                       poolId.set(p.toLong);
+                                                       redisplayPool()},
+                                                 "id" -> editPoolName),
          "username" -> text(username, username = _, "id" -> editUsername),
-         "permission" -> select(permissions, Empty, addUserPool, "id" -> editPermission)
+         "permission" -> select(permissions, Empty, addPoolUser, "id" -> editPermission)
     )
     
   }
+  
+  def displayPoolUsers(in: NodeSeq): NodeSeq = {
+    // get the span name to update
+    val spanName = S.attr("the_id") openOr "PoolSpan"
+    // get the current user
+    val user = User.currentUser
+
+    def doRender(): NodeSeq =
+    Privilege.findAll(By(Privilege.pool, poolId.is)) match {
+      case Nil => NodeSeq.Empty
+      case xs => bind("pool", in,
+                      "user" -> 
+                      (lst => xs.flatMap(i => bind("user", lst,
+                                                   "name" -> User.find(i.user).get.nickname.is,
+                                                   "privilege" -> i.permission.is.toString
+                      ))))
+    }
+    
+
+    def updateSpan(): JsCmd = SetHtml(spanName, doRender())
+
+    updatePool.set(updateSpan)
+    doRender
+ }
 }
