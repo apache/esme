@@ -204,7 +204,6 @@ object DBVendor extends ConnectionManager {
                     Props.get("db_pwd", ""))
       Full(dm)
     } else {
-      Class.forName("org.apache.derby.jdbc.EmbeddedDriver")
       val driverName = Props.mode match {
         case Props.RunModes.Test => "jdbc:derby:esme_test_db;create=true"
         case _ => "jdbc:derby:esme_db;create=true"
