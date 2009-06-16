@@ -30,11 +30,12 @@ import Helpers._
 import MsgParser._
 import net.sourceforge.jwebunit.junit.WebTester
 import org.mortbay.jetty.Server
-//import org.mortbay.jetty.servlet.Context
+import org.mortbay.jetty.servlet.{Context, FilterHolder}
 import org.mortbay.jetty.servlet.ServletHolder
-// import org.mortbay.jetty.webapp.WebAppContext
+import org.mortbay.jetty.webapp.WebAppContext
 import org.apache.esme._
 import model._
+import net.liftweb.http._
 
 import net.sourceforge.jwebunit.junit.WebTester
 import _root_.junit.framework.AssertionFailedError
@@ -43,6 +44,8 @@ class MsgParserSpecsAsTest extends JUnit3(MsgParserSpecs)
 object MsgParserSpecsRunner extends ConsoleRunner(MsgParserSpecs)
 
 object MsgParserSpecs extends Specification {
+  (new bootstrap.liftweb.Boot).boot
+  
   JettyTestServer.start()
   
   type PFT = MsgParser.ParseResult[_]
@@ -303,15 +306,16 @@ object JettyTestServer {
 
   private val server_ : Server = {
     val server = new Server(serverPort_)
-    /*
+    
     val context = new WebAppContext()
     context.setServer(server)
     context.setContextPath("/")
-    context.setWar("src/main/webapp")
-    */
-    //val context = new Context(_server, "/", Context.SESSIONS)
+    context.setWar("target/esme-server-0.3.0-SNAPSHOT")
+    
+    //val context = new Context(server, "/", Context.SESSIONS)
     //context.addFilter(new FilterHolder(new LiftFilter()), "/");
-    // server.addHandler(context)
+    //new LiftFilter()
+    //server.addHandler(context)
     server
   }
 
