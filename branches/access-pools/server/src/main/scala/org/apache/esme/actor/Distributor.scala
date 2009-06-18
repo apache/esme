@@ -43,6 +43,9 @@ import scala.xml.{Elem}
 object Distributor extends Actor {
   def act = loop {
     react {
+           case RelinkToActorWatcher =>
+        link(ActorWatcher)
+
       case StartMeUp =>
         link(ActorWatcher)
         User.findAll.map(_.id.is).foreach(findOrCreateUser)

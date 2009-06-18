@@ -82,6 +82,9 @@ class UserActor extends Actor {
 
   def act = loop {
     react {
+      case RelinkToActorWatcher =>
+        link(ActorWatcher)
+
       case m @ Distributor.UserUpdated(_) =>
         User.find(userId).
         foreach(u => userTimezone = TimeZone.getTimeZone(u.timezone))

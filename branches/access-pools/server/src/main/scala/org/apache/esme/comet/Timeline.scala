@@ -43,7 +43,7 @@ class Timeline extends CometActor {
     super.localSetup()
     for (user <- User.currentUser) {
       Distributor ! Distributor.Listen(user.id, this)
-      Distributor !? (200, Distributor.LatestMessages(user.id, 40)) match {
+      Distributor !? (2000, Distributor.LatestMessages(user.id, 40)) match {
         case Some(msg: List[Long]) => messages = msg
         case x =>
       }

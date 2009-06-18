@@ -47,6 +47,9 @@ import org.compass.core.config.CompassConfiguration
  */
 class Boot {
   def boot {
+    // do this before any messages are sent or there's hell to pay
+    ActorSchedulerFixer.doActorSchedulerFix()
+
     DefaultConnectionIdentifier.jndiName = Props.get("jndi.name") openOr "esme"
     
     if (!DB.jndiJdbcConnAvailable_?) DB.defineConnectionManager(DefaultConnectionIdentifier, DBVendor)
@@ -142,6 +145,7 @@ class Boot {
 
     DB.addLogFunc(S.logQuery _)
     S.addAnalyzer(RequestAnalyzer.analyze _)
+    
   }
   private def makeUtf8(req: HttpServletRequest): Unit = {req.setCharacterEncoding("UTF-8")}
 }
