@@ -52,7 +52,8 @@ abstract class Feed(val user: User, val url: String, val source: String, val tru
           getDate(node),
           Empty,
           source,
-          Empty
+          Empty,
+          None
         )
     ).toList
   }

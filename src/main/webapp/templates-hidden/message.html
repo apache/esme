@@ -101,6 +101,7 @@
           <li><lift:Menu.item name="trackMgt"/></li>
           <li><lift:Menu.item name="actionMgt"/></li>
           <li><lift:Menu.item name="authToken"/></li>
+          <li><lift:Menu.item name="accessPools"/></li>
           <li><lift:Menu.item name="Logout"/></li>
         </ul>
       </div>
@@ -241,6 +242,14 @@
                       separate tags</span>
                       <span class="r">not required</span>
                     </div>
+                  </div>
+
+                  <div class="row clear">
+                    <label>Access pool</label>
+                    <select id="access_pool">
+                      <option id="0">--public--</option>
+                      <lift:UserSnip.accessPools />
+                    </select>
                   </div>
 
                   <div class="row clear"><button class="btn" onclick="javascript:post_msg();">Update<!--<img src="/images/send-message.png" alt="Send Message" />--></button></div>

@@ -54,10 +54,11 @@ object Distributor extends Actor {
       case UserCreatedMessage(user, text, tags, when, 
                               metaData,
                               source,
-                              inReplyTo) =>
+                              inReplyTo,
+                              pool) =>
         val toact = findOrCreateUser(user)
         toact ! UserActor.CreateMessage(text, tags,
-                                        when, metaData, source, inReplyTo)
+                                        when, metaData, source, inReplyTo, pool)
         toact ! text
 
       case AddMessageToMailbox(user, message, reason) =>
@@ -89,6 +90,9 @@ object Distributor extends Actor {
 
       case PublicTimelineUnlisteners(who) =>
         listeners = listeners.filter(_ ne who)
+        
+      case AllowUserInPool(userId, poolId) =>
+        findOrCreateUser(userId) ! UserActor.AllowPool(poolId)
 
       case _ =>
     }
@@ -100,7 +104,8 @@ object Distributor extends Actor {
                                 when: Long,
                                 metaData: Box[Elem],
                                 source: String,
-                                replyTo: Box[Long])
+                                replyTo: Box[Long],
+                                pool: Box[Long])
   case class AddMessageToMailbox(user: Long, message: Message, reason: MailboxReason)
   case class Listen(user: Long, who: Actor)
   case class Unlisten(user: Long, who: Actor)
@@ -110,6 +115,7 @@ object Distributor extends Actor {
   case class UserUpdated(userId: Long)
   case class PublicTimelineListeners(who: Actor)
   case class PublicTimelineUnlisteners(who: Actor)
+  case class AllowUserInPool(userId: Long, poolId: Long)
   sealed trait TrackingType
   case object PerformTrackingType extends TrackingType
   case object TrackTrackingType extends TrackingType
