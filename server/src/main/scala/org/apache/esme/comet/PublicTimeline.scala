@@ -45,7 +45,8 @@ class PublicTimeline extends CometActor {
   override def localSetup() {
     super.localSetup()
     Distributor ! Distributor.PublicTimelineListeners(this) 
-    messages = Message.findAll(OrderBy(Message.id, Descending), 
+    messages = Message.findAll(By(Message.pool, Empty),
+        OrderBy(Message.id, Descending), 
                                MaxRows(40)).map(_.id.is)
   }
   
@@ -71,7 +72,8 @@ class PublicTimeline extends CometActor {
       reRender(false)
 
     case Distributor.NewMessage(msg) =>
-      messages = (msg.id.is :: messages).take(40)
+      if (!msg.pool.defined_?)
+        messages = (msg.id.is :: messages).take(40)
 
       if ((millis - lastRender) < 30000L) {
         if (!scheduled) {

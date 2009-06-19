@@ -46,13 +46,19 @@ object JsonPoster extends SessionVar(S.buildJsonFunc{
 
         val replyTo: Box[Long] = map.get("reply-to").map(toLong)
 
+        val pool = map.get("access_pool").map(toLong) match {
+          case Some(x) if x > 0L => Some(x)
+          case _ => None
+        }
+        
         Distributor ! 
         Distributor.UserCreatedMessage(user.id, msg, 
                                        Tag.split(tags),
                                        millis, 
                                        Empty,
                                        "web",
-                                       replyTo)
+                                       replyTo,
+                                       pool)
       }
       Noop
 
@@ -67,7 +73,8 @@ class UserSnip extends DispatchSnippet {
       "followers" -> followers _,
       "following" -> following _,
       "loginForm" -> loginForm _,
-      "loggedIn" -> loggedInFilter _)
+      "loggedIn" -> loggedInFilter _,
+      "accessPools" -> accessPools _)
 
   def loggedInFilter(in: NodeSeq): NodeSeq = {
     val lookFor = if (User.loggedIn_?) "in" else "out"
@@ -109,6 +116,15 @@ class UserSnip extends DispatchSnippet {
     Text(User.currentUser.map(_.wholeName) openOr "")
   }
 
+  def accessPools(in: NodeSeq): NodeSeq = {
+    for(user <- User.currentUser.toSeq;
+        p    <- Privilege.findWritablePools(user.id))
+        // slow?
+      yield <option value={p}>
+              {AccessPool.find(p).get.getName}
+            </option>
+  }
+  
   def postScript(in: NodeSeq): NodeSeq =
   <xml:group>
     {Script(JsonPoster.is._2)}
@@ -116,9 +132,11 @@ class UserSnip extends DispatchSnippet {
                      JsonPoster.is._1("post",
                                       JsObj("msg" -> ValById("textdude"),
                                             "tags" -> ValById("tagdude"),
+                                            "access_pool" -> ValById("access_pool"),
                                             "reply-to" -> JsVar("currentConvNumber"))) &
                      SetValById("textdude", "") &
                      SetValById("tagdude", "") &
+                     SetValById("access_pool", "0") &
                      JsRaw("clearReplyTo();")
         ))
     }
