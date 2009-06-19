@@ -72,7 +72,7 @@ class UserActor extends Actor {
   
   private var _mailbox: Array[Long] = Array()
   
-  private var pools: List[Long] = List()
+  private var pools: Set[Long] = Set()
 
   private def followers: List[Long] = User.followerIdsForUserId(userId)
   
@@ -185,7 +185,7 @@ class UserActor extends Actor {
     
       case LatestMessages(cnt) => reply(_mailbox.take(cnt).toList)
       
-      case AllowPool(poolId) => pools ::= poolId
+      case AllowPool(poolId) => pools += poolId
     }
   }
 

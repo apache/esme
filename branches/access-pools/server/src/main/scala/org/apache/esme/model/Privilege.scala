@@ -35,19 +35,20 @@ object Privilege extends Privilege with LongKeyedMetaMapper[Privilege] {
     foreach(_.delete_!)
   }
   
-  def findViewablePools(userId: Long) = Privilege.findMap(
+  def findViewablePools(userId: Long): Set[Long] =
+  Set(Privilege.findMap(
     By(Privilege.user, userId)
-  )(p => Full(p.pool.is))
+  )(p => Full(p.pool.is)) :_*)
 
-  def findWritablePools(userId: Long) = Privilege.findMap(
+  def findWritablePools(userId: Long): Set[Long] = Set(Privilege.findMap(
     By(Privilege.user, userId),
     NotBy(Privilege.permission, Permission.Read)
-  )(p => Full(p.pool.is))
+  )(p => Full(p.pool.is)) :_*)
 
-  def findAdminPools(userId: Long) = Privilege.findMap(
+  def findAdminPools(userId: Long): Set[Long] = Set(Privilege.findMap(
     By(Privilege.user, userId),
     By(Privilege.permission, Permission.Admin)
-  )(p => Full(p.pool.is))
+  )(p => Full(p.pool.is)) :_*)
 }
 
 class Privilege extends LongKeyedMapper[Privilege] {

@@ -102,7 +102,7 @@ object AccessPoolMgr {
     val adminPools = ("0", "--choose pool--") ::
     (adminUser match {
       case Full(u)=> Privilege.findAdminPools(u.id).map(
-        p => (p.toString, AccessPool.find(p).get.getName))
+        p => (p.toString, AccessPool.find(p).get.getName)).toList
       case _ => Nil
     })
       
