@@ -53,7 +53,8 @@ class TwitterFeed(val user: User, val twitterUser: String) extends UniqueMessage
       tf.parse(node \ "created_at" text).getTime,
       Empty,
       "twiiter",
-      Empty
+      Empty,
+      None
     )).toList
   }
   

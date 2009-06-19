@@ -192,6 +192,8 @@ class Message extends LongKeyedMapper[Message] {
 
   object conversation extends MappedLongForeignKey(this, Message)
 
+  object pool extends MappedLongForeignKey(this, AccessPool)
+  
   private[model] def preload(users: Map[Long, User]) {
     author.can.foreach{
       id =>
