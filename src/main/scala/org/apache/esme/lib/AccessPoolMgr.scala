@@ -72,9 +72,10 @@ object AccessPoolMgr {
             case Failure(_,_,_) => S.error("Duplicate pool name!")
             case Full(p: AccessPool) => val privilegeSaved =
               Privilege.create.pool(p.saveMe).user(user).permission(Permission.Admin).save
-              if(privilegeSaved) 
+              if(privilegeSaved) {
+                Distributor ! Distributor.AllowUserInPool(user.get.id.is, p.id.is)
                 S.notice("New pool added")
-              else
+              } else
                 S.error("Could not add pool!")
             case _ => S.error("Could not add pool!")
           }

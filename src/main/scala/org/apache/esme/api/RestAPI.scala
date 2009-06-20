@@ -357,7 +357,10 @@ object RestAPI extends XMLApiHelper {
          pool <- AccessPool.create.realm("Native").setName(poolName);
          privilegeSaved = Privilege.create.pool(pool.saveMe).user(user).
            permission(Permission.Admin).save
-    ) yield privilegeSaved
+    ) yield {
+      if (privilegeSaved) Distributor ! Distributor.AllowUserInPool(user.id.is, pool.id.is)
+      privilegeSaved
+    }
     
     r
   }
