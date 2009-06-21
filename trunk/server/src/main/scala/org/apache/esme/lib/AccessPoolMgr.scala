@@ -72,7 +72,7 @@ object AccessPoolMgr {
             case Failure(_,_,_) => S.error("Duplicate pool name!")
             case Full(p: AccessPool) => val privilegeSaved =
               Privilege.create.pool(p.saveMe).user(user).permission(Permission.Admin).save
-              if(privilegeSaved) {
+              if(privilegeSaved && user.isDefined) {
                 Distributor ! Distributor.AllowUserInPool(user.get.id.is, p.id.is)
                 S.notice("New pool added")
               } else
@@ -115,7 +115,11 @@ object AccessPoolMgr {
            p <- AccessPool.find(pool) ?~ "Pool not found";
            user <- User.findFromWeb(username) ?~ "User not found"
       ) yield if(Privilege.hasPermission(admin.id.is, p.id.is, Permission.Admin)) {
-        val result = Privilege.create.user(user).pool(p).permission(Permission(permission.toInt)).save
+        val result = try {
+          Privilege.create.user(user).pool(p).permission(Permission(permission.toInt)).save
+        } catch {
+          case _: Exception => false
+        }
         if (result) Distributor ! Distributor.AllowUserInPool(user.id.is, p.id.is)
         result
       } else false // "User has no permission to administer pool"

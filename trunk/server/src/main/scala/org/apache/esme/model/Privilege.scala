@@ -30,9 +30,17 @@ object Privilege extends Privilege with LongKeyedMetaMapper[Privilege] {
   override def beforeSave = deleteExisting _ :: super.beforeSave
 
   private def deleteExisting(in: Privilege) {
-    findAll(By(pool, in.pool),
-            By(user, in.user)).
-    foreach(_.delete_!)
+    // Delete current privileges of user in pool only
+    // if admin permissions by other users exist
+    if (in.permission.is == Permission.Admin ||
+        find(By(pool, in.pool),
+             By(permission, Permission.Admin),
+             NotBy(user, in.user)).
+        isDefined
+    ) bulkDelete_!!(By(pool, in.pool),
+                    By(user, in.user))
+    else throw new Exception("No other admin users in pool!")
+                    
   }
   
   def findViewablePools(userId: Long): Set[Long] =
