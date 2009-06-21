@@ -50,6 +50,8 @@
             var msgDateObj = new Date(parseInt(cometMsg.when));
             var msgDateStr = msgDateObj.toLocaleDateString() +
               ' ' + msgDateObj.toLocaleTimeString();
+            var msgPool = '[public]';
+            if (cometMsg.pool) msgPool = cometMsg.pool.name;
             var msgSource = cometMsg.source;
             var msgTags = jQuery(cometMsg.text).find('tags > tag').get();
             for (var tagIndex=0; tagIndex < msgTags.length; tagIndex++) {
@@ -67,6 +69,7 @@
             .attr('alt',msgAuthor.firstname + ' ' + msgAuthor.lastname);
 
             newMsg.find('#body').html(msgBody);
+            newMsg.find('#pool').text(msgPool);
             newMsg.find('#source').text(msgSource);
             newMsg.find('#when').text(msgDateStr);
             for (var tagIndex=0; tagIndex < msgTags.length; tagIndex++) {
@@ -123,6 +126,7 @@
                               <th>Author</th>
                               <th>Message</th>
                               <th>Tags</th>
+                              <th>Pool</th>
                               <th>Source</th>
                               <th>Date</th>
                             </tr>
@@ -140,6 +144,7 @@
                                 <p id="tag"><a href="tag/tag1">tag1</a></p>
                                 <p id="tag"><a href="tag/tag2">tag2</a></p>
                               </td>
+                              <td id="pool">-</td>
                               <td id="source">web</td>
                               <td id="when" class="date">Jan 1, 2009 12:00</td>
                             </tr>
@@ -154,6 +159,7 @@
                                 <p id="tag"><a href="tag/tag1">tag1</a></p>
                                 <p id="tag"><a href="tag/tag3">tag3</a></p>
                               </td>
+                              <td id="pool">PUBLIC</td>
                               <td id="source">web</td>
                               <td id="when" class="date">Jan 1, 2009 11:58</td>
                             </tr>

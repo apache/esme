@@ -192,7 +192,10 @@ class Message extends LongKeyedMapper[Message] {
 
   object conversation extends MappedLongForeignKey(this, Message)
 
-  object pool extends MappedLongForeignKey(this, AccessPool)
+  object pool extends MappedLongForeignKey(this, AccessPool) {
+    override def asJs = 
+      List("pool" -> (obj.map(_.asJs) openOr JE.JsNull))
+  }
   
   private[model] def preload(users: Map[Long, User]) {
     author.can.foreach{
