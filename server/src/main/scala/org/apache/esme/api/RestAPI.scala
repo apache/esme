@@ -376,7 +376,11 @@ object RestAPI extends XMLApiHelper {
          permissionName <- (S.param("permission") or Full("Write"));
          permission <- Box(Permission.valueOf(permissionName)) ?~ "Unknown permission type"
     ) yield if(Privilege.hasPermission(adminUser.id.is, pool.id.is, Permission.Admin)) {
-      val result = Privilege.create.user(user).pool(pool).permission(permission).save
+      val result = try {
+        Privilege.create.user(user).pool(pool).permission(permission).save
+      } catch {
+        case _: Exception => false
+      }
       if (result) Distributor ! Distributor.AllowUserInPool(user.id.is, pool.id.is)
       result
     } else false // "User has no permission to administer pool"
