@@ -41,6 +41,8 @@ import mapper._
 import javax.servlet.http.{HttpServlet, HttpServletRequest , HttpServletResponse, HttpSession}
 import org.compass.core._
 import org.compass.core.config.CompassConfiguration
+import scala.actors.Actor
+import Actor._
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -160,6 +162,9 @@ class Boot {
      */
     LiftRules.ajaxEnd =
     Full(() => LiftRules.jsArtifacts.hide("ajax-loader").cmd)
+
+        // Dump information about session every 10 minutes
+    SessionMaster.sessionWatchers = SessionInfoDumper :: SessionMaster.sessionWatchers
   }
   private def makeUtf8(req: HttpServletRequest): Unit = {req.setCharacterEncoding("UTF-8")}
 }
@@ -250,3 +255,32 @@ object DBVendor extends ConnectionManager {
   }
 }
 
+object SessionInfoDumper extends Actor {
+  private var lastTime = millis
+
+  val tenMinutes: Long = 10 minutes
+  def act = {
+    link(ActorWatcher)
+    loop {
+      react {
+        case SessionWatcherInfo(sessions) =>
+          if ((millis - tenMinutes) > lastTime) {
+            lastTime = millis
+            val rt = Runtime.getRuntime
+            rt.gc
+
+            val dateStr: String = timeNow.toString
+            Log.info("[MEMDEBUG] At "+dateStr+" Number of open sessions: "+sessions.size)
+            Log.info("[MEMDEBUG] Free Memory: "+pretty(rt.freeMemory))
+            Log.info("[MEMDEBUG] Total Memory: "+pretty(rt.totalMemory))
+          }
+      }
+    }
+  }
+
+  private def pretty(in: Long): String =
+  if (in > 1000L) pretty(in / 1000L)+","+(in % 1000L)
+  else in.toString
+
+  this.start
+}
