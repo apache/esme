@@ -62,10 +62,13 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
 
   def findMessages(in: Seq[Long]): Map[Long, Message] = synchronized {
     val il = in.toList
+    val user = User.currentUser
     val (r1, left) = il.foldLeft[(Map[Long, Message], List[Long])](
       (Map.empty, Nil)) {
       case ((map, left), id) =>
-        if (idCache.contains(id)) {
+        if (idCache.contains(id) && (!user.isDefined || 
+                                     Privilege.findViewablePools(user.get.id.is).
+                                               contains(idCache(id).pool.is))) {
           (map + (id -> idCache(id)), left)
         } else (map, id :: left)
     }
@@ -147,7 +150,8 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
 
           val resourceList = hitlist.getResources.toList.asInstanceOf[List[Resource]]
 
-          returnValue = resourceList.flatMap(x => Message.find(x.getId))
+          val msgIds = resourceList.map(_.getId.toLong)
+          returnValue = Message.findMessages(msgIds).values.toList
           tx.commit();
         } catch  {
           case ce: CompassException =>
@@ -158,6 +162,25 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
 
         returnValue
       }) openOr Nil
+  }
+  
+  override def findMapDb[T](dbId : ConnectionIdentifier, by : QueryParam[Message]*)(f : (Message) => Box[T]): List[T] = {
+    // modify behavior of find methods so that results include only authorized pools of current user
+    val viewablePools =
+      for (user <- User.currentUser) yield {
+        Privilege.findViewablePools(user.id.is)
+      }
+    val newQueryParams: Seq[QueryParam[Message]] = viewablePools match {
+      case Full(pools: Set[Long]) if !pools.isEmpty => List(
+        BySql(" POOL in ( ?" + ( ", ?" * (pools.size - 1)) + " ) OR POOL IS NULL ",
+              IHaveValidatedThisSQL("vdichev", "22 June 2009"),
+              pools.toSeq:_*)
+      )
+      case _ => Nil
+    }
+    val modifiedQueryParams = by ++ newQueryParams
+    logger.fine("Modified query: " + modifiedQueryParams)
+    super.findMapDb(dbId, modifiedQueryParams:_*)(f)
   }
 }
 
