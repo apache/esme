@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<title>ESME: Enterprise Social Messaging Experiment</title>
+	<!-- STYLESHEETS -->	
+		<link rel="stylesheet" type="text/css" href="css/reset.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="css/text.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="css/grid.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="css/layout.css" media="screen" />
+		<link type="text/css" href="css/smoothness/jquery-ui-1.7.2.custom.css" rel="stylesheet" />			
+		<!--[if IE 6]><link rel="stylesheet" type="text/css" href="css/ie6.css" media="screen" /><![endif]-->
+		<!--[if gte IE 7]><link rel="stylesheet" type="text/css" href="css/ie.css" media="screen" /><![endif]-->
+
+	<!-- JAVASCRIPT -->
+		<script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
+		<script type="text/javascript" src="js/jquery-ui-1.7.2.custom.min.js"></script>
+
+		<script type="text/javascript">
+
+			// CONSTANTS
+			const HIDE_LEFTBAR_AT_WIDTH = 500;
+			const HIDE_RIGHTBAR_AT_WIDTH = 500;
+
+
+			var leftBarHidden = false;
+			var rightBarHidden = false;
+			var leftHiddenManually = false;
+			var rightHiddenManually = false;
+			
+			function hideLeftBar(){
+				$("#leftSidebar").fadeOut(300);
+				$("#content").animate({opacity: "0.1"}, 300, function() {
+					$("#content")
+					.switchClass('grid_13','grid_16',400)
+					.animate({opacity: "1"}, 400);
+				});
+				leftBarHidden = true; 
+			};
+
+			function hideRightBar(){
+				$("#rightSidebar").fadeOut(300);
+				$("#messages").animate({opacity: "0.1"}, 300, function() {
+					$("#messages")
+					.switchClass('grid_13','grid_16',400)
+					.animate({opacity: "1"}, 400);
+				});
+				rightBarHidden = true; 
+			};
+
+			function showLeftBar(){
+				$("#content").animate({opacity: "0.1"}, 300, function() {
+					$("#content")
+					.switchClass('grid_16','grid_13',400, function() { $("#leftSidebar").fadeIn(800); })
+					.animate({opacity: "1"}, 400);
+				});
+				leftBarHidden = false;
+			};
+
+			function showRightBar(){
+			
+				$("#messages").animate({opacity: "0.1"}, 300, function() {
+					$("#messages")
+					.switchClass('grid_16','grid_13',400, function() { $("#rightSidebar").fadeIn(800); })
+					.animate({opacity: "1"}, 400);
+				});
+				rightBarHidden = false; 
+			};
+			
+			function onWindowResize(e){
+				var newWindowWidth = $(window).width();
+			    
+				if(newWindowWidth < HIDE_LEFTBAR_AT_WIDTH && !leftHiddenManually){
+					if(!leftBarHidden) hideLeftBar();
+				}
+				if(newWindowWidth > HIDE_LEFTBAR_AT_WIDTH && !leftHiddenManually){
+					if(leftBarHidden) showLeftBar();
+				}
+				
+				if(newWindowWidth < HIDE_RIGHTBAR_AT_WIDTH && !rightHiddenManually){
+					if(!rightBarHidden) hideRightBar();
+				}
+				if(newWindowWidth > HIDE_RIGHTBAR_AT_WIDTH && !rightHiddenManually){
+					if(rightBarHidden) showRightBar();
+				}
+			}		
+			
+			
+			$(function(){
+				$("#tabs").tabs();
+				
+				$("#toggleLeftBtn").click(function() {
+							if(leftBarHidden) {
+								showLeftBar();
+								leftHiddenManually = false;
+							}
+							else {
+								hideLeftBar();
+								leftHiddenManually = true;
+							}
+							return false;
+						});
+						
+				$("#toggleRightBtn").click(function() {
+							if(rightBarHidden) {
+								showRightBar();
+								rightHiddenManually = false;
+							}
+							else {
+								hideRightBar();
+								rightHiddenManually = true;
+							}
+							return false;
+						});
+
+				$(window).bind("resize", onWindowResize);
+			});
+	
+		</script>
+	</head>
+	
+	
+	<body>
+
+	<!-- CONTAINER -->	
+		<div id="container" class="container_16">
+
+		<!-- HEADER -->	
+        			<div id="header" class="grid_16">
+				<p>HEADER
+					<a href="#" id="toggleLeftBtn">Toggle Left Sidebar</a>
+					<a href="#" id="toggleRightBtn">Toggle Right Sidebar</a>
+				</p>
+            		</div> <!-- END HEADER -->
+			<div class="clear"></div>
+
+
+		<!-- LEFT SIDEBAR -->	
+			<div id="leftSidebar" class="grid_3">
+				<div class="ui-widget ui-widget-content ui-corner-all">
+					<div><p>LEFT BAR</p></div>
+				</div>
+			</div> <!-- END LEFT SIDEBAR -->
+
+		<!-- CONTENT-->	
+
+			<div id="content" class="grid_13">
+
+				<!-- SEND MESSAGE -->	
+					<div id="sendMessage" class="grid_16">
+						<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+					</div> <!-- END SEND MESSAGE -->			
+
+
+
+				<!-- MESSAGES -->	
+					<div id="messages" class="grid_13">	
+					
+					    <!-- TABS-->
+						<div id="tabs">
+							<ul>
+								<li><a href="#tabs-1">First</a></li>
+								<li><a href="#tabs-2">Second</a></li>
+								<li><a href="#tabs-3">Third</a></li>
+							</ul>
+							<div id="tabs-1">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
+							<div id="tabs-2">Phasellus mattis tincidunt nibh. Cras orci urna, blandit id, pretium vel, aliquet ornare, felis. Maecenas scelerisque sem non nisl. Fusce sed lorem in enim dictum bibendum.</div>
+							<div id="tabs-3">Nam dui erat, auctor a, dignissim quis, sollicitudin eu, felis. Pellentesque nisi urna, interdum eget, sagittis et, consequat vestibulum, lacus. Mauris porttitor ullamcorper augue.</div>
+						</div><!-- END TABS-->
+				
+					</div><!-- END MESSAGES-->	
+
+			
+							
+				<!-- RIGHT SIDEBAR -->	
+					<div id="rightSidebar" class="grid_3">
+						<div class="ui-widget ui-widget-content ui-corner-all"><p>RIGHT BAR</p></div>
+					</div> <!-- END LEFT SIDEBAR -->				
+	    	
+			</div><!-- END CONTENT-->	
+			<div class="clear"></div>	
+
+
+		<!-- FOOTER -->	
+        			<div id="footer" class="grid_16">
+				<p>FOOTER</p>
+          		</div> <!-- END FOOTER-->
+			<div class="clear"></div>
+
+		</div><!-- END CONTAINER -->
+	</body>
+</html>

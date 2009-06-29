@@ -1,0 +1,4 @@
+# Properties file for COIL servers (user id = project)
+http.proxyHost=vsvGW000.pal.coil
+http.proxyPort=8080
+http.nonProxyHosts=*.sap.corp
