@@ -93,6 +93,9 @@ object Action extends Action with LongKeyedMetaMapper[Action] {
     case AtUserAction(userId) =>
       (m, u, c, r) => m.author.is == userId 
         
+    case PoolAction(poolId) =>
+      (m, u, c, r) => m.pool.is == poolId
+        
     case SentToMeAction =>
       SentToMe
       
@@ -292,6 +295,10 @@ case class AndAction(left: TestAction, right: TestAction) extends TestAction {
 
 case class AtUserAction(userId: Long) extends TestAction {
   def toStr = "@"+userId
+}
+
+case class PoolAction(poolId: Long) extends TestAction {
+  def toStr = "pool:" + poolId
 }
 
 case class RegexAction(re: String) extends TestAction {
