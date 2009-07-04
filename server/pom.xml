@@ -179,7 +179,7 @@
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-compiler</artifactId>
       <version>${scala.version}</version>
-      <scope>test</scope>
+      <!--<scope>test</scope>-->
     </dependency>
     <dependency>
       <groupId>org.apache.lucene</groupId>
