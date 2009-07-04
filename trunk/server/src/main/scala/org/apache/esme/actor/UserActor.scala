@@ -222,6 +222,7 @@ class UserActor extends Actor {
           case UnfollowedReason(unfollowerId) => mb.unfollowed(unfollowerId)
           case ProfileReason(moduserId) => mb.profile(moduserId)
           case RegularReason(actionId) => mb.regular(actionId)
+          case InterpreterReason(userId) => mb.interpreter(userId)
           case NoReason =>
         }
         mb.saveMe
@@ -249,6 +250,9 @@ class UserActor extends Actor {
               Distributor.AddMessageToMailbox(id, msg, ResendReason(userId))
 
             case FetchFeed(url) => MessagePullActor ! MessagePullActor.Fetch(td.performId)
+            
+            case ScalaInterpret => if (msg.source.is != "scala")
+              ScalaInterpreter ! ScalaInterpreter.ScalaExcerpt(userId, msg.id.is, msg.pool.is, msg.getText)
 
             case PerformFilter => // IGNORE
           }

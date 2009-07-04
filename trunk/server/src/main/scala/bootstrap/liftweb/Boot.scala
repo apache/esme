@@ -143,6 +143,7 @@ class Boot {
     Distributor.touch
     SchedulerActor.touch
     MessagePullActor.touch
+    ScalaInterpreter.touch
 
     Action.findAll(By(Action.disabled, false), By(Action.removed, false)).foreach {
       _.startActors

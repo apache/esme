@@ -449,3 +449,4 @@ case class FetchAtom(override val url: UrlStore) extends FetchFeed(url)
 case class FetchRss(override val url: UrlStore) extends FetchFeed(url)
 case object PerformResend extends Performances
 case object PerformFilter extends Performances
+case object ScalaInterpret extends Performances
