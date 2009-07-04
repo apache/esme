@@ -216,7 +216,8 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
         HttpTo(protocol + urlpart, userPass._1, userPass._2, hdrs, data)
     }) |
   (acceptCI("atom:") ~> httpUrl <~ EOF ^^ {url => FetchAtom(UrlStore.make(url))}) |
-  (acceptCI("rss:") ~> httpUrl <~ EOF ^^ {url => FetchRss(UrlStore.make(url))})
+  (acceptCI("rss:") ~> httpUrl <~ EOF ^^ {url => FetchRss(UrlStore.make(url))}) |
+  (acceptCI("scala") ~ lineSpace ~ EOF ^^^ ScalaInterpret)
 
   lazy val httpHeader: Parser[(String, String)] = EOL ~ accept("header:") ~
   lineSpace ~> rep1(uchar) ~ '=' ~ rep1(uchar) ^^ {

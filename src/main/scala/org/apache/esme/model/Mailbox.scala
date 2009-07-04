@@ -61,6 +61,7 @@ class Mailbox extends LongKeyedMapper[Mailbox] {
   object unfollowed extends MappedLongForeignKey(this, User)
   object profile extends MappedLongForeignKey(this, User)
   object regular extends MappedLongForeignKey(this, Action)
+  object interpreter extends MappedLongForeignKey(this, User)
 
   lazy val reason: MailboxReason =
   viaTrack.can.map(TrackReason) or directlyFrom.can.map(DirectReason)  or
@@ -99,4 +100,7 @@ case class ProfileReason(userId: Long) extends MailboxReason {
 }
 case class RegularReason(actionId: Long) extends MailboxReason {
   def attr = new UnprefixedAttribute("regular", actionId.toString, Null)
+}
+case class InterpreterReason(userId: Long) extends MailboxReason {
+  def attr = new UnprefixedAttribute("interpreter", userId.toString, Null)
 }
