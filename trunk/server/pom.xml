@@ -9,7 +9,7 @@
   <inceptionYear>2008</inceptionYear>
   <properties>
     <lift.version>1.1-SNAPSHOT</lift.version>
-    <scala.version>2.7.4</scala.version>
+    <scala.version>2.7.5</scala.version>
     <compass.version>2.1.1</compass.version>
     <lucene.version>2.4.0</lucene.version>
     <netbeans.hint.deploy.server>gfv3</netbeans.hint.deploy.server>
