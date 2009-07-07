@@ -51,7 +51,7 @@ import Actor._
 class Boot {
   def boot {
     // do this before any messages are sent or there's hell to pay
-    ActorSchedulerFixer.doActorSchedulerFix()
+    // ActorSchedulerFixer.doActorSchedulerFix()
 
     DefaultConnectionIdentifier.jndiName = Props.get("jndi.name") openOr "esme"
 
