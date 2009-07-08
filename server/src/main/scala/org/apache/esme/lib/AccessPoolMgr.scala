@@ -67,7 +67,7 @@ object AccessPoolMgr {
       name.trim match {
         case x if x.length < 3 => S.error("Name too short")
         case x => {
-          val pool = AccessPool.create.realm("Native").setName(name)
+          val pool = AccessPool.create.realm(AccessPool.Native).setName(name)
           pool match {
             case Failure(_,_,_) => S.error("Duplicate pool name!")
             case Full(p: AccessPool) => val privilegeSaved =

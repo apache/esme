@@ -56,12 +56,6 @@ class Mailbox extends LongKeyedMapper[Mailbox] {
   object directlyFrom extends MappedLongForeignKey(this, User)
   object conversation extends MappedLongForeignKey(this, Message)
   object resentBy extends MappedLongForeignKey(this, User)
-  object login extends MappedLongForeignKey(this, User)
-  object followed extends MappedLongForeignKey(this, User)
-  object unfollowed extends MappedLongForeignKey(this, User)
-  object profile extends MappedLongForeignKey(this, User)
-  object regular extends MappedLongForeignKey(this, Action)
-  object interpreter extends MappedLongForeignKey(this, User)
 
   lazy val reason: MailboxReason =
   viaTrack.can.map(TrackReason) or directlyFrom.can.map(DirectReason)  or

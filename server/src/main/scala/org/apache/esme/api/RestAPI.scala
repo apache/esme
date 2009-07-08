@@ -295,7 +295,7 @@ object RestAPI extends XMLApiHelper {
       val from: String = params.param("via") openOr "api"
       val pool = for (poolName <- params.param("pool");
                       p <- AccessPool.findPool(poolName,
-                        params.param("realm") openOr "Native")
+                        params.param("realm") openOr AccessPool.Native)
                       ) yield p.id.is
 
       val xml: Box[Elem] = params.param("metadata").flatMap(md =>
@@ -354,7 +354,7 @@ object RestAPI extends XMLApiHelper {
   def addPool(poolName: String): LiftResponse = {
     val r: Box[Boolean] =
     for (user <- User.currentUser;
-         pool <- AccessPool.create.realm("Native").setName(poolName);
+         pool <- AccessPool.create.realm(AccessPool.Native).setName(poolName);
          privilegeSaved = Privilege.create.pool(pool.saveMe).user(user).
            permission(Permission.Admin).save
     ) yield {
@@ -369,7 +369,7 @@ object RestAPI extends XMLApiHelper {
     val r: Box[Boolean] = 
     for (adminUser <- User.currentUser;
          poolName <- S.param("pool") ?~ "Pool not specified";
-         realm <- (S.param("realm") or Full("Native"));
+         realm <- (S.param("realm") or Full(AccessPool.Native));
          pool <- AccessPool.findPool(poolName, realm) ?~ "Pool not found";
          userName <- S.param("user") ?~ "User to add to pool not specified";
          user <- User.findFromWeb(userName) ?~ "User not found";
