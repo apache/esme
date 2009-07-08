@@ -65,7 +65,7 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
   
   lazy val poolName: Parser[MsgInfo] = acceptCI("pool:") ~> poolNameStr ^^ {
     case name => 
-      AccessPool.findPool(name, "Native") match {
+      AccessPool.findPool(name, AccessPool.Native) match {
         case Full(p) => PoolName(p)
         case _ => MsgText("pool:"+name)
       }

@@ -29,6 +29,7 @@ import util._
 import scala.xml.Text
 
 object AccessPool extends AccessPool with LongKeyedMetaMapper[AccessPool] {
+  val Native = "Native"
 
   def findPool(name: String, realm: String): Box[AccessPool] = 
     AccessPool.find(By(AccessPool.name,  name),
