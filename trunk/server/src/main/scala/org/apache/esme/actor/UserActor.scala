@@ -217,13 +217,7 @@ class UserActor extends Actor {
           case DirectReason(fromId) => mb.directlyFrom(fromId)
           case ConversationReason(convId) => mb.conversation(convId)
           case ResendReason(resender) => mb.resentBy(resender)
-          case LoginReason(loggedId) => mb.login(loggedId)
-          case FollowedReason(followerId) => mb.followed(followerId)
-          case UnfollowedReason(unfollowerId) => mb.unfollowed(unfollowerId)
-          case ProfileReason(moduserId) => mb.profile(moduserId)
-          case RegularReason(actionId) => mb.regular(actionId)
-          case InterpreterReason(userId) => mb.interpreter(userId)
-          case NoReason =>
+          case _ =>
         }
         mb.saveMe
           
