@@ -25,6 +25,7 @@ import net.liftweb._
 import mapper._
 import util._
 import net.liftweb.http.js.JE._
+import net.liftweb.http.js.JsExp
 
 import scala.xml._
 
@@ -67,11 +68,16 @@ sealed trait MailboxReason {
   def attr: MetaData
   def asJs = attr match {
     case Null => JsNull
-    case _ => JsObj((attr.key, Str(attr.value.toString)))
+    case _ => JsObj((attr.key, attrValueAsJs(attr.value)))
   }
+  def attrValueAsJs(value: Seq[Node]): JsExp = Str(value.toString)
 }
+
 case class ResendReason(fromUserId: Long) extends MailboxReason {
   def attr = new UnprefixedAttribute("resent_from", fromUserId.toString, Null)
+  
+  override def attrValueAsJs(value: Seq[Node]) =
+    User.find(fromUserId).map(_.asJs) openOr JsNull
 }
 case object NoReason extends MailboxReason {
   def attr = Null
