@@ -55,7 +55,13 @@
             if (cometMsg.pool) msgPool = cometMsg.pool.name;
             var msgSource = cometMsg.source;
             var msgReason = ""
-            for (r in cometReason) {var msgReason = r; break}
+            for (r in cometReason) {
+              if (r == "resent_from")
+                msgReason = "resent:" + cometReason[r].nickname;
+              else
+                msgReason = r;
+              break
+            }
             var msgTags = jQuery(cometMsg.text).find('tags > tag').get();
             for (var tagIndex=0; tagIndex < msgTags.length; tagIndex++) {
               // Replace each tag element with the plain tag text
