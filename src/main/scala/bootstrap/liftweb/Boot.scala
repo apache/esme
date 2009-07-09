@@ -110,7 +110,6 @@ class Boot {
       Loc.Snippet("user_info", TagDisplay.userInfo))) ::
     Menu(Loc("conv", List("user_view", "conversation"), "Conversation", Hidden)) ::
     Menu(Loc("about", List("static", "about"), "About", Hidden)) ::
-    Menu(Loc("openid", List("static", "openid"), "OpenID", Hidden)) ::
     Menu(Loc("tag", List("info_view", "tag"), "Tag", Hidden, Loc.Snippet("tag_display", TagDisplay.display))) ::
     Menu(Loc("search", List("user_view", "search"), "Search", Hidden)) ::
     User.sitemap :::

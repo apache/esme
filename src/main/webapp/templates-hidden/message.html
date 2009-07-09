@@ -16,7 +16,7 @@
 
       function msgDateCompare(msg1, msg2)
       {
-        return parseInt(msg1.when) - parseInt(msg2.when);
+        return parseInt(msg1.message.when) - parseInt(msg2.message.when);
       }
 
       function displayMessages(msgArray, elementId)
@@ -39,7 +39,8 @@
         for (var msgIndex in msgArray)
         {
           // Marshall the data from the Comet-supplied message
-          var cometMsg = msgArray[msgIndex];
+          var cometMsg = msgArray[msgIndex].message;
+          var cometReason = msgArray[msgIndex].reason;
           var msgId = "message_"+cometMsg.id;
 
           // Only do this if the message is not already in the table
@@ -53,6 +54,8 @@
             var msgPool = '[public]';
             if (cometMsg.pool) msgPool = cometMsg.pool.name;
             var msgSource = cometMsg.source;
+            var msgReason = ""
+            for (r in cometReason) {var msgReason = r; break}
             var msgTags = jQuery(cometMsg.text).find('tags > tag').get();
             for (var tagIndex=0; tagIndex < msgTags.length; tagIndex++) {
               // Replace each tag element with the plain tag text
@@ -71,6 +74,7 @@
             newMsg.find('#body').html(msgBody);
             newMsg.find('#pool').text(msgPool);
             newMsg.find('#source').text(msgSource);
+            newMsg.find('#reason').text(msgReason);
             newMsg.find('#when').text(msgDateStr);
             for (var tagIndex=0; tagIndex < msgTags.length; tagIndex++) {
               var newTag = tagTemplate.clone(true).attr('id',msgTags[tagIndex]);
@@ -128,6 +132,7 @@
                               <th>Tags</th>
                               <th>Pool</th>
                               <th>Source</th>
+                              <th>Reason</th>
                               <th>Date</th>
                             </tr>
                           </thead>
@@ -146,6 +151,7 @@
                               </td>
                               <td id="pool">-</td>
                               <td id="source">web</td>
+                              <td id="reason">resend</td>
                               <td id="when" class="date">Jan 1, 2009 12:00</td>
                             </tr>
                             <tr id="message">
@@ -161,6 +167,7 @@
                               </td>
                               <td id="pool">PUBLIC</td>
                               <td id="source">web</td>
+                              <td id="reason"><!-- no reason --></td>
                               <td id="when" class="date">Jan 1, 2009 11:58</td>
                             </tr>
                           </tbody>

@@ -24,6 +24,7 @@ package org.apache.esme.model
 import net.liftweb._
 import mapper._
 import util._
+import net.liftweb.http.js.JE._
 
 import scala.xml._
 
@@ -64,6 +65,10 @@ class Mailbox extends LongKeyedMapper[Mailbox] {
 
 sealed trait MailboxReason {
   def attr: MetaData
+  def asJs = attr match {
+    case Null => JsNull
+    case _ => JsObj((attr.key, Str(attr.value.toString)))
+  }
 }
 case class ResendReason(fromUserId: Long) extends MailboxReason {
   def attr = new UnprefixedAttribute("resent_from", fromUserId.toString, Null)

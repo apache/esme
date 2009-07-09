@@ -63,7 +63,7 @@ class PublicTimeline extends CometActor {
     val jsId = "public_timeline_messages";
 
     OnLoad(JsCrVar(jsId, JsArray(
-        toDisplay.map(_.asJs) :_*)) &
+        toDisplay.map(m => JsObj(("message", m.asJs)) ) :_*)) &
     JsFunc("displayMessages", JsVar(jsId), jsId).cmd)
   }
 

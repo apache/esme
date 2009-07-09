@@ -45,7 +45,7 @@ class TagCloud extends CometActor /* with MsgFormat*/ {
     for (user <- User.currentUser) {
       Distributor ! Distributor.Listen(user.id, this)
       Distributor !? (2000, Distributor.LatestMessages(user.id, 40)) match {
-        case Some(msg: List[Long]) => messages = msg
+        case Some(msg: List[(Long,MailboxReason)]) => messages = msg map {_._1}
         case x =>
       }
     }
