@@ -71,7 +71,7 @@ class UserActor extends Actor {
 
   private var perform: List[PerformMatcher] = Nil
   
-  private var _mailbox: Array[Long] = Array()
+  private var _mailbox: Array[(Long,MailboxReason)] = Array()
   
   private var pools: Set[Long] = Set()
 
@@ -98,7 +98,7 @@ class UserActor extends Actor {
         foreach(u => userTimezone = TimeZone.getTimeZone(u.timezone))
 
         _mailbox = Mailbox.mostRecentMessagesFor(userId, 500).
-        map(_._1.id.is).toArray
+        map(m => (m._1.id.is, m._2) ).toArray
         
         pools = Privilege.findViewablePools(userId)
 
@@ -221,7 +221,7 @@ class UserActor extends Actor {
         }
         mb.saveMe
           
-        _mailbox = (msg.id.is :: _mailbox.toList).take(500).toArray
+        _mailbox = ((msg.id.is, reason) :: _mailbox.toList).take(500).toArray
 
         listeners.foreach(_ ! MessageReceived(msg, reason))
             
