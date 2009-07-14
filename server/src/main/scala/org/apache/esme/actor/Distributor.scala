@@ -93,6 +93,9 @@ object Distributor extends Actor {
         
       case AllowUserInPool(userId, poolId) =>
         findOrCreateUser(userId) ! UserActor.AllowPool(poolId)
+        
+      case ResendMessage(userId, msgId) =>
+        findOrCreateUser(userId) ! UserActor.Resend(msgId)
 
       case _ =>
     }
@@ -116,6 +119,7 @@ object Distributor extends Actor {
   case class PublicTimelineListeners(who: Actor)
   case class PublicTimelineUnlisteners(who: Actor)
   case class AllowUserInPool(userId: Long, poolId: Long)
+  case class ResendMessage(userId: Long, msgId: Long)
   sealed trait TrackingType
   case object PerformTrackingType extends TrackingType
   case object TrackTrackingType extends TrackingType
