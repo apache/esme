@@ -66,6 +66,18 @@ object JsonPoster extends SessionVar(S.buildJsonFunc{
   }
 )
 
+object JsonResender extends SessionVar(S.buildJsonFunc{
+    case JsonCmd("resend", _, map: Map[String, Any], _) =>
+      for (msgId <- map.get("msg_id").map(toLong);
+           user  <- User.currentUser)
+             Distributor ! Distributor.ResendMessage(user.id, msgId)
+    
+      Noop
+
+    case _ => Noop
+  }
+)
+
 class UserSnip extends DispatchSnippet {
   def dispatch: DispatchIt = 
   Map("name" -> userName _,
@@ -74,7 +86,8 @@ class UserSnip extends DispatchSnippet {
       "following" -> following _,
       "loginForm" -> loginForm _,
       "loggedIn" -> loggedInFilter _,
-      "accessPools" -> accessPools _)
+      "accessPools" -> accessPools _,
+      "resendScript" -> resendScript _)
 
   def loggedInFilter(in: NodeSeq): NodeSeq = {
     val lookFor = if (User.loggedIn_?) "in" else "out"
@@ -141,4 +154,15 @@ class UserSnip extends DispatchSnippet {
         ))
     }
   </xml:group>
+  
+  def resendScript(in: NodeSeq): NodeSeq = 
+  <xml:group>
+    {Script(JsonResender.is._2)}
+    {Script(Function("resend_msg", List("msg_id"),
+                     JsonResender.is._1("resend",
+                                        JsObj("msg_id" -> JsVar("msg_id")))
+        ))
+    }
+  </xml:group>
+  
 }

@@ -51,6 +51,7 @@ object UserActor {
   private[actor] case class TestForTracking(msg: Message)
   private[actor] case class UpdateTracking(ttype: Distributor.TrackingType)
   private[actor] case class AllowPool(poolId: Long)
+  private[actor] case class Resend(msgId: Long)
   
   case class MessageReceived(msg: Message, reason: MailboxReason)
   
@@ -189,6 +190,13 @@ class UserActor extends Actor {
         reply(_mailbox.take(cnt).toList)
       
       case AllowPool(poolId) => pools += poolId
+      
+      case Resend(msgId) =>
+        for (msg <- Message.find(msgId);
+             id <- followers)
+               Distributor !
+               Distributor.AddMessageToMailbox(id, msg, ResendReason(userId))
+
     }
   }
 

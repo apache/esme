@@ -82,6 +82,7 @@
             newMsg.find('#source').text(msgSource);
             newMsg.find('#reason').text(msgReason);
             newMsg.find('#when').text(msgDateStr);
+            newMsg.find('#resend').attr('onclick', 'javascript:resend_msg(' + cometMsg.id + ');');
             for (var tagIndex=0; tagIndex < msgTags.length; tagIndex++) {
               var newTag = tagTemplate.clone(true).attr('id',msgTags[tagIndex]);
               newTag.find('a')
@@ -159,6 +160,7 @@
                               <td id="source">web</td>
                               <td id="reason">resend</td>
                               <td id="when" class="date">Jan 1, 2009 12:00</td>
+                              <td><button id="resend" class="btn">Resend</button></td>
                             </tr>
                             <tr id="message">
                               <td><img id="avatar" src="http://static.twitter.com/images/default_profile_bigger.png" alt="Anonymous" width="50px"/><div id="author">anon</div></td>
@@ -175,12 +177,14 @@
                               <td id="source">web</td>
                               <td id="reason"><!-- no reason --></td>
                               <td id="when" class="date">Jan 1, 2009 11:58</td>
+                              <td><button id="resend" class="btn">Resend</button></td>
                             </tr>
                           </tbody>
                         </table>
                       </div>
                     </dd>
                   </dl>
+                  <lift:UserSnip.resendScript/>
 
                   <dl class="tagclouds">
                     <dt class="caption">Public timeline</dt>
