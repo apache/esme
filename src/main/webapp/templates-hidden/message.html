@@ -82,7 +82,10 @@
             newMsg.find('#source').text(msgSource);
             newMsg.find('#reason').text(msgReason);
             newMsg.find('#when').text(msgDateStr);
-            newMsg.find('#resend').attr('onclick', 'javascript:resend_msg(' + cometMsg.id + ');');
+            var id = cometMsg.id;
+            newMsg.find('#resend').attr('id', 'resend_' + id).
+              attr('onclick', 'javascript:resend_msg(' + id + ');' +
+                                         'clearResend("resend_' + id + '")');
             for (var tagIndex=0; tagIndex < msgTags.length; tagIndex++) {
               var newTag = tagTemplate.clone(true).attr('id',msgTags[tagIndex]);
               newTag.find('a')
@@ -290,6 +293,10 @@
                     function clearReplyTo() {
                       currentConvNumber = 0;
                       document.getElementById('reply-to-div').style.display = "none";
+                    }
+                    
+                    function clearResend(id) {
+                      document.getElementById(id).style.display="none"
                     }
                     // ]]>
                   </script>
