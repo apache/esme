@@ -332,11 +332,12 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
     case x => ParenAction(x)
   }
 
-  lazy val testPool: Parser[PoolAction] =
+  lazy val testPool: Parser[TestAction] =
   (whiteSpace ~ acceptCI("pool:") ~> rep1(digit) <~ whiteSpace ^^ {case id => PoolAction(id.mkString.toLong)}) |
   (poolName ^^ {
       case PoolName(pool) => PoolAction(pool.id)
-    })
+    }) |
+  (whiteSpace ~ acceptCI("pool") ~ whiteSpace ^^^ PoolAction)
     
   lazy val testResent: Parser[TestAction] = 
   (whiteSpace ~ acceptCI("resent:") ~> rep1(digit) <~ whiteSpace ^^ {case id => ResentAction(id.mkString.toLong)}) |
