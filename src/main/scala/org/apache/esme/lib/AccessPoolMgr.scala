@@ -156,7 +156,8 @@ object AccessPoolMgr {
       case xs => bind("pool", in,
                       "user" -> 
                       (lst => xs.flatMap(i => bind("user", lst,
-                                                   "name" -> User.find(i.user).get.nickname.is,
+                                                   "name" -> User.find(i.user).map(
+                                                             _.nickname.is).getOrElse(""),
                                                    "privilege" -> i.permission.is.toString
                       ))))
     }

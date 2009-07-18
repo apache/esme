@@ -59,7 +59,10 @@ class Timeline extends CometActor {
   
   def render = {
     val msgMap = Message.findMessages(messages map {_._1})
-    val toDisplay = messages.map(m => (msgMap.get(m._1).get, m._2))
+    val toDisplay =
+      for ((id, reason) <- messages;
+           msg <- msgMap.get(id))
+      yield (msg, reason)
     val jsId = "timeline_messages";
 
     OnLoad(JsCrVar(jsId, JsArray(
