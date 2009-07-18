@@ -53,7 +53,8 @@
           unfollowed -- user is being unfollowed<br/>
           profile -- user changed profile<br/>
           every N mins -- repeat action, N is an integer<br/>
-          pool:mypool -- message is in access pool mypool
+          pool[:mypool] -- message is in access pool mypool<br/>
+          resent[:user] -- message was resent by user
         </td>
       </tr>
 
@@ -66,8 +67,7 @@
           mailto:foo@bar.com -- sends the message to foo@bar.com<br/>
           http://foo.com/message/in -- HTTP post, %s expands to message<br/>
           atom:http://blog.com/feed.atom -- posts new messages from Atom feed<br/>
-          rss:http://blog.com/feed.rss -- posts new messages from RSS feed<br/>
-          scala -- proccess message text in Scala interpreter
+          rss:http://blog.com/feed.rss -- posts new messages from RSS feed
         </td>
       </tr>
       <input type="submit" value="Add" />
