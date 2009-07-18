@@ -47,13 +47,13 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
 
   lazy val url: Parser[URL] = httpUrl ^^ {url => URL(UrlStore.make(url))}
 
-  lazy val atNameStr: Parser[String] = alpha ~ rep(alpha | digit | '_') ^^ {
+  lazy val userNameStr: Parser[String] = alpha ~ rep(alpha | digit | '_') ^^ {
     case first ~ more => first + more.mkString
   }
   
-  lazy val poolNameStr = atNameStr
+  lazy val poolNameStr = userNameStr
   
-  lazy val atName: Parser[MsgInfo] = '@' ~> atNameStr ~ rep('.' ~> atNameStr) ^^ {
+  lazy val atName: Parser[MsgInfo] = '@' ~> userNameStr ~ rep('.' ~> userNameStr) ^^ {
     case name ~ domainlist => 
       val nickName: String = name
       val wholeName: String = (name :: domainlist).mkString(".")
@@ -68,6 +68,14 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
       AccessPool.findPool(name, AccessPool.Native) match {
         case Full(p) => PoolName(p)
         case _ => MsgText("pool:"+name)
+      }
+  }
+  
+  lazy val resenderName: Parser[MsgInfo] = acceptCI("resent:") ~> userNameStr ^^ {
+    case name => 
+      User.find(By(User.nickname, name)) match {
+        case Full(u) => ResenderName(u)
+        case _ => MsgText("resent:"+name)
       }
   }
   
@@ -245,6 +253,7 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
   lazy val testFactor: Parser[TestAction] = (notTest |
   testAt | testRegex | testString |
   testTag | testPool |
+  testResent |
   testParen | testPercent |
   testDates | testLogin |
   testFollowed | testUnfollowed |
@@ -328,6 +337,14 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
   (poolName ^^ {
       case PoolName(pool) => PoolAction(pool.id)
     })
+    
+  lazy val testResent: Parser[TestAction] = 
+  (whiteSpace ~ acceptCI("resent:") ~> rep1(digit) <~ whiteSpace ^^ {case id => ResentAction(id.mkString.toLong)}) |
+  (resenderName ^^ {
+      case ResenderName(user) => ResentAction(user.id)
+    }) |
+  (whiteSpace ~ acceptCI("resent") ~ whiteSpace ^^^ ResentAction)
+    
   
   lazy val testAt: Parser[AtUserAction] =
   (whiteSpace ~ '@' ~> rep1(digit) <~ whiteSpace ^^ {case dig => AtUserAction(dig.mkString.toLong)}) |
@@ -381,6 +398,7 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
 sealed trait MsgInfo
 case class MsgText(text: String) extends MsgInfo
 case class AtName(user: User) extends MsgInfo
+case class ResenderName(user: User) extends MsgInfo
 case class HashTag(tag: Tag) extends MsgInfo
 case class URL(url: UrlStore) extends MsgInfo
 case class PoolName(pool: AccessPool) extends MsgInfo
