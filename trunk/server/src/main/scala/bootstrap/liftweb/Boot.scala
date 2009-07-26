@@ -116,7 +116,8 @@ class Boot {
     TrackMgr.menuItems :::
     ActionMgr.menuItems :::
     AuthMgr.menuItems :::
-    AccessPoolMgr.menuItems
+    AccessPoolMgr.menuItems :::
+    StreamMgr.menuItems
 
     LiftRules.setSiteMap(SiteMap(entries:_*))
 
