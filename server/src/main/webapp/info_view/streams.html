@@ -1,0 +1,31 @@
+<lift:surround with="default" at="content">
+
+  Manage your streams: <br/>
+  <span id="StreamSpan">
+    <lift:ignore>
+      <!--
+      The displayStreams snippet *MUST* appear on the page before
+      the main snippet
+      -->
+    </lift:ignore>
+    <lift:displayStream the_id="StreamSpan">
+      <table>
+        <thead>
+          <tr> <th>Author</th> <th>Text</th> <th>Date</th></tr>
+        </thead>
+        
+        <tbody>
+          <disp:item>
+            <tr><td><item:author/></td> <td><item:text/></td> <td><item:date/></td></tr>
+          </disp:item>
+        </tbody>
+      </table>
+    </lift:displayStream>
+  </span>
+
+  <lift:streamFilters>
+    Filter by resent <main:filterResent/> Resent by: <main:resent/><br/>
+    Filter by pool <main:filterPools/> In pool: <main:pools/>
+  </lift:streamFilters>
+
+</lift:surround>
