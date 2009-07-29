@@ -89,7 +89,7 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
     r2
   }
 
-  private def uncache(msg: Message) = synchronized {
+  private def uncache(msg: Message): Unit = synchronized {
     idCache.remove(msg.id)
   }
 
