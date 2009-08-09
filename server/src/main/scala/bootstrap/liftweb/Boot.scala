@@ -40,7 +40,7 @@ import snippet._
 import api._
 import net.liftweb._
 import mapper._
-import javax.servlet.http.{HttpServlet, HttpServletRequest , HttpServletResponse, HttpSession}
+import provider.HTTPRequest
 import org.compass.core._
 import org.compass.core.config.CompassConfiguration
 import scala.actors.Actor
@@ -171,7 +171,7 @@ class Boot {
         // Dump information about session every 10 minutes
     SessionMaster.sessionWatchers = SessionInfoDumper :: SessionMaster.sessionWatchers
   }
-  private def makeUtf8(req: HttpServletRequest): Unit = {req.setCharacterEncoding("UTF-8")}
+  private def makeUtf8(req: HTTPRequest) = {req.setCharacterEncoding("UTF-8")}
 }
 
 object Compass {
