@@ -1,5 +1,5 @@
 /* Content page (begin) */ /**/
-.b-cloud {
+.b-cloud, .b-stats {
   margin-top: 30px;
   /* background: #233e5e; /* url(../images/sh-r.png) repeat-y 100% 0; */
   text-align: center;
@@ -8,7 +8,7 @@
   border: 1px solid black;
 }
 
-#tag-para, #word-para {
+#tag-para, #word-para, #stats-para {
   font-size: 1.7em;
   text-decoration: underline;
   font-style: italic;

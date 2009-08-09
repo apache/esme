@@ -32,6 +32,8 @@ import JsCmds._
 import JE._
 import util._
 import Helpers._
+import TimeHelpers.intToTimeSpanBuilder
+import TimeHelpers.timeSpanToLong
 
 import scala.xml.{NodeSeq, Text, Node}
 
@@ -87,7 +89,8 @@ class UserSnip extends DispatchSnippet {
       "loginForm" -> loginForm _,
       "loggedIn" -> loggedInFilter _,
       "accessPools" -> accessPools _,
-      "resendScript" -> resendScript _)
+      "resendScript" -> resendScript _,
+      "popular" -> popular _)
 
   def loggedInFilter(in: NodeSeq): NodeSeq = {
     val lookFor = if (User.loggedIn_?) "in" else "out"
@@ -165,4 +168,33 @@ class UserSnip extends DispatchSnippet {
     }
   </xml:group>
   
+  def popular(in: NodeSeq): NodeSeq = 
+  <xml:group>
+    {PopStatsActor !? PopStatsActor.TopStats(ResendStat, 5, 1 week) match {
+        case l: List[Tuple2[Long,Int]] =>
+          <table>
+            <thead>
+              <tr> <th>Resent</th> <th>Message</th> </tr>
+            </thead>
+            <tbody>
+            {
+              val msgMap = Message.findMessages(l.map(_._1))
+              l.map{ stat =>
+                val (msgId, freq) = stat
+                (for (m <- msgMap.get(msgId)) yield {
+                  <tr>
+                    <td>{freq}</td>
+                    <td>{m.author.obj.map(_.nickname.is).openOr("")}:
+                        {m.digestedXHTML}
+                        <!--{new java.util.Date(m.when.toLong).toString}--></td>
+                  </tr>
+                }).getOrElse(<br/>)
+              }
+            }
+            </tbody>
+          </table>
+        case _ => <br/>
+      }
+    }
+  </xml:group>
 }

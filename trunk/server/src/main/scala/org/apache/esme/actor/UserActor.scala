@@ -192,11 +192,13 @@ class UserActor extends Actor {
       case AllowPool(poolId) => pools += poolId
       
       case Resend(msgId) =>
-        for (msg <- Message.find(msgId);
-             id <- followers)
-               Distributor !
-               Distributor.AddMessageToMailbox(id, msg, ResendReason(userId))
-
+        for (msg <- Message.find(msgId)) {
+          if (!msg.pool.defined_?)
+            PopStatsActor ! PopStatsActor.IncrStats(ResendStat, msgId)
+          for (id <- followers)
+            Distributor !
+            Distributor.AddMessageToMailbox(id, msg, ResendReason(userId))
+        }
     }
   }
 
