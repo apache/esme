@@ -27,6 +27,8 @@ import net.liftweb.http.auth._
 import net.liftweb.sitemap._
 import net.liftweb.sitemap.Loc._
 import Helpers._
+import TimeHelpers.intToTimeSpanBuilder
+import TimeHelpers.timeSpanToLong
 import net.liftweb.mapper.{DB, ConnectionManager, Schemifier, DefaultConnectionIdentifier, ConnectionIdentifier}
 import java.sql.{Connection, DriverManager}
 import org.apache.esme._
@@ -144,6 +146,8 @@ class Boot {
     SchedulerActor.touch
     MessagePullActor.touch
     ScalaInterpreter.touch
+    
+    PopStatsActor ! PopStatsActor.StartStats(ResendStat, 1 week, 1 hour)
 
     Action.findAll(By(Action.disabled, false), By(Action.removed, false)).foreach {
       _.startActors
