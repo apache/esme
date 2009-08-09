@@ -390,7 +390,7 @@ object User extends User with KeyedMetaMapper[Long, User] {
     onLogOut.foreach(_(curUser))
     curUserId.remove()
     curUser.remove()
-    S.request.foreach(_.request.getSession.invalidate)
+    S.request.foreach(_.request.session.terminate)
   }
 
   private object curUserId extends SessionVar[Box[String]](Empty)
