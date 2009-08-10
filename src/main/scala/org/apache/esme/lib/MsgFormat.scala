@@ -33,21 +33,18 @@ import Helpers._
 
 import java.text.SimpleDateFormat
 
+/*
 object IsIE7 extends SessionVar[Boolean]({
     // "Firefox/3"
     // "MSIE 7"
-    def findUserAgent(in: List[(String, String)]): Box[String] =
-    in.filter(_._1.equalsIgnoreCase("User-Agent")).map(_._2).firstOption
 
   val r: Box[Boolean] =
-  for (session <- S.session;
-       agent <- findUserAgent(session.initialHeaders)) yield
+  for (agent <- S.getHeader("User-Agent")) yield
   agent.indexOf("MSIE 7") >= 0
 
   r openOr false
 })
 
-/*
 trait MsgFormat {
   
   def formatMsg(in: Message, showReply: Boolean, showConv: Boolean): NodeSeq =
