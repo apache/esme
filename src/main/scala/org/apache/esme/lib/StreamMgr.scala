@@ -90,7 +90,7 @@ object StreamMgr {
       
       val query = poolsQuery :::
                   resentQuery :::
-                  List[QueryParam[Message]](OrderBy(Message.id, Ascending), MaxRows(40)) 
+                  List[QueryParam[Message]](OrderBy(Message.id, Descending), MaxRows(40)) 
       
       Message.findAll(query: _*) match {
         case Nil => NodeSeq.Empty
