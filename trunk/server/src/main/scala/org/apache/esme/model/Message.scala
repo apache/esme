@@ -198,7 +198,16 @@ class Message extends LongKeyedMapper[Message] {
 
   object viaGroup extends MappedLongForeignKey(this, Group)
 
-  private[model] object text extends MappedText(this)
+  private[model] object text extends MappedText(this){
+    import scala.xml.transform.{RuleTransformer, RewriteRule}
+    override def asJsExp =
+      JE.Str(XML.loadString(is).map(new RuleTransformer(new RewriteRule {
+        override def transform(n: Node) = n match {
+          case e: Elem if "body" == e.label => <body>{digestedXHTML}</body>
+          case _ => n
+        }
+      })).mkString)
+  }
 
   object when extends MappedLong(this) {
     override def defaultValue = millis

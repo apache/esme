@@ -98,7 +98,7 @@ object StreamMgr {
                         "item" -> 
                         (lst => xs.flatMap(i => bind("item", lst,
                                                      "author" -> i.author.obj.map(_.nickname.is).openOr(""),
-                                                     "text" -> i.getText,
+                                                     "text" -> i.digestedXHTML,
                                                      "date" -> new java.util.Date(i.when.toLong).toString
                 ))))
       }
