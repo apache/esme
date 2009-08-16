@@ -26,6 +26,9 @@ import mapper._
 import util._
 import http._
 
+import org.apache.esme.actor.PopStatsActor
+import org.apache.esme.actor.LinkClickedStat
+
 object UrlStore extends UrlStore with LongKeyedMetaMapper[UrlStore] {
   def redirectizer: LiftRules.DispatchPF = {
     case Req("u" :: id :: Nil, "", GetRequest) =>
@@ -34,7 +37,10 @@ object UrlStore extends UrlStore with LongKeyedMetaMapper[UrlStore] {
 
   private def serve(id: String)(): Box[LiftResponse] = 
   for (url <- find(By(uniqueId, id)))
-  yield RedirectResponse(url.url)
+  yield {
+    PopStatsActor ! PopStatsActor.IncrStats(LinkClickedStat, url.id)
+    RedirectResponse(url.url)
+  }
 
   def make(in: String): UrlStore = {
     find(By(url, in)) match {
