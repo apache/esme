@@ -92,7 +92,8 @@ class UserSnip extends DispatchSnippet {
       "loggedIn" -> loggedInFilter _,
       "accessPools" -> accessPools _,
       "resendScript" -> resendScript _,
-      "popular" -> popular _)
+      "popular" -> popular _,
+      "links" -> links _)
 
   def loggedInFilter(in: NodeSeq): NodeSeq = {
     val lookFor = if (User.loggedIn_?) "in" else "out"
@@ -189,6 +190,32 @@ class UserSnip extends DispatchSnippet {
                     <td>{m.author.obj.map(_.nickname.is).openOr("")}:
                         {m.digestedXHTML}
                         <!--{new java.util.Date(m.when.toLong).toString}--></td>
+                  </tr>
+                }).getOrElse(<br/>)
+              }
+            }
+            </tbody>
+          </table>
+        case _ => <br/>
+      }
+    }
+  </xml:group>
+
+  def links(in: NodeSeq): NodeSeq = 
+  <xml:group>
+    {PopStatsActor !? PopStatsActor.TopStats(LinkClickedStat, 5, 1 week) match {
+        case l: List[Tuple2[Long,Int]] =>
+          <table>
+            <thead>
+              <tr> <th>Clicked</th> <th>Link</th> </tr>
+            </thead>
+            <tbody>
+            {
+              l.map{ stat =>
+                val (linkId, freq) = stat
+                (for (u <- UrlStore.find(linkId)) yield {
+                  <tr>
+                    <td>{freq}</td> <td>{u.url.is}</td>
                   </tr>
                 }).getOrElse(<br/>)
               }

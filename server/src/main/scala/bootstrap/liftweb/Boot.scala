@@ -148,6 +148,7 @@ class Boot {
     ScalaInterpreter.touch
     
     PopStatsActor ! PopStatsActor.StartStats(ResendStat, 1 week, 1 hour)
+    PopStatsActor ! PopStatsActor.StartStats(LinkClickedStat, 1 week, 1 hour)
 
     Action.findAll(By(Action.disabled, false), By(Action.removed, false)).foreach {
       _.startActors
