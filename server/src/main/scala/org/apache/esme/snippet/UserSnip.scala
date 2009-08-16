@@ -37,7 +37,8 @@ import TimeHelpers.timeSpanToLong
 
 import scala.xml.{NodeSeq, Text, Node}
 
-object JsonPoster extends SessionVar(S.buildJsonFunc{
+object JsonPoster extends JsonHandler{
+  def apply(in: Any): JsCmd = in match {
     case JsonCmd("post", _, map: Map[String, Any], _) =>
       println("Posting "+map)
       for (msgObj <- map.get("msg");
@@ -66,9 +67,10 @@ object JsonPoster extends SessionVar(S.buildJsonFunc{
 
     case _ => Noop
   }
-)
+}
 
-object JsonResender extends SessionVar(S.buildJsonFunc{
+object JsonResender extends JsonHandler{
+  def apply(in: Any): JsCmd = in match {
     case JsonCmd("resend", _, map: Map[String, Any], _) =>
       for (msgId <- map.get("msg_id").map(toLong);
            user  <- User.currentUser)
@@ -78,7 +80,7 @@ object JsonResender extends SessionVar(S.buildJsonFunc{
 
     case _ => Noop
   }
-)
+}
 
 class UserSnip extends DispatchSnippet {
   def dispatch: DispatchIt = 
@@ -143,9 +145,9 @@ class UserSnip extends DispatchSnippet {
   
   def postScript(in: NodeSeq): NodeSeq =
   <xml:group>
-    {Script(JsonPoster.is._2)}
+    {Script(JsonPoster.jsCmd)}
     {Script(Function("post_msg", List(),
-                     JsonPoster.is._1("post",
+                     JsonPoster.call("post",
                                       JsObj("msg" -> ValById("textdude"),
                                             "tags" -> ValById("tagdude"),
                                             "access_pool" -> ValById("access_pool"),
@@ -160,9 +162,9 @@ class UserSnip extends DispatchSnippet {
   
   def resendScript(in: NodeSeq): NodeSeq = 
   <xml:group>
-    {Script(JsonResender.is._2)}
+    {Script(JsonResender.jsCmd)}
     {Script(Function("resend_msg", List("msg_id"),
-                     JsonResender.is._1("resend",
+                     JsonResender.call("resend",
                                         JsObj("msg_id" -> JsVar("msg_id")))
         ))
     }
