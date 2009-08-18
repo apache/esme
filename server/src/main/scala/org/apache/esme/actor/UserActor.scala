@@ -51,8 +51,8 @@ object UserActor {
   private[actor] case class TestForTracking(msg: Message)
   private[actor] case class UpdateTracking(ttype: Distributor.TrackingType)
   private[actor] case class AllowPool(poolId: Long)
-  private[actor] case class Resend(msgId: Long)
   
+  case class Resend(msgId: Long)
   case class MessageReceived(msg: Message, reason: MailboxReason)
   
   val logger: Logger = Logger.getLogger("org.apache.esme.actor")
@@ -72,7 +72,7 @@ class UserActor extends Actor {
 
   private var perform: List[PerformMatcher] = Nil
   
-  private var _mailbox: Array[(Long,MailboxReason)] = Array()
+  private var _mailbox: Array[(Long,MailboxReason,Boolean)] = Array()
   
   private var pools: Set[Long] = Set()
 
@@ -99,7 +99,7 @@ class UserActor extends Actor {
         foreach(u => userTimezone = TimeZone.getTimeZone(u.timezone))
 
         _mailbox = Mailbox.mostRecentMessagesFor(userId, 500).
-        map(m => (m._1.id.is, m._2) ).toArray
+        map{case (msg, reason, resent) => (msg.id.is, reason, resent) }.toArray
         
         pools = Privilege.findViewablePools(userId)
 
@@ -195,6 +195,12 @@ class UserActor extends Actor {
         for (msg <- Message.find(msgId)) {
           if (!msg.pool.defined_?)
             PopStatsActor ! PopStatsActor.IncrStats(ResendStat, msgId)
+            
+          Mailbox.find(By(Mailbox.message, msg),
+                       By(Mailbox.user, userId)).foreach { m =>
+                         m.resent(true).save
+                         listeners.foreach(_ ! Resend(msgId))
+                       }
           for (id <- followers)
             Distributor !
             Distributor.AddMessageToMailbox(id, msg, ResendReason(userId))
@@ -231,7 +237,7 @@ class UserActor extends Actor {
         }
         mb.saveMe
           
-        _mailbox = ((msg.id.is, reason) :: _mailbox.toList).take(500).toArray
+        _mailbox = ((msg.id.is, reason, false) :: _mailbox.toList).take(500).toArray
 
         listeners.foreach(_ ! MessageReceived(msg, reason))
             

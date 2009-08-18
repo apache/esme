@@ -33,7 +33,7 @@ object Mailbox extends Mailbox with LongKeyedMetaMapper[Mailbox] {
   override def dbTableName = "mailbox" // define the DB table name
 
   def mostRecentMessagesFor(userId: Long, cnt: Int):
-  List[(Message, MailboxReason)] = {
+  List[(Message, MailboxReason, Boolean)] = {
     val mb = findAll(By(user, userId), OrderBy(id, Descending),
                      MaxRows(cnt))
 
@@ -41,7 +41,7 @@ object Mailbox extends Mailbox with LongKeyedMetaMapper[Mailbox] {
 
     val map = Message.findMessages(msgToFind)
 
-    mb.flatMap(m => map.get(m.message).map(msg => (msg, m.reason)))
+    mb.flatMap(m => map.get(m.message).map(msg => (msg, m.reason, m.resent.is)))
   }
     
   override def dbIndexes = Index(user, message) :: super.dbIndexes
@@ -58,6 +58,7 @@ class Mailbox extends LongKeyedMapper[Mailbox] {
   object directlyFrom extends MappedLongForeignKey(this, User)
   object conversation extends MappedLongForeignKey(this, Message)
   object resentBy extends MappedLongForeignKey(this, User)
+  object resent extends MappedBoolean(this)
 
   lazy val reason: MailboxReason =
   viaTrack.can.map(TrackReason) or directlyFrom.can.map(DirectReason)  or
