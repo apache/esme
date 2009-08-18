@@ -56,9 +56,9 @@ class PopStatsActor(val period: Long, val refreshInterval: Long) extends Actor {
           queue += StatEvent(id, now)
           stats += (id -> (stats.getOrElse(id,0) + 1))
         case Top(n) =>
-          val topList = stats.toList.sort{ (t1, t2) =>
-            val ((_,freq1),(_,freq2)) = (t1, t2)
-            freq2 < freq1
+          val topList = stats.toList.sort{
+            case ((_,freq1),(_,freq2)) =>
+              freq2 < freq1
           }.take(n)
           reply(topList)
         case Expire => {
