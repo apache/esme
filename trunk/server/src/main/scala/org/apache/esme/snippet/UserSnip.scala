@@ -182,8 +182,8 @@ class UserSnip extends DispatchSnippet {
             <tbody>
             {
               val msgMap = Message.findMessages(l.map(_._1))
-              l.map{ stat =>
-                val (msgId, freq) = stat
+              l.map{
+                case (msgId, freq) =>
                 (for (m <- msgMap.get(msgId)) yield {
                   <tr>
                     <td>{freq}</td>
@@ -211,8 +211,8 @@ class UserSnip extends DispatchSnippet {
             </thead>
             <tbody>
             {
-              l.map{ stat =>
-                val (linkId, freq) = stat
+              l.map{
+                case (linkId, freq) =>
                 (for (u <- UrlStore.find(linkId)) yield {
                   <tr>
                     <td>{freq}</td> <td>{u.url.is}</td>

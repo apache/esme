@@ -178,7 +178,7 @@ abstract class TwitterAPI {
   def friendsTimeline(): Box[TwitterResponse] = {
     calcUser map { user => 
       val statusList =
-        for ((msg, why) <- Mailbox.mostRecentMessagesFor(user.id, 20))
+        for ((msg, why, _) <- Mailbox.mostRecentMessagesFor(user.id, 20))
           yield { msgData(msg) }
       Right(Map("statuses" -> ("status", statusList) ))
     }

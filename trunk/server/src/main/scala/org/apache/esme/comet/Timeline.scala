@@ -37,14 +37,14 @@ import lib._
 import java.text._
 
 class Timeline extends CometActor {
-  private var messages: List[(Long,MailboxReason)] = Nil
+  private var messages: List[(Long,MailboxReason,Boolean)] = Nil
   
   override def localSetup() {
     super.localSetup()
     for (user <- User.currentUser) {
       Distributor ! Distributor.Listen(user.id, this)
       Distributor !? (2000, Distributor.LatestMessages(user.id, 40)) match {
-        case Some(msg: List[(Long,MailboxReason)]) => messages = msg
+        case Some(msg: List[(Long,MailboxReason,Boolean)]) => messages = msg
         case x =>
       }
     }
@@ -60,19 +60,28 @@ class Timeline extends CometActor {
   def render = {
     val msgMap = Message.findMessages(messages map {_._1})
     val toDisplay =
-      for ((id, reason) <- messages;
+      for ((id, reason, resent) <- messages;
            msg <- msgMap.get(id))
-      yield (msg, reason)
+      yield (msg, reason, resent)
     val jsId = "timeline_messages";
 
     OnLoad(JsCrVar(jsId, JsArray(
-        toDisplay.map(m => JsObj(("message",m._1.asJs),("reason",m._2.asJs))) :_*)) &
+        toDisplay.map{case (msg, reason, resent) =>
+                  JsObj(("message",msg.asJs),("reason",reason.asJs), ("resent",resent))
+                  } :_*)) &
     JsFunc("displayMessages", JsVar(jsId), jsId).cmd)
   }
   
   override def lowPriority = {
     case UserActor.MessageReceived(msg, r) =>
-      messages = ( (msg.id.is,r) :: messages).take(40)
+      messages = ( (msg.id.is,r,false) :: messages).take(40)
+      reRender(false)
+      
+    case UserActor.Resend(msgId) =>
+      messages = messages.map {
+        case (`msgId`, r, _) => (msgId, r, true)
+        case x => x
+      }
       reRender(false)
       
     case Distributor.UserUpdated(_) =>

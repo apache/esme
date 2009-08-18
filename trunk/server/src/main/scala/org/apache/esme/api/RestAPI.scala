@@ -324,7 +324,7 @@ object RestAPI extends XMLApiHelper {
     val r: Box[NodeSeq] = 
     t or (for (user <- calcUser ?~ "User not found";
                val lst = Mailbox.mostRecentMessagesFor(user.id, 40))
-          yield lst.flatMap{ case (msg, why) => msg.toXml % why.attr})
+          yield lst.flatMap{ case (msg, why, _) => msg.toXml % why.attr})
     
     r
   }
