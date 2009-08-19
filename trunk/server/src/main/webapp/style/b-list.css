@@ -74,6 +74,11 @@
   padding-bottom: 0.4em;
 }
 
+.b-list .message .metainfo
+{
+  color: gray;
+}
+
 .b-list .mail
 {
   display: block;
