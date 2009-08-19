@@ -50,17 +50,17 @@
             var msgAuthor = cometMsg.author;
             var msgBody = jQuery(cometMsg.text).find('body').html();
             var msgDateObj = new Date(parseInt(cometMsg.when));
-            var msgDateStr = msgDateObj.toLocaleDateString() +
+            var msgDateStr = 'on ' + msgDateObj.toLocaleDateString() +
               ' ' + msgDateObj.toLocaleTimeString();
-            var msgPool = '[public]';
-            if (cometMsg.pool) msgPool = cometMsg.pool.name;
+            var msgPool = '';
+            if (cometMsg.pool) msgPool = 'in pool ' + cometMsg.pool.name;
             var msgSource = cometMsg.source;
             var msgReason = ""
             for (r in cometReason) {
               if (r == "resent_from")
-                msgReason = "resent:" + cometReason[r].nickname;
+                msgReason = "resent by " + cometReason[r].nickname;
               else
-                msgReason = r;
+                msgReason = "caused by " + r;
               break
             }
             var msgTags = jQuery(cometMsg.text).find('tags > tag').get();
@@ -147,10 +147,6 @@
                               <th>Author</th>
                               <th>Message</th>
                               <th>Tags</th>
-                              <th>Pool</th>
-                              <th>Source</th>
-                              <th>Reason</th>
-                              <th>Date</th>
                             </tr>
                           </thead>
                           <lift:comet type="Timeline"/>
@@ -158,35 +154,41 @@
                             <tr id="message">
                               <td><img id="avatar" src="http://static.twitter.com/images/default_profile_bigger.png" alt="Anonymous" width="50px"/><div id="author">anon</div></td>
                               <td class="message">
-                                <div class="outer"><div class="inner clear">
+                                <div class="outer">
+                                  <div class="inner clear">
                                     <p class="text" id="body">This is a test message in the HTML for designers.</p>
-                                </div></div>
+                                  </div>
+                                  <div class="metainfo">
+                                    <span id="pool">in pool PUBLIC</span>
+                                    <span id="reason">resent by me</span>
+                                    <span id="when" class="date">today</span>
+                                  </div>
+                                </div>
                               </td>
                               <td id="tags" class="tag">
                                 <p id="tag"><a href="tag/tag1">tag1</a></p>
                                 <p id="tag"><a href="tag/tag2">tag2</a></p>
                               </td>
-                              <td id="pool">-</td>
-                              <td id="source">web</td>
-                              <td id="reason">resend</td>
-                              <td id="when" class="date">Jan 1, 2009 12:00</td>
                               <td><button id="resend" class="btn">Resend</button></td>
                             </tr>
                             <tr id="message">
                               <td><img id="avatar" src="http://static.twitter.com/images/default_profile_bigger.png" alt="Anonymous" width="50px"/><div id="author">anon</div></td>
                               <td class="message">
-                                <div class="outer"><div class="inner clear">
-                                    <p class="text" id="body">This is another test message in the HTML for designers.</p>
-                                </div></div>
+                                <div class="outer">
+                                  <div class="inner clear">
+                                      <p class="text" id="body">This is another test message in the HTML for designers.</p>
+                                  </div>
+                                  <div class="metainfo">
+                                    <span id="pool">in pool PUBLIC</span>
+                                    <span id="reason">resent by me</span>
+                                    <span id="when" class="date">yesterday</span>
+                                  </div>
+                                </div>
                               </td>
                               <td id="tags" class="tag">
                                 <p id="tag"><a href="tag/tag1">tag1</a></p>
                                 <p id="tag"><a href="tag/tag3">tag3</a></p>
                               </td>
-                              <td id="pool">PUBLIC</td>
-                              <td id="source">web</td>
-                              <td id="reason"><!-- no reason --></td>
-                              <td id="when" class="date">Jan 1, 2009 11:58</td>
                               <td><button id="resend" class="btn">Resend</button></td>
                             </tr>
                           </tbody>
@@ -207,8 +209,6 @@
                               <th>Author</th>
                               <th>Message</th>
                               <th>Tags</th>
-                              <th>Source</th>
-                              <th>Date</th>
                             </tr>
                           </thead>
                           <lift:comet type="PublicTimeline"/>
@@ -216,16 +216,19 @@
                             <tr id="message">
                               <td id="author">dhague</td>
                               <td class="message">
-                                <div class="outer"><div class="inner clear">
+                                <div class="outer">
+                                  <div class="inner clear">
                                     <p class="text" id="body">This is a public timeline message in the HTML for designers.</p>
-                                </div></div>
+                                  </div>
+                                  <div class="metainfo">
+                                    <span id="when" class="date">now</span>
+                                  </div>
+                                </div>
                               </td>
                               <td id="tags" class="tag">
                                 <p id="tag"><a href="tag/tagA">tagA</a></p>
                                 <p id="tag"><a href="tag/tagB">tagB</a></p>
                               </td>
-                              <td id="source">web</td>
-                              <td id="when" class="date">Jan 1, 2009 12:00</td>
                             </tr>
                           </tbody>
                         </table>
