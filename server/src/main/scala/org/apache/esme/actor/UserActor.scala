@@ -199,6 +199,10 @@ class UserActor extends Actor {
           Mailbox.find(By(Mailbox.message, msg),
                        By(Mailbox.user, userId)).foreach { m =>
                          m.resent(true).save
+                         _mailbox = _mailbox.map {
+                           case (`msgId`, r, _) => (msgId, r, true)
+                           case x => x
+                         }
                          listeners.foreach(_ ! Resend(msgId))
                        }
           for (id <- followers)
