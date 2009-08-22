@@ -125,7 +125,7 @@ class UserSnip extends DispatchSnippet {
 
   def loginForm(in: NodeSeq): NodeSeq =
   if (User.loggedIn_?) NodeSeq.Empty
-  else User.loginForm
+  else UserAuth.loginPresentation.map(l => <div>{l}</div>)
   
 
   def userName(in: NodeSeq) = {
