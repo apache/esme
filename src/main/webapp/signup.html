@@ -1,0 +1,40 @@
+<lift:surround with="default" at="content">
+  <div>
+    Sign up for ESME:
+    <lift:signup form="post">
+      <div>
+        <label for="nickname">
+          Nickname: <signup:nickname/>
+        </label>
+        <br/>
+
+        <label for="firstname">
+          First Name: <signup:firstname/>
+        </label>
+        <br/>
+        <label for="lastname">
+          Last Name: <signup:lastname/>
+        </label>
+        <br/>
+        <label for="image_url">
+          Image URL: <signup:image_url/>
+        </label>
+        <br/>
+        <label for="timezone">
+          Timezone: <signup:timezone/>
+        </label>
+        <br/>
+        <label for="locale">
+          Locale: <signup:locale/>
+        </label>
+        <br/>
+        <signup:credentials/>
+
+        <label for="submit">
+          <signup:submit id="submit"/>
+        </label>
+
+      </div>
+    </lift:signup>
+  </div>
+</lift:surround>

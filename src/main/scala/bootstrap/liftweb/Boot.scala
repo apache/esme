@@ -67,14 +67,14 @@ class Boot {
                                   Group, Relationship, MessageTag,
                                   AuthToken, UrlStore, Tracking,
                                   Action, DidPerform, AccessPool,
-                                  Privilege)
+                                  Privilege, UserAuth, UserCryptoSig)
     }
 
     Schemifier.schemify(true, Log.infoF _, User, ExtSession, Message,
                         Mailbox, Tag,
                         Group, Relationship, MessageTag, AuthToken,
                         UrlStore, Tracking, Action, DidPerform,
-                        AccessPool, Privilege)
+                        AccessPool, Privilege, UserAuth, UserCryptoSig)
 
     LiftRules.statelessDispatchTable.append {
       case r @ Req("api" :: "send_msg" :: Nil, "", PostRequest)
@@ -105,6 +105,9 @@ class Boot {
 
     LiftRules.siteMapFailRedirectLocation = List("static", "about")
 
+    UserAuth.register(UserPwdAuthModule)
+    UserAuth.register(OpenIDAuthModule)
+
     // Build SiteMap
     val entries = Menu(Loc("Home", List("index"), "Home")) ::
     Menu(Loc("list_users", List("user_view", "all"), "List Users")) ::
@@ -114,7 +117,10 @@ class Boot {
     Menu(Loc("about", List("static", "about"), "About", Hidden)) ::
     Menu(Loc("tag", List("info_view", "tag"), "Tag", Hidden, Loc.Snippet("tag_display", TagDisplay.display))) ::
     Menu(Loc("search", List("user_view", "search"), "Search", Hidden)) ::
-    User.sitemap :::
+    Menu(Loc("sign_up", List("signup"), "Sign Up", 
+             Snippet("signup", User.signupForm),
+             Unless(User.loggedIn_? _, "Can't sign up when logged in"))) ::
+    // User.sitemap :::
     TrackMgr.menuItems :::
     ActionMgr.menuItems :::
     AuthMgr.menuItems :::
