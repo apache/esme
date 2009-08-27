@@ -120,6 +120,9 @@ class Boot {
     Menu(Loc("sign_up", List("signup"), "Sign Up", 
              Snippet("signup", User.signupForm),
              Unless(User.loggedIn_? _, "Can't sign up when logged in"))) ::
+    Menu(Loc("logout", List("logout"), "Log Out",
+             EarlyResponse(() => {User.logUserOut; S.redirectTo(S.referer openOr "/")}),
+             If(User.loggedIn_? _, "You must be logged in to log out"))) ::
     // User.sitemap :::
     TrackMgr.menuItems :::
     ActionMgr.menuItems :::
