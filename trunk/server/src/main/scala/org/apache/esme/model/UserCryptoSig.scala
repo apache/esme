@@ -35,18 +35,18 @@ class UserCryptoSig extends LongKeyedMapper[UserCryptoSig] with IdPK {
   def getSingleton = UserCryptoSig
 
   object user extends MappedLongForeignKey(this, User)
-  private object createdOn extends MappedLong(this) {
+  object createdOn extends MappedLong(this) {
     override def defaultValue = millis
   }
-  private object valid extends MappedBoolean(this) {
+  object valid extends MappedBoolean(this) {
     override def defaultValue = true
   }
-  private object publicKey extends MappedString(this, 1024) {
+  object publicKey extends MappedString(this, 1024) {
     override def dbIndexed_? = true
     override def defaultValue = base64Encode(defaultKeyPair.getPublic.getEncoded)
   }
 
-  private object privateKey extends MappedText(this) {
+  object privateKey extends MappedText(this) {
     override def defaultValue = base64Encode(defaultKeyPair.getPrivate.getEncoded)
   }
 
