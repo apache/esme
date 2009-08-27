@@ -110,7 +110,10 @@ object UserPwdAuthModule extends AuthModule {
         (for {
             name <- S.param("username").map(_.trim.toLowerCase)
             pwd <- S.param("password").map(_.trim)
-            user <- /*User.find(By(User.email, name)) or */ User.find(By(User.nickname, name))
+            user <- UserAuth.find(By(UserAuth.authKey, name),
+                                  By(UserAuth.authType, moduleName)).flatMap(_.user.obj) or
+            User.find(By(User.nickname, name))
+            
             userAuth <- UserAuth.find(By(UserAuth.user, user), By(UserAuth.authType, moduleName))
             if authenticatePassword(userAuth.authData.is, pwd)
           } yield user) match {
@@ -137,26 +140,34 @@ object UserPwdAuthModule extends AuthModule {
   def createHolder(): FieldSet = new FieldSet {
     private var pwd1 = ""
     private var pwd2 = ""
+    private var email = ""
 
     def toForm: NodeSeq =
     TemplateFinder.findAnyTemplate("templates-hidden" :: "upw_signup_form" :: Nil).map(
       xhtml =>
       bind("signup", xhtml,
+           "email" -> SHtml.text(email, s => email = s.trim.toLowerCase),
            "pwd1" -> SHtml.password(pwd1, s => pwd1 = s.trim),
            "pwd2" -> SHtml.password(pwd2, s => pwd2 = s.trim))
     ) openOr NodeSeq.Empty
 
-    def validate: List[FieldError] = if (pwd1 != pwd2) List(FieldError(new FieldIdentifier {
+    def validate: List[FieldError] =
+    (if (MappedEmail.validEmailAddr_?(email)) Nil else
+     List(FieldError(new FieldIdentifier {
+          override def uniqueFieldId: Box[String] = Full("email")
+        },Text(S.?("Bad email address"))))) :::
+    (if (pwd1 != pwd2) List(FieldError(new FieldIdentifier {
           override def uniqueFieldId: Box[String] = Full("pwd1")
         },Text(S.?("Passwords do not match"))))
     else if (pwd1.length < 6) List(FieldError(new FieldIdentifier {
           override def uniqueFieldId: Box[String] = Full("pwd1")
         },Text(S.?("Passwords must be 6 characters or longer"))))
-    else Nil
+    else Nil)
+
     def save(user: User): Unit = {
       val salt = randomString(10)
       val md5 = Helpers.md5(salt + pwd1)
-      UserAuth.create.user(user).authData(salt+";"+md5).save
+      UserAuth.create.user(user).authType(moduleName).authKey(email).authData(salt+";"+md5).save
     }
   }
 }
