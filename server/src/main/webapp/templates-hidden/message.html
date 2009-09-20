@@ -321,12 +321,39 @@
                 
                 <div class="b-stats">
                   <p id="stats-para">Popular messages</p>
-                  <lift:UserSnip.popular/>
+                  <lift:UserSnip.popular>
+                    <table>
+                      <thead>
+                        <tr> <th>Resent</th> <th>Message</th> </tr>
+                      </thead>
+                      <tbody>
+                        <disp:item>
+                          <tr>
+                            <td><item:freq/></td>
+                            <td><item:author/>:
+                                <item:text/>
+                                <!--<item:date/>--></td>
+                          </tr>
+                        </disp:item>
+                      </tbody>
+                    </table>
+                  </lift:UserSnip.popular>
                 </div>
 
                 <div class="b-stats">
                   <p id="stats-para">Popular links</p>
-                  <lift:UserSnip.links/>
+                  <lift:UserSnip.links>
+                    <table>
+                      <thead>
+                        <tr> <th>Clicked</th> <th>Link</th> </tr>
+                      </thead>
+                      <tbody>
+                        <disp:item>
+                          <tr> <td><item:freq/></td> <td><item:url/></td> </tr>
+                        </disp:item>
+                      </tbody>
+                    </table>
+                  </lift:UserSnip.links>
                 </div>
 
                 <lift:ignore>
