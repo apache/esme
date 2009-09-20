@@ -172,58 +172,44 @@ class UserSnip extends DispatchSnippet {
   </xml:group>
   
   def popular(in: NodeSeq): NodeSeq = 
-  <xml:group>
-    {PopStatsActor !? PopStatsActor.TopStats(ResendStat, 5, 1 week) match {
-        case l: List[Tuple2[Long,Int]] =>
-          <table>
-            <thead>
-              <tr> <th>Resent</th> <th>Message</th> </tr>
-            </thead>
-            <tbody>
-            {
-              val msgMap = Message.findMessages(l.map(_._1))
-              l.map{
-                case (msgId, freq) =>
-                (for (m <- msgMap.get(msgId)) yield {
-                  <tr>
-                    <td>{freq}</td>
-                    <td>{m.author.obj.map(_.nickname.is).openOr("")}:
-                        {m.digestedXHTML}
-                        <!--{new java.util.Date(m.when.toLong).toString}--></td>
-                  </tr>
-                }).getOrElse(<br/>)
-              }
-            }
-            </tbody>
-          </table>
-        case _ => <br/>
-      }
+    PopStatsActor !? PopStatsActor.TopStats(ResendStat, 5, 1 week) match {
+      case l: List[Tuple2[Long,Int]] =>
+        val msgMap = Message.findMessages(l.map(_._1))
+        val messages = 
+          for ((id, freq) <- l;
+               msg <- msgMap.get(id))
+          yield (msg, freq)
+        messages match {
+          case Nil => NodeSeq.Empty
+          case xs => bind("disp", in,
+                          "item" ->
+                          (lst => xs.flatMap{case (m,freq) => bind(
+                            "item", lst,
+                            "freq" -> freq,
+                            "author" -> m.author.obj.map(_.nickname.is).openOr(""),
+                            "text" -> m.digestedXHTML,
+                            "date" -> new java.util.Date(m.when.toLong).toString)}))
+        }
+      case _ => NodeSeq.Empty
     }
-  </xml:group>
 
   def links(in: NodeSeq): NodeSeq = 
-  <xml:group>
-    {PopStatsActor !? PopStatsActor.TopStats(LinkClickedStat, 5, 1 week) match {
-        case l: List[Tuple2[Long,Int]] =>
-          <table>
-            <thead>
-              <tr> <th>Clicked</th> <th>Link</th> </tr>
-            </thead>
-            <tbody>
-            {
-              l.map{
-                case (linkId, freq) =>
-                (for (u <- UrlStore.find(linkId)) yield {
-                  <tr>
-                    <td>{freq}</td> <td>{u.url.is}</td>
-                  </tr>
-                }).getOrElse(<br/>)
-              }
-            }
-            </tbody>
-          </table>
-        case _ => <br/>
-      }
+    PopStatsActor !? PopStatsActor.TopStats(LinkClickedStat, 5, 1 week) match {
+      case Nil => NodeSeq.Empty
+      case xs: List[Tuple2[Long,Int]] =>
+        bind("disp", in,
+             "item" ->
+             (lst => xs.flatMap {
+               case (linkId, freq) =>
+                 UrlStore.find(linkId).map { u => bind(
+                   "item", lst,
+                   "freq" -> freq,
+                   "url" -> u.url.is
+                   )
+                 }.getOrElse(NodeSeq.Empty)
+               }
+             )
+        )
+      case _ => NodeSeq.Empty
     }
-  </xml:group>
 }
