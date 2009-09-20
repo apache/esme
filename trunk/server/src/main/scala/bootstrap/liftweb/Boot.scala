@@ -156,8 +156,20 @@ class Boot {
     MessagePullActor.touch
     ScalaInterpreter.touch
     
-    PopStatsActor ! PopStatsActor.StartStats(ResendStat, 1 week, 1 hour)
-    PopStatsActor ! PopStatsActor.StartStats(LinkClickedStat, 1 week, 1 hour)
+    val resentPeriod = Props.getLong("stats.resent.period", 1 week)
+    val resentRefreshInterval: Long = Props.getLong("stats.resent.refresh") match {
+      case Full(interval) if interval > (1 minute) => interval
+      case _ => 1 hour
+    }
+    val linksPeriod = Props.getLong("stats.links.period", 1 week)
+    val linksRefreshInterval: Long = Props.getLong("stats.links.refresh") match {
+      case Full(interval) if interval > (1 minute) => interval
+      case _ => 1 hour
+    }
+    if (resentPeriod > 0)
+      PopStatsActor ! PopStatsActor.StartStats(ResendStat, resentPeriod, resentRefreshInterval)
+    if (linksPeriod > 0)
+      PopStatsActor ! PopStatsActor.StartStats(LinkClickedStat, linksPeriod, linksRefreshInterval)
 
     Action.findAll(By(Action.disabled, false), By(Action.removed, false)).foreach {
       _.startActors
