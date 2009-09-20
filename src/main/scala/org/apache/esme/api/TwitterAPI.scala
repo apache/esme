@@ -49,6 +49,13 @@ import Actor._
 import scala.collection.mutable.ListBuffer
 import java.util.logging._
 
+// operator to match on last elements of a List
+object ::> {def unapply[A] (l: List[A]) = l match {
+    case Nil => None
+    case _ => Some( (l.init, l.last) )
+  }
+}
+
 object TwitterAPI {
   val ApiPath = Props.get("twitter.prefix", "twitter").split("/").toList.filter(_.length > 0)
   
@@ -69,33 +76,33 @@ abstract class TwitterAPI {
   val tf = new java.text.SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", java.util.Locale.US)
   val logger: Logger = Logger.getLogger("org.apache.esme.api")
   val method: String
-  // TODO: twitter struct could be stronger typed
+  // TODO: twitter struct could be stronger typed- if recursive types are enabled
   type TwitterResponse = Either[(String,List[Any]),Map[String,Any]]
   
   def dispatch: LiftRules.DispatchPF
   protected def dispatchMethod: PartialFunction[Req, () => Box[TwitterResponse]] = {
-    case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "public_timeline" :: Nil => publicTimeline
-    case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "replies" :: Nil => replies
-    case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "direct_messages" :: Nil => directMessages
-    case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "friends_timeline" :: Nil => friendsTimeline
-    case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "user_timeline" :: Nil => userTimeline
-    case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "user_timeline" :: l.last :: Nil => () => userTimeline(l last)
-    case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "show" :: l.last :: Nil => () => showStatus(l last)
-    case Req(l: List[String], this.method, PostRequest) if l == ApiPath ::: "statuses" :: "update" :: Nil => update
+    case Req(ApiPath ::> "statuses" ::> "public_timeline", this.method, GetRequest) => publicTimeline
+    case Req(ApiPath ::> "statuses" ::> "replies", this.method, GetRequest) => replies
+    case Req(ApiPath ::> "direct_messages", this.method, GetRequest) => directMessages
+    case Req(ApiPath ::> "statuses" ::> "friends_timeline", this.method, GetRequest) => friendsTimeline
+    case Req(ApiPath ::> "statuses" ::> "user_timeline", this.method, GetRequest) => userTimeline
+    case Req(ApiPath ::> "statuses" ::> "user_timeline" ::> last, this.method, GetRequest) => () => userTimeline(last)
+    case Req(ApiPath ::> "statuses" ::> "show" ::> last, this.method, GetRequest) => () => showStatus(last)
+    case Req(ApiPath ::> "statuses" ::> "update", this.method, PostRequest) => update
 
-    case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "friends" :: Nil => friends
-    case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "friends" :: l.last :: Nil => () => friends(l last)
-    case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "followers" :: Nil => followers
-    case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "statuses" :: "followers" :: l.last :: Nil => () => followers(l last)
-    case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "users" :: "show" :: l.last :: Nil => () => showUser(l last)
+    case Req(ApiPath ::> "statuses" ::> "friends", this.method, GetRequest) => friends
+    case Req(ApiPath ::> "statuses" ::> "friends" ::> last, this.method, GetRequest) => () => friends(last)
+    case Req(ApiPath ::> "statuses" ::> "followers", this.method, GetRequest) => followers
+    case Req(ApiPath ::> "statuses" ::> "followers" ::> last, this.method, GetRequest) => () => followers(last)
+    case Req(ApiPath ::> "users" ::> "show" ::> last, this.method, GetRequest) => () => showUser(last)
 
-    case Req(l: List[String], this.method, PostRequest) if l == ApiPath ::: "friendships" :: "create" :: l.last :: Nil => () => createFriendship(l last)
-    case Req(l: List[String], this.method, PostRequest) if l == ApiPath ::: "friendships" :: "destroy" :: l.last :: Nil => () => destroyFriendship(l last)
-    case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "friendships" :: "exists" :: Nil => existsFriendship
+    case Req(ApiPath ::> "friendships" ::> "create" ::> last, this.method, PostRequest) => () => createFriendship(last)
+    case Req(ApiPath ::> "friendships" ::> "destroy" ::> last, this.method, PostRequest) => () => destroyFriendship(last)
+    case Req(ApiPath ::> "friendships" ::> "exists", this.method, GetRequest) => existsFriendship
 
-    case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "account" :: "verify_credentials" :: Nil => verifyCredentials
-    case Req(l: List[String], this.method, PostRequest) if l == ApiPath ::: "account" :: "end_session" :: Nil => endSession
-    // case Req(l: List[String], this.method, GetRequest) if l == ApiPath ::: "update_profile" :: Nil => updateProfile
+    case Req(ApiPath ::> "account" ::> "verify_credentials", this.method, GetRequest) => verifyCredentials
+    case Req(ApiPath ::> "account" ::> "end_session", this.method, PostRequest) => endSession
+    // case Req(ApiPath ::> "update_profile", this.method, GetRequest) => updateProfile
 
   }
 
