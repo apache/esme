@@ -163,7 +163,7 @@ class Boot {
       _.startActors
     }
 
-    DB.addLogFunc(S.logQuery _)
+    // DB.addLogFunc(S.logQuery _)
     S.addAnalyzer(RequestAnalyzer.analyze _)
 
     /*
