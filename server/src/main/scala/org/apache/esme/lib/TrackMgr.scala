@@ -50,13 +50,13 @@ object TrackMgr {
 
   val menuItems =
   Menu(Loc("trackMgt", List("track_view", "index"), "Item Tracking", ifIsLoggedIn,
-           Loc.Snippet("dispayTracking", dispayTracking),
+           Loc.Snippet("displayTracking", displayTracking),
            Loc.Snippet("main", mainTracking))) ::
   Nil
 
   object updateTracking extends RequestVar[() => JsCmd](() => Noop)
 
-  def dispayTracking(in: NodeSeq): NodeSeq = {
+  def displayTracking(in: NodeSeq): NodeSeq = {
     // get the span name to update
     val spanName = S.attr("the_id") openOr "TrackSpan"
     // get the current user
