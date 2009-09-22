@@ -50,13 +50,13 @@ object AuthMgr {
 
   val menuItems =
   Menu(Loc("authToken", List("auth_view", "index"), "Manage Tokens", ifIsLoggedIn,
-           Loc.Snippet("dispayTokens", dispayTokens),
+           Loc.Snippet("displayTokens", displayTokens),
            Loc.Snippet("main", mainTokens))) ::
   Nil
 
   object updateTokens extends RequestVar[() => JsCmd](() => Noop)
 
-  def dispayTokens(in: NodeSeq): NodeSeq = {
+  def displayTokens(in: NodeSeq): NodeSeq = {
     // get the span name to update
     val spanName = S.attr("the_id") openOr "TokenSpan"
     // get the current user

@@ -50,13 +50,13 @@ object ActionMgr {
 
   val menuItems =
   Menu(Loc("actionMgt", List("action_view", "index"), "Action Management", ifIsLoggedIn,
-           Loc.Snippet("dispayActions", dispayActions),
+           Loc.Snippet("displayActions", displayActions),
            Loc.Snippet("main", mainActions))) ::
   Nil
 
   object updateActions extends RequestVar[() => JsCmd](() => Noop)
 
-  def dispayActions(in: NodeSeq): NodeSeq = {
+  def displayActions(in: NodeSeq): NodeSeq = {
     // get the span name to update
     val spanName = S.attr("the_id") openOr "TokenSpan"
     // get the current user
