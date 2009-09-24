@@ -63,19 +63,19 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
       }
   }
   
-  lazy val poolName: Parser[MsgInfo] = acceptCI("pool:") ~> poolNameStr ^^ {
+  lazy val poolName: Parser[PoolName] = acceptCI("pool:") ~> poolNameStr ^^ {
     case name => 
       AccessPool.findPool(name, AccessPool.Native) match {
         case Full(p) => PoolName(p)
-        case _ => MsgText("pool:"+name)
+        case _ => throw new RuntimeException("Unknown pool name")
       }
   }
   
-  lazy val resenderName: Parser[MsgInfo] = acceptCI("resent:") ~> userNameStr ^^ {
+  lazy val resenderName: Parser[ResenderName] = acceptCI("resent:") ~> userNameStr ^^ {
     case name => 
       User.find(By(User.nickname, name)) match {
         case Full(u) => ResenderName(u)
-        case _ => MsgText("resent:"+name)
+        case _ => throw new RuntimeException("Unknown user name for resender")
       }
   }
   
@@ -399,7 +399,8 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
 sealed trait MsgInfo
 case class MsgText(text: String) extends MsgInfo
 case class AtName(user: User) extends MsgInfo
-case class ResenderName(user: User) extends MsgInfo
 case class HashTag(tag: Tag) extends MsgInfo
 case class URL(url: UrlStore) extends MsgInfo
-case class PoolName(pool: AccessPool) extends MsgInfo
+
+case class ResenderName(user: User)
+case class PoolName(pool: AccessPool)
