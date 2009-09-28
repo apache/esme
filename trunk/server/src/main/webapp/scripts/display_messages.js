@@ -44,6 +44,7 @@ function displayMessages(msgArray, elementId)
       var msgPool = '';
       if (cometMsg.pool) msgPool = 'in pool ' + cometMsg.pool.name;
       var msgSource = cometMsg.source;
+      var msgConversation = cometMsg.conversation;
       var msgReason = ""
       for (r in cometReason) {
         if (r == "resent_from")
@@ -81,8 +82,15 @@ function displayMessages(msgArray, elementId)
           attr('onclick', 'javascript:resend_msg(' + id + ');' +
                                      'clearResend("resend_' + id + '")');
       }
-      var reply = newMsg.find('#reply');
-      reply.attr('href', "javascript:setReplyTo(" + id + ", '" + msgBody + "')");
+      newMsg.find('#reply').attr('href',
+        "javascript:setReplyTo(" + id + ", '"+ msgBody + "')");
+      var conversation = newMsg.find('#conversation');
+      if (msgConversation != 0) {
+        conversation.attr('href',
+          '/conversation/' + msgConversation);
+      } else {
+        conversation.css("display", "none");
+      }
       for (var tagIndex=0; tagIndex < msgTags.length; tagIndex++) {
         var newTag = tagTemplate.clone(true).attr('id',msgTags[tagIndex]);
         newTag.find('a')
