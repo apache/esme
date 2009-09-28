@@ -81,6 +81,8 @@
                 attr('onclick', 'javascript:resend_msg(' + id + ');' +
                                            'clearResend("resend_' + id + '")');
             }
+            var reply = newMsg.find('#reply');
+            reply.attr('href', "javascript:setReplyTo(" + id + ", '" + msgBody + "')");
             for (var tagIndex=0; tagIndex < msgTags.length; tagIndex++) {
               var newTag = tagTemplate.clone(true).attr('id',msgTags[tagIndex]);
               newTag.find('a')
