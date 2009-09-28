@@ -27,6 +27,7 @@ import util._
 import http.js._
 import Helpers._
 import java.util.logging._
+import textile.TextileParser
 
 import scala.xml._
 
@@ -293,6 +294,8 @@ class Message extends LongKeyedMapper[Message] {
             e.attribute("uniqueId").map(id =>
               <xml:group> <a href={"/u/"+id}>{url}</a> </xml:group>)).
           getOrElse(Text("") )
+
+        case t: Text => TextileParser.toHtml(t.toString)
 
         case x => x
       })
