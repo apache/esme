@@ -151,18 +151,28 @@ object UserPwdAuthModule extends AuthModule {
            "pwd2" -> SHtml.password(pwd2, s => pwd2 = s.trim))
     ) openOr NodeSeq.Empty
 
-    def validate: List[FieldError] =
-    (if (MappedEmail.validEmailAddr_?(email)) Nil else
-     List(FieldError(new FieldIdentifier {
-          override def uniqueFieldId: Box[String] = Full("email")
-        },Text(S.?("Bad email address"))))) :::
-    (if (pwd1 != pwd2) List(FieldError(new FieldIdentifier {
-          override def uniqueFieldId: Box[String] = Full("pwd1")
-        },Text(S.?("Passwords do not match"))))
-    else if (pwd1.length < 6) List(FieldError(new FieldIdentifier {
-          override def uniqueFieldId: Box[String] = Full("pwd1")
-        },Text(S.?("Passwords must be 6 characters or longer"))))
-    else Nil)
+    def validate: List[FieldError] = (
+    if (MappedEmail.validEmailAddr_?(email)) Nil else {
+      val msg = S.?("Bad email address")
+      S.error(msg)
+      List(FieldError(new FieldIdentifier {
+        override def uniqueFieldId: Box[String] = Full("email")
+      }, Text(msg)))
+    }
+    ) ::: (
+    if (pwd1 != pwd2) {
+      val msg = S.?("Passwords do not match")
+      S.error(msg)
+      List(FieldError(new FieldIdentifier {
+        override def uniqueFieldId: Box[String] = Full("pwd1")
+      }, Text(msg)))
+    } else if (pwd1.length < 6) {
+      val msg = S.?("Passwords must be 6 characters or longer")
+      S.error(msg)
+      List(FieldError(new FieldIdentifier {
+        override def uniqueFieldId: Box[String] = Full("pwd1")
+      }, Text(msg)))
+    } else Nil)
 
     def save(user: User): Unit = {
       val salt = randomString(10)
