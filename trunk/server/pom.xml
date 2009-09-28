@@ -107,6 +107,11 @@
       <artifactId>lift-openid</artifactId>
       <version>${lift.version}</version>
     </dependency>
+    <dependency>
+      <groupId>net.liftweb</groupId>
+      <artifactId>lift-textile</artifactId>
+      <version>${lift.version}</version>
+    </dependency>
     <!--
 	<dependency>
 	  <groupId>com.socialmaterial</groupId>
