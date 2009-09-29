@@ -9,6 +9,26 @@
     </lift:addPool>
   </lift:form>
   
+    <span id="PoolDetailSpan">
+    <lift:ignore>
+      <!--
+      The poolUsers snippet *MUST* appear on the page before
+      the editPool snippet
+      -->
+    </lift:ignore>
+    <lift:poolDetail the_pool_id="PoolDetailSpan">
+      <table>
+        <thead>
+          <tr> <th>Name</th> <th>Last Modifier</th> <th>Last Modify Date</th> <th>Creator</th> <th>createdDate</th> </tr>
+        </thead>
+        
+        <tbody>
+            <tr> <td><pool:name/></td>  <td><pool:modifier/></td><td><pool:lastModifyDate/></td><td><pool:creator/></td><td><pool:createdDate/></td> </tr>
+        </tbody>
+      </table>
+    </lift:poolDetail>
+  </span>
+  
   <span id="PoolSpan">
     <lift:ignore>
       <!--
@@ -30,7 +50,6 @@
       </table>
     </lift:poolUsers>
   </span>
-
 
   <lift:form>
     <lift:editPool>
