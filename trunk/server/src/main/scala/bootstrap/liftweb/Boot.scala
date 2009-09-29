@@ -83,6 +83,9 @@ class Boot {
     }
 
     LiftRules.dispatch.append(ESMEOpenIDVendor.dispatchPF)
+    
+    //Resources for Internationalization
+    LiftRules.resourceNames = "ESMEBase" :: "ESMEUI" :: Nil
 
     LiftRules.siteMapFailRedirectLocation = List("static", "about")
 
