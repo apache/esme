@@ -295,7 +295,7 @@ class Message extends LongKeyedMapper[Message] {
               <xml:group> <a href={"/u/"+id}>{url}</a> </xml:group>)).
           getOrElse(Text("") )
 
-        case t: Text => TextileParser.toHtml(t.toString)
+        case t: Text => <xml:group> {TextileParser.toHtml(t.toString())} </xml:group>
 
         case x => x
       })
