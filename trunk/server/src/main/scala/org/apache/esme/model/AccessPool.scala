@@ -28,6 +28,8 @@ import util._
 
 import scala.xml.Text
 
+import java.util.Date
+
 object AccessPool extends AccessPool with LongKeyedMetaMapper[AccessPool] {
   val Native = "Native"
 
@@ -35,6 +37,13 @@ object AccessPool extends AccessPool with LongKeyedMetaMapper[AccessPool] {
     AccessPool.find(By(AccessPool.name,  name),
                     By(AccessPool.realm, realm))
 
+  //set createdDate and creator when instance AccessPool
+  override def create: AccessPool = {
+    val ap = super.create
+    ap.createdDate(new Date())
+    ap.creator(User.currentUser)
+    ap
+  }
 }
 
 class AccessPool extends LongKeyedMapper[AccessPool] {
@@ -57,8 +66,13 @@ class AccessPool extends LongKeyedMapper[AccessPool] {
     
   }
   
+  // set modify information when setName
   def setName(in: String) = sameName(in) match {
-    case Nil => Full(this.name(in))
+    case Nil => {
+      Full(this.name(in))
+      Full(this.lastModifyDate(new Date()))
+      Full(this.modifier(User.currentUser))
+    }
     case List(_,_*) => Failure("Duplicate access pool name!")
   }
   
@@ -67,5 +81,11 @@ class AccessPool extends LongKeyedMapper[AccessPool] {
   private def sameName(name: String) = 
     AccessPool.findAll(By(AccessPool.name, name)).
       filter(_.realm.is.equalsIgnoreCase(this.realm.is))
+  
+  //define create and modify fields
+  object createdDate extends MappedDateTime(this) 
+  object creator extends MappedLongForeignKey(this,User)
+  object lastModifyDate extends MappedDateTime(this) 
+  object modifier extends MappedLongForeignKey(this,User)
   
 }
