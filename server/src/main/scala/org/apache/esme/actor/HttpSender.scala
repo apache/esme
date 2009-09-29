@@ -58,7 +58,7 @@ object HttpSender extends Actor with GetPoster {
   private def send(action: Performances, msg: Message, user: User, reason: MailboxReason, token: String) {
     import Mailer._
     
-    action match {
+    (action: @unchecked) match {
       case MailTo(who, text) =>
         val body = text match {
           case None => XHTMLMailBodyType(msg.digestedXHTML)

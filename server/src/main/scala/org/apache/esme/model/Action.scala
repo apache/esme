@@ -178,6 +178,8 @@ class Action extends LongKeyedMapper[Action] {
               case FetchRss(_) => new RssFeed(u, url.url, urlSourcePrefix + url.uniqueId, 0, Nil)
             }
             MessagePullActor ! MessagePullActor.StartPullActor(id, lastMsg, feed)
+          
+          case _ =>
         }
       }
       case _ =>
@@ -206,7 +208,8 @@ class Action extends LongKeyedMapper[Action] {
       case _ => Nil
     }
     
-    def actionFunc = _perform(is) match {
+    // already parsed, so should always return Success
+    def actionFunc = (_perform(is): @unchecked) match {
       case Success(v, _) => v
     }
   }
@@ -221,7 +224,8 @@ class Action extends LongKeyedMapper[Action] {
       case _ => Nil
     }
 
-    def testFunc = testExpr(is) match {
+    // already parsed, so should always return Success
+    def testFunc = (testExpr(is): @unchecked) match {
       case Success(v, _) => Action.toFunc(v)
     }
   }
@@ -251,6 +255,7 @@ class Action extends LongKeyedMapper[Action] {
 
   def regularActions: List[RegularAction] = testExpr(testText) match {
     case Success(v, _) => Action.regularActions(v)
+    case _ => Nil
   }
 
   def actionText = theAction.is

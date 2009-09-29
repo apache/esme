@@ -351,6 +351,7 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
   (whiteSpace ~ '@' ~> rep1(digit) <~ whiteSpace ^^ {case dig => AtUserAction(dig.mkString.toLong)}) |
   (atName ^^ {
       case AtName(user) => AtUserAction(user.id)
+      case _ => throw new RuntimeException("Unknown user name")
     })
 
   lazy val reChars: Parser[Char] = (('\\' ~ '/') ^^^ '/') |
@@ -359,6 +360,7 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
   lazy val testRegex: Parser[TestAction] = 
   whiteSpace ~ '/' ~> rep1(reChars) <~ '/' ~ whiteSpace ^^ {
     case re if validRegex(re.mkString).isDefined => RegexAction(re.mkString)
+    case _ => throw new RuntimeException("Invalid regular expression")
   }
   
   lazy val strChars: Parser[Char] = (('\\' ~ '"') ^^^ '/') |
