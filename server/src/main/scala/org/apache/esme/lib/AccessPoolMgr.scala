@@ -41,6 +41,8 @@ import org.apache.esme.actor.Distributor
 
 import scala.xml._
 
+import java.util.Date
+import java.text.{DateFormat,SimpleDateFormat}
 /**
  * Manage the sitemap and related snippets for Access Pools
  */
@@ -53,10 +55,17 @@ object AccessPoolMgr {
   Menu(Loc("accessPools", List("pools_view", "index"), "Manage Access Pools", ifIsLoggedIn,
            Loc.Snippet("addPool", addPool),
            Loc.Snippet("editPool", editPool),
-           Loc.Snippet("poolUsers", displayPoolUsers))) ::
+           Loc.Snippet("poolUsers", displayPoolUsers),
+  		   Loc.Snippet("poolDetail", displayPoolDetail)//regist snippet for pool detail display
+  		)) ::
   Nil
 
   object updatePool extends RequestVar[() => JsCmd](() => Noop)
+  
+  //update pool detail response 
+  object updatePoolDetail extends RequestVar[() => JsCmd](() => Noop)
+  
+  
   object poolId extends RequestVar[Long](0)
 
   def addPool(in: NodeSeq): NodeSeq = {
@@ -93,6 +102,13 @@ object AccessPoolMgr {
   def editPool(in: NodeSeq): NodeSeq = {
     val redisplayPool = updatePool.is
     
+    // redisplay pool detail
+    val redisplayPoolDetail = updatePoolDetail.is
+    
+    // redisplay pool users and pool detail
+    def redisplay(): JsCmd = {
+      redisplayPoolDetail() & redisplayPool() 
+    }
     var pool = ""
     var username = ""
     val editPoolName = "edit_pool"
@@ -130,18 +146,57 @@ object AccessPoolMgr {
       }
       
       poolId.set(pool.toLong)
+      
+      //we needn't redisplay pool detail when add a new user
       redisplayPool() & SetValById(editUsername, "")
     }
 
     bind("edit", in,
          "pool" -> ajaxSelect(adminPools, Empty, p => {pool = p;
                                                        poolId.set(p.toLong);
-                                                       redisplayPool()},
+                                                       redisplay() //redisplay pooluser and pool detail
+                                                       },
                                                  "id" -> editPoolName),
          "username" -> text(username, username = _, "id" -> editUsername),
          "permission" -> select(permissions, Empty, addPoolUser, "id" -> editPermission)
     )
     
+  }
+  
+  
+  def displayPoolDetail(in: NodeSeq): NodeSeq = {
+    // get the span name to update
+    val spanName = S.attr("the_pool_id") openOr "PoolDetailSpan"
+    
+    //XXX display date, should we have a common dateFormat?
+    val dateFormat = new SimpleDateFormat("yyyy/MM/dd")
+    def getDateHtml(date: Date) : Text = date match {
+     case null => Text("---")
+     case d => Text(dateFormat.format(d))
+   }
+    
+    def disPlayUserName(uid: Long): NodeSeq = {
+      User.find(uid) match {
+        case Full(user) => <span>{user.nickname}</span>
+        case _ => NodeSeq.Empty
+      }
+    }
+    
+    def doRender(): NodeSeq = 
+       AccessPool.find(By(AccessPool.id, poolId.is)) match {
+        case Full(ap) => bind(
+        "pool", in,
+        "name" -> ap.getName,     
+        "creator" -> disPlayUserName(ap.creator),
+        "createdDate" -> getDateHtml(ap.createdDate),
+        "modifier" -> disPlayUserName(ap.modifier),
+        "lastModifyDate" -> getDateHtml(ap.lastModifyDate))
+      case _ => NodeSeq.Empty
+      }
+    
+    def updateSpan(): JsCmd = SetHtml(spanName, doRender())
+    updatePoolDetail.set(updateSpan)
+    doRender
   }
   
   def displayPoolUsers(in: NodeSeq): NodeSeq = {
@@ -150,7 +205,9 @@ object AccessPoolMgr {
     // get the current user
     val user = User.currentUser
 
-    def doRender(): NodeSeq =
+      
+    def doRender(): NodeSeq = {
+    val accessPool = AccessPool.find(By(AccessPool.id, poolId.is))  
     Privilege.findAll(By(Privilege.pool, poolId.is)) match {
       case Nil => NodeSeq.Empty
       case xs => bind("pool", in,
@@ -161,7 +218,7 @@ object AccessPoolMgr {
                                                    "privilege" -> i.permission.is.toString
                       ))))
     }
-    
+    }
 
     def updateSpan(): JsCmd = SetHtml(spanName, doRender())
 
