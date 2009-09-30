@@ -1,5 +1,7 @@
 <lift:surround with="default" at="content">
-  Manage your Actions items: <br/>
+
+
+
   <span id="TokenSpan">
     <lift:ignore>
       <!--
@@ -8,22 +10,23 @@
       -->
     </lift:ignore>
     <lift:displayActions the_id="TokenSpan">
+      <b><lift:loc>ui_action_title</lift:loc></b><br/>
       <table>
         <tr>
-          <td>Name</td>
-          <td>Enabled</td>
-          <td>Test</td>
-          <td>Action</td>
-          <td>Remove</td>
+          <td><lift:loc>ui_action_table_name</lift:loc></td>
+          <td><lift:loc>ui_action_table_enabled</lift:loc></td>
+          <td><lift:loc>ui_action_table_test</lift:loc></td>
+          <td><lift:loc>ui_action_table_action</lift:loc></td>
+          <td><lift:loc>ui_action_table_delete</lift:loc></td>
         </tr>
         <disp:item>
           <tr>
             <td><item:name/></td>
-            <td>Enabled: <item:enabled/></td>
+            <td><item:enabled/></td>
             <td><pre><item:test/></pre></td>
             <td><pre><item:action/></pre></td>
             <td>
-              <item:remove>Remove</item:remove>
+              <item:remove><lift:loc>ui_action_table_item_delete</lift:loc></item:remove>
             </td>
           </tr>
         </disp:item>
@@ -34,43 +37,22 @@
   <lift:form>
     <lift:main>
     <table>
-      <tr><td colspan="3">New Action</td></tr>
+      <tr><td colspan="3"><b><lift:loc>ui_action_new_action</lift:loc></b></td></tr>
       <tr>
-        <td>Name</td>
+        <td><lift:loc>ui_action_new_action_name</lift:loc></td>
         <td><main:name/></td>
       </tr>
       <tr>
-        <td>Test</td>
-        <td><main:test/></td>
-        <td>
-          @foo -- sender is @foo<br />
-          day = (0,1) -- sent on Sunday or Monday<br/>
-          #moo -- contains the #moo tag<br/>
-          50% -- success 50% of the time<br/>
-          @foo &amp; 50% -- half the time, something sent by @foo<br/>
-          login -- user has logged in<br/>
-          followed -- user is being followed<br/>
-          unfollowed -- user is being unfollowed<br/>
-          profile -- user changed profile<br/>
-          every N mins -- repeat action, N is an integer<br/>
-          pool[:mypool] -- message is in access pool mypool<br/>
-          resent[:user] -- message was resent by user
-        </td>
+        <td><lift:loc>ui_action_new_action_test</lift:loc></td>
+        <td><main:test/></td> 
       </tr>
-
       <tr>
-        <td>Action</td>
+        <td><lift:loc>ui_action_new_action_action</lift:loc></td>
         <td><main:action/></td>
-        <td>
-          filter -- not put in your timeline<br />
-          resend -- sends the message to all your followers<br />
-          mailto:foo@bar.com -- sends the message to foo@bar.com<br/>
-          http://foo.com/message/in -- HTTP post, %s expands to message<br/>
-          atom:http://blog.com/feed.atom -- posts new messages from Atom feed<br/>
-          rss:http://blog.com/feed.rss -- posts new messages from RSS feed
-        </td>
       </tr>
-      <input type="submit" value="Add" />
+       <tr>
+      <td></td><td><input type="submit" value="Add" /></td>
+      </tr>
     </table>
     </lift:main>
   </lift:form>
