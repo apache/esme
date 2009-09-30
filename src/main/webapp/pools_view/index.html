@@ -1,10 +1,10 @@
 <lift:surround with="default" at="content">
 
-  Manage access pools: <br/>
+  <lift:loc>ui_pool_title</lift:loc><br/>
 
   <lift:form>
     <lift:addPool>
-      Add pool with name: <add:poolName/>
+      <lift:loc>ui_pool_add</lift:loc><add:poolName/>
       <input type="submit" value="Add" />
     </lift:addPool>
   </lift:form>
@@ -19,7 +19,7 @@
     <lift:poolDetail the_pool_id="PoolDetailSpan">
       <table>
         <thead>
-          <tr> <th>Name</th> <th>Last Modifier</th> <th>Last Modify Date</th> <th>Creator</th> <th>createdDate</th> </tr>
+          <tr> <th><lift:loc>ui_pool_list_pool_name</lift:loc></th> <th><lift:loc>ui_pool_list_last_modifier</lift:loc></th> <th><lift:loc>ui_pool_list_modify_date</lift:loc> </th> <th><lift:loc>ui_pool_list_modify_date</lift:loc> </th> <th><lift:loc>ui_pool_list_last_creator</lift:loc></th> <th><lift:loc>ui_pool_list_create_date</lift:loc></th> </tr>
         </thead>
         
         <tbody>
@@ -39,7 +39,7 @@
     <lift:poolUsers the_id="PoolSpan">
       <table>
         <thead>
-          <tr> <th>User</th>  <th>Privilege</th> </tr>
+          <tr> <th><lift:loc>ui_pool_list_user_name</lift:loc></th>  <th><lift:loc>ui_pool_list_user_role</lift:loc></th> </tr>
         </thead>
         
         <tbody>
@@ -53,8 +53,8 @@
 
   <lift:form>
     <lift:editPool>
-      Edit user permissions within pool: <edit:pool/> <br/>
-      User name: <edit:username/> <edit:permission/> <br/>
+      <lift:loc>ui_pool_edit_label</lift:loc><edit:pool/> <br/>
+      <lift:loc>ui_pool_edit_name</lift:loc><edit:username/> <edit:permission/> <br/>
       <input type="submit" value="Edit" />
     </lift:editPool>
   </lift:form>
