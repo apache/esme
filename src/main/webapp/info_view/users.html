@@ -1,0 +1,21 @@
+<lift:surround with="default" at="content">
+
+    <fieldset style="width: 80em">
+      <legend>Users</legend>
+      <table>
+      <tr><th></th><th>Nickname</th><th>Name</th><th colspan="2">Last Message</th></tr>
+          <lift:displayUsers>
+              <disp:item>
+                  <tr>
+                      <td><item:imageUrl/></td>
+                      <td><item:nickname/></td>
+                      <td><item:firstName/> <item:lastName/></td> 
+                      <td><item:lastMsg/></td> 
+                      <td><item:lastMsgWhen/></td> 
+                  </tr>
+              </disp:item>
+          </lift:displayUsers>
+      </table>
+    </fieldset>
+
+</lift:surround>

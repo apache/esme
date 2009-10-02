@@ -113,7 +113,6 @@ class Boot {
 
     // Build SiteMap
     val entries = Menu(Loc("Home", List("index"), "Home")) ::
-    Menu(Loc("list_users", List("user_view", "all"), "List Users")) ::
     Menu(Loc("user", List("info_view", "user"), "User Info", Hidden,
       Loc.Snippet("user_info", TagDisplay.userInfo))) ::
     Menu(Loc("conv", List("user_view", "conversation"), "Conversation", Hidden)) ::
@@ -127,6 +126,7 @@ class Boot {
              EarlyResponse(() => {User.logUserOut; S.redirectTo(S.referer openOr "/")}),
              If(User.loggedIn_? _, "You must be logged in to log out"))) ::
     // User.sitemap :::
+    UserMgr.menuItems :::
     TrackMgr.menuItems :::
     ActionMgr.menuItems :::
     AuthMgr.menuItems :::
