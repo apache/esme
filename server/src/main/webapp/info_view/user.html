@@ -3,8 +3,8 @@
     <div>
       <div id="tabs" class="b-view tab1">
         <dl class="messages">
-          <dt class="caption"><user:nicename/>'s Timeline
-          <span id="following"><user:followButton/></span></dt>
+        <fieldset><legend> <user:nicename/><lift:loc>ui_user_timeline</lift:loc></legend>
+          <span id="following"><user:followButton/></span>
           <dd>
             <table>
               <user:timeline>
@@ -15,12 +15,11 @@
                 </tr>
               </user:timeline>
             </table>
-
           </dd>
-        </dl>
-
+          </fieldset>
+        </dl>     
         <dl class="">
-          <dt class="caption"><user:nicename/>'s Messages</dt>
+           <fieldset><legend><user:nicename/><lift:loc>ui_user_messages</lift:loc></legend>
 
           <dd class="b-clouds">
             <table>
@@ -33,22 +32,23 @@
               </user:messages>
             </table>
           </dd>
+            </fieldset>
         </dl>
         <dl class="">
-          <dt class="caption">
-            Contacts
-          </dt>
+          <fieldset><legend><lift:loc>ui_user_contacts</lift:loc></legend>
 
           <dd class="b-contacts" style="height: 240px; overflow: auto">
-            Following:
+            <lift:loc>ui_user_following</lift:loc>
             <lift:UserSnip.following user:userId=""/>
           </dd>
           <dd class="b-contacts" style="height: 240px; overflow: auto">
-            Followers:
+            <lift:loc>ui_user_followers</lift:loc>
             <lift:UserSnip.followers user:userId=""/>
           </dd>
+           </fieldset>
         </dl>
       </div>
     </div>
   </lift:user_info>
 </lift:surround>
+
