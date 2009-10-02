@@ -57,9 +57,7 @@ object UserView extends LiftView /* with MsgFormat */ {
 
   val dispatch = 
   Map("index" -> index _,
-      // "tag" -> displayTag _,
       "search" -> search _,
-      "all" -> allUsers _,
       "conversation" -> conversation _)
 
   def conversation(): Box[NodeSeq] =   {
@@ -209,49 +207,6 @@ object UserView extends LiftView /* with MsgFormat */ {
         </ul>
       </fieldset>
     </div>
-  </lift:surround>
-
-  /*
-  def displayTag(): Box[NodeSeq] =
-  (<lift:surround with="default" at="content">
-      {
-        val ui = for (tagText <- S.param("tag").map(_.trim);
-                      tag <- Tag.find(By(Tag.name, tagText))) yield {
-          val lst = tag.findMessages()
-          
-          (<div>
-              <fieldset>
-                <legend>{tag.name}</legend>
-                <ul>
-                  {
-                    lst.zipWithIndex.map{
-                      case (m, idx) =>
-                        <span id={"m5_"+idx}>
-                          {
-                            Script(OnLoad(JsFunc("displayMessages", JsArray(m.asJs), "m5_"+idx).cmd))
-                          }
-                        </span>
-                    }
-                  }
-                </ul>
-              </fieldset>
-           </div>)
-        }
-        ui openOr (<span>Tag Not Found</span>)
-      }
-   </lift:surround>)
-  */
-  def allUsers(): Box[NodeSeq] = 
-  <lift:surround with="default" at="content">
-    <fieldset>
-      <legend>Users</legend>
-      <ul>
-        {
-          User.findAll(OrderBy(User.nickname, Ascending)).
-          map(u => <li><a href={"/user/"+urlEncode(u.nickname.is)}>{u.niceName}</a> {u.firstName} {u.lastName}</li>)
-        }
-      </ul>
-    </fieldset>
   </lift:surround>
 
 }
