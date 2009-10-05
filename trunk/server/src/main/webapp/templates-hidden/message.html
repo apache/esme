@@ -69,9 +69,9 @@
                                 <p id="tag"><a href="tag/tag1">tag1</a></p>
                                 <p id="tag"><a href="tag/tag2">tag2</a></p>
                               </td>
-                              <td><button id="resend" class="btn">Resend</button><br/>
-                                  <a href="#" id="reply">reply</a><br/>
-                                  <a id="conversation">conversation</a></td>
+                              <td><button id="resend" class="btn"><lift:loc>ui_messages_message_label_resend</lift:loc></button><br/>
+                                  <a href="#" id="reply"><lift:loc>ui_messages_message_label_reply</lift:loc></a><br/>
+                                  <a id="conversation"><lift:loc>ui_messages_message_label_conversation</lift:loc></a></td>
                             </tr>
                           </tbody>
                         </table>
@@ -81,7 +81,7 @@
                   <lift:UserSnip.resendScript/>
 
                   <dl class="tagclouds">
-                    <dt class="caption">Public timeline</dt>
+                    <dt class="caption"><lift:loc>ui_messages_message_label_public_timeline</lift:loc></dt>
 
                     <dd>
                       <div class="b-list">
@@ -119,15 +119,15 @@
                   </dl>
                   <dl class="contacts">
                     <dt class="caption">
-                      Contacts
+                      <lift:loc>ui_messages_message_label_contacts</lift:loc>
                     </dt>
 
                     <dd class="b-contacts" style="height: 240px; overflow: auto">
-                      Following:
+                      <lift:loc>ui_messages_message_label_following</lift:loc>
                       <lift:UserSnip.following/>
                     </dd>
                     <dd class="b-contacts" style="height: 240px; overflow: auto">
-                      Followers:
+                      <lift:loc>ui_messages_message_label_followers</lift:loc>
                       <lift:UserSnip.followers/>
                     </dd>
                   </dl>
@@ -136,11 +136,11 @@
             </td>
             <td class="l-page-l">
               <div class="b-edit">
-                <h2 class="title">Welcome<span class="name"><lift:UserSnip.name /></span></h2>
+                <h2 class="title"><lift:loc>ui_messages_message_label_welcome</lift:loc><span class="name"><lift:UserSnip.name /></span></h2>
 
                 <div class="b-popup-c">
                   <div class="row clear">
-                    <label>What are you working on?</label>
+                    <label><lift:loc>ui_messages_message_label_message_request</lift:loc></label>
                     <textarea rows="4" cols="20" id="textdude"
                               style="width: 90%"></textarea
                     >
@@ -148,24 +148,23 @@
                   <div class="row clear"
                        style="display: none;"
                        id="reply-to-div">
-                    Replying to <span id="reply-to-span">&nbsp;</span>
+                    <lift:loc>ui_messages_message_label_message_reply</lift:loc><span id="reply-to-span">&nbsp;</span>
                     <button onclick="clearReplyTo()">remove reply</button>
                   </div>
 
                   <div class="row clear" style="display: none">
-                    <label>Tag your message</label>
+                    <label><lift:loc>ui_messages_message_label_message_tag</lift:loc></label>
                     <input id="tagdude" style="width: 90%"/>
                     <div class="note clear">
-                      <span class="l">use commas to
-                      separate tags</span>
-                      <span class="r">not required</span>
+                      <span class="l"><lift:loc>ui_messages_message_label_message_tag_note</lift:loc></span>
+                      <span class="r"><lift:loc>ui_messages_message_label_message_tag_not_required</lift:loc></span>
                     </div>
                   </div>
 
                   <div class="row clear">
-                    <label>Access pool</label>
+                    <label><lift:loc>ui_messages_message_label_message_pool</lift:loc></label>
                     <select id="access_pool">
-                      <option id="0">--public--</option>
+                      <option id="0"><lift:loc>ui_messages_message_label_message_pool_public</lift:loc></option>
                       <lift:UserSnip.accessPools />
                     </select>
                   </div>
@@ -201,11 +200,11 @@
                 </div>
                 
                 <div class="b-stats">
-                  <p id="stats-para">Popular messages</p>
+                  <p id="stats-para"><lift:loc>ui_messages_message_label_popular</lift:loc></p>
                   <lift:UserSnip.popular>
                     <table>
                       <thead>
-                        <tr> <th>Resent</th> <th>Message</th> </tr>
+                        <tr> <th><lift:loc>ui_messages_message_header_popular_resent</lift:loc></th> <th><lift:loc>ui_messages_message_header_popular_message</lift:loc></th> </tr>
                       </thead>
                       <tbody>
                         <disp:item>
@@ -222,11 +221,11 @@
                 </div>
 
                 <div class="b-stats">
-                  <p id="stats-para">Popular links</p>
+                  <p id="stats-para"><lift:loc>ui_messages_message_label_popular_links</lift:loc></p>
                   <lift:UserSnip.links>
                     <table>
                       <thead>
-                        <tr> <th>Clicked</th> <th>Link</th> </tr>
+                        <tr> <th><lift:loc>ui_messages_message_header_popular_links_clicked</lift:loc></th> <th><lift:loc>ui_messages_message_header_popular_links_link</lift:loc></th> </tr>
                       </thead>
                       <tbody>
                         <disp:item>
