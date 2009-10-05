@@ -1,7 +1,8 @@
 <lift:surround with="default" at="content">
 
-  Manage your external application authentication tokens: <br/>
+ <lift:loc>ui_token_title</lift:loc><br/>
   <span id="TokenSpan">
+  <fieldset><legend><lift:loc>ui_token_list_title</lift:loc></legend>
     <lift:ignore>
       <!--
       The displayTokens snippet *MUST* appear on the page before
@@ -11,18 +12,22 @@
     <lift:displayTokens the_id="TokenSpan">
       <ul>
         <disp:item>
-          <li><item:description/> token: <item:uniqueId/> <item:revoke>Revoke</item:revoke></li>
+          <li><item:description/> <lift:loc>ui_token_list_token</lift:loc> <item:uniqueId/> <item:revoke><lift:loc>ui_token_revoke</lift:loc></item:revoke></li>
         </disp:item>
       </ul>
     </lift:displayTokens>
+    </fieldset>
   </span>
 
   <lift:form>
+  <fieldset><legend><lift:loc>ui_token_create_title</lift:loc></legend>
     <lift:main>
-      Create a new Authentication Token.<br />
-      Description: <main:token/>
+      <lift:loc>ui_token_create_description</lift:loc>
+      <br/>
+      <main:token/>
       <input type="submit" value="Add" />
     </lift:main>
+     </fieldset>
   </lift:form>
 
 </lift:surround>

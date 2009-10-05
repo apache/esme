@@ -1,8 +1,32 @@
 <lift:surround with="default" at="content">
 
+	<lift:Style.header />
+	    	
+	<!-- STYLESHEETS <lift:Style.header /> -->	
+		<link rel="stylesheet" type="text/css" href="../style/reset.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="../style/text.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="../style/grid.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="../style/layout.css" media="screen" />
+		<link type="text/css" href="../style/smoothness/jquery-ui-1.7.2.custom.css" rel="stylesheet" />			
+		<!--[if IE 6]><link rel="stylesheet" type="text/css" href="../style/ie6.css" media="screen" /><![endif]-->
+		<!--[if gte IE 7]><link rel="stylesheet" type="text/css" href="../style/ie.css" media="screen" /><![endif]-->
 
+	<!-- JAVASCRIPT -->
+		<script type="text/javascript" src="../scripts/jquery-1.3.2.min.js"></script>
+		<script type="text/javascript" src="../scripts/jquery-ui-1.7.2.custom.min.js"></script>
+		<script type="text/javascript" src="../scripts/esme.js"></script>
+  
 
-  <span id="TokenSpan">
+<div class="demo">
+
+<div class="ui-tabs ui-widget ui-widget-content ui-corner-all" id="tabs">
+	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+		<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a href="#tabs-1"><lift:loc>ui_action_title</lift:loc></a></li>
+		<li class="ui-state-default ui-corner-top"><a href="#tabs-2"><lift:loc>ui_action_new_action</lift:loc></a></li>
+		<li class="ui-state-default ui-corner-top"><a href="#tabs-3">Help</a></li>
+	</ul>
+	<div class="ui-tabs-panel ui-widget-content ui-corner-bottom" id="tabs-1">
+		  <span id="TokenSpan">
     <lift:ignore>
       <!--
       The displayActions snippet *MUST* appear on the page before
@@ -10,14 +34,13 @@
       -->
     </lift:ignore>
     <lift:displayActions the_id="TokenSpan">
-      <b><lift:loc>ui_action_title</lift:loc></b><br/>
       <table>
         <tr>
           <td><lift:loc>ui_action_table_name</lift:loc></td>
-          <td><lift:loc>ui_action_table_enabled</lift:loc></td>
-          <td><lift:loc>ui_action_table_test</lift:loc></td>
-          <td><lift:loc>ui_action_table_action</lift:loc></td>
-          <td><lift:loc>ui_action_table_delete</lift:loc></td>
+          <td halign="center"><lift:loc>ui_action_table_enabled</lift:loc></td>
+          <td halign="center"><lift:loc>ui_action_table_test</lift:loc></td>
+          <td halign="center"><lift:loc>ui_action_table_action</lift:loc></td>
+          <td halign="center"><lift:loc>ui_action_table_delete</lift:loc></td>
         </tr>
         <disp:item>
           <tr>
@@ -33,11 +56,11 @@
       </table>
     </lift:displayActions>
   </span>
-
+	</div>
+	<div class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide" id="tabs-2">
   <lift:form>
     <lift:main>
     <table>
-      <tr><td colspan="3"><b><lift:loc>ui_action_new_action</lift:loc></b></td></tr>
       <tr>
         <td><lift:loc>ui_action_new_action_name</lift:loc></td>
         <td><main:name/></td>
@@ -56,4 +79,35 @@
     </table>
     </lift:main>
   </lift:form>
+	</div>
+	<div class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide" id="tabs-3">
+		<b><lift:loc>ui_action_new_action_test</lift:loc></b><br />
+		<p>
+          @foo -- sender is @foo<br />
+          day = (0,1) -- sent on Sunday or Monday<br/>
+          #moo -- contains the #moo tag<br/>
+          50% -- success 50% of the time<br/>
+          @foo &amp; 50% -- half the time, something sent by @foo<br/>
+          login -- user has logged in<br/>
+          followed -- user is being followed<br/>
+          unfollowed -- user is being unfollowed<br/>
+          profile -- user changed profile<br/>
+          every N mins -- repeat action, N is an integer<br/>
+          pool[:mypool] -- message is in access pool mypool<br/>
+          resent[:user] -- message was resent by user
+        </p>
+        	<b><lift:loc>ui_action_new_action_action</lift:loc></b><br />
+          <p>
+          filter -- not put in your timeline<br />
+          resend -- sends the message to all your followers<br />
+          mailto:foo@bar.com -- sends the message to foo@bar.com<br/>
+          http://foo.com/message/in -- HTTP post, %s expands to message<br/>
+          atom:http://blog.com/feed.atom -- posts new messages from Atom feed<br/>
+          rss:http://blog.com/feed.rss -- posts new messages from RSS feed
+        </p>
+	</div>
+</div>
+
+</div><!-- End demo -->
+
 </lift:surround>
