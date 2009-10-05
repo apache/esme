@@ -21,24 +21,22 @@
 
 package org.apache.esme.lib
 
+import java.text.SimpleDateFormat
+import scala.xml.{NodeSeq}
+
 import net.liftweb._
 import http._
 import SHtml._
 import js._
 import JsCmds._
 import JE._
-
 import sitemap._
 import Loc._
-
 import mapper._
-
 import util._
 import Helpers._
-
 import model._
-
-import scala.xml._
+import org.apache.esme.model.{Message, User}
 
 /**
  * Manage the sitemap and related snippets for the display of users
@@ -58,26 +56,29 @@ object UserMgr {
     bind("disp", in,
          "item" -> 
          (lst => users.flatMap(u => {
-           val msg = lastMessage(u.id) 
+           val (msg, when) = lastMessage(u) 
            bind("item", lst,
-             "nickname" -> u.nickname,
+             "nickname" -> nicknameWithProfileLink(u),
              "firstName" -> u.firstName,
              "lastName" -> u.lastName,
              "imageUrl" -> profileImage(u.imageUrl),
-             "lastMsg" -> msg._1,
-             "lastMsgWhen" -> msg._2
+             "lastMsg" -> msg,
+             "lastMsgWhen" -> when
              )
          }
      )))
   }
   
-  private def lastMessage(id: Long): Tuple2[String,String] = {
-    Mailbox.mostRecentMessagesFor(id, 1) match {
+  private def nicknameWithProfileLink(u: User): NodeSeq = {
+    <a href={"/user/" + urlEncode(u.nickname.is)}>{u.niceName}</a>
+  }
+  
+  private val dateFormatter = new SimpleDateFormat("hh:mm a MMM d, yyyy")
+  
+  private def lastMessage(user: User): Tuple2[String,String] = {
+    Message.findAll(By(Message.author, user), OrderBy(Message.id, Descending), MaxRows(1)) match {
       case Nil => ("", "")
-      case msgs => {
-        val msg = msgs(0)._1
-        (msg.getText, msg.getWhen.toString)
-      }
+      case msg :: _ => (msg.getText, dateFormatter.format(msg.getWhen))
     }
   }
 
