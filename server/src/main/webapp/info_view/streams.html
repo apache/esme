@@ -1,6 +1,5 @@
 <lift:surround with="default" at="content">
-
-  Manage your streams: <br/>
+  <lift:loc>ui_streams_title</lift:loc> <br/>
   <span id="StreamSpan">
     <lift:ignore>
       <!--
@@ -11,7 +10,7 @@
     <lift:displayStream the_id="StreamSpan">
       <table>
         <thead>
-          <tr> <th>Author</th> <th>Text</th> <th>Date</th></tr>
+          <tr> <th><lift:loc>ui_streams_author</lift:loc></th> <th><lift:loc>ui_streams_text</lift:loc></th> <th><lift:loc>ui_streams_date</lift:loc></th></tr>
         </thead>
         
         <tbody>
@@ -22,10 +21,12 @@
       </table>
     </lift:displayStream>
   </span>
+  
+  
 
   <lift:streamFilters>
-    Filter by resent <main:filterResent/> Resent by: <main:resent/><br/>
-    Filter by pool <main:filterPools/> In pool: <main:pools/>
+    <lift:loc>ui_streams_filter_by_resent</lift:loc> <main:filterResent/><lift:loc>ui_streams_filter_resender</lift:loc> <main:resent/><br/>
+    <lift:loc>ui_streams_filter_by_pool</lift:loc> <main:filterPools/><lift:loc>ui_streams_filter_pool</lift:loc> <main:pools/>
   </lift:streamFilters>
 
 </lift:surround>
