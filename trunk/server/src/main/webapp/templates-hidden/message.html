@@ -2,7 +2,7 @@
       xml:lang="eng">
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
-    <title>Enterprise Social Messaging Experiment: Messages</title>
+    <title><lift:loc>ui_default_title</lift:loc></title>
 
     <lift:Style.header />
 
@@ -37,16 +37,16 @@
               <div class="l-top">
                 <div id="tabs" >
                   <dl class="messages">
-                    <dt class="caption">Your timeline</dt>
+                    <dt class="caption"><lift:loc>ui_messages_your_timeline</lift:loc></dt>
 
                     <dd>
                       <div class="b-list">
                         <table>
                           <thead>
                             <tr>
-                              <th>Author</th>
-                              <th>Message</th>
-                              <th>Tags</th>
+                              <th><lift:loc>ui_messages_message_label_author</lift:loc></th>
+                              <th><lift:loc>ui_messages_message_label_message</lift:loc></th>
+                              <th><lift:loc>ui_messages_message_label_tags</lift:loc></th>
                             </tr>
                           </thead>
                           <lift:comet type="Timeline"/>
@@ -88,9 +88,9 @@
                         <table>
                           <thead>
                             <tr>
-                              <th>Author</th>
-                              <th>Message</th>
-                              <th>Tags</th>
+                              <th><lift:loc>ui_messages_message_label_author</lift:loc></th>
+                              <th><lift:loc>ui_messages_message_label_message</lift:loc></th>
+                              <th><lift:loc>ui_messages_message_label_tags</lift:loc></th>
                             </tr>
                           </thead>
                           <lift:comet type="PublicTimeline"/>
@@ -256,7 +256,7 @@
       </table>
     </div>
     <div class="foot">
-      <center>ESME</center>
+      <center><lift:loc>ui_default_footer</lift:loc></center>
     </div>
   </body>
 </html>
