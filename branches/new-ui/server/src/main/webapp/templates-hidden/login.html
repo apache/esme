@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="eng">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+    <title>Enterprise Social Messaging Experiment</title>
+
+    <lift:Style.header />
+
+    <script id="jquery" src="/classpath/jquery.js" type="text/javascript"/>
+    <script id="json" src="/classpath/json.js" type="text/javascript"/>
+
+  </head>
+  <body>
+    <div class="container">
+
+      <div class="head">
+        <a class="logo" href="/"><img src="/images/esme.png" alt="ESME" /></a>
+
+        <ul class="b-primary">
+          <li><lift:Menu.item name="about"/></li>
+          <li><lift:Menu.item name="Logout"/></li>
+        </ul>
+      </div>
+
+      <table class="l-page l-page-login">
+        <tr>
+          <td class="l-page-l">
+            <div class="b-sign-on">
+              <h1 class="title">Welcome and Sign On</h1>
+
+              <p><b>Brought to you by the Enterprise Social Messaging Experiment group.</b></p>
+              <p><b>The best, brightest shinning stars in the microblogging space.</b></p>
+              <p class="last">Send micromessages to your friends and colleagues, tag messages and create groups of contacts.</p>
+              <p><lift:msgs/></p>
+            </div>
+          </td>
+          <td class="l-page-c"></td>
+          <td class="l-page-r">
+            <div class="l-top">
+              <div class="b-open">
+                <lift:bind name="content"/>
+
+                <div class="open-id">
+                  <h3>Need an OpenID?</h3>
+                  <p>try: <a href="http://openid.yahoo.com">http://openid.yahoo.com</a> or <a href="http://www.myopenid.com">www.myopenid.com</a></p>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <div class="foot"></div>
+    </div>
+  </body>
+</html>

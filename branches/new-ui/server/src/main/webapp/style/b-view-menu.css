@@ -1,0 +1,43 @@
+/* View menu (begin) */ /**/
+    .b-view-menu
+    {
+        font-size: 90%;
+
+        width: 515px;
+        margin: 1em 0 0 0;
+        padding-left: 6px;
+
+        border-bottom: 8px solid #fff;
+    }
+
+    .b-view-menu li
+    {
+        float: left;
+
+        margin-right: 3px;
+        padding: 3px 0.5em;
+
+        /* background: #c9d8ea; */
+    }
+
+    .b-view-menu li:hover
+    {
+        background: #fff;
+    }
+
+    .b-view-menu .current
+    {
+        background: #fff;
+        color: #233e5e;
+    }
+
+    .b-view-menu a
+    {
+        text-decoration: none;
+        outline: none;  
+
+        color: #233e5e;
+    }
+
+    
+/* View menu (end) */ /**/

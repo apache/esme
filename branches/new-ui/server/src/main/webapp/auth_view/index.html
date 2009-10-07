@@ -1,0 +1,33 @@
+<lift:surround with="default" at="content">
+
+ <lift:loc>ui_token_title</lift:loc><br/>
+  <span id="TokenSpan">
+  <fieldset><legend><lift:loc>ui_token_list_title</lift:loc></legend>
+    <lift:ignore>
+      <!--
+      The displayTokens snippet *MUST* appear on the page before
+      the main snippet
+      -->
+    </lift:ignore>
+    <lift:displayTokens the_id="TokenSpan">
+      <ul>
+        <disp:item>
+          <li><item:description/> <lift:loc>ui_token_list_token</lift:loc> <item:uniqueId/> <item:revoke><lift:loc>ui_token_revoke</lift:loc></item:revoke></li>
+        </disp:item>
+      </ul>
+    </lift:displayTokens>
+    </fieldset>
+  </span>
+
+  <lift:form>
+  <fieldset><legend><lift:loc>ui_token_create_title</lift:loc></legend>
+    <lift:main>
+      <lift:loc>ui_token_create_description</lift:loc>
+      <br/>
+      <main:token/>
+      <input type="submit" value="Add" />
+    </lift:main>
+     </fieldset>
+  </lift:form>
+
+</lift:surround>
