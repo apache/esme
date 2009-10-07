@@ -197,7 +197,6 @@ class Message extends LongKeyedMapper[Message] {
       List("author" -> (obj.map(_.asJs) openOr JE.JsNull))
   }
 
-  object viaGroup extends MappedLongForeignKey(this, Group)
 
   private[model] object text extends MappedText(this){
     import scala.xml.transform.{RuleTransformer, RewriteRule}
