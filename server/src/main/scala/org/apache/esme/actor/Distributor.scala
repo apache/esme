@@ -49,7 +49,6 @@ object Distributor extends Actor {
       case StartMeUp =>
         link(ActorWatcher)
         User.findAll.map(_.id.is).foreach(findOrCreateUser)
-        Group.findAll.map(_.id.is).foreach(findOrCreateGroup)
 
       case UserCreatedMessage(user, text, tags, when, 
                               metaData,
@@ -133,7 +132,6 @@ object Distributor extends Actor {
   }
 
   private var users: Map[Long, UserActor] = Map.empty
-  private var groups: Map[Long, GroupActor] = Map.empty
   private var listeners: List[Actor] = Nil
 
   private def findOrCreateUser(user: Long): UserActor = {
@@ -148,15 +146,4 @@ object Distributor extends Actor {
     }
   }
 
-  private def findOrCreateGroup(group: Long) {
-    groups.get(group) match {
-      case Some(ret) => ret
-      case _ =>
-        val ret = new GroupActor
-        ret.start
-        ret ! GroupActor.StartMeUp(group)
-        groups = groups + (group -> ret)
-        ret
-    }
-  }
 }
