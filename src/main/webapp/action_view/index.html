@@ -21,9 +21,9 @@
 
 <div class="ui-tabs ui-widget ui-widget-content ui-corner-all" id="tabs">
 	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
-		<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a href="#tabs-1"><lift:loc>ui_action_title</lift:loc></a></li>
+		<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a href="#tabs-1"><lift:loc>ui_track_manage</lift:loc></a></li>
 		<li class="ui-state-default ui-corner-top"><a href="#tabs-2"><lift:loc>ui_action_new_action</lift:loc></a></li>
-		<li class="ui-state-default ui-corner-top"><a href="#tabs-3">Help</a></li>
+		<li class="ui-state-default ui-corner-top"><a href="#tabs-3"><lift:loc>ui_action_help</lift:loc></a></li>
 	</ul>
 	<div class="ui-tabs-panel ui-widget-content ui-corner-bottom" id="tabs-1">
 		  <span id="TokenSpan">
@@ -34,13 +34,13 @@
       -->
     </lift:ignore>
     <lift:displayActions the_id="TokenSpan">
-      <table>
+      <table border="1">
         <tr>
-          <td><lift:loc>ui_action_table_name</lift:loc></td>
-          <td halign="center"><lift:loc>ui_action_table_enabled</lift:loc></td>
-          <td halign="center"><lift:loc>ui_action_table_test</lift:loc></td>
-          <td halign="center"><lift:loc>ui_action_table_action</lift:loc></td>
-          <td halign="center"><lift:loc>ui_action_table_delete</lift:loc></td>
+          <td><b><lift:loc>ui_action_table_name</lift:loc></b></td>
+          <td halign="center"><b><lift:loc>ui_action_table_enabled</lift:loc></b></td>
+          <td halign="center"><b><lift:loc>ui_action_table_test</lift:loc></b></td>
+          <td halign="center"><b><lift:loc>ui_action_table_action</lift:loc></b></td>
+          <td halign="center"><b><lift:loc>ui_action_table_delete</lift:loc></b></td>
         </tr>
         <disp:item>
           <tr>
@@ -49,7 +49,7 @@
             <td><pre><item:test/></pre></td>
             <td><pre><item:action/></pre></td>
             <td>
-              <item:remove><lift:loc>ui_action_table_item_delete</lift:loc></item:remove>
+              <item:remove><img src="/images/delete.png"/></item:remove>
             </td>
           </tr>
         </disp:item>
@@ -96,6 +96,7 @@
           pool[:mypool] -- message is in access pool mypool<br/>
           resent[:user] -- message was resent by user
         </p>
+         <br/>
         	<b><lift:loc>ui_action_new_action_action</lift:loc></b><br />
           <p>
           filter -- not put in your timeline<br />
