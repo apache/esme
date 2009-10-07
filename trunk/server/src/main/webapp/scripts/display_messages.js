@@ -63,7 +63,11 @@ function displayMessages(msgArray, elementId)
       var newMsg = msgTemplate.clone(true).attr('id',msgId);
 
       newMsg.find('#author').text(msgAuthor.nickname);
-
+     
+      // Dealing with users with no avatars
+      if (!msgAuthor.imageurl)
+      	msgAuthor.imageurl="/images/avatar.jpg"
+      	
       var avatar = newMsg.find('#avatar')
       .attr('src', msgAuthor.imageurl)
       .attr('alt',msgAuthor.firstname + ' ' + msgAuthor.lastname);
