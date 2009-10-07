@@ -32,11 +32,23 @@
       -->
     </lift:ignore>
     <lift:displayTracking the_id="TrackSpan">
-      <ul>
+            <table border="1">
+        <tr>
+          <td halign="center"><b><lift:loc>ui_track_manage_track</lift:loc></b></td>
+          <td halign="center"><b><lift:loc>ui_track_manage_active</lift:loc></b></td>
+          <td halign="center"><b><lift:loc>ui_track_manage_remove</lift:loc></b></td>
+        </tr>
         <disp:item>
-          <li><item:pattern/> <lift:loc>ui_track_manage_active</lift:loc> <item:enabled/> <item:remove><lift:loc>ui_track_manage_remove</lift:loc></item:remove></li>
+          <tr>
+            <td><item:pattern/></td>
+            <td><item:enabled/></td>
+            <td>
+              <item:remove><img src="/images/delete.png"/></item:remove>
+            </td>
+          </tr>
         </disp:item>
-      </ul>
+      </table>
+
     </lift:displayTracking>
   </span>
 	</div>
