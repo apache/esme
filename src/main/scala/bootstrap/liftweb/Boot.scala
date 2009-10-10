@@ -97,7 +97,7 @@ class Boot {
 
       case RewriteRequest(ParsePath("conversation" :: cid :: Nil, "", _, _),
                           _, _) =>
-        RewriteResponse(List("user_view", "conversation"), Map("cid" -> cid))
+        RewriteResponse(List("info_view", "conversation"), Map("cid" -> cid))
 
       case RewriteRequest(ParsePath("search" :: term :: Nil,"", _,_), _, _) =>
         RewriteResponse( List("user_view", "search"), Map("term" -> term))
@@ -115,7 +115,6 @@ class Boot {
     val entries = Menu(Loc("Home", List("index"), "Home")) ::
     Menu(Loc("user", List("info_view", "user"), "User Info", Hidden,
       Loc.Snippet("user_info", TagDisplay.userInfo))) ::
-    Menu(Loc("conv", List("user_view", "conversation"), "Conversation", Hidden)) ::
     Menu(Loc("about", List("static", "about"), "About", Hidden)) ::
     Menu(Loc("tag", List("info_view", "tag"), "Tag", Hidden, Loc.Snippet("tag_display", TagDisplay.display))) ::
     Menu(Loc("search", List("user_view", "search"), "Search", Hidden)) ::
@@ -131,7 +130,8 @@ class Boot {
     ActionMgr.menuItems :::
     AuthMgr.menuItems :::
     AccessPoolMgr.menuItems :::
-    StreamMgr.menuItems
+    StreamMgr.menuItems :::
+    ConversationMgr.menuItems
 
     LiftRules.setSiteMap(SiteMap(entries:_*))
 
