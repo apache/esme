@@ -59,6 +59,9 @@ object ::> {def unapply[A] (l: List[A]) = l match {
 object TwitterAPI {
   val ApiPath = Props.get("twitter.prefix", "twitter").split("/").toList.filter(_.length > 0)
   
+  val ByMe = By(Mailbox.resent, true)
+  val ToMe = NotBy(Mailbox.resentBy, Empty)
+  
   def twitterAuth = HttpBasicAuthentication("esme") {
     case (user: String, password: String, _) =>
       !(for(auth <- AuthToken.find(By(AuthToken.uniqueId, password));
@@ -71,7 +74,7 @@ object TwitterAPI {
 }
 
 abstract class TwitterAPI {
-  import TwitterAPI.ApiPath
+  import TwitterAPI._
   
   val tf = new java.text.SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", java.util.Locale.US)
   val logger: Logger = Logger.getLogger("org.apache.esme.api")
@@ -95,6 +98,9 @@ abstract class TwitterAPI {
     case Req(ApiPath ::> "statuses" ::> "followers", this.method, GetRequest) => followers
     case Req(ApiPath ::> "statuses" ::> "followers" ::> last, this.method, GetRequest) => () => followers(last)
     case Req(ApiPath ::> "users" ::> "show" ::> last, this.method, GetRequest) => () => showUser(last)
+
+    case Req(ApiPath ::> "statuses" ::> "retweeted_by_me", this.method, GetRequest) => () => retweeted(ByMe)
+    case Req(ApiPath ::> "statuses" ::> "retweeted_to_me", this.method, GetRequest) => () => retweeted(ToMe)
 
     case Req(ApiPath ::> "friendships" ::> "create" ::> last, this.method, PostRequest) => () => createFriendship(last)
     case Req(ApiPath ::> "friendships" ::> "destroy" ::> last, this.method, PostRequest) => () => destroyFriendship(last)
@@ -318,6 +324,19 @@ abstract class TwitterAPI {
       Right(Map("hash" -> Map("error" -> "User logged out.")))
     }
   }
+  
+  def retweeted(param: QueryParam[Mailbox]): Box[TwitterResponse] =
+    calcUser.map { user =>
+      val msgIds = 
+        Mailbox.findMap(param,
+                        By(Mailbox.user, user),
+                        MaxRows(20),
+                        OrderBy(Mailbox.id, Descending)) (m => Full(m.message.is))
+      val msgMap = Message.findMessages(msgIds)
+      val statusList = msgIds.flatMap(msgMap.get).
+          map(msgData _)
+      Right(Map("statuses" -> ("status", statusList) ))
+    }
   
   private def calcUser(): Box[User] = {
     val userBox =
