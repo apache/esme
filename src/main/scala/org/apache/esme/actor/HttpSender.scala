@@ -98,7 +98,9 @@ object HttpSender extends Actor with GetPoster {
     replace("%f", followerName).
     replace("%i", user.imageUrl).
     replace("%w", user.wholeName).
-    replace("%s", msg.getText)
+    replace("%s", msg.getText).
+    replace("%t", msg.getTags).
+    replace("%d", msg.getWhen.toString)
   }
 
   // Overloaded method from GetPoster
