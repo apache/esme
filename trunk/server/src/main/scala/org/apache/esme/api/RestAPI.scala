@@ -103,6 +103,9 @@ object RestAPI extends XMLApiHelper {
 
     case Req("api" :: "add_user_pool" :: Nil, "", PostRequest) =>
       addUserToPool
+
+    case Req("api" :: "get_pools" :: Nil, "", GetRequest) =>
+      getPools
   }
 
   def findAction: Box[Action] =
@@ -388,6 +391,16 @@ object RestAPI extends XMLApiHelper {
     r
   }
   
+  def getPools(): LiftResponse = {
+    val ret: Box[NodeSeq] =
+    for (user <- User.currentUser ?~ "Not logged in")
+    yield AccessPool.findAll(In(AccessPool.id, Privilege.pool, By(Privilege.user, user)),
+                             OrderBy(AccessPool.id, Descending),
+                             MaxRows(20)).
+          flatMap(_.toXml)
+    ret
+  }
+
   def createTag(in: NodeSeq) = <esme_api>{in}</esme_api>
 
   
