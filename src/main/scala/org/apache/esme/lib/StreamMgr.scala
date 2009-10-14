@@ -91,19 +91,23 @@ object StreamMgr {
       val query = poolsQuery :::
                   resentQuery :::
                   List[QueryParam[Message]](OrderBy(Message.id, Descending), MaxRows(40)) 
-      
+                  
+      //XXX copy from lib.UserMgr
+      def nicknameWithProfileLink(u: User): NodeSeq = {
+    		  <a href={"/user/" + urlEncode(u.nickname.is)}>{u.niceName}</a>
+      	}
+        
       Message.findAll(query: _*) match {
         case Nil => NodeSeq.Empty
         case xs => bind("disp", in,
                         "item" -> 
                         (lst => xs.flatMap(i => bind("item", lst,
-                                                     "author" -> i.author.obj.map(_.nickname.is).openOr(""),
+                                                     "author" -> i.author.obj.map(nicknameWithProfileLink).openOr(Text("")),
                                                      "text" -> i.digestedXHTML,
                                                      "date" -> new java.util.Date(i.when.toLong).toString
                 ))))
       }
     }
-
     def updateSpan(): JsCmd = SetHtml(spanName, doRender())
 
     updateStream.set(updateSpan)
