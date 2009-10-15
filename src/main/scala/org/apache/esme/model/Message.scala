@@ -294,7 +294,9 @@ class Message extends LongKeyedMapper[Message] {
               <xml:group> <a href={"/u/"+id}>{url}</a> </xml:group>)).
           getOrElse(Text("") )
 
-        case t: Text => <xml:group> {TextileParser.toHtml(t.toString())} </xml:group>
+        case t: Text => <xml:group> { TextileParser.toHtml(t.toString()).flatMap { e =>
+          if (e.label == "p") e.child else e
+        }} </xml:group>
 
         case x => x
       })
