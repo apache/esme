@@ -52,7 +52,7 @@ object AccessPoolMgr {
   val ifIsLoggedIn = If(loggedIn_? _, strFuncToFailMsg(() => S.?("You must be logged in")))
 
   val menuItems =
-  Menu(Loc("accessPools", List("pools_view", "index"), "Manage Access Pools", ifIsLoggedIn,
+  Menu(Loc("accessPools", List("pools_view", "index"), S.?("base_action_menu"), ifIsLoggedIn,
            Loc.Snippet("addPool", addPool),
            Loc.Snippet("editPool", editPool),
            Loc.Snippet("poolUsers", displayPoolUsers),
@@ -74,7 +74,7 @@ object AccessPoolMgr {
     
     def addNewPool(name: String) = {
       name.trim match {
-        case x if x.length < 3 => S.error("Name too short")
+        case x if x.length < 3 => S.error(S.?("base_action_error_name_short"))
         case x => {
           val pool = AccessPool.create.realm(AccessPool.Native).setName(name)
           pool match {

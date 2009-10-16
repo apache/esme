@@ -46,10 +46,10 @@ import scala.xml._
 object TrackMgr {
   def loggedIn_? = User.loggedIn_?
 
-  val ifIsLoggedIn = If(loggedIn_? _, strFuncToFailMsg(() => S.?("You must be logged in")))
+  val ifIsLoggedIn = If(loggedIn_? _, strFuncToFailMsg(() => S.?("base_error_not_logged_in")))
 
   val menuItems =
-  Menu(Loc("trackMgt", List("track_view", "index"), "Item Tracking", ifIsLoggedIn,
+  Menu(Loc("trackMgt", List("track_view", "index"), S.?("base_track_menu"), ifIsLoggedIn,
            Loc.Snippet("displayTracking", displayTracking),
            Loc.Snippet("main", mainTracking))) ::
   Nil
@@ -92,9 +92,9 @@ object TrackMgr {
     
     def addTrack(what: String): JsCmd = {
       what.trim match {
-        case x if x.length < 3 => S.error("Too short")
+        case x if x.length < 3 => S.error(S.?("base_track_error_name_short"))
         case x => Tracking.create.regex(x).user(user).saveMe
-          S.notice("Now tracking "+x)
+          S.notice(S.?("base_track_msg_success", x))
       }
 
       redisplayTracking() & SetValById(theInput, "")
