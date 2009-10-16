@@ -1,9 +1,17 @@
 <lift:surround with="default" at="content">
 
+		<script type="text/javascript" src="../scripts/esme_table_sorter.js"></script>
+
+	<lift:TableSorterSnip/>
+
     <fieldset style="width: 80em">
       <legend><lift:loc>ui_user_list_title</lift:loc></legend>
-      <table>
+      <table id="esme-table" class="tablesorter">
+      <thead>
+      
       <tr><th></th><th><lift:loc>ui_user_list_nickname</lift:loc></th><th><lift:loc>ui_user_list_name</lift:loc></th><th colspan="2"><lift:loc>ui_user_list_last_message</lift:loc></th></tr>
+       </thead>
+        <tbody>
           <lift:displayUsers>
               <disp:item>
                   <tr>
@@ -15,6 +23,7 @@
                   </tr>
               </disp:item>
           </lift:displayUsers>
+            </tbody>
       </table>
     </fieldset>
 
