@@ -46,10 +46,10 @@ import scala.xml._
 object AuthMgr {
   def loggedIn_? = User.loggedIn_?
 
-  val ifIsLoggedIn = If(loggedIn_? _, strFuncToFailMsg(() => S.?("You must be logged in")))
+  val ifIsLoggedIn = If(loggedIn_? _, strFuncToFailMsg(() => S.?("base_error_not_logged_in")))
 
   val menuItems =
-  Menu(Loc("authToken", List("auth_view", "index"), "Manage Tokens", ifIsLoggedIn,
+  Menu(Loc("authToken", List("auth_view", "index"), S.?("base_token_menu"), ifIsLoggedIn,
            Loc.Snippet("displayTokens", displayTokens),
            Loc.Snippet("main", mainTokens))) ::
   Nil
@@ -91,9 +91,9 @@ object AuthMgr {
     
     def addAuthToken(desc: String): JsCmd = {
       desc.trim match {
-        case x if x.length < 3 => S.error("Description too short")
+        case x if x.length < 3 => S.error(S.?("base_token_error_name_short"))
         case x => AuthToken.create.description(x).user(user).saveMe
-          S.notice("New token added")
+          S.notice(S.?("base_token_msg_new_token"))
       }
 
       redisplayTokens() & SetValById(theInput, "")

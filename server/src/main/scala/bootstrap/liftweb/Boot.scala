@@ -116,20 +116,20 @@ class Boot {
 
     UserAuth.register(UserPwdAuthModule)
     UserAuth.register(OpenIDAuthModule)
-
-    // Build SiteMap
+    
+      // Build SiteMap
     val entries = Menu(Loc("Home", List("index"), "Home")) ::
     Menu(Loc("user", List("info_view", "user"), "User Info", Hidden,
       Loc.Snippet("user_info", TagDisplay.userInfo))) ::
     Menu(Loc("about", List("static", "about"), "About", Hidden)) ::
     Menu(Loc("tag", List("info_view", "tag"), "Tag", Hidden, Loc.Snippet("tag_display", TagDisplay.display))) ::
-    Menu(Loc("search", List("user_view", "search"), "Search", Hidden)) ::
-    Menu(Loc("sign_up", List("signup"), "Sign Up", 
+    Menu(Loc("search", List("user_view", "search"), S.?("base_menu_search"), Hidden)) ::
+    Menu(Loc("sign_up", List("signup"), S.?("base_menu_signup"), 
              Snippet("signup", User.signupForm),
              Unless(User.loggedIn_? _, "Can't sign up when logged in"))) ::
-    Menu(Loc("logout", List("logout"), "Log Out",
+    Menu(Loc("logout", List("logout"), S.?("base_menu_logout"),
              EarlyResponse(() => {User.logUserOut; S.redirectTo(S.referer openOr "/")}),
-             If(User.loggedIn_? _, "You must be logged in to log out"))) ::
+             If(User.loggedIn_? _, S.?("base_menu_logout_error")))) ::
     // User.sitemap :::
     UserMgr.menuItems :::
     TrackMgr.menuItems :::
