@@ -46,6 +46,8 @@ import org.compass.core.config.CompassConfiguration
 import scala.actors.Actor
 import Actor._
 
+import net.liftweb.widgets.tablesorter._  
+
 /**
  * A class that's instantiated early and run.  It allows the application
  * to modify lift's environment
@@ -86,6 +88,10 @@ class Boot {
     
     //Resources for Internationalization
     LiftRules.resourceNames = "ESMEBase" :: "ESMEUI" :: Nil
+    
+    //Jquery functions
+    
+    TableSorter.init
 
     LiftRules.siteMapFailRedirectLocation = List("static", "about")
 
