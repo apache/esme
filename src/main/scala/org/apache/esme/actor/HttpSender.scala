@@ -64,7 +64,7 @@ object HttpSender extends Actor with GetPoster {
           case None => XHTMLMailBodyType(msg.digestedXHTML)
           case Some(t) => PlainMailBodyType(expandText(t, msg, user, reason))
         }
-        Mailer.sendMail(From("i@esme.us"), Subject("msg"),
+        Mailer.sendMail(From("esme@esme.apache.org"), Subject("Message"),
                         To(who), body)
           
       case HttpTo(url, username, password, headers, data) =>
