@@ -205,6 +205,20 @@ object AccessPoolMgr {
     // get the current user
     val user = User.currentUser
 
+    def deleteUserFromPool(in: Privilege) {
+       //Delete current admin only if admin permissions by other users exist
+    if(in.permission.is == Permission.Admin ||
+      Privilege.find(By(Privilege.pool, in.pool),
+        By(Privilege.permission,Permission.Admin),
+        NotBy(Privilege.user, in.user)).isEmpty)
+      throw new Exception("No other admin users in pool!")
+      
+      val userId = in.user.is
+
+      in.delete_!
+
+      Distributor ! Distributor.RefreshUser(userId)
+    }
       
     def doRender(): NodeSeq = {
     val accessPool = AccessPool.find(By(AccessPool.id, poolId.is))  
@@ -215,7 +229,8 @@ object AccessPoolMgr {
                       (lst => xs.flatMap(i => bind("user", lst,
                                                    "name" -> User.find(i.user).map(
                                                              _.nickname.is).getOrElse(""),
-                                                   "privilege" -> i.permission.is.toString
+                                                   "privilege" -> i.permission.is.toString,
+                                                   "operations" -> link("", () => deleteUserFromPool(i), Text("Delete"))//delete user from pool  
                       ))))
     }
     }
