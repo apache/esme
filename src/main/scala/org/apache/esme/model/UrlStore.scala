@@ -62,7 +62,7 @@ class UrlStore extends LongKeyedMapper[UrlStore] {
 
   object url extends MappedPoliteString(this, 512) {
     override def validations =
-    this.valMinLen(3, "The minimum group length is 3 characters") _ ::
+    this.valMinLen(3, S.?("base_urlstore_err_too_short")) _ ::
     super.validations
 
     override def setFilter = trim _ :: super.setFilter

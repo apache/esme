@@ -49,10 +49,10 @@ object StreamMgr {
 
   def loggedIn_? = User.loggedIn_?
 
-  val ifIsLoggedIn = If(loggedIn_? _, strFuncToFailMsg(() => S.?("You must be logged in")))
+  val ifIsLoggedIn = If(loggedIn_? _, strFuncToFailMsg(() => S.?("base_error_not_logged_in")))
 
   val menuItems =
-  Menu(Loc("streams", List("info_view", "streams"), "Streams", ifIsLoggedIn,
+  Menu(Loc("streams", List("info_view", "streams"), S.?("base_streams_menu"), ifIsLoggedIn,
            Loc.Snippet("displayStream", displayStream),
            Loc.Snippet("streamFilters", streamFilters))) ::
   Nil
@@ -127,13 +127,13 @@ object StreamMgr {
     var filterResent = false
     var filterPools = false
     
-    val following = (AnyResender.toString, "--any--") ::
+    val following = (AnyResender.toString, S.?("base_streams_resend_any")) ::
     (user match {
       case Full(u) => u.following.map(u => (u.id.is.toString, u.nickname.is) )
       case _ => Nil
-    })
+    }) 
     
-    val pools = (PublicPool.toString, "--default--") ::
+    val pools = (PublicPool.toString, S.?("base_streams_pool_default")) ::
     (user match {
       case Full(u)=> Privilege.findViewablePools(u.id).map(
         p => (p.toString, AccessPool.find(p).get.getName)).toList

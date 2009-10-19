@@ -61,7 +61,7 @@ class AccessPool extends LongKeyedMapper[AccessPool] {
     
     def checkDuplicate(in: String): List[FieldError] = 
       sameName(in).map(p =>
-        FieldError(this, Text("Duplicate pool: " + in + " in realm " + p.realm.is ))
+        FieldError(this, Text(S.?("base_pool_err_dup_name_in_realm", in, p.realm.is)))
       )
     
   }
@@ -73,7 +73,7 @@ class AccessPool extends LongKeyedMapper[AccessPool] {
       Full(this.lastModifyDate(new Date()))
       Full(this.modifier(User.currentUser))
     }
-    case List(_,_*) => Failure("Duplicate access pool name!")
+    case List(_,_*) => Failure(S.?("base_pool_err_dup_name"))
   }
   
   def getName() = name.is

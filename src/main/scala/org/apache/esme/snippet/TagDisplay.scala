@@ -42,19 +42,20 @@ import java.util.Date
 object TagDisplay {
   def userInfo(in: NodeSeq): NodeSeq = {
     val user: User = S.param("uid").flatMap(User.findFromWeb) openOr {
-      S.error("User not found")
+      S.error(S.?("base_ui_no_user_found"))
       S.redirectTo(S.referer openOr "/")
     }
    
     def updateFollow: JsCmd = SetHtml("following", followOrNot)
 
 
+
     def followOrNot: NodeSeq = {
       User.currentUser match {
         case Full(u) if u != user =>
           if (u.following_?(user))
-          ajaxButton("Unfollow", () => {u.unfollow(user); updateFollow})
-          else ajaxButton("Follow", () => {u.follow(user); updateFollow})
+          ajaxButton(S.?("base_ui_unfollow"), () => {u.unfollow(user); updateFollow})
+          else ajaxButton(S.?("base_ui_follow"), () => {u.follow(user); updateFollow})
 
         case _ => NodeSeq.Empty
       }

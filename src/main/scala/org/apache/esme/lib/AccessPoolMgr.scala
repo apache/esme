@@ -49,10 +49,10 @@ import java.text.{DateFormat,SimpleDateFormat}
 object AccessPoolMgr {
   def loggedIn_? = User.loggedIn_?
 
-  val ifIsLoggedIn = If(loggedIn_? _, strFuncToFailMsg(() => S.?("You must be logged in")))
+  val ifIsLoggedIn = If(loggedIn_? _, strFuncToFailMsg(() => S.?("base_error_not_logged_in")))
 
   val menuItems =
-  Menu(Loc("accessPools", List("pools_view", "index"), S.?("base_action_menu"), ifIsLoggedIn,
+  Menu(Loc("accessPools", List("pools_view", "index"), S.?("base_pool_menu"), ifIsLoggedIn,
            Loc.Snippet("addPool", addPool),
            Loc.Snippet("editPool", editPool),
            Loc.Snippet("poolUsers", displayPoolUsers),
@@ -70,23 +70,23 @@ object AccessPoolMgr {
 
   def addPool(in: NodeSeq): NodeSeq = {
     val theInput = "new_pool"
-    val user = User.currentUser
+    val user = User.currentUser 
     
     def addNewPool(name: String) = {
       name.trim match {
-        case x if x.length < 3 => S.error(S.?("base_action_error_name_short"))
+        case x if x.length < 3 => S.error(S.?("base_pool_error_name_short"))
         case x => {
           val pool = AccessPool.create.realm(AccessPool.Native).setName(name)
           pool match {
-            case Failure(_,_,_) => S.error("Duplicate pool name!")
+            case Failure(_,_,_) => S.error(S.?("base_pool_msg_duplicate_name_pool"))
             case Full(p: AccessPool) => val privilegeSaved =
               Privilege.create.pool(p.saveMe).user(user).permission(Permission.Admin).save
               if(privilegeSaved && user.isDefined) {
                 Distributor ! Distributor.AllowUserInPool(user.get.id.is, p.id.is)
-                S.notice("New pool added")
+                S.notice(S.?("base_pool_msg_new_pool"))
               } else
-                S.error("Could not add pool!")
-            case _ => S.error("Could not add pool!")
+                S.error(S.?("base_error_general"))
+            case _ => S.error(S.?("base_error_general"))
           }
         }
       }
@@ -116,7 +116,7 @@ object AccessPoolMgr {
     val editPermission = "edit_permission"
     val adminUser = User.currentUser
     
-    val adminPools = ("0", "--choose pool--") ::
+    val adminPools = ("0", S.?("base_pool_msg_choose_pool")) ::
     (adminUser match {
       case Full(u)=> Privilege.findAdminPools(u.id).map(
         p => (p.toString, AccessPool.find(p).get.getName)).toList
@@ -128,8 +128,8 @@ object AccessPoolMgr {
     def addPoolUser(permission: String): JsCmd = {
       val r: Box[Boolean] = 
       for (admin <- adminUser;
-           p <- AccessPool.find(pool) ?~ "Pool not found";
-           user <- User.findFromWeb(username) ?~ "User not found"
+           p <- AccessPool.find(pool) ?~ S.?("base_pool_err_pool_not_found");
+           user <- User.findFromWeb(username) ?~ S.?("base_pool_err_user_not_found")
       ) yield if(Privilege.hasPermission(admin.id.is, p.id.is, Permission.Admin)) {
         val result = try {
           Privilege.create.user(user).pool(p).permission(Permission(permission.toInt)).save
@@ -141,8 +141,8 @@ object AccessPoolMgr {
       } else false // "User has no permission to administer pool"
       r match {
         case Failure(m,_,_) => S.error(m)
-        case Full(true) => S.notice("Successfully set user privileges in pool")
-        case _ => S.error("Could not set user privileges in pool")
+        case Full(true) => S.notice(S.?("base_pool_msg_permission_set"))
+        case _ => S.error(S.?("base_error_general"))
       }
       
       poolId.set(pool.toLong)
@@ -171,7 +171,7 @@ object AccessPoolMgr {
     //XXX display date, should we have a common dateFormat?
     val dateFormat = new SimpleDateFormat("yyyy/MM/dd")
     def getDateHtml(date: Date) : Text = date match {
-     case null => Text("---")
+     case null => Text(S.?("base_pool_ui_empty_date"))
      case d => Text(dateFormat.format(d))
    }
     

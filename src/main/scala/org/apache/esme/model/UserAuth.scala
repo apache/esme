@@ -119,10 +119,10 @@ object UserPwdAuthModule extends AuthModule {
           } yield user) match {
           case Full(user) =>
             User.logUserIn(user)
-            S.notice(S.?("Welcome")+" "+user.niceName)
+            S.notice(S.?("base_user_msg_welcome", user.niceName))
 
           case _ =>
-            S.error(S.?("Unknown credentials"))
+            S.error(S.?("base_user_err_unknown_creds"))
         }
 
         S.redirectTo(from)
@@ -153,7 +153,7 @@ object UserPwdAuthModule extends AuthModule {
 
     def validate: List[FieldError] = (
     if (MappedEmail.validEmailAddr_?(email)) Nil else {
-      val msg = S.?("Bad email address")
+      val msg = S.?("base_user_err_bad_email")
       S.error(msg)
       List(FieldError(new FieldIdentifier {
         override def uniqueFieldId: Box[String] = Full("email")
@@ -161,13 +161,13 @@ object UserPwdAuthModule extends AuthModule {
     }
     ) ::: (
     if (pwd1 != pwd2) {
-      val msg = S.?("Passwords do not match")
+      val msg = S.?("base_user_err_mismatch_password")
       S.error(msg)
       List(FieldError(new FieldIdentifier {
         override def uniqueFieldId: Box[String] = Full("pwd1")
       }, Text(msg)))
     } else if (pwd1.length < 6) {
-      val msg = S.?("Passwords must be 6 characters or longer")
+      val msg = S.?("base_user_err_password_too_short")
       S.error(msg)
       List(FieldError(new FieldIdentifier {
         override def uniqueFieldId: Box[String] = Full("pwd1")
@@ -197,12 +197,12 @@ object OpenIDAuthModule extends AuthModule {
           (openid, exp) match {
             case (Full(OpenIDAuthModule(user)), _) =>
               User.logUserIn(user)
-              S.notice(S.?("Welcome")+" "+user.niceName)
+              S.notice(S.?("base_user_msg_welcome",user.niceName))
 
               Message.create.author(user.id).
               when(Helpers.timeNow.getTime).
               source("login").
-              setTextAndTags("User " + user.nickname + " logged in.", Nil, Empty).
+              setTextAndTags(S.?("base_user_msg_login", user.nickname), Nil, Empty).
               foreach{ msg =>
                 if (msg.save) {
                   Distributor ! Distributor.AddMessageToMailbox(user.id, msg, LoginReason(user.id))
@@ -212,16 +212,16 @@ object OpenIDAuthModule extends AuthModule {
               RedirectResponse(from, S responseCookies :_*)
 
             case (Full(id), _) =>
-              S.error(S.?("Your OpenID is not registered")+": "+id.getIdentifier())
+              S.error(S.?("base_user_err_openid_not_reg",id.getIdentifier()))
               RedirectResponse(from, S responseCookies :_*)
 
 
             case (_, Full(exp)) =>
-              S.error(S.?("Got an exception")+": "+exp.getMessage)
+              S.error(S.?("base_error_exception", exp.getMessage))
               RedirectResponse(from, S responseCookies :_*)
 
             case _ =>
-              S.error(S.?("Unable to log you in")+": "+fo.map(_.getStatusMsg))
+              S.error(S.?("base_user_err_login", fo.map(_.getStatusMsg)))
               RedirectResponse(from, S responseCookies :_*)
           }
 
@@ -274,18 +274,19 @@ object ESMEOpenIDVendor extends OpenIdVendor {
       case Full(OpenIDAuthModule(user)) =>
         // val user: User = OpenIDAuthModule.findOrCreate(id.getIdentifier())
         User.logUserIn(user)
-        S.notice(S.?("Welcome")+" "+user.niceName)
+        S.notice(S.?("base_user_msg_welcome",user.niceName))
 
       case Full(id) =>
-        S.error(S.?("Your OpenID is not registered")+": "+id.getIdentifier())
+        S.error(S.?("base_user_err_openid_not_reg",id.getIdentifier()))
+
 
       case _ =>
         logUserOut()
-        S.error("Failed to authenticate")
+        S.error(S.?("base_user_err_no_auth"))
     }
   }
 
-  def displayUser(in: User): NodeSeq = Text(S.?("Welcome")+" "+in.niceName)
+  def displayUser(in: User): NodeSeq = Text(S.?("base_user_msg_welcome",User.niceName))
 
   def createAConsumer = new ESMEOpenIDConsumer
 }
