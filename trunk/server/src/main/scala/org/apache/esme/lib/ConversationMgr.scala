@@ -46,10 +46,10 @@ import scala.xml._
 object ConversationMgr {
   def loggedIn_? = User.loggedIn_?
 
-  val ifIsLoggedIn = If(loggedIn_? _, strFuncToFailMsg(() => S.?("You must be logged in")))
+  val ifIsLoggedIn = If(loggedIn_? _, strFuncToFailMsg(() => S.?("base_error_not_logged_in")))
 
   val menuItems =
-  Menu(Loc("conversation", List("info_view", "conversation"), "Manage Conversations", ifIsLoggedIn,
+  Menu(Loc("conversation", List("info_view", "conversation"), S.?("base_conv_menu"), ifIsLoggedIn,
            Loc.Snippet("displayConversation", displayConversation))) ::
   Nil
 

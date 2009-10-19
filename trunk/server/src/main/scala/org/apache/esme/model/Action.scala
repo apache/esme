@@ -32,6 +32,7 @@ import org.apache.esme.actor._
 import external._
 
 import java.util.Calendar
+import java.util.Date
 import scala.xml.{Text, Node, Elem => XmlElem}
 
 object Action extends Action with LongKeyedMetaMapper[Action] {
@@ -40,6 +41,9 @@ object Action extends Action with LongKeyedMetaMapper[Action] {
   private def notifyDistributor(in: Action) {
     Distributor ! Distributor.UpdateTrackingFor(in.user, 
                                                 Distributor.PerformTrackingType)
+    
+
+  
   }
 
   override def afterSave = startStopActors _ :: super.afterSave
@@ -188,6 +192,9 @@ class Action extends LongKeyedMapper[Action] {
 
   def getSingleton = Action // what's the "meta" server
   def primaryKeyField = id
+  
+    //define createfields
+  object createdDate extends MappedDateTime(this)
 
   object id extends MappedLongIndex(this)
 
@@ -195,7 +202,7 @@ class Action extends LongKeyedMapper[Action] {
   object name extends MappedPoliteString(this, 64) {
     
     override def validations =
-    valMinLen(2, "The name must be at least 2 characters long") _ :: super.validations
+    valMinLen(2, S.?("base_action_error_min_len")) _ :: super.validations
     
   }
   private[model] object theAction extends MappedText(this) {

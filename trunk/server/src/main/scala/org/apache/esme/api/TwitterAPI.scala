@@ -242,8 +242,8 @@ abstract class TwitterAPI {
   
   def update(): Box[TwitterResponse] = {
     for (req <- S.request;
-         user <- calcUser ?~ "User not found";
-         text <- req.param("status") ?~ "Message not included";
+         user <- calcUser ?~ S.?("base_twitter_api_err_user_not_found");
+         text <- req.param("status") ?~ S.?("base_twitter_api_err_user_not_included");
          msg <- Message.create.author(user.id.is).when(millis).
                                source(req.param("source") openOr "twitterapi").
                                setTextAndTags(text, Nil, None))
@@ -258,7 +258,7 @@ abstract class TwitterAPI {
   }
   
   def friends(userName: String): Box[TwitterResponse] = {
-    User.findFromWeb(userName).map(friends) ?~ "User not found"
+    User.findFromWeb(userName).map(friends) ?~ S.?("base_twitter_api_err_user_not_found")
   }
   
   def friends(): Box[TwitterResponse] = {
@@ -270,7 +270,7 @@ abstract class TwitterAPI {
   }
   
   def followers(userName: String): Box[TwitterResponse] = {
-    User.findFromWeb(userName).map(followers) ?~ "User not found"
+    User.findFromWeb(userName).map(followers) ?~ S.?("base_twitter_api_err_user_not_found")
   }
   
   def followers(): Box[TwitterResponse] = {
@@ -278,50 +278,50 @@ abstract class TwitterAPI {
   }
   
   def showUser(name: String): Box[TwitterResponse] = {
-    for (user <- User.findFromWeb(name) ?~ "User not found")
+    for (user <- User.findFromWeb(name) ?~ S.?("base_twitter_api_err_user_not_found"))
     yield Right(Map("user" -> extendedUserData(user)))
   }
 
   def showStatus(statusId: String): Box[TwitterResponse] = {
-    for (status <- Message.find(statusId) ?~ "Message not found")
+    for (status <- Message.find(statusId) ?~ S.?("base_twitter_api_err_message_not_found"))
     yield Right(Map("status" -> msgData(status)))
   }
 
   def createFriendship(other: String): Box[TwitterResponse] = {
     for (user <- calcUser;
-         other <- User.findFromWeb(other) ?~ "User not found")
+         other <- User.findFromWeb(other) ?~ S.?("base_twitter_api_err_user_not_found"))
     yield {
       if (user follow other)
         Right(Map("user" -> userData(other)))
       else
-        Right(Map("hash" -> Map("error" -> "Could not follow user")))
+        Right(Map("hash" -> Map("error" -> S.?("base_twitter_api_err_user_not_follow"))))
     }
   }
   
   def destroyFriendship(other: String): Box[TwitterResponse] = {
     for (user <- calcUser;
-         other <- User.findFromWeb(other) ?~ "User not found")
+         other <- User.findFromWeb(other) ?~ S.?("base_twitter_api_err_user_not_found"))
     yield {
       if (user unfollow other)
         Right(Map("user" -> userData(other)))
       else
-        Right(Map("hash" -> Map("error" -> "Could not unfollow user")))
+        Right(Map("hash" -> Map("error" -> S.?("base_twitter_api_err_user_not_unfollow"))))
     }
   }
   
   def existsFriendship(): Box[TwitterResponse] = {
     for (req <- S.request;
-         param_a <- req.param("user_a") ?~ "User A not specified";
-         param_b <- req.param("user_b") ?~ "User B not specified";
-         user_a <- User.findFromWeb(param_a) ?~ "User A not found";
-         user_b <- User.findFromWeb(param_b) ?~ "User B not found")
+         param_a <- req.param("user_a") ?~ S.?("base_twitter_api_err_user_a_not_specified");
+         param_b <- req.param("user_b") ?~ S.?("base_twitter_api_err_user_b_not_specified");
+         user_a <- User.findFromWeb(param_a) ?~ S.?("base_twitter_api_err_user_a_not_found");
+         user_b <- User.findFromWeb(param_b) ?~ S.?("base_twitter_api_err_user_b_not_found"))
     yield Right(Map("friends" -> user_a.following_?(user_b)))
   }
   
   def endSession(): Box[TwitterResponse] = {
     calcUser map { _ =>
       User.logUserOut
-      Right(Map("hash" -> Map("error" -> "User logged out.")))
+      Right(Map("hash" -> Map("error" -> S.?("base_twitter_api_err_user_logged_out"))))
     }
   }
   
@@ -347,7 +347,7 @@ abstract class TwitterAPI {
                user <- User.findFromWeb(cred._1))
           yield user
       }
-    userBox ?~ "User authentication failed"
+    userBox ?~ S.?("base_twitter_api_err_auth_failed")
   }
   
   protected def unbox(x: () => Box[TwitterResponse]) = {

@@ -59,7 +59,7 @@ object User extends User with KeyedMetaMapper[Long, User] {
     Message.create.author(in.id).
     when(Helpers.timeNow.getTime).
     source("profile").
-    setTextAndTags("User " + in.nickname + " changed profile. Name: " + in.wholeName + ", Image: " + in.imageUrl, Nil, Empty).
+    setTextAndTags(S.?("base_user_msg_change",in.nickname, in.wholeName, in.imageUrl), Nil, Empty).
     foreach{ msg =>
       if (msg.save) {
         Distributor ! Distributor.AddMessageToMailbox(in.id, msg, ProfileReason(in.id))
@@ -89,7 +89,7 @@ object User extends User with KeyedMetaMapper[Long, User] {
           user.save
           auth.save(user)
           User.logUserIn(user)
-          S.notice(S.?("Welcome")+" "+user.niceName)
+          S.notice(S.?("base_user_msg_welcome", user.niceName))
           S.redirectTo(from)
 
         case fe =>
@@ -106,7 +106,7 @@ object User extends User with KeyedMetaMapper[Long, User] {
            "timezone" _id_> user.timezone.toForm,
            "locale" _id_> user.locale.toForm,
            "credentials" -> auth.toForm,
-           "submit" _id_> SHtml.submit(S.?("Sign Up"), doSubmit))
+           "submit" _id_> SHtml.submit(S.?("base_user_ui_signup"), doSubmit))
     }
 
 
@@ -198,7 +198,7 @@ class User extends KeyedMapper[Long, User] with UserIdAsString {// OpenIDProtoUs
         Message.create.author(who.id).
         when(Helpers.timeNow.getTime).
         source("followed").
-        setTextAndTags("User " + this.nickname + " followed " + who.nickname + ".", Nil, Empty).
+        setTextAndTags(S.?("base_user_msg_follow", this.nickname,who.nickname), Nil, Empty).
         foreach { msg =>
           if (msg.save) {
             Distributor ! Distributor.AddMessageToMailbox(who.id, msg, FollowedReason(this.id))
@@ -216,7 +216,7 @@ class User extends KeyedMapper[Long, User] with UserIdAsString {// OpenIDProtoUs
       if (r.delete_!) Message.create.author(who.id).
       when(Helpers.timeNow.getTime).
       source("unfollowed").
-      setTextAndTags("User " + this.nickname + " unfollowed " + who.nickname + ".", Nil, Empty).
+      setTextAndTags(S.?("base_user_msg_unfollow", this.nickname,who.nickname), Nil, Empty).
       foreach{ msg =>
         if (msg.save) {
           Distributor ! Distributor.AddMessageToMailbox(who.id, msg, UnfollowedReason(this.id))
@@ -274,7 +274,7 @@ class User extends KeyedMapper[Long, User] with UserIdAsString {// OpenIDProtoUs
     override val fieldId = Some(Text("txtFirstName"))
   }
 
-  def firstNameDisplayName = ??("First Name")
+  def firstNameDisplayName = S.?("base_user_ui_first_name")
 
   // Last Name
   object lastName extends MappedString(this, 32) {
@@ -282,9 +282,9 @@ class User extends KeyedMapper[Long, User] with UserIdAsString {// OpenIDProtoUs
     override val fieldId = Some(Text("txtLastName"))
   }
 
-  def lastNameDisplayName = ??("Last Name")
+  def lastNameDisplayName = S.?("base_user_ui_last_name")
 
-  // def emailDisplayName = ??("Email")
+  def emailDisplayName = S.?("base_user_ui_email")
   // Password
 
   object superUser extends MappedBoolean(this) {
@@ -351,7 +351,7 @@ class User extends KeyedMapper[Long, User] with UserIdAsString {// OpenIDProtoUs
 
   def niceName: String = nickname
 
-  def timezoneDisplayName = ??("Time Zone")
+  def timezoneDisplayName = S.?("base_user_ui_timezone")
 
-  def localeDisplayName = ??("Locale")
+  def localeDisplayName = S.?("base_user_ui_locale")
 }

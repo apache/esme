@@ -38,6 +38,9 @@ import Helpers._
 
 import model._
 
+import java.util.Date
+import java.text.{DateFormat,SimpleDateFormat}
+
 import scala.xml._
 
 /**
@@ -46,15 +49,22 @@ import scala.xml._
 object ActionMgr {
   def loggedIn_? = User.loggedIn_?
 
-  val ifIsLoggedIn = If(loggedIn_? _, strFuncToFailMsg(() => S.?("You must be logged in")))
+  val ifIsLoggedIn = If(loggedIn_? _, strFuncToFailMsg(() => S.?("base_menu_logout_error")))
 
   val menuItems =
-  Menu(Loc("actionMgt", List("action_view", "index"), "Action Management", ifIsLoggedIn,
+  Menu(Loc("actionMgt", List("action_view", "index"), S.?("base_actions_menu"), ifIsLoggedIn,
            Loc.Snippet("displayActions", displayActions),
            Loc.Snippet("main", mainActions))) ::
   Nil
 
   object updateActions extends RequestVar[() => JsCmd](() => Noop)
+  
+      //XXX display date, should we have a common dateFormat?
+    val dateFormat = new SimpleDateFormat("yyyy/MM/dd")
+    def getDateHtml(date: Date) : Text = date match {
+     case null => Text(S.?("base_pool_ui_empty_date"))
+     case d => Text(dateFormat.format(d))
+   }
 
   def displayActions(in: NodeSeq): NodeSeq = {
     // get the span name to update
@@ -75,6 +85,7 @@ object ActionMgr {
                                                                              e => {i.disabled(!e).save; Noop} ),
                                                    "test" -> i.testText,
                                                    "action" -> i.actionText,
+                                                   "createdDate" -> getDateHtml(i.createdDate),
                                                    "remove" -> 
                                                    ((bt: NodeSeq) => 
                   ajaxButton(bt, () => {i.removed(true).save ; updateSpan()}))
@@ -107,8 +118,8 @@ object ActionMgr {
 
         act match {
           case Full(Nil) =>
-            toSave.save
-            S.notice("Action added")
+            toSave.save 
+            S.notice(S.?("base_action_msg_new_action"))
             redisplay() &
             SetValById(mainName, "") &
             SetValById(mainAction, "") &
