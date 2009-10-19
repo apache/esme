@@ -1,6 +1,7 @@
 <lift:surround with="default" at="content">
 
 	<lift:Style.header />
+	<lift:TableSorterSnip/>
 	    	
 	<!-- STYLESHEETS <lift:Style.header /> -->	
 		<link rel="stylesheet" type="text/css" href="../style/reset.css" media="screen" />
@@ -15,6 +16,7 @@
 		<script type="text/javascript" src="../scripts/jquery-1.3.2.min.js"></script>
 		<script type="text/javascript" src="../scripts/jquery-ui-1.7.2.custom.min.js"></script>
 		<script type="text/javascript" src="../scripts/esme.js"></script>
+		<script type="text/javascript" src="../scripts/esme_table_sorter.js"></script>
   
 
 <div class="demo">
@@ -34,25 +36,33 @@
       -->
     </lift:ignore>
     <lift:displayActions the_id="TokenSpan">
-      <table border="1">
+      <table id="esme-table" class="tablesorter">
+      <thead>
         <tr>
           <td><b><lift:loc>ui_action_table_name</lift:loc></b></td>
           <td halign="center"><b><lift:loc>ui_action_table_enabled</lift:loc></b></td>
           <td halign="center"><b><lift:loc>ui_action_table_test</lift:loc></b></td>
           <td halign="center"><b><lift:loc>ui_action_table_action</lift:loc></b></td>
+          <td halign="center"><b><lift:loc>ui_action_table_create_date</lift:loc></b></td>
           <td halign="center"><b><lift:loc>ui_action_table_delete</lift:loc></b></td>
         </tr>
+         </thead>
+        
         <disp:item>
+         <tbody>
           <tr>
             <td><item:name/></td>
             <td><item:enabled/></td>
-            <td><pre><item:test/></pre></td>
-            <td><pre><item:action/></pre></td>
+            <td><<item:test/></td>
+            <td><item:action/></td>
+            <td><item:createdDate/></td>
             <td>
               <item:remove><img src="/images/delete.png"/></item:remove>
             </td>
           </tr>
+           </tbody>
         </disp:item>
+        
       </table>
     </lift:displayActions>
   </span>

@@ -22,8 +22,21 @@ package org.apache.esme.model
  */
 
 import net.liftweb._
+import http._
+import SHtml._
+import js._
+import JsCmds._
+import JE._
+
+import sitemap._
+import Loc._
+
 import mapper._
+
 import util._
+import Helpers._
+
+import model._
 
 object Privilege extends Privilege with LongKeyedMetaMapper[Privilege] {
   
@@ -39,7 +52,7 @@ object Privilege extends Privilege with LongKeyedMetaMapper[Privilege] {
         isDefined
     ) bulkDelete_!!(By(pool, in.pool),
                     By(user, in.user))
-    else throw new Exception("No other admin users in pool!")
+    else throw new Exception(S.?("base_pool_err_no_admin_users"))
                     
   }
   

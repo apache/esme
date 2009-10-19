@@ -109,18 +109,18 @@ object RestAPI extends XMLApiHelper {
   }
 
   def findAction: Box[Action] =
-  for (user <- User.currentUser ?~ "Not Logged In";
-       id <- S.param("actionid") ?~ "id param not supplied";
+  for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in");
+       id <- S.param("actionid") ?~ S.?("base_rest_api_err_missing_param", "id");
        action <- Action.find(By(Action.user, user),
                              By(Action.id, id.toLong),
                              By(Action.removed, false))) yield action
 
   def addAction(): LiftResponse = {
     val ret: Box[NodeSeq] =
-    for (user <- User.currentUser ?~ "Not logged in";
-         name <- S.param("name") ?~ "'name' param not supplied";
-         test <- S.param("test") ?~ "'test' param not supplied";
-         action <- S.param("action") ?~ "'action' param not supplied";
+    for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in");
+         name <- S.param("name") ?~ S.?("base_rest_api_err_missing_param", "name");
+         test <- S.param("test") ?~ S.?("base_rest_api_err_missing_param", "test");
+         action <- S.param("action") ?~ S.?("base_rest_api_err_missing_param", "action");
          val a = Action.create.user(user).name(name);
          a2 <- a.setTest(test);
          a3 <- a.setAction(action)) yield a3.saveMe.toXml
@@ -130,7 +130,7 @@ object RestAPI extends XMLApiHelper {
 
   def getActions(): LiftResponse = {
     val ret: Box[NodeSeq] =
-    for (user <- User.currentUser ?~ "Not logged in")
+    for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in"))
     yield user.performing.flatMap(_.toXml)
 
     ret
@@ -139,7 +139,7 @@ object RestAPI extends XMLApiHelper {
   def enableAction(): LiftResponse = {
     val ret: Box[Boolean] =
     for (action <- findAction;
-         enabled <- S.param("enabled").map(toBoolean) ?~ "enabled param not supplied")
+         enabled <- S.param("enabled").map(toBoolean) ?~ S.?("base_rest_api_err_missing_param", "enable"))
     yield action.disabled(!enabled).save
   
     ret
@@ -159,15 +159,15 @@ object RestAPI extends XMLApiHelper {
   
   def getTracking(): LiftResponse = {
     val ret: Box[NodeSeq] =
-    for (user <- User.currentUser ?~ "Not logged in")
+    for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in"))
     yield Tracking.findAll(By(Tracking.user, user)).flatMap(_.toXml)
     ret
   }
 
   def getConversation(): LiftResponse = {
     val ret: Box[NodeSeq] =
-    for (user <- User.currentUser ?~ "Not logged in";
-         id <- S.param("conversationid").map(toLong) ?~ "id param missing"
+    for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in");
+         id <- S.param("conversationid").map(toLong) ?~ S.?("base_rest_api_err_missing_param", "id")
     ) yield <conversation id={id.toString}>{
         Message.findAndPrime(By(Message.conversation, id),
                              OrderBy(Message.id, Ascending)).map(_.toXml)
@@ -178,8 +178,8 @@ object RestAPI extends XMLApiHelper {
 
   def removeTracking(): LiftResponse = {
     val ret: Box[Boolean] =
-    for (user <- User.currentUser ?~ "Not logged in";
-         id <- S.param("trackid") ?~ "id param missing";
+    for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in");
+         id <- S.param("trackid") ?~ S.?("base_rest_api_err_missing_param", "id");
          track <- Tracking.find(By(Tracking.id, id.toLong),
                                 By(Tracking.user, user)) ?~ "Couldn't find tracking item"
     ) yield track.removed(true).save
@@ -189,8 +189,8 @@ object RestAPI extends XMLApiHelper {
 
   def addTracking(): LiftResponse = {
     val ret: Box[Boolean] =
-    for (user <- User.currentUser ?~ "Not logged in";
-         toTrack <- (S.param("track") ?~ "No track param") if toTrack.trim.length > 0)
+    for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in");
+         toTrack <- (S.param("track") ?~ S.?("base_rest_api_err_missing_param", "track")) if toTrack.trim.length > 0)
     yield
     Tracking.create.user(user).regex(toTrack).save
 
@@ -243,7 +243,7 @@ object RestAPI extends XMLApiHelper {
 
   def login(): LiftResponse = {
     val res: Box[Boolean] = if (User.loggedIn_?) Empty else
-    for (token <- S.param("token") ?~ "No 'token' param";
+    for (token <- S.param("token") ?~ S.?("base_rest_api_err_missing_param", "token");
          auth <- AuthToken.find(By(AuthToken.uniqueId, token))
          ?~ "Token not found";
          user <- auth.user.obj;
@@ -292,8 +292,8 @@ object RestAPI extends XMLApiHelper {
   
   def sendMsg(theUser: Box[Long], params: HasParams): LiftResponse = {
     val r: Box[Boolean] =
-    for (user <- theUser ?~ "User not found";
-         msg <- params.param("message") ?~ "Message not included")
+    for (user <- theUser ?~ S.?("base_rest_api_err_param_not_found", "User");
+         msg <- params.param("message") ?~ S.?("base_rest_api_err_missing_param", "message"))
     yield {
       val from: String = params.param("via") openOr "api"
       val pool = for (poolName <- params.param("pool");
@@ -325,7 +325,7 @@ object RestAPI extends XMLApiHelper {
     yield tag.findMessages.map(_.toXml)
         
     val r: Box[NodeSeq] = 
-    t or (for (user <- calcUser ?~ "User not found";
+    t or (for (user <- calcUser ?~  S.?("base_rest_api_err_param_not_found", "User");
                val lst = Mailbox.mostRecentMessagesFor(user.id, 40))
           yield lst.flatMap{ case (msg, why, _) => msg.toXml % why.attr})
     
@@ -338,7 +338,7 @@ object RestAPI extends XMLApiHelper {
     val numMsgs = 40 //(params.param("numMsgs") openOr "40").toInt
 
     val r: Box[NodeSeq] = 
-    for (user <- calcUser ?~ "User not found";
+    for (user <- calcUser ?~  S.?("base_rest_api_err_param_not_found", "User");
          val lst = Mailbox.mostRecentMessagesFor(user.id, numMsgs).map(_._1))
     yield
     <tag_cloud>
@@ -371,13 +371,13 @@ object RestAPI extends XMLApiHelper {
   def addUserToPool(): LiftResponse = {
     val r: Box[Boolean] = 
     for (adminUser <- User.currentUser;
-         poolName <- S.param("pool") ?~ "Pool not specified";
+         poolName <- S.param("pool") ?~ S.?("base_rest_api_err_missing_param", "pool");
          realm <- (S.param("realm") or Full(AccessPool.Native));
-         pool <- AccessPool.findPool(poolName, realm) ?~ "Pool not found";
-         userName <- S.param("user") ?~ "User to add to pool not specified";
-         user <- User.findFromWeb(userName) ?~ "User not found";
+         pool <- AccessPool.findPool(poolName, realm) ?~  S.?("base_rest_api_err_param_not_found", "Pool");
+         userName <- S.param("user") ?~ S.?("base_rest_api_err_missing_param", "user");
+         user <- User.findFromWeb(userName) ?~  S.?("base_rest_api_err_param_not_found", "User");
          permissionName <- (S.param("permission") or Full("Write"));
-         permission <- Box(Permission.valueOf(permissionName)) ?~ "Unknown permission type"
+         permission <- Box(Permission.valueOf(permissionName)) ?~ S.?("base_rest_api_err_param_not_found", "Permission")
     ) yield if(Privilege.hasPermission(adminUser.id.is, pool.id.is, Permission.Admin)) {
       val result = try {
         Privilege.create.user(user).pool(pool).permission(permission).save
@@ -393,7 +393,7 @@ object RestAPI extends XMLApiHelper {
   
   def getPools(): LiftResponse = {
     val ret: Box[NodeSeq] =
-    for (user <- User.currentUser ?~ "Not logged in")
+    for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in"))
     yield AccessPool.findAll(In(AccessPool.id, Privilege.pool, By(Privilege.user, user)),
                              OrderBy(AccessPool.id, Descending),
                              MaxRows(20)).

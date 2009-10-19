@@ -44,10 +44,10 @@ import org.apache.esme.model.{Message, User}
 object UserMgr {
   def loggedIn_? = User.loggedIn_?
 
-  val ifIsLoggedIn = If(loggedIn_? _, strFuncToFailMsg(() => S.?("You must be logged in")))
+  val ifIsLoggedIn = If(loggedIn_? _, strFuncToFailMsg(() => S.?("base_error_not_logged_in")))
 
   val menuItems =
-  Menu(Loc("list_users", List("info_view", "users"), "List Users", ifIsLoggedIn,
+  Menu(Loc("list_users", List("info_view", "users"), S.?("base_users_menu"), ifIsLoggedIn,
            Loc.Snippet("displayUsers", displayUsers))) ::
   Nil
 
