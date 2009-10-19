@@ -59,8 +59,8 @@ object User extends User with KeyedMetaMapper[Long, User] {
     Message.create.author(in.id).
     when(Helpers.timeNow.getTime).
     source("profile").
-    setTextAndTags(S.?("base_user_msg_change",in.nickname, in.wholeName, in.imageUrl), Nil, Empty).
-    foreach{ msg =>
+    setTextAndTags("User " + in.nickname + " changed profile. Name: " + in.wholeName + ", Image: " + in.imageUrl, Nil, Empty).
+     foreach{ msg =>
       if (msg.save) {
         Distributor ! Distributor.AddMessageToMailbox(in.id, msg, ProfileReason(in.id))
       }
@@ -198,7 +198,7 @@ class User extends KeyedMapper[Long, User] with UserIdAsString {// OpenIDProtoUs
         Message.create.author(who.id).
         when(Helpers.timeNow.getTime).
         source("followed").
-        setTextAndTags(S.?("base_user_msg_follow", this.nickname,who.nickname), Nil, Empty).
+        setTextAndTags("User " + this.nickname + " followed " + who.nickname + ".", Nil, Empty).
         foreach { msg =>
           if (msg.save) {
             Distributor ! Distributor.AddMessageToMailbox(who.id, msg, FollowedReason(this.id))
@@ -216,7 +216,7 @@ class User extends KeyedMapper[Long, User] with UserIdAsString {// OpenIDProtoUs
       if (r.delete_!) Message.create.author(who.id).
       when(Helpers.timeNow.getTime).
       source("unfollowed").
-      setTextAndTags(S.?("base_user_msg_unfollow", this.nickname,who.nickname), Nil, Empty).
+      setTextAndTags("User " + this.nickname + " unfollowed " + who.nickname + ".", Nil, Empty).
       foreach{ msg =>
         if (msg.save) {
           Distributor ! Distributor.AddMessageToMailbox(who.id, msg, UnfollowedReason(this.id))
