@@ -39,6 +39,7 @@ import scala.xml.{Elem}
 
 object UserActor {
   private[actor] case class StartMeUp(user: Long)
+  private[actor] case class RefreshMe(user: Long)
   private[actor] case class CreateMessage(text: String, tags: List[String],
                                           when: Long, metaData: Box[Elem],
                                           source: String,
@@ -105,7 +106,10 @@ class UserActor extends Actor {
 
         this ! UpdateTracking(Distributor.TrackTrackingType)
         this ! UpdateTracking(Distributor.PerformTrackingType)
-
+        
+      case RefreshMe(user) => 
+         pools = Privilege.findViewablePools(user)
+         
       case RunFunc(f) =>
         f()
         
