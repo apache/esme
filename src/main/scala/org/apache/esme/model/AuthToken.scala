@@ -23,10 +23,26 @@ package org.apache.esme.model
 
 import net.liftweb._
 import mapper._
+import http._
 import util._
+
+import org.apache.esme._
+import lib._
+import org.apache.esme.actor._
+import external._
+
+import java.util.Calendar
+import java.util.Date
+import scala.xml.{Text, Node, Elem => XmlElem}
 
 object AuthToken extends AuthToken with LongKeyedMetaMapper[AuthToken] {
   // override def dbIndexes = Index(user, status) :: super.dbIndexes
+  
+     override def create: AuthToken = {
+    val ap = super.create
+    ap.createdDate(new Date())
+    ap
+  } 
 }
 
 class AuthToken extends LongKeyedMapper[AuthToken] {
@@ -36,9 +52,14 @@ class AuthToken extends LongKeyedMapper[AuthToken] {
   object id extends MappedLongIndex(this)
   object user extends MappedLongForeignKey(this, User)
   object description extends MappedPoliteString(this, 64)
+   //define createfields
+  object createdDate extends MappedDateTime(this)
+  
+
   
   object uniqueId extends MappedUniqueId(this, 32) {
     override def dbIndexed_? = true
+    
   }
 /*
 
