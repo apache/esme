@@ -40,6 +40,9 @@ import model._
 
 import scala.xml._
 
+import java.util.Date
+import java.text.{DateFormat,SimpleDateFormat}
+
 /**
  * Manage the sitemap and related snippets for Authentication Tokens
  */
@@ -55,6 +58,13 @@ object AuthMgr {
   Nil
 
   object updateTokens extends RequestVar[() => JsCmd](() => Noop)
+  
+     //XXX display date, should we have a common dateFormat?
+    val dateFormat = new SimpleDateFormat("yyyy/MM/dd")
+    def getDateHtml(date: Date) : Text = date match {
+     case null => Text(S.?("base_pool_ui_empty_date"))
+     case d => Text(dateFormat.format(d))
+   }
 
   def displayTokens(in: NodeSeq): NodeSeq = {
     // get the span name to update
@@ -72,6 +82,7 @@ object AuthMgr {
                       (lst => xs.flatMap(i => bind("item", lst,
                                                    "description" -> i.description.is,
                                                    "uniqueId" -> i.uniqueId.is,
+                                                   "createdDate" -> getDateHtml(i.createdDate),
                                                    "revoke" -> 
                                                    ((bt: NodeSeq) => 
                   ajaxButton(bt, () => {i.delete_! ; updateSpan()}))

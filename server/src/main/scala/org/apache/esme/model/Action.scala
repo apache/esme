@@ -41,10 +41,15 @@ object Action extends Action with LongKeyedMetaMapper[Action] {
   private def notifyDistributor(in: Action) {
     Distributor ! Distributor.UpdateTrackingFor(in.user, 
                                                 Distributor.PerformTrackingType)
-    
-
   
   }
+  
+   override def create: Action = {
+    val ap = super.create
+    ap.createdDate(new Date())
+    ap
+  }
+
 
   override def afterSave = startStopActors _ :: super.afterSave
   
