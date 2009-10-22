@@ -27,6 +27,7 @@ import org.apache.esme.model.User
 
 import net.liftweb._
 import util._
+import common._
 
 object TwitterFeed {
   val UserTimelineUrl = "http://twitter.com/statuses/user_timeline/"

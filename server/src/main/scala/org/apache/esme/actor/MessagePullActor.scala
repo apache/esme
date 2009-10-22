@@ -21,71 +21,36 @@ package org.apache.esme.actor
  * under the License.
  */
 
-import scala.actors.Actor
-import scala.actors.Actor._
-import net.liftweb.http.ActorWatcher
+import net.liftweb._
+import common._
+import actor._
 import org.apache.esme.actor.Distributor.{UserCreatedMessage=>Msg}
 
-class MessagePullActor(val messageProcessor: Actor, private var lastMessage: Option[Msg], val messageSource: UniqueMessageSource) extends Actor {
-
-  import MessagePullActor._
-
-  def act {
-    loop {
-      react {
-        case StartUp => {
-          link(ActorWatcher)
-        }
-        case ByeBye => {
-          unlink(ActorWatcher)
-          self.exit()
-        }
-        case (msgs: List[Msg]) => {
-          val lastMessages = messageSource.getLastSortedMessages(msgs, lastMessage)
-          for (message <- lastMessages) {
-            messageProcessor ! message
-            lastMessage = Some(message)
-          }
-        }
-        case FetchMessages => actor {
-          // "this" used to reference invoking actor
-          this ! messageSource()
-        }
-      }
-    }
-  }
+object MessagePullActor extends LiftActor {
   
-}
+  private var messagePullActors: Map[Any, LiftActor] = Map()
+  
+  protected def messageHandler = {
+    case StartPullActor(obj, lastMessage, messageSource) => 
+      if (!messagePullActors.contains(obj)) {
+        val pullActor = new MessagePullActor(Distributor, lastMessage, messageSource)
+        messagePullActors += (obj -> pullActor)
+        pullActor ! StartUp
+      }
 
-object MessagePullActor extends Actor {
-  
-  private var messagePullActors: Map[Any, Actor] = Map()
-  
-  def act = loop {
-    react {
-      case StartPullActor(obj, lastMessage, messageSource) => {
-        if (!messagePullActors.contains(obj)) {
-          val pullActor = new MessagePullActor(Distributor, lastMessage, messageSource)
-          messagePullActors += (obj -> pullActor)
-          pullActor.start
-          pullActor ! StartUp
-        }
+    case StopPullActor(obj) => 
+      messagePullActors.get(obj).foreach {
+	pull =>
+	pull ! ByeBye
+        messagePullActors -= obj
       }
-      case StopPullActor(obj) => {
-        if (messagePullActors.contains(obj)) {
-          messagePullActors(obj) ! ByeBye
-          messagePullActors -= obj
-        }
-      }
-      case Fetch(obj) => {
-        if (messagePullActors.contains(obj)) {
-          messagePullActors(obj) ! FetchMessages
-        }
-      }
-    }
+    
+    case Fetch(obj) => 
+        messagePullActors.get(obj).foreach (
+          _ ! FetchMessages
+        )
   }
 
-  start
 
   // do nothing
   def touch {
@@ -97,7 +62,31 @@ object MessagePullActor extends Actor {
   case class StartPullActor(any: Any, lastMessage: Option[Msg], messageSource: UniqueMessageSource)
   case class StopPullActor(any: Any)
   case class Fetch(any: Any)
-}
+
+
+  private class MessagePullActor(messageProcessor: LiftActor, 
+			 private var lastMessage: Option[Msg],
+			 messageSource: UniqueMessageSource) extends LiftActor {
+    protected def messageHandler = {
+      case StartUp => 
+	
+	case ByeBye => 
+	  
+          case (msgs: List[Msg]) => 
+            val lastMessages = messageSource.getLastSortedMessages(msgs, lastMessage)
+      for (message <- lastMessages) {
+        messageProcessor ! message
+        lastMessage = Some(message)
+      }
+      
+      case FetchMessages => 
+        this ! messageSource()
+    }
+    
+  }
+}  
+  
+
 
 trait UniqueMessageSource extends (() => List[Msg]) {
   def messageSorter(a: Msg, b: Msg) = a.when < b.when

@@ -21,97 +21,48 @@ package org.apache.esme.actor
  * under the License.
  */
 
-import scala.actors.Actor
-import scala.actors.TIMEOUT
-import scala.actors.Actor._
 import org.apache.esme.actor.Distributor.AddMessageToMailbox
 import org.apache.esme.model._
 import net.liftweb.http.ActorWatcher
-import net.liftweb.util.{Full,Empty,TimeHelpers}
+import net.liftweb.util._
+import Helpers._
+import net.liftweb.common._
+import net.liftweb.actor._
 
-class PopStatsActor(val period: Long, val refreshInterval: Long) extends Actor {
-
-  import PopStatsActor._
-
-  var queue: List[StatEvent] = List()
-  var stats: Map[Long,Int] = Map()
-  var refreshActor: Actor = _
-  
-  def act {
-    loop {
-      react {
-        case StartUp =>
-          refreshActor = actor {
-            loop {
-              self.reactWithin(refreshInterval) {
-                case TIMEOUT => this ! Expire
-                case ByeBye => self.exit()
-              }
-            }
-          }
-        case ByeBye =>
-          refreshActor ! ByeBye  
-          self.exit()
-        case Hit(id) =>
-          queue += StatEvent(id, now)
-          stats += (id -> (stats.getOrElse(id,0) + 1))
-        case Top(n) =>
-          val topList = stats.toList.sort{
-            case ((_,freq1),(_,freq2)) =>
-              freq2 < freq1
-          }.take(n)
-          reply(topList)
-        case Expire => {
-          queue = queue.dropWhile{ event =>
-            val expired_? = event.when < now
-            if (expired_?) stats -= event.id
-            expired_?
-          }.toList
-        }
-      }
-    }
-  }
-  
-  case class StatEvent(id: Long, when: Long)
-}
-
-object PopStatsActor extends Actor {
+object PopStatsActor extends LiftActor {
 
   // immutable maps of maps doesn't work well
+  // FIXME dpp asks why not?
   import scala.collection.mutable.Map
   
-  val actors: Map[StatParam,Map[Long,PopStatsActor]] = Map()
+  private val actors: Map[StatParam,Map[Long,PopStatsActor]] = Map()
   
-  def now = System.currentTimeMillis
-  def act = loop {
-    react {
-      case StartStats(what, period, refresh) =>
-        if (!actors.contains(what))
-          actors(what) = Map()
-        val stat = actors(what)
-        if(!stat.contains(period)) {
-          val statActor = new PopStatsActor(period, refresh)
-          stat(period) = statActor
-          statActor.start
-          statActor ! StartUp
-        }
-          
-      case StopStats(what, period) => // TODO: not used
+  protected def now = System.currentTimeMillis
+  protected def messageHandler = {
+    case StartStats(what, period, refresh) =>
+      if (!actors.contains(what))
+        actors(what) = Map()
+    val stat = actors(what)
+    if(!stat.contains(period)) {
+      val statActor = new PopStatsActor(period, refresh)
+      stat(period) = statActor
+      statActor ! StartUp
+    }
+    
+    case StopStats(what, period) => // TODO: not used
       case TopStats(what, n, period) =>
         (for (stat <- actors.get(what);
-             availableActor <- stat.get(period)) yield availableActor) match {
-               case Some(statActor) => statActor forward Top(n)
-               case _ => reply(Nil)
-             }
-      case IncrStats(what, hitItem) =>
-        for (stat <- actors.get(what);
-             statActor <- stat.values)
-          statActor ! Hit(hitItem)
-    }
+              availableActor <- stat.get(period)) yield availableActor) match {
+		case Some(statActor) => forwardMessageTo(Top(n), statActor)
+		case _ => reply(Nil)
+              }
+
+    case IncrStats(what, hitItem) =>
+      for (stat <- actors.get(what);
+           statActor <- stat.values)
+        statActor ! Hit(hitItem)
   }
   
-  start
-
   // do nothing
   def touch {
   }
@@ -126,6 +77,44 @@ object PopStatsActor extends Actor {
   case class StopStats(what: StatParam, period: Long)
   case class TopStats(what: StatParam, n: Byte, period: Long)
   case class IncrStats(what: StatParam, hitItem: Long)
+
+  private class PopStatsActor(period: Long,
+			      refreshInterval: Long) extends LiftActor {
+    private var queue: List[StatEvent] = List()
+    private var stats: Map[Long,Int] = Map()
+    private var running = true
+
+    protected def messageHandler = {
+      case StartUp =>
+
+    case ByeBye =>
+      running = false
+
+    case Hit(id) =>
+      // FIXME this is an O(n) operation.
+      // use LiftBuffer or prepend (using ::)
+      queue += StatEvent(id, now)
+      stats += (id -> (stats.getOrElse(id,0) + 1))
+      
+      case Top(n) =>
+	val topList = stats.toList.sort{
+          case ((_,freq1),(_,freq2)) =>
+            freq2 < freq1
+	}.take(n)
+      reply(topList)
+      
+      case Expire => {
+	queue = queue.dropWhile{ event =>
+          val expired_? = event.when < now
+				if (expired_?) stats -= event.id
+				expired_?
+			      }.toList
+	}
+    }
+    
+    case class StatEvent(id: Long, when: Long)
+  }
+
 }
 
 sealed trait StatParam

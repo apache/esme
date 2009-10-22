@@ -25,6 +25,7 @@ import net.liftweb._
 import mapper._
 import http._
 import util._
+import common._
 
 import org.apache.esme._
 import lib._
@@ -256,11 +257,11 @@ class Action extends LongKeyedMapper[Action] {
   def setTest(in: String): Box[Action] = try {
     testExpr(in) match {
       case Success(v, _) => Full(this.theTest(v.toStr))
-      case Failure(m, _) => net.liftweb.util.Failure(m, Empty, Empty)
-      case Error(m, _) => net.liftweb.util.Failure(m, Empty, Empty)
+      case Failure(m, _) => net.liftweb.common.Failure(m, Empty, Empty)
+      case Error(m, _) => net.liftweb.common.Failure(m, Empty, Empty)
     }
   } catch {
-    case e: Exception => net.liftweb.util.Failure(e.getMessage, Empty, Empty)
+    case e: Exception => net.liftweb.common.Failure(e.getMessage, Empty, Empty)
   }
 
   def testText = theTest.is
@@ -274,8 +275,8 @@ class Action extends LongKeyedMapper[Action] {
   
   def setAction(in: String): Box[Action] = _perform(in) match {
     case Success(_, _) => Full(this.theAction(in))
-    case Failure(m, _) => net.liftweb.util.Failure(m, Empty, Empty)
-    case Error(m, _) => net.liftweb.util.Failure(m, Empty, Empty)
+    case Failure(m, _) => net.liftweb.common.Failure(m, Empty, Empty)
+    case Error(m, _) => net.liftweb.common.Failure(m, Empty, Empty)
   }
 
 

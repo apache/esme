@@ -28,7 +28,7 @@ import org.apache.esme.model.User
 import org.apache.esme.model.Message
 import org.apache.esme.actor.Distributor.{UserCreatedMessage=>Msg}
 
-import net.liftweb.util.Empty
+import net.liftweb.common.Empty
 
 object RssFeed {
   val dateFormats = List(new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", US))

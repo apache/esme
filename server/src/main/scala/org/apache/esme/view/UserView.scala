@@ -28,6 +28,7 @@ import JE._
 import JsCmds._
 import SHtml._
 import util._
+import common._
 import Helpers._
 import sitemap._
 import mapper._

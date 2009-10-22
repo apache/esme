@@ -21,12 +21,11 @@
 
 package org.apache.esme.actor
 
-import scala.actors.{Actor, Exit}
-import Actor._
-
 import net.liftweb._
 import http._
+import actor._
 import util._
+import common._
 import mapper._
 
 import org.apache.esme._
@@ -46,8 +45,8 @@ object UserActor {
                                           replyTo: Box[Long],
                                           pool: Box[Long])
   private[actor] case class AddToMailbox(msg: Message, reason: MailboxReason)
-  private[actor] case class Listen(who: Actor)
-  private[actor] case class Unlisten(who: Actor)
+  private[actor] case class Listen(who: LiftActor)
+  private[actor] case class Unlisten(who: LiftActor)
   private[actor] case class LatestMessages(cnt: Int)
   private[actor] case class TestForTracking(msg: Message)
   private[actor] case class UpdateTracking(ttype: Distributor.TrackingType)
@@ -60,14 +59,14 @@ object UserActor {
 }
 
 
-class UserActor extends Actor {
+class UserActor extends LiftActor {
   import UserActor._
   
   private var userId: Long = 0
 
   private var userTimezone: TimeZone = _
   
-  private var listeners: List[Actor] = Nil
+  private var listeners: List[LiftActor] = Nil
   
   private var tracking: List[TrackingMatcher] = Nil
 
@@ -83,18 +82,13 @@ class UserActor extends Actor {
 
   private case class RunFunc(f: () => Unit)
 
-  def act = loop {
-    react {
-      case RelinkToActorWatcher =>
-        link(ActorWatcher)
-
+  protected def messageHandler = {
       case m @ Distributor.UserUpdated(_) =>
         User.find(userId).
         foreach(u => userTimezone = TimeZone.getTimeZone(u.timezone))
         listeners.foreach(_ ! m)
 
       case StartMeUp(user) =>
-        link(ActorWatcher)
         userId = user
         User.find(userId).
         foreach(u => userTimezone = TimeZone.getTimeZone(u.timezone))
@@ -213,7 +207,6 @@ class UserActor extends Actor {
             Distributor !
             Distributor.AddMessageToMailbox(id, msg, ResendReason(userId))
         }
-    }
   }
 
   def buildCalendar = userTimezone match {
@@ -268,9 +261,11 @@ class UserActor extends Actor {
               Distributor.AddMessageToMailbox(id, msg, ResendReason(userId))
 
             case FetchFeed(url) => MessagePullActor ! MessagePullActor.Fetch(td.performId)
-            
+
+            /*
             case ScalaInterpret => if (msg.source.is != "scala")
               ScalaInterpreter ! ScalaInterpreter.ScalaExcerpt(userId, msg.id.is, msg.pool.is, msg.getText)
+	      */
 
             case PerformFilter => // IGNORE
           }

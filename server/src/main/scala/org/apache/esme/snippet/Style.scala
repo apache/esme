@@ -24,6 +24,7 @@ package org.apache.esme.snippet
 import net.liftweb._
 import http._
 import util._
+import common._
 import js._
 import JE._
 import JsCmds._

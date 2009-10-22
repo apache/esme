@@ -25,15 +25,16 @@ import java.io.PrintWriter
 import scala.tools.nsc.Interpreter
 import scala.tools.nsc.Settings
 
-import scala.actors.Actor
-import scala.actors.Actor._
-
 import org.apache.esme.model._
-import net.liftweb.util.{Empty,Props}
+import net.liftweb.util._
+import net.liftweb.common._
+import net.liftweb.actor._
 
-object ScalaInterpreter extends Actor{
+/**
+ * dpp commented out for security reasons
+object ScalaInterpreter extends LiftActor {
 
-  val settings = new Settings()
+  private val settings = new Settings()
   val origBootclasspath = settings.bootclasspath.value
   lazy val pathList = List(jarPathOfClass("scala.tools.nsc.Interpreter"),
                            jarPathOfClass("scala.ScalaObject"))
@@ -82,3 +83,4 @@ object ScalaInterpreter extends Actor{
  
   case class ScalaExcerpt(from: Long, replyTo: Long, pool: Long, code: String)
 }
+*/

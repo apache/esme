@@ -24,6 +24,7 @@ package org.apache.esme.comet
 import net.liftweb.http._
 import net.liftweb.mapper._
 import net.liftweb.util._
+import net.liftweb.common._
 import net.liftweb.util.Helpers._
 import scala.xml._
 import js._
