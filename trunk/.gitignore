@@ -10,6 +10,7 @@ syntax: glob
 
 # logs
 derby.log
+esme_test_db
 
 # eclipse conf file
 .settings
