@@ -21,12 +21,11 @@
 
 package org.apache.esme.actor
 
-import scala.actors.Actor
-import Actor._
-
 import net.liftweb._
 import http._
 import util._
+import actor._
+import common._
 import net.liftweb.http.testing._
 
 import org.apache.esme._
@@ -38,18 +37,12 @@ import org.apache.commons.httpclient.auth._
 import methods._
 import java.io.OutputStream
 
-object HttpSender extends Actor with GetPoster {
-  def act = loop {
-    react {
-      case StartMeUp =>
-        link(ActorWatcher)
-        
-
+object HttpSender extends LiftActor with GetPoster {
+  protected def messageHandler = {
       case SendAMessage(action, msg, user, reason, token) =>
         send(action, msg, user, reason, token)
 
       case _ =>
-    }
   }
 
   private case object StartMeUp
@@ -142,8 +135,6 @@ object HttpSender extends Actor with GetPoster {
     ret
   }
 
-  start
-  this ! StartMeUp
 
   def baseUrl = ""
 }

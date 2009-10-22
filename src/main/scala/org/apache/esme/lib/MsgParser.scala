@@ -26,9 +26,10 @@ import scala.util.parsing.combinator.{Parsers, ImplicitConversions}
 import scala.util.matching._
 import net.liftweb._
 import util._
+import common._
 import mapper._
 import Helpers._
-import net.liftweb.util.{Failure => BoxFailure}
+import net.liftweb.common.{Failure => BoxFailure}
 import scala.util.parsing.input.Reader
 import scala.xml.{XML, NodeSeq, Node, Text}
 import org.apache.esme._

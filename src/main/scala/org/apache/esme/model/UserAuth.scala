@@ -25,6 +25,7 @@ import net.liftweb._
 import mapper._
 import openid._
 import util._
+import common._
 import Helpers._
 import http._
 

@@ -25,6 +25,7 @@ import org.specs._
 import org.specs.runner.JUnit3
 import org.specs.runner.ConsoleRunner
 import net.liftweb.util._
+import net.liftweb.common._
 import org.specs.matcher._
 import Helpers._
 import MsgParser._

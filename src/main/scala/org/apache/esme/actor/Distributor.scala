@@ -28,26 +28,20 @@
 
 package org.apache.esme.actor
 
-import scala.actors.Actor
-import Actor._
-
 import net.liftweb._
+import actor._
 import http._
 import util._
+import common._
 
 import org.apache.esme._
 import model._
 
 import scala.xml.{Elem}
 
-object Distributor extends Actor {
-  def act = loop {
-    react {
-           case RelinkToActorWatcher =>
-        link(ActorWatcher)
-
+object Distributor extends LiftActor {
+  protected def messageHandler = {
       case StartMeUp =>
-        link(ActorWatcher)
         User.findAll.map(_.id.is).foreach(findOrCreateUser)
 
       case UserCreatedMessage(user, text, tags, when, 
@@ -70,7 +64,7 @@ object Distributor extends Actor {
         findOrCreateUser(user) ! UserActor.Unlisten(who)
 
       case LatestMessages(user, cnt) =>
-        findOrCreateUser(user).forward(UserActor.LatestMessages(cnt))
+        forwardMessageTo(UserActor.LatestMessages(cnt), findOrCreateUser(user))
 
       case m @ UserUpdated(id) =>
         users.get(id).foreach(_ ! m)
@@ -100,7 +94,6 @@ object Distributor extends Actor {
         findOrCreateUser(userId) ! UserActor.Resend(msgId)
 
       case _ =>
-    }
   }
 
   private case object StartMeUp
@@ -112,14 +105,14 @@ object Distributor extends Actor {
                                 replyTo: Box[Long],
                                 pool: Box[Long])
   case class AddMessageToMailbox(user: Long, message: Message, reason: MailboxReason)
-  case class Listen(user: Long, who: Actor)
-  case class Unlisten(user: Long, who: Actor)
+  case class Listen(user: Long, who: LiftActor)
+  case class Unlisten(user: Long, who: LiftActor)
   case class LatestMessages(user: Long, cnt: Int)
   case class NewMessage(msg: Message)
   case class UpdateTrackingFor(user: Long, which: TrackingType)
   case class UserUpdated(userId: Long)
-  case class PublicTimelineListeners(who: Actor)
-  case class PublicTimelineUnlisteners(who: Actor)
+  case class PublicTimelineListeners(who: LiftActor)
+  case class PublicTimelineUnlisteners(who: LiftActor)
   case class AllowUserInPool(userId: Long, poolId: Long)
   case class RefreshUser(userId: Long)
   case class ResendMessage(userId: Long, msgId: Long)
@@ -127,23 +120,20 @@ object Distributor extends Actor {
   case object PerformTrackingType extends TrackingType
   case object TrackTrackingType extends TrackingType
 
-  start
-  this ! StartMeUp
-
   // do nothing
   def touch {
 
   }
 
   private var users: Map[Long, UserActor] = Map.empty
-  private var listeners: List[Actor] = Nil
+  private var listeners: List[LiftActor] = Nil
 
   private def findOrCreateUser(user: Long): UserActor = {
     users.get(user) match {
       case Some(ret) => ret
       case _ =>
         val ret = new UserActor
-        ret.start
+      // ret.start
         ret ! UserActor.StartMeUp(user)
         users = users + (user -> ret)
         ret

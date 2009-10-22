@@ -30,11 +30,13 @@ package org.apache.esme.api
 
 import net.liftweb._
 import http._
+import actor._
 import auth._
 import js._
 import JE._
 import rest._
 import util._
+import common._
 import mapper._
 import Helpers._
 
@@ -43,8 +45,6 @@ import model._
 import org.apache.esme.actor._
 
 import scala.xml._
-import scala.actors.Actor
-import Actor._
 
 import scala.collection.mutable.ListBuffer
 import java.util.logging._

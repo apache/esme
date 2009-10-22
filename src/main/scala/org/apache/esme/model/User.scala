@@ -27,6 +27,7 @@ import scala.xml.{Node, Elem, NodeSeq, Text}
 
 import sitemap._
 import util._
+import common._
 import openid._
 import http._
 import js._

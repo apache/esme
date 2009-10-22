@@ -30,8 +30,10 @@ package org.apache.esme.api
 
 import net.liftweb._
 import http._
+import actor._
 import rest._
 import util._
+import common._
 import mapper._
 import Helpers._
 
@@ -40,8 +42,6 @@ import model._
 import org.apache.esme.actor._
 
 import scala.xml.{NodeSeq, Text, Elem, XML}
-import scala.actors.Actor
-import Actor._
 
 import scala.collection.mutable.ListBuffer
 import java.util.logging._
@@ -264,19 +264,14 @@ object RestAPI extends XMLApiHelper {
   }
 
   def waitForMsgs(): LiftResponse = {
-    val seq: Long = Helpers.nextNum
-
+    val future = new LAFuture[List[(Message, MailboxReason)]]()
+    
     def waitForAnswer: Box[List[(Message, MailboxReason)]] = 
-    receiveWithin(6L * 60L * 1000L) {
-      case (s2, ret: List[(Message, MailboxReason)]) if s2 == seq =>
-        Full(ret)
-      case (s2, _, _) if s2 != seq => waitForAnswer
-      case _ => Empty
-    }
+      future.get(6L * 60L * 1000L)
 
     var r: Box[NodeSeq] = 
     for (act <- restActor.is ?~ "No REST actor";
-         val ignore = act ! ListenFor(self, 5 minutes, seq);
+         val ignore = act ! ListenFor(future, 5 minutes);
          answer <- waitForAnswer ?~ "Didn't get an answer")
     yield answer.flatMap{ case (msg, reason) => msg.toXml % reason.attr}
 
@@ -406,7 +401,6 @@ object RestAPI extends XMLApiHelper {
   
   private def buildActor(userId: Long): RestActor = {
     val ret = new RestActor
-    ret.start
     ret ! StartUp(userId)
     ret
   }
@@ -416,54 +410,51 @@ object RestAPI extends XMLApiHelper {
   }
   
 
-  class RestActor extends Actor {
+  class RestActor extends LiftActor {
     private var userId: Long = _
     private var msgs: List[(Message, MailboxReason)] = Nil
-    private var listener: Box[(Actor, Long)] = Empty
+    private var listener: Box[LAFuture[List[(Message, MailboxReason)]]] = Empty
     
-    def act = loop {
-      react {
-        case StartUp(userId) =>
-          link(ActorWatcher)
+    protected def messageHandler = {
+      case StartUp(userId) =>
           this.userId = userId
           Distributor ! Distributor.Listen(userId, this)
 
         case ByeBye =>
-          unlink(ActorWatcher)
           Distributor ! Distributor.Unlisten(userId, this)
-          self.exit()
           
-        case UserActor.MessageReceived(msg, reason) =>
-          msgs = (msg, reason) :: msgs
-          listener.foreach {
-            who =>
-            who._1 ! (who._2, msgs)
-            listener = Empty
-            msgs = Nil
-          }
-        
-        case ReleaseListener =>
-          listener.foreach(l => l._1 ! (l._2, Nil))
-          listener = Empty
-
-        case ListenFor(who, len, seq) =>
-          msgs match {
+      case UserActor.MessageReceived(msg, reason) =>
+        msgs = (msg, reason) :: msgs
+      listener.foreach {
+        who =>
+          who.satisfy(msgs)
+        listener = Empty
+        msgs = Nil
+      }
+      
+      case ReleaseListener =>
+        listener.foreach(_.satisfy(Nil))
+      listener = Empty
+      
+      case ListenFor(who, len) =>
+        msgs match {
             case Nil =>
-              listener.foreach(l => l._1 ! (l._2, Nil))
-              listener = Full((who, seq))
+              listener.foreach(_.satisfy(Nil))
+              listener = Full(who)
               ActorPing.schedule(this, ReleaseListener, len)
              
             case xs =>
-              who ! (seq, xs)
+              who.satisfy(xs)
               msgs = Nil
               listener = Empty
-          }
-      }
+        }
     }
   }
 
+
   private case class StartUp(userId: Long)
   private case object ByeBye
-  private case class ListenFor(who: Actor, howLong: TimeSpan, seq: Long)
+  private case class ListenFor(who: LAFuture[List[(Message, MailboxReason)]],
+			       howLong: TimeSpan)
   private case object ReleaseListener
 }
