@@ -24,6 +24,7 @@ package org.apache.esme.model
 import net.liftweb._
 import mapper._
 import util._
+import common._
 import http.js._
 import Helpers._
 import java.util.logging._

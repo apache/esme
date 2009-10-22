@@ -34,6 +34,7 @@ import org.apache.esme.model.User
 import org.apache.esme.actor.Distributor.UserCreatedMessage
 
 import net.liftweb.util._
+import net.liftweb.common._
 
 abstract class Feed(val user: User, val url: String, val source: String, val truncateChars: Int, val tags: List[String]) extends UniqueMessageSource {
   // import java.net.{URLConnection, URL}

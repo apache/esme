@@ -22,6 +22,8 @@ package bootstrap.liftweb
  */
 
 import net.liftweb.util._
+import net.liftweb.common._
+import net.liftweb.actor._
 import net.liftweb.http._
 import net.liftweb.http.auth._
 import net.liftweb.sitemap._
@@ -43,8 +45,6 @@ import mapper._
 import provider.HTTPRequest
 import org.compass.core._
 import org.compass.core.config.CompassConfiguration
-import scala.actors.Actor
-import Actor._
 
 import net.liftweb.widgets.tablesorter._  
 
@@ -163,7 +163,7 @@ class Boot {
     Distributor.touch
     SchedulerActor.touch
     MessagePullActor.touch
-    ScalaInterpreter.touch
+    // ScalaInterpreter.touch
     
     val resentPeriod = Props.getLong("stats.resent.period", 1 week)
     val resentRefreshInterval: Long = Props.getLong("stats.resent.refresh") match {
@@ -291,32 +291,26 @@ object DBVendor extends ConnectionManager {
   }
 }
 
-object SessionInfoDumper extends Actor {
+object SessionInfoDumper extends LiftActor {
   private var lastTime = millis
 
   val tenMinutes: Long = 10 minutes
-  def act = {
-    link(ActorWatcher)
-    loop {
-      react {
-        case SessionWatcherInfo(sessions) =>
-          if ((millis - tenMinutes) > lastTime) {
-            lastTime = millis
-            val rt = Runtime.getRuntime
-            rt.gc
-
-            val dateStr: String = timeNow.toString
-            Log.info("[MEMDEBUG] At "+dateStr+" Number of open sessions: "+sessions.size)
-            Log.info("[MEMDEBUG] Free Memory: "+pretty(rt.freeMemory))
-            Log.info("[MEMDEBUG] Total Memory: "+pretty(rt.totalMemory))
-          }
+  protected def messageHandler = {
+    case SessionWatcherInfo(sessions) =>
+      if ((millis - tenMinutes) > lastTime) {
+        lastTime = millis
+        val rt = Runtime.getRuntime
+        rt.gc
+	
+        val dateStr: String = timeNow.toString
+        Log.info("[MEMDEBUG] At "+dateStr+" Number of open sessions: "+sessions.size)
+        Log.info("[MEMDEBUG] Free Memory: "+pretty(rt.freeMemory))
+        Log.info("[MEMDEBUG] Total Memory: "+pretty(rt.totalMemory))
       }
-    }
+    
   }
 
   private def pretty(in: Long): String =
   if (in > 1000L) pretty(in / 1000L)+","+(in % 1000L)
   else in.toString
-
-  this.start
 }

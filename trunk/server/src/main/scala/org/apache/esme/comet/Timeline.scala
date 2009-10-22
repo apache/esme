@@ -23,6 +23,7 @@ package org.apache.esme.comet
 
 import net.liftweb.http._
 import net.liftweb.util._
+import net.liftweb.common._
 import net.liftweb.util.Helpers._
 import scala.xml._
 import js._
@@ -44,7 +45,7 @@ class Timeline extends CometActor {
     for (user <- User.currentUser) {
       Distributor ! Distributor.Listen(user.id, this)
       Distributor !? (2000, Distributor.LatestMessages(user.id, 40)) match {
-        case Some(msg: List[(Long,MailboxReason,Boolean)]) => messages = msg
+        case Full(msg: List[(Long,MailboxReason,Boolean)]) => messages = msg
         case x =>
       }
     }

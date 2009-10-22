@@ -25,13 +25,12 @@ import net.liftweb._
 import http._
 import mapper._
 import util._
+import actor._
+import common._
 import Helpers._
 
 import scala.collection.mutable.HashMap
 import java.util.logging._
-
-import scala.actors._
-import Actor._
 
 import org.apache.esme.lib.TagUtils
 
@@ -43,7 +42,7 @@ object Tag extends Tag with MetaProtoTag[Tag] {
   val logger: Logger = Logger.getLogger("org.apache.esme.model")
   logger.setLevel(Level.WARNING);
   
-  private var listeners: List[Actor] = Nil
+  private var listeners: List[LiftActor] = Nil
   private var cloud: List[(String, Float)] = Nil
 
   // Compounds a bunch of (String, Int) elements so that [(String1, Int1), (String1, Int2)] becomes [(String1, Int1+Int2)]

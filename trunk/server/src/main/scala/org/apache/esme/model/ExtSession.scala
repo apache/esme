@@ -24,6 +24,7 @@ package org.apache.esme.model
 import net.liftweb._
 import mapper._
 import util._
+import common._
 
 object ExtSession extends ExtSession with MetaProtoExtendedSession[ExtSession] {
   override def dbTableName = "ext_session" // define the DB table name

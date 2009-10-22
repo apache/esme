@@ -25,6 +25,7 @@ import net.liftweb._
 import mapper._
 import http._
 import util._
+import common._
 
 import scala.xml.Text
 
