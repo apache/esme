@@ -206,21 +206,29 @@ object AccessPoolMgr {
     // get the current user
     val user = User.currentUser
 
-    def deleteUserFromPool(in: Privilege) {
-       //Delete current admin only if admin permissions by other users exist
-    if(in.permission.is == Permission.Admin ||
+    def validateDeleteUser(in: Privilege): Boolean = {
+      //Delete current admin only if admin permissions by other users exist
+      !(in.permission.is == Permission.Admin &&
       Privilege.find(By(Privilege.pool, in.pool),
         By(Privilege.permission,Permission.Admin),
         NotBy(Privilege.user, in.user)).isEmpty)
-      throw new Exception("No other admin users in pool!")
-      
+    }
+    def deleteUserFromPool(in: Privilege) {
+    if(validateDeleteUser(in)) 
+    {
       val userId = in.user.is
-
       in.delete_!
-
       Distributor ! Distributor.RefreshUser(userId)
     }
+    else 
+      throw new Exception("No other admin users in pool!")
       
+    }
+    def operationLinks(in: Privilege): NodeSeq = {
+      if (validateDeleteUser(in))
+    	  link("", () => deleteUserFromPool(in), Text("Delete"))//delete user from pool
+      else NodeSeq.Empty
+    }
     def doRender(): NodeSeq = {
     val accessPool = AccessPool.find(By(AccessPool.id, poolId.is))  
     Privilege.findAll(By(Privilege.pool, poolId.is)) match {
@@ -231,7 +239,7 @@ object AccessPoolMgr {
                                                    "name" -> User.find(i.user).map(
                                                              _.nickname.is).getOrElse(""),
                                                    "privilege" -> i.permission.is.toString,
-                                                   "operations" -> link("", () => deleteUserFromPool(i), Text("Delete"))//delete user from pool  
+                                                   "operations" -> operationLinks(i)  
                       ))))
     }
     }
