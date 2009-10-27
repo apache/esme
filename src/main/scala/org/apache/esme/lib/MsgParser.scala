@@ -46,7 +46,7 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
 
   lazy val startSpace = rep(' ')
 
-  lazy val url: Parser[URL] = httpUrl ^^ {url => URL(UrlStore.make(url))}
+  lazy val url: Parser[URL] = fragmentAddress ^^ {url => URL(UrlStore.make(url))}
 
   lazy val userNameStr: Parser[String] = alpha ~ rep(alpha | digit | '_') ^^ {
     case first ~ more => first + more.mkString
@@ -134,6 +134,13 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
 
   lazy val scheme: Parser[String] = (accept("http://") | accept("https://")) ^^ {_ mkString}
 
+  lazy val fragmentAddress: Parser[String] = httpUrl ~ opt( '#' ~> fragmentid ) ^^ {
+    case uri ~ None => uri
+    case uri ~ Some(fragmentid) => uri + "#" + fragmentid
+  }
+  
+  lazy val fragmentid: Parser[String] = rep( uchar ) ^^ {_ mkString}
+  
   lazy val httpUrl: Parser[String] = scheme ~ login ~ urlpart ^^ {
     case front ~ login ~ urlpart => front + login + urlpart
   }
