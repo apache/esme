@@ -87,7 +87,7 @@ class Boot {
     LiftRules.dispatch.append(ESMEOpenIDVendor.dispatchPF)
     
     //Resources for Internationalization
-    LiftRules.resourceNames = "ESMEBase" :: "ESMEUI" :: Nil
+    LiftRules.resourceNames = "ESMECustom" :: "ESMEBase" :: "ESMEUI" :: Nil
     
     //Jquery functions
     
@@ -121,12 +121,12 @@ class Boot {
     val entries = Menu(Loc("Home", List("index"), "Home")) ::
     Menu(Loc("user", List("info_view", "user"), "User Info", Hidden,
       Loc.Snippet("user_info", TagDisplay.userInfo))) ::
-    Menu(Loc("about", List("static", "about"), "About", Hidden)) ::
+    Menu(Loc("about", List("static", "about"), S.?("base_menu_about"), Hidden)) ::
     Menu(Loc("tag", List("info_view", "tag"), "Tag", Hidden, Loc.Snippet("tag_display", TagDisplay.display))) ::
     Menu(Loc("search", List("user_view", "search"), S.?("base_menu_search"), Hidden)) ::
     Menu(Loc("sign_up", List("signup"), S.?("base_menu_signup"), 
              Snippet("signup", User.signupForm),
-             Unless(User.loggedIn_? _, "Can't sign up when logged in"))) ::
+             Unless(User.loggedIn_? _, S.?("base_menu_sign_up_error")))) ::
     Menu(Loc("logout", List("logout"), S.?("base_menu_logout"),
              EarlyResponse(() => {User.logUserOut; S.redirectTo(S.referer openOr "/")}),
              If(User.loggedIn_? _, S.?("base_menu_logout_error")))) ::
@@ -147,7 +147,9 @@ class Boot {
       case "user_view" :: _ => Right(UserView)
     }
 
+    // REST APIs (new and old)
     LiftRules.dispatch.prepend(RestAPI.dispatch)
+    LiftRules.dispatch.prepend(API2.dispatch)
 
     LiftRules.httpAuthProtectedResource.prepend {
       case (ParsePath(TwitterAPI.ApiPath :: _, _, _, _)) => Full(AuthRole("user"))
