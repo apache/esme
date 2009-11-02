@@ -13,6 +13,7 @@
     <compass.version>2.1.1</compass.version>
     <lucene.version>2.4.0</lucene.version>
     <netbeans.hint.deploy.server>gfv3</netbeans.hint.deploy.server>
+      <scala.stats.version>1.3</scala.stats.version>
   </properties>
 
   <repositories>
@@ -32,6 +33,21 @@
       <name>Compass</name>
       <url>http://repo.compass-project.org</url>
     </repository>
+    <repository>
+     <id>scala-stats</id>
+          <name>Twitter Repo</name>
+          <url>http://www.lag.net/nest</url>
+      </repository>
+      <repository>
+          <id>configgy</id>
+          <name>Another Twitter Repo</name>
+          <url>http://www.lag.net/repo</url>
+      </repository>
+      <repository>
+          <id>opendmk</id>
+          <name>Java Dynamic Management Kit</name>
+          <url>http://maven.tigase.org/</url>
+      </repository>
   </repositories>
 
   <pluginRepositories>
@@ -79,7 +95,7 @@
     <dependency>
       <groupId>org.openid4java</groupId>
       <artifactId>openid4java</artifactId>
-      <version>0.9.3</version>
+      <version>0.9.5</version>
     </dependency>
 
     <dependency>
@@ -191,7 +207,19 @@
       <artifactId>lucene-snowball</artifactId>
       <version>${lucene.version}</version>
     </dependency>
-    <dependency>
+      <!-- for stats gathering and jmx -->
+      <dependency>
+          <groupId>com.twitter</groupId>
+          <artifactId>stats</artifactId>
+          <version>${scala.stats.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>openDMK</groupId>
+          <artifactId>jdmkrt</artifactId>
+          <version>1.0-b02</version>
+      </dependency>
+      <!-- end stats and jmx -->
+      <dependency>
       <groupId>org.scala-tools.testing</groupId>
       <artifactId>specs</artifactId>
       <version>1.5.0</version>
@@ -250,6 +278,7 @@
         </executions>
         <configuration>
           <nosuffix>true</nosuffix>
+          <jswarn>false</jswarn>
         </configuration>
       </plugin>
       <plugin>
@@ -290,3 +319,4 @@
     </plugins>
   </reporting>
 </project>
+
