@@ -41,12 +41,14 @@ import view._
 import snippet._
 import api._
 import net.liftweb._
+import common.Full
 import mapper._
 import provider.HTTPRequest
 import org.compass.core._
 import org.compass.core.config.CompassConfiguration
 
 import net.liftweb.widgets.tablesorter._  
+import com.twitter.stats._
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -161,11 +163,18 @@ class Boot {
     LiftRules.dispatch.append(TwitterJsonAPI.dispatch)
 
     LiftRules.early.append(makeUtf8)
+    
+    //JMX
+    if (Props.getBool("jmx.enable", false))
+        StatsMBean("org.apache.esme.stats")
 
     Distributor.touch
     SchedulerActor.touch
     MessagePullActor.touch
     // ScalaInterpreter.touch
+    
+    Stats.makeGauge("users"){Distributor.getUsersCount}
+    Stats.makeGauge("listener"){Distributor.getListenersCount}
     
     val resentPeriod = Props.getLong("stats.resent.period", 1 week)
     val resentRefreshInterval: Long = Props.getLong("stats.resent.refresh") match {
@@ -299,6 +308,7 @@ object SessionInfoDumper extends LiftActor {
   val tenMinutes: Long = 10 minutes
   protected def messageHandler = {
     case SessionWatcherInfo(sessions) =>
+     Stats.getCounter("liftSessions").update(sessions.size)
       if ((millis - tenMinutes) > lastTime) {
         lastTime = millis
         val rt = Runtime.getRuntime

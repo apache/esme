@@ -35,6 +35,7 @@ import lib._
 import java.util.logging._
 import java.util.{TimeZone, Calendar}
 import scala.xml.{Elem}
+import com.twitter.stats.Stats
 
 object UserActor {
   private[actor] case class StartMeUp(user: Long)
@@ -100,6 +101,8 @@ class UserActor extends LiftActor {
 
         this ! UpdateTracking(Distributor.TrackTrackingType)
         this ! UpdateTracking(Distributor.PerformTrackingType)
+
+        Stats incr "userCount"
         
       case RefreshMe(user) => 
          pools = Privilege.findViewablePools(user)
@@ -133,6 +136,8 @@ class UserActor extends LiftActor {
                  else null
 
           msg.saveMe
+          Stats incr "userMessagesCreated"
+          Stats incr "messagesCreated"
 
           Distributor ! Distributor.AddMessageToMailbox(userId, msg, NoReason)
         
@@ -231,13 +236,18 @@ class UserActor extends LiftActor {
         val mb = Mailbox.create.user(userId).message(msg)
         reason match {
           case TrackReason(trackId) => mb.viaTrack(trackId)
+              Stats incr "messagesDeliveredTrackReason"
           case DirectReason(fromId) => mb.directlyFrom(fromId)
+              Stats incr "messagesDeliveredDirectReason"
           case ConversationReason(convId) => mb.conversation(convId)
+              Stats incr "messagesDeliveredConversationReason"
           case ResendReason(resender) => mb.resentBy(resender)
+              Stats incr "messagesDeliveredResendReason"
           case _ =>
         }
         mb.saveMe
-          
+        Stats incr "messagesDelivered"
+
         _mailbox = ((msg.id.is, reason, false) :: _mailbox.toList).take(500).toArray
 
         listeners.foreach(_ ! MessageReceived(msg, reason))
@@ -249,11 +259,11 @@ class UserActor extends LiftActor {
             case m @ MailTo(_, _) =>
               User.find(userId).foreach( u =>
                 HttpSender ! HttpSender.SendAMessage(m, msg, u, reason, td.uniqueId))
-             
+                Stats incr "messagesMailed"
             case h @ HttpTo(_, _, _, _, _) =>
               User.find(userId).foreach( u =>
                 HttpSender ! HttpSender.SendAMessage(h, msg, u, reason, td.uniqueId))
-
+                Stats incr "messagesSentViaHTTP"
             case PerformResend =>
               if (! msg.saved_?) msg.save
               for (id <- followers)
@@ -267,7 +277,7 @@ class UserActor extends LiftActor {
               ScalaInterpreter ! ScalaInterpreter.ScalaExcerpt(userId, msg.id.is, msg.pool.is, msg.getText)
 	      */
 
-            case PerformFilter => // IGNORE
+            case PerformFilter => Stats incr "messagesFiltered" // IGNORE
           }
         }
       }
