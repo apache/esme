@@ -140,4 +140,7 @@ object Distributor extends LiftActor {
     }
   }
 
+  def getUsersCount = users.size
+  def getListenersCount = listeners.size
+
 }

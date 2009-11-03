@@ -45,6 +45,7 @@ import org.apache.esme.actor._
 import org.apache.esme.view._
 import java.net.URL
 import java.util.logging._
+import com.twitter.stats.Stats
 
 object User extends User with KeyedMetaMapper[Long, User] {
   override def afterSave = profileChanged _ :: notifyActors _ :: super.afterSave
@@ -149,6 +150,8 @@ object User extends User with KeyedMetaMapper[Long, User] {
     curUser.remove()
     curUserId(Full(who.id.toString))
     onLogIn.foreach(_(who))
+
+    Stats incr "usersLoggedIn"
   }
 
   def logoutCurrentUser = logUserOut()
@@ -158,6 +161,7 @@ object User extends User with KeyedMetaMapper[Long, User] {
     curUserId.remove()
     curUser.remove()
     S.request.foreach(_.request.session.terminate)
+    Stats getCounter "usersLoggedIn" incr -1
   }
 
   private object curUserId extends SessionVar[Box[String]](Empty)
