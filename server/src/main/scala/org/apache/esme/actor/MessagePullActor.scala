@@ -25,6 +25,7 @@ import net.liftweb._
 import common._
 import actor._
 import org.apache.esme.actor.Distributor.{UserCreatedMessage=>Msg}
+import com.twitter.stats.Stats
 
 object MessagePullActor extends LiftActor {
   
@@ -77,6 +78,7 @@ object MessagePullActor extends LiftActor {
       for (message <- lastMessages) {
         messageProcessor ! message
         lastMessage = Some(message)
+        Stats incr "messagesPulled"
       }
       
       case FetchMessages => 
