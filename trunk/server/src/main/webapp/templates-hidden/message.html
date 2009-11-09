@@ -80,22 +80,22 @@
                                                                 <div class="outer">
                                                                     <div class="inner clear">
                                                                         <p class="text" id="body">
-                                                                            This is a test message in the HTML for designers.
+                                                                            -
                                                                         </p>
                                                                     </div>
                                                                     <div class="metainfo">
-                                                                        <span id="pool">in pool PUBLIC</span>
-                                                                        <span id="reason">resent by me</span>
-                                                                        <span id="when" class="date">today</span>
+                                                                        <span id="pool">-</span>
+                                                                        <span id="reason">-</span>
+                                                                        <span id="when" class="date">-</span>
                                                                     </div>
                                                                 </div>
                                                             </td>
                                                             <td id="tags" class="tag">
                                                                 <p id="tag">
-                                                                    <a href="tag/tag1">tag1</a>
+                                                                    <a href="tag/tag1">-</a>
                                                                 </p>
                                                                 <p id="tag">
-                                                                    <a href="tag/tag2">tag2</a>
+                                                                    <a href="tag/tag2">-</a>
                                                                 </p>
                                                             </td>
                                                             <td>
@@ -140,31 +140,32 @@
                                                             <td>
                                                                 <img id="avatar" src="/images/avatar.jpg" alt="Anonymous" width="50px"/>
                                                                 <div id="author">
-                                                                    anon
+                                                                    -
                                                                 </div>
                                                             </td>
                                                             <td class="message">
                                                                 <div class="outer">
                                                                     <div class="inner clear">
                                                                         <p class="text" id="body">
-                                                                            This is a test message in the HTML for designers.
+                                                                            -
                                                                         </p>
                                                                     </div>
                                                                     <div class="metainfo">
-                                                                        <span id="pool">in pool PUBLIC</span>
-                                                                        <span id="reason">resent by me</span>
-                                                                        <span id="when" class="date">today</span>
+                                                                        <span id="pool">-</span>
+                                                                        <span id="reason">-</span>
+                                                                        <span id="when" class="date">-</span>
                                                                     </div>
                                                                 </div>
                                                             </td>
                                                             <td id="tags" class="tag">
                                                                 <p id="tag">
-                                                                    <a href="tag/tag1">tag1</a>
+                                                                    <a href="tag/tag1">-</a>
                                                                 </p>
                                                                 <p id="tag">
-                                                                    <a href="tag/tag2">tag2</a>
+                                                                    <a href="tag/tag2">-</a>
                                                                 </p>
                                                             </td>
+                                                            
                                                         </tr>
                                                     </tbody>
                                                 </table>
@@ -201,19 +202,9 @@
                                     <div class="row clear" style="display: none;" id="reply-to-div">
                                         <lift:loc>ui_messages_message_label_message_reply</lift:loc>
                                         <span id="reply-to-span">&nbsp;</span>
-                                        <button onclick="clearReplyTo()">
-                                            remove reply
+                                        <button onclick="clearReplyTo()">                                           
+                                            <lift:loc>ui_messages_message_label_message_remove_reply</lift:loc>
                                         </button>
-                                    </div>
-                                    <div class="row clear" style="display: none">
-                                        <label>
-                                            <lift:loc>ui_messages_message_label_message_tag</lift:loc>
-                                        </label>
-                                        <input id="tagdude" style="width: 90%"/>
-                                        <div class="note clear">
-                                            <span class="l"><lift:loc>ui_messages_message_label_message_tag_note</lift:loc></span>
-                                            <span class="r"><lift:loc>ui_messages_message_label_message_tag_not_required</lift:loc></span>
-                                        </div>
                                     </div>
                                     <div class="row clear">
                                         <label>
@@ -226,7 +217,7 @@
                                     </div>
                                     <div class="row clear">
                                         <button class="btn" onclick="javascript:post_msg();">
-                                            Update<!--<img src="/images/send-message.png" alt="Send Message" />-->
+                                            <lift:loc>ui_messages_message_update</lift:loc>
                                         </button>
                                     </div>
                                     <script>
@@ -278,7 +269,7 @@
                                                             <item:freq/>
                                                         </td>
                                                         <td>
-                                                            <item:author/>:<item:text/><!--<item:date/>-->
+                                                            <item:author/>:<item:text/>
                                                         </td>
                                                     </tr>
                                                 </disp:item>
@@ -317,13 +308,6 @@
                                         </table>
                                     </lift:UserSnip.links>
                                 </div>
-                                <lift:ignore>
-                                    <div class="bugs">
-                                        <form action="/user_view/search" class="b-primay">
-                                            <input style="height: 20px; background: #c9d8ea;" name="term"/><input style="height: 22px; background: #233e5e; color: #c9d8ea;" type="submit" value="Search"/>
-                                        </form>
-                                    </div>
-                                </lift:ignore>
                             </div>
                         </td>
                     </tr>
