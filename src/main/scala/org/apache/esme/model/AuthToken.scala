@@ -62,23 +62,5 @@ class AuthToken extends LongKeyedMapper[AuthToken] {
     override def dbIndexed_? = true
     
   }
-/*
-
-  object url extends MappedString(this, 256)
-  object headerName extends MappedString(this, 64)
-  object headerValue extends MappedString(this, 256)
-  object status extends MappedEnum(this, TokenStates) {
-    override def defaultValue = TokenStates.Normal
-  }*/
 }
 
-/*
-object TokenStates extends Enumeration {
-  val Normal = Value(0, "Normal")
-  val Send = Value(1, "Send")
-  val Removed = Value(2, "Removed")
-  val Disabled = Value(3, "Disabled")
-
-  val forPopup = List(Normal, Send, Disabled)
-}
-*/
