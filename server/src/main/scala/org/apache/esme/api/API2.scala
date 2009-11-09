@@ -18,8 +18,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-/*
+ 
+ /*
  * API2.scala
  *
  * To change this template, choose Tools | Template Manager
@@ -41,77 +41,81 @@ import org.apache.esme._
 import model._
 import org.apache.esme.actor._
 
-import scala.xml.{NodeSeq, Text, Elem, XML}
+import scala.xml.{NodeSeq, Text, Elem, XML, Node}
 
 import scala.collection.mutable.ListBuffer
 import java.util.logging._
 
-object API2 extends XMLApiHelper {
+object API2 extends ApiHelper {
   val logger: Logger = Logger.getLogger("org.apache.esme.api")
 
   def dispatch: LiftRules.DispatchPF = {
-    case Req("api2" :: "session" :: Nil, _, GetRequest) => status  // No params
-    case Req("api2" :: "session" :: Nil, _, PostRequest) => login  // token           
-    case Req("api2" :: "session" :: Nil, _, DeleteRequest) => logout  // No params                       
+    case Req("api2" :: "session" :: Nil, _, GetRequest) => allSessions
+    case Req("api2" :: "session" :: Nil, _, PostRequest) => addSession          
+    case Req("api2" :: "session" :: Nil, _, DeleteRequest) => removeSession                      
 	
-    case Req("api2" :: "users" :: Nil, _, GetRequest) => allUsers _  // No params
+    case Req("api2" :: "users" :: Nil, _, GetRequest) => allUsers
 // Add a method to get detail for a specific user
 
-    case Req("api2" :: "user" :: "messages" :: Nil, _, GetRequest) => allUserMsgs  // tag (opt) 
+// Document the fact that tag is no longer a parameter here
+    case Req("api2" :: "user" :: "messages" :: Nil, _, GetRequest) => allUserMsgs
+// Document the new method for getting messages belonging to a particular tag
+    case Req("api2" :: "user" :: "messages" :: "tag" :: tag :: Nil, _, GetRequest)
+  		    => () => allUserMsgs(tag)
 // Possibly deprecate and move to api2/messages or api2/pools/poolName/messages
-    case Req("api2" :: "user" :: "messages" :: Nil, _, PostRequest) => () => addMsg // message,
-// via (opt), pool (opt), realm (opt), metadata (opt), tags (opt), replyto (opt)
+// Add back long-poll option
+    case Req("api2" :: "user" :: "messages" :: Nil, _, PostRequest) => () => addMsg
 
-    case Req("api2" :: "user" :: "followees" :: Nil, _, GetRequest) => allFollowees  // No params          
-    case Req("api2" :: "user" :: "followees" :: Nil, _, PostRequest) => addFollowee  // userId
+    case Req("api2" :: "user" :: "followees" :: Nil, _, GetRequest) => allFollowees         
+    case Req("api2" :: "user" :: "followees" :: Nil, _, PostRequest) => addFollowee
     case Req("api2" :: "user" :: "followees" :: userId :: Nil, _, DeleteRequest) 
-			=> removeFollow(Box(List(userId)))  // No params
+			=> removeFollow(Box(List(userId)))
 
-    case Req("api2" :: "user" :: "followers" :: Nil, _, GetRequest) => allFollowers  // No params          
+    case Req("api2" :: "user" :: "followers" :: Nil, _, GetRequest) => allFollowers         
 
-    case Req("api2" :: "user" :: "tracks" :: Nil, _, GetRequest) => allTracking  // No params
-    case Req("api2" :: "user" :: "tracks" :: Nil, _, PostRequest) => addTracking  // track (regex)  
+    case Req("api2" :: "user" :: "tracks" :: Nil, _, GetRequest) => allTracking
+    case Req("api2" :: "user" :: "tracks" :: Nil, _, PostRequest) => addTracking
 // Add a method to get detail for a specific track (or messages for the track?)
     case Req("api2" :: "user" :: "tracks" :: trackId :: Nil, _, DeleteRequest) => () 
-			=> removeTracking(Box(List(trackId)))  // No params
+			=> removeTracking(Box(List(trackId)))
 
-    case Req("api2" :: "user" :: "actions" :: Nil, _, GetRequest) => allActions // No params       
-    case Req("api2" :: "user" :: "actions" :: Nil, _, PostRequest) => addAction // name, test, action     
+    case Req("api2" :: "user" :: "actions" :: Nil, _, GetRequest) => allActions 
+    case Req("api2" :: "user" :: "actions" :: Nil, _, PostRequest) => addAction
 // Add a method to get detail of a specific action
     case Req("api2" :: "user" :: "actions" :: actionId :: Nil, _, PutRequest) => () 
-			=> changeAction(Box(List(actionId)))  // enabled (boolean)
+			=> changeAction(Box(List(actionId)))
     case Req("api2" :: "user" :: "actions" :: actionId :: Nil, _, DeleteRequest) => () 
-			=> removeAction(Box(List(actionId)))  // No params
+			=> removeAction(Box(List(actionId)))
                                                                                 
-    case Req("api2" :: "pools" :: Nil, _, GetRequest) => allPools  // No params
-    case Req("api2" :: "pools" :: Nil, _, PostRequest) => () => addPool  // poolName
+    case Req("api2" :: "pools" :: Nil, _, GetRequest) => allPools 
+    case Req("api2" :: "pools" :: Nil, _, PostRequest) => () => addPool 
 // Add a method to delete pool
 // Add a method to get the detail for a pool
 // Add a method to get the list of users in a pool
     case Req("api2" :: "pools" :: poolId :: "users" :: Nil, _, PostRequest) => () 
-			=> addUserToPool(Box(List(poolId)))  // realm, userId, permission
+			=> addUserToPool(Box(List(poolId))) 
 // Add a method to delete a user from a pool   
 // Add a method to get the messages from a pool
 // Add a method to post a new message to a pool
     
 // Add a method to get list of conversations
     case Req("api2" :: "conversations" :: conversationId :: Nil, _, GetRequest) => () 
-			=> getConversation(Box(List(conversationId)))  // No params
-// Add a method to post a message to a conversation??      
-                                                                                   
-// Do we need this? - specifically, can we merge it with the /api2/user/messages 
-// resource with a different match?
-//    case Req("api2" :: "wait_for_msgs" :: Nil, _, GetRequest) => waitForMsgs
+			=> getConversation(Box(List(conversationId)))
+// Add a method to post a message to a conversation??                          
   }
 
-  def status(): LiftResponse =
-  {
-    val ret: Box[NodeSeq] = User.currentUser.map(_.toXml)
-    ret
+  def allSessions(): LiftResponse = {
+    val r: Box[NodeSeq] = 
+		for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in"))
+    	yield { 
+			<session>{userToXml(user)}</session>
+		}
+
+	r
   }      
 
-  def login(): LiftResponse = {
-    val res: Box[Boolean] = if (User.loggedIn_?) Empty else
+  def addSession(): LiftResponse = {
+    val r: Box[NodeSeq] = if (User.loggedIn_?) Empty else
     for (token <- S.param("token") ?~ S.?("base_rest_api_err_missing_param", "token");
          auth <- AuthToken.find(By(AuthToken.uniqueId, token))
          ?~ "Token not found";
@@ -121,36 +125,52 @@ object API2 extends XMLApiHelper {
       User.logUserIn(user)
       val myActor = buildActor(user.id)
       restActor(Full(myActor))
-      true
+      <session>{userToXml(user)}</session>
     }
 
-    res
+    r
   } 
 
-  def logout(): LiftResponse = {
+  def removeSession(): LiftResponse = {
     User.logUserOut()
     true
   } 
 
 
-  def allUsers(): LiftResponse = 
-  	for (user <- User.findAll) yield user.toXml
+  def allUsers(): LiftResponse = {      	
+  	val users: NodeSeq = for (user <- User.findAll) yield userToXml(user)
+    val r: Elem = <users>{users}</users>
+	r
+  }
        
   def allUserMsgs(): LiftResponse = {
-    val t: Box[NodeSeq] =
-    for (tagName <- S.param("tag");
-         tag <- Tag.find(By(Tag.name, tagName)))
-    yield tag.findMessages.map(_.toXml)
-
-    val r: Box[NodeSeq] = 
-    t or (for (user <- calcUser ?~  S.?("base_rest_api_err_param_not_found", "User");
-               val lst = Mailbox.mostRecentMessagesFor(user.id, 40))
-          yield lst.flatMap{ case (msg, why, _) => msg.toXml % why.attr})
+    val r: Box[Node] = 
+      for (user <- calcUser ?~  S.?("base_rest_api_err_param_not_found", "User");
+        val lst = Mailbox.mostRecentMessagesFor(user.id, 40))
+      yield {
+		<messages>{lst.flatMap{ case (msg, why, _) => msg.toXml % why.attr}}</messages>
+	  }
 
     r
+  }
+
+  def allUserMsgs(tag: String): LiftResponse = {
+	val r: Box[Node] =
+      for (tagName <- Box(List(tag));
+        tag <- Tag.find(By(Tag.name, tagName)))
+      yield {
+	    <tag>
+		  <name>{tag.name}</name>
+		  <messages>{tag.findMessages.map(_.toXml)}</messages>
+	    </tag>
+	  }
+	
+	r  	
   } 
 
   def addMsg(): LiftResponse = {
+// Should return the created message
+
     val r: Box[Boolean] =
     for (user <- calcUser.map(_.id.is) ?~ S.?("base_rest_api_err_param_not_found", "User");
          msg <- S.param("message") ?~ S.?("base_rest_api_err_missing_param", "message"))
@@ -180,20 +200,24 @@ object API2 extends XMLApiHelper {
 
 
   def allFollowees(): LiftResponse = {
-    val r: Box[NodeSeq] = for (user <- calcUser) yield
-    user.following().map(_.toXml)
-    
-    r
+    val followees: NodeSeq = calcUser.map(_.following)
+		.map(_.map(userToXml(_)))
+		.openOr(<no_followees/>)
+
+    <followees>{followees}</followees>
   }         
 
   def addFollowee(): LiftResponse = {
-    val r: Box[Boolean] =
+    val r: Box[Node] =
     for (user <- User.currentUser;
          userName <- S.param("userId");
          other <- User.findFromWeb(userName)
-    ) yield user.follow(other)
+    ) yield { 	
+		user.follow(other)
+		userToXml(other)
+    }
     
-    r
+	r
   }   
 
   
@@ -208,17 +232,19 @@ object API2 extends XMLApiHelper {
   }
 
   def allFollowers(): LiftResponse = {
-    val r: Box[NodeSeq] = for (user <- calcUser) yield
-    user.followers().map(_.toXml)
-    
-    r
+  	val followers: NodeSeq = calcUser.map(_.followers)
+		.map(_.map(userToXml(_)))
+		.openOr(<no_followers/>)
+
+  	<followers>{followers}</followers>
   }     
 
   def allTracking(): LiftResponse = {
-    val ret: Box[NodeSeq] =
+    val tracks: Box[NodeSeq] =
     for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in"))
     yield Tracking.findAll(By(Tracking.user, user)).flatMap(_.toXml)
-    ret
+    
+	<tracks>{tracks}</tracks>
   }   
 
   def addTracking(): LiftResponse = {
@@ -333,7 +359,7 @@ object API2 extends XMLApiHelper {
          id <- conversationId.map(toLong) ?~ S.?("base_rest_api_err_missing_param", "id")
     ) yield <conversation id={id.toString}>{
         Message.findAndPrime(By(Message.conversation, id),
-                             OrderBy(Message.id, Ascending)).map(_.toXml)
+                            OrderBy(Message.id, Ascending)).map(_.toXml)
       }</conversation>
 
     ret
@@ -349,30 +375,15 @@ object API2 extends XMLApiHelper {
   
   private def calcUser: Box[User] =
   	S.param("user").flatMap(User.findFromWeb) or
-  	User.currentUser
+  	User.currentUser 
 
+  def createTag(in: NodeSeq) = <api_response>{in}</api_response>
 
-
-  def waitForMsgs(): LiftResponse = {
-    val future = new LAFuture[List[(Message, MailboxReason)]]()
-    
-    def waitForAnswer: Box[List[(Message, MailboxReason)]] = 
-      future.get(6L * 60L * 1000L)
-
-    var r: Box[NodeSeq] = 
-    for (act <- restActor.is ?~ "No REST actor";
-         val ignore = act ! ListenFor(future, 5 minutes);
-         answer <- waitForAnswer ?~ "Didn't get an answer")
-    yield answer.flatMap{ case (msg, reason) => msg.toXml % reason.attr}
-
-    r
-  }  
-
-  def createTag(in: NodeSeq) = <esme_api>{in}</esme_api>
-
+  private def userToXml(user: User): Elem = 
+	<user><id>{user.id.toString}</id><nickname>{user.niceName}</nickname><image>{user.image}</image><whole_name>{user.wholeName}</whole_name></user>
   
   private def buildActor(userId: Long): RestActor = {
-    val ret = new RestActor
+   val ret = new RestActor
     ret ! StartUp(userId)
     ret
   }
@@ -382,12 +393,12 @@ object API2 extends XMLApiHelper {
   }
   
 
-  class RestActor extends LiftActor {
+ class RestActor extends LiftActor {
     private var userId: Long = _
     private var msgs: List[(Message, MailboxReason)] = Nil
     private var listener: Box[LAFuture[List[(Message, MailboxReason)]]] = Empty
     
-    protected def messageHandler = {
+   protected def messageHandler = {
       case StartUp(userId) =>
           this.userId = userId
           Distributor ! Distributor.Listen(userId, this)
@@ -417,7 +428,7 @@ object API2 extends XMLApiHelper {
              
             case xs =>
               who.satisfy(xs)
-              msgs = Nil
+             msgs = Nil
               listener = Empty
         }
     }
@@ -428,7 +439,7 @@ object API2 extends XMLApiHelper {
   private case object ByeBye
   private case class ListenFor(who: LAFuture[List[(Message, MailboxReason)]],
 			       howLong: TimeSpan)
-  private case object ReleaseListener
+  private case object ReleaseListener       
 }                                                          
 
 // TODO:
@@ -436,3 +447,6 @@ object API2 extends XMLApiHelper {
 // 2. Fix errors so that they properly indicate a missing parameter or 404
 // 3. Change changeAction so that if the "enabled" parameter doesn't show up it will simply use
 //    the current value for the action, not throw an error.
+// 4. Match based on the return content type header to determine what to return (default to XML)    
+// 5. Re-enable streaming message API (using comet approach)
+
