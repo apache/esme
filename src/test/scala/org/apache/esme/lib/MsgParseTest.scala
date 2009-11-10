@@ -1,6 +1,6 @@
 /**
  * Copyright 2008-2009 WorldWide Conferencing, LLC
- * 
+ *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
@@ -45,21 +45,19 @@ class MsgParserSpecsAsTest extends JUnit3(MsgParserSpecs)
 object MsgParserSpecsRunner extends ConsoleRunner(MsgParserSpecs)
 
 object MsgParserSpecs extends Specification {
-  (new bootstrap.liftweb.Boot).boot
-  
-  JettyTestServer.start()
-  
+  JettyTestServer.start
+
   type PFT = MsgParser.ParseResult[_]
   def parseMatch(name: String, matchr: PartialFunction[PFT, Any]) = new Matcher[PFT] {
-    def apply(v: => PFT) = (matchr.isDefinedAt(v), 
+    def apply(v: => PFT) = (matchr.isDefinedAt(v),
                             name+" succeeded parsing",
                             name+" failed parsing")
   }
-  
+
   "Msg Parser Parse" should {
     "parse top label" in {
       val ret = MsgParser.toplabel("www")
-   
+
       ret must
       parseMatch("www", {
           case MsgParser.Success("www", _) =>
@@ -72,10 +70,10 @@ object MsgParserSpecs extends Specification {
           case MsgParser.Success("http://www.google.com", _) =>
         })
     }
-    
+
     "parse a complex simple URL" in {
       val Str = "http://www.google.com:8080/Foo/bar"
-        
+
       val ret = MsgParser.httpUrl(Str)
 
       ret must
@@ -83,10 +81,10 @@ object MsgParserSpecs extends Specification {
           case MsgParser.Success(Str, _) =>
         })
     }
-    
+
     "parse a complex URL with query params" in {
       val Str = "https://www.sdn.sap.com/irj/sdn/weblogs?blog=/pub/wlg/10754"
-      
+
       val ret = MsgParser.httpUrl(Str)
 
       ret must
@@ -94,50 +92,50 @@ object MsgParserSpecs extends Specification {
           case MsgParser.Success(Str, _) =>
         })
     }
-    
+
     "Fail for an empty string" in {
       MsgParser.begin("") must
       parseMatch("Empty",
                  {case MsgParser.Error(_, _) =>
           case MsgParser.Failure(_, _) =>
         })
-					    
+
     }
-    
+
     "Find only text" in {
       MsgParser.begin("This is a message") must
       parseMatch("only test",
                  {case MsgParser.Success(MsgText(_) :: Nil, _) =>
-		   
+
         })
-					    
+
     }
-    
+
     "Find only text" in {
       MsgParser.begin("This is http://$$$ a message") must
       parseMatch("only test",
                  {case MsgParser.Success(MsgText(_) :: Nil, _) =>
-		   
+
         })
-					    
+
     }
 
     "Find only text" in {
       MsgParser.begin("This is #,hello a message") must
       parseMatch("only test",
                  {case MsgParser.Success(MsgText(_) :: Nil, _) =>
-		   
+
         })
-					    
+
     }
 
     "Find only text" in {
       MsgParser.begin("This is @--Moose a message") must
       parseMatch("only test",
                  {case MsgParser.Success(MsgText(_) :: Nil, _) =>
-		   
+
         })
-					    
+
     }
 
     "Find a hash tag" in {
@@ -149,7 +147,7 @@ object MsgParserSpecs extends Specification {
             if tag.name.equalsIgnoreCase("hash") =>
         }
       )
-					    
+
     }
 
     "Find a @msg tag" in {
@@ -162,9 +160,9 @@ object MsgParserSpecs extends Specification {
                                          MsgText(_) :: Nil, _) =>
         }
       )
-					    
+
     }
-    
+
     "Find a url tag" in {
       MsgParser.begin("This is http://www.moo.com a message") must
       parseMatch("only test",
@@ -173,9 +171,9 @@ object MsgParserSpecs extends Specification {
                                          MsgText(_) :: Nil, _) =>
         }
       )
-					    
+
     }
-    
+
     "Find a https url tag" in {
       MsgParser.begin("This is https://www.moo.com a message") must
       parseMatch("only test",
@@ -184,9 +182,9 @@ object MsgParserSpecs extends Specification {
                                          MsgText(_) :: Nil, _) =>
         }
       )
-					    
+
     }
-    
+
     "match 'any'" in {
       val ret =  MsgParser._testMessage("any")
 
@@ -195,10 +193,10 @@ object MsgParserSpecs extends Specification {
                  {case MsgParser.Success(AnyAction, _) =>
         }
       )
-					    
+
     }
-    
-    
+
+
     "match '54%'" in {
       val ret =  MsgParser._testMessage(" 54% ")
 
@@ -207,9 +205,9 @@ object MsgParserSpecs extends Specification {
                  {case MsgParser.Success(PercentAction(54), _) =>
         }
       )
-					    
+
     }
-    
+
     "match '#foo'" in {
       val ret =  MsgParser._testMessage(" #foo ")
 
@@ -218,11 +216,11 @@ object MsgParserSpecs extends Specification {
                  {case MsgParser.Success(HashAction(_, _), _) =>
         }
       )
-					    
+
     }
 
     /*
-    
+
     "match '@hash'" in {
       println("About to test @hash")
       val ret =  MsgParser._testMessage(" @hash ")
@@ -234,7 +232,7 @@ object MsgParserSpecs extends Specification {
                  {case MsgParser.Success(AtUserAction(_), _) =>
         }
       )
-					    
+
     }
     */
 
@@ -246,9 +244,9 @@ object MsgParserSpecs extends Specification {
                  {case MsgParser.Failure(_ , _) =>
         }
       )
-					    
+
     }
-    
+
     "match 'day = 4'" in {
       val ret =  MsgParser._testMessage(" day = 4 ")
 
@@ -257,9 +255,9 @@ object MsgParserSpecs extends Specification {
                  {case MsgParser.Success(DateTestAction(DayDateType, EqOpr, List(4)), _) =>
         }
       )
-					    
+
     }
-    
+
     "match 'month = (1,2,4)'" in {
       val ret =  MsgParser._testMessage(" month = (1, 2,     4   ) ")
 
@@ -268,9 +266,9 @@ object MsgParserSpecs extends Specification {
                  {case MsgParser.Success(DateTestAction(MonthDateType, EqOpr, List(1, 2, 4)), _) =>
         }
       )
-					    
+
     }
-    
+
     "match 'month = (1,2,4) | 74%'" in {
       val ret =  MsgParser._testMessage(" month = (1, 2,     4   )|74% ")
 
@@ -279,9 +277,9 @@ object MsgParserSpecs extends Specification {
                  {case MsgParser.Success(OrAction(DateTestAction(MonthDateType, EqOpr, List(1, 2, 4)), PercentAction(74)), _) =>
         }
       )
-					    
+
     }
-    
+
     "match '( month = (1, 2,     4   )|74%) & #frog'" in {
       val ret =  MsgParser._testMessage("( month = (1, 2,     4   )|74%) & #frog ")
 
@@ -291,63 +289,9 @@ object MsgParserSpecs extends Specification {
                 ParenAction(OrAction(DateTestAction(MonthDateType, EqOpr, List(1, 2, 4)), PercentAction(74))),
                   HashAction(_, _)), _) =>
         })
-					    
+
     }
-    
+
   }
 
 }
-
-
-object JettyTestServer {
-  private val serverPort_ = System.getProperty("SERVLET_PORT", "8989").toInt
-  private var baseUrl_ = "http://127.0.0.1:" + serverPort_
-
-  System.setProperty("run.mode", "test")
-
-  private val server_ : Server = {
-    val server = new Server(serverPort_)
-    
-    val context = new WebAppContext()
-    context.setServer(server)
-    context.setContextPath("/")
-    context.setWar("target/esme-server-0.3.0-SNAPSHOT")
-    
-    //val context = new Context(server, "/", Context.SESSIONS)
-    //context.addFilter(new FilterHolder(new LiftFilter()), "/");
-    //new LiftFilter()
-    //server.addHandler(context)
-    server
-  }
-
-  def urlFor(path: String) = baseUrl_ + path
-
-  def start() = {
-    server_.start()
-    User.create.nickname("hash").save
-  }
-
-  def stop() = {
-    server_.stop()
-    server_.join()
-  }
-
-  def browse(startPath: String, f:(WebTester) => Unit) = {
-    val wc = new WebTester()
-    try {
-      wc.setScriptingEnabled(false)
-      wc.beginAt(JettyTestServer.urlFor(startPath))
-      f(wc)
-    } catch {
-      case exc: AssertionFailedError => {
-          System.err.println("serveur response: ", wc.getServeurResponse())
-          throw exc
-        }
-    } finally {
-      wc.closeBrowser()
-    }
-  }
-
-}
-
-
