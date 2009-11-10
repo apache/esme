@@ -47,7 +47,7 @@ import provider.HTTPRequest
 import org.compass.core._
 import org.compass.core.config.CompassConfiguration
 
-import net.liftweb.widgets.tablesorter._  
+import net.liftweb.widgets.tablesorter._
 import com.twitter.stats._
 
 /**
@@ -67,48 +67,48 @@ class Boot {
 
     if (Props.mode == Props.RunModes.Test) {
       Schemifier.destroyTables_!!(Log.infoF _, User, ExtSession,
-                                  Message, Mailbox, Tag,
-                                  Relationship, MessageTag,
-                                  AuthToken, UrlStore, Tracking,
-                                  Action, DidPerform, AccessPool,
-                                  Privilege, UserAuth, UserCryptoSig)
+        Message, Mailbox, Tag,
+        Relationship, MessageTag,
+        AuthToken, UrlStore, Tracking,
+        Action, DidPerform, AccessPool,
+        Privilege, UserAuth, UserCryptoSig)
     }
 
     Schemifier.schemify(true, Log.infoF _, User, ExtSession, Message,
-                        Mailbox, Tag,
-                        Relationship, MessageTag, AuthToken,
-                        UrlStore, Tracking, Action, DidPerform,
-                        AccessPool, Privilege, UserAuth, UserCryptoSig)
+      Mailbox, Tag,
+      Relationship, MessageTag, AuthToken,
+      UrlStore, Tracking, Action, DidPerform,
+      AccessPool, Privilege, UserAuth, UserCryptoSig)
 
     LiftRules.statelessDispatchTable.append {
-      case r @ Req("api" :: "send_msg" :: Nil, "", PostRequest)
-        if r.param("token").isDefined  =>
+      case r@Req("api" :: "send_msg" :: Nil, "", PostRequest)
+        if r.param("token").isDefined =>
         () => RestAPI.sendMsgWithToken(r)
     }
 
     LiftRules.dispatch.append(ESMEOpenIDVendor.dispatchPF)
-    
+
     //Resources for Internationalization
     LiftRules.resourceNames = "ESMECustom" :: "ESMEBase" :: "ESMEUI" :: Nil
-    
+
     //Jquery functions
-    
+
     TableSorter.init
 
     LiftRules.siteMapFailRedirectLocation = List("static", "about")
 
     LiftRules.rewrite.prepend {
-      case RewriteRequest(ParsePath("user" :: user :: Nil,"", _,_), _, _) =>
-        RewriteResponse( List("info_view", "user"), Map("uid" -> user))
-      case RewriteRequest(ParsePath("tag" :: tag :: Nil,"", _,_), _, _) =>
-        RewriteResponse( List("info_view", "tag"), Map("tag" -> tag))
+      case RewriteRequest(ParsePath("user" :: user :: Nil, "", _, _), _, _) =>
+        RewriteResponse(List("info_view", "user"), Map("uid" -> user))
+      case RewriteRequest(ParsePath("tag" :: tag :: Nil, "", _, _), _, _) =>
+        RewriteResponse(List("info_view", "tag"), Map("tag" -> tag))
 
       case RewriteRequest(ParsePath("conversation" :: cid :: Nil, "", _, _),
-                          _, _) =>
+      _, _) =>
         RewriteResponse(List("info_view", "conversation"), Map("cid" -> cid))
 
-      case RewriteRequest(ParsePath("search" :: term :: Nil,"", _,_), _, _) =>
-        RewriteResponse( List("user_view", "search"), Map("term" -> term))
+      case RewriteRequest(ParsePath("search" :: term :: Nil, "", _, _), _, _) =>
+        RewriteResponse(List("user_view", "search"), Map("term" -> term))
     }
 
     LiftRules.dispatch.append(UrlStore.redirectizer)
@@ -118,30 +118,30 @@ class Boot {
 
     UserAuth.register(UserPwdAuthModule)
     UserAuth.register(OpenIDAuthModule)
-    
-      // Build SiteMap
-    val entries = Menu(Loc("Home", List("index"), "Home")) ::
-    Menu(Loc("user", List("info_view", "user"), "User Info", Hidden,
-      Loc.Snippet("user_info", TagDisplay.userInfo))) ::
-    Menu(Loc("about", List("static", "about"), S.?("base_menu_about"), Hidden)) ::
-    Menu(Loc("tag", List("info_view", "tag"), "Tag", Hidden, Loc.Snippet("tag_display", TagDisplay.display))) ::
-    Menu(Loc("search", List("user_view", "search"), S.?("base_menu_search"), Hidden)) ::
-    Menu(Loc("sign_up", List("signup"), S.?("base_menu_signup"), 
-             Snippet("signup", User.signupForm),
-             Unless(User.loggedIn_? _, S.?("base_menu_sign_up_error")))) ::
-    Menu(Loc("logout", List("logout"), S.?("base_menu_logout"),
-             EarlyResponse(() => {User.logUserOut; S.redirectTo(S.referer openOr "/")}),
-             If(User.loggedIn_? _, S.?("base_menu_logout_error")))) ::
-    // User.sitemap :::
-    UserMgr.menuItems :::
-    TrackMgr.menuItems :::
-    ActionMgr.menuItems :::
-    AuthMgr.menuItems :::
-    AccessPoolMgr.menuItems :::
-    StreamMgr.menuItems :::
-    ConversationMgr.menuItems
 
-    LiftRules.setSiteMap(SiteMap(entries:_*))
+    // Build SiteMap
+    val entries = Menu(Loc("Home", List("index"), "Home")) ::
+        Menu(Loc("user", List("info_view", "user"), "User Info", Hidden,
+          Loc.Snippet("user_info", TagDisplay.userInfo))) ::
+        Menu(Loc("about", List("static", "about"), S.?("base_menu_about"), Hidden)) ::
+        Menu(Loc("tag", List("info_view", "tag"), "Tag", Hidden, Loc.Snippet("tag_display", TagDisplay.display))) ::
+        Menu(Loc("search", List("user_view", "search"), S.?("base_menu_search"), Hidden)) ::
+        Menu(Loc("sign_up", List("signup"), S.?("base_menu_signup"),
+          Snippet("signup", User.signupForm),
+          Unless(User.loggedIn_? _, S.?("base_menu_sign_up_error")))) ::
+        Menu(Loc("logout", List("logout"), S.?("base_menu_logout"),
+          EarlyResponse(() => {User.logUserOut; S.redirectTo(S.referer openOr "/")}),
+          If(User.loggedIn_? _, S.?("base_menu_logout_error")))) ::
+        // User.sitemap :::
+        UserMgr.menuItems :::
+        TrackMgr.menuItems :::
+        ActionMgr.menuItems :::
+        AuthMgr.menuItems :::
+        AccessPoolMgr.menuItems :::
+        StreamMgr.menuItems :::
+        ConversationMgr.menuItems
+
+    LiftRules.setSiteMap(SiteMap(entries: _*))
 
     S.addAround(ExtSession.requestLoans)
 
@@ -163,19 +163,19 @@ class Boot {
     LiftRules.dispatch.append(TwitterJsonAPI.dispatch)
 
     LiftRules.early.append(makeUtf8)
-    
+
     //JMX
     if (Props.getBool("jmx.enable", false))
-        StatsMBean("org.apache.esme.stats")
+      StatsMBean("org.apache.esme.stats")
 
     Distributor.touch
     SchedulerActor.touch
     MessagePullActor.touch
     // ScalaInterpreter.touch
-    
-    Stats.makeGauge("users"){Distributor.getUsersCount}
-    Stats.makeGauge("listener"){Distributor.getListenersCount}
-    
+
+    Stats.makeGauge("users") {Distributor.getUsersCount}
+    Stats.makeGauge("listener") {Distributor.getListenersCount}
+
     val resentPeriod = Props.getLong("stats.resent.period", 1 week)
     val resentRefreshInterval: Long = Props.getLong("stats.resent.refresh") match {
       case Full(interval) if interval > (1 minute) => interval
@@ -202,30 +202,31 @@ class Boot {
      * Show the spinny image when an Ajax call starts
      */
     LiftRules.ajaxStart =
-    Full(() => LiftRules.jsArtifacts.show("ajax-loader").cmd)
+        Full(() => LiftRules.jsArtifacts.show("ajax-loader").cmd)
 
     /*
      * Make the spinny image go away when it ends
      */
     LiftRules.ajaxEnd =
-    Full(() => LiftRules.jsArtifacts.hide("ajax-loader").cmd)
+        Full(() => LiftRules.jsArtifacts.hide("ajax-loader").cmd)
 
-        // Dump information about session every 10 minutes
+    // Dump information about session every 10 minutes
     SessionMaster.sessionWatchers = SessionInfoDumper :: SessionMaster.sessionWatchers
   }
+
   private def makeUtf8(req: HTTPRequest) = {req.setCharacterEncoding("UTF-8")}
 }
 
 object Compass {
   // Set up Compass for search
   val conf = tryo(new CompassConfiguration()
-                  .configure(Props.get("compass_config_file") openOr "/props/compass.cfg.xml")
-                  .addClass((new Message).clazz))
+      .configure(Props.get("compass_config_file") openOr "/props/compass.cfg.xml")
+      .addClass((new Message).clazz))
 
   val compass = conf.map(_.buildCompass())
 
   for (c <- compass if !c.getSearchEngineIndexManager.indexExists)
-  tryo(c.getSearchEngineIndexManager().createIndex())
+    tryo(c.getSearchEngineIndexManager().createIndex())
 }
 
 
@@ -233,8 +234,8 @@ object RequestAnalyzer {
   def analyze(req: Box[Req], time: Long, queries: List[(String, Long)]): Unit = {
     val longQueries = (queries.filter(_._2 > 30))
     if (time > 50 || longQueries.?) {
-      Log.info("Request "+req.map(_.uri).openOr("No Request")+
-               " took "+time+" query "+longQueries.comma)
+      Log.info("Request " + req.map(_.uri).openOr("No Request") +
+          " took " + time + " query " + longQueries.comma)
     }
   }
 }
@@ -248,16 +249,16 @@ object DBVendor extends ConnectionManager {
     if (Props.getBool("use_prod_psql", false)) {
       Class.forName("org.postgresql.Driver")
       val dm = DriverManager.
-      getConnection("jdbc:postgresql://localhost/esme_prod",
-                    Props.get("db_user", "dpp"),
-                    Props.get("db_pwd", ""))
+          getConnection("jdbc:postgresql://localhost/esme_prod",
+        Props.get("db_user", "dpp"),
+        Props.get("db_pwd", ""))
       Full(dm)
     } else if (Props.getBool("use_local_psql", false)) {
       Class.forName("org.postgresql.Driver")
       val dm = DriverManager.
-      getConnection("jdbc:postgresql://localhost/esme_dev",
-                    Props.get("db_user", "dpp"),
-                    Props.get("db_pwd", ""))
+          getConnection("jdbc:postgresql://localhost/esme_dev",
+        Props.get("db_user", "dpp"),
+        Props.get("db_pwd", ""))
       Full(dm)
     } else {
       val driverName = Props.mode match {
@@ -269,29 +270,30 @@ object DBVendor extends ConnectionManager {
       Full(dm)
     }
   } catch {
-    case e : Exception => e.printStackTrace; Empty
+    case e: Exception => e.printStackTrace; Empty
   }
 
   def newConnection(name: ConnectionIdentifier): Box[Connection] = synchronized {
     pool match {
       case Nil if poolSize < maxPoolSize => val ret = createOne
-        poolSize = poolSize + 1
-        ret.foreach(c => pool = c :: pool)
-        ret
+      poolSize = poolSize + 1
+      // ret.foreach(c => pool = c :: pool)
+      ret
 
       case Nil => wait(1000L); newConnection(name)
-      case x :: xs => try {
+      case x :: xs =>
+        pool = xs
+        try {
           x.setAutoCommit(false)
           Full(x)
         } catch {
           case e => try {
-              pool = xs
-              poolSize = poolSize - 1
-              x.close
-              newConnection(name)
-            } catch {
-              case e => newConnection(name)
-            }
+            poolSize = poolSize - 1
+            x.close
+            newConnection(name)
+          } catch {
+            case e => newConnection(name)
+          }
         }
     }
   }
@@ -306,23 +308,24 @@ object SessionInfoDumper extends LiftActor {
   private var lastTime = millis
 
   val tenMinutes: Long = 10 minutes
+
   protected def messageHandler = {
     case SessionWatcherInfo(sessions) =>
-     Stats.getCounter("liftSessions").update(sessions.size)
+      Stats.getCounter("liftSessions").update(sessions.size)
       if ((millis - tenMinutes) > lastTime) {
         lastTime = millis
         val rt = Runtime.getRuntime
         rt.gc
-	
+
         val dateStr: String = timeNow.toString
-        Log.info("[MEMDEBUG] At "+dateStr+" Number of open sessions: "+sessions.size)
-        Log.info("[MEMDEBUG] Free Memory: "+pretty(rt.freeMemory))
-        Log.info("[MEMDEBUG] Total Memory: "+pretty(rt.totalMemory))
+        Log.info("[MEMDEBUG] At " + dateStr + " Number of open sessions: " + sessions.size)
+        Log.info("[MEMDEBUG] Free Memory: " + pretty(rt.freeMemory))
+        Log.info("[MEMDEBUG] Total Memory: " + pretty(rt.totalMemory))
       }
-    
+
   }
 
   private def pretty(in: Long): String =
-  if (in > 1000L) pretty(in / 1000L)+","+(in % 1000L)
-  else in.toString
+    if (in > 1000L) pretty(in / 1000L) + "," + (in % 1000L)
+    else in.toString
 }
