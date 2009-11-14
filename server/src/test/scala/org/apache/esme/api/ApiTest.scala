@@ -65,17 +65,26 @@ implicit val reportError = new ReportFailure {
     (resp.xml \ "@success").text must_== "true"
   }
 
+  def shouldnt(f: => Unit): Unit =
+  try {
+    val x = f
+    fail("Shouldn't succeed")
+  } catch {
+    case _ => ()
+  }
+
   "API" should {
 
     "Login" in {
       for {
         login <- post("/api/login", "token" -> token) !@ "Failed to log in" if (testSuccess(login))
         status <- login.get("/api/status") !@ "Failed to get status" if (testSuccess(status))
+        otherStatus <- get("/api/status") if shouldnt(testSuccess(status))
       } {
         (status.xml \ "user" \ "@id").text must_== theUser.id.toString
       }
     }
 
-    
+
   }
 }
