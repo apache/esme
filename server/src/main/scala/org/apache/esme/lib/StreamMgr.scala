@@ -20,6 +20,7 @@
  */
 
 package org.apache.esme.lib
+import java.text.SimpleDateFormat
 
 import net.liftweb._
 import http._
@@ -97,6 +98,8 @@ object StreamMgr {
       def nicknameWithProfileLink(u: User): NodeSeq = {
     		  <a href={"/user/" + urlEncode(u.nickname.is)}>{u.niceName}</a>
       	}
+      	
+      val dateFormatter = new SimpleDateFormat("yyyy/MM/dd hh:mm")
         
       Message.findAll(query: _*) match {
         case Nil => NodeSeq.Empty
@@ -105,7 +108,7 @@ object StreamMgr {
                         (lst => xs.flatMap(i => bind("item", lst,
                                                      "author" -> i.author.obj.map(nicknameWithProfileLink).openOr(Text("")),
                                                      "text" -> i.digestedXHTML,
-                                                     "date" -> new java.util.Date(i.when.toLong).toString
+                                                     "date" -> dateFormatter.format(i.getWhen)
                 ))))
       }
     }
