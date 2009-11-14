@@ -24,6 +24,7 @@ package org.apache.esme.lib
 import java.text.SimpleDateFormat
 import scala.xml.{NodeSeq}
 
+
 import net.liftweb._
 import http._
 import SHtml._
@@ -38,6 +39,7 @@ import common._
 import Helpers._
 import model._
 import org.apache.esme.model.{Message, User}
+
 
 /**
  * Manage the sitemap and related snippets for the display of users
@@ -74,7 +76,7 @@ object UserMgr {
     <a href={"/user/" + urlEncode(u.nickname.is)}>{u.niceName}</a>
   }
   
-  private val dateFormatter = new SimpleDateFormat("hh:mm a MMM d, yyyy")
+  private val dateFormatter = new SimpleDateFormat("yyyy/MM/dd hh:mm")
   
   private def lastMessage(user: User): Tuple2[String,String] = {
     Message.findAll(By(Message.author, user), OrderBy(Message.id, Descending), MaxRows(1)) match {
