@@ -39,17 +39,18 @@ import net.liftweb.http._
 
 import net.sourceforge.jwebunit.junit.WebTester
 import _root_.junit.framework.AssertionFailedError
-import testing.{HttpResponse, TestFramework}
+import testing.{ReportFailure, TestKit, HttpResponse, TestFramework}
 class ApiSpecsAsTest extends JUnit3(ApiSpecs)
 object ApiSpecsRunner extends ConsoleRunner(ApiSpecs)
 
-object ApiSpecs extends Specification with TestFramework {
+object ApiSpecs extends Specification with TestKit {
   JettyTestServer.start
 
-  def buildRunner = null
-  def tests = Nil
+  val baseUrl = JettyTestServer.urlFor("")
 
-  def baseUrl = JettyTestServer.urlFor("")
+implicit val reportError = new ReportFailure {
+  def fail(msg: String): Nothing = ApiSpecs.this.fail(msg)
+}
 
   val theUser = User.createAndPopulate.nickname("api_test").saveMe
   val token = {
@@ -57,21 +58,24 @@ object ApiSpecs extends Specification with TestFramework {
     toke.uniqueId.is
   }
 
+
+  private def testSuccess(resp: HttpResponse) {
+    resp.code must_== 200
+    resp.contentType.toLowerCase().startsWith("text/xml") must_== true
+    (resp.xml \ "@success").text must_== "true"
+  }
+
   "API" should {
+
     "Login" in {
-      post("/api/login", "token" -> token) match {
-        case hr: HttpResponse => hr.code must_== 200
-
-        hr.get("/api/status") match {
-          case h2: HttpResponse =>
-          (h2.xml \ "user" \ "@id").text must_== theUser.id.toString
-
-          case x =>  true must_== false
-        }
-
-
-        case _ => true must_== false
+      for {
+        login <- post("/api/login", "token" -> token) !@ "Failed to log in" if (testSuccess(login))
+        status <- login.get("/api/status") !@ "Failed to get status" if (testSuccess(status))
+      } {
+        (status.xml \ "user" \ "@id").text must_== theUser.id.toString
       }
     }
-    }
+
+    
+  }
 }
