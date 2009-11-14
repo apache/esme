@@ -40,6 +40,7 @@ import net.liftweb.http._
 import net.sourceforge.jwebunit.junit.WebTester
 import _root_.junit.framework.AssertionFailedError
 import testing.{ReportFailure, TestKit, HttpResponse, TestFramework}
+
 class ApiSpecsAsTest extends JUnit3(ApiSpecs)
 object ApiSpecsRunner extends ConsoleRunner(ApiSpecs)
 
@@ -48,9 +49,9 @@ object ApiSpecs extends Specification with TestKit {
 
   val baseUrl = JettyTestServer.urlFor("")
 
-implicit val reportError = new ReportFailure {
-  def fail(msg: String): Nothing = ApiSpecs.this.fail(msg)
-}
+  implicit val reportError = new ReportFailure {
+    def fail(msg: String): Nothing = ApiSpecs.this.fail(msg)
+  }
 
   val theUser = User.createAndPopulate.nickname("api_test").saveMe
   val token = {
@@ -66,17 +67,17 @@ implicit val reportError = new ReportFailure {
   }
 
   def shouldnt(f: => Unit): Unit =
-  try {
-    val x = f
-    fail("Shouldn't succeed")
-  } catch {
-    case _ => ()
-  }
+    try {
+      val x = f
+      fail("Shouldn't succeed")
+    } catch {
+      case _ => ()
+    }
 
   "API" should {
 
     "Login" in {
-      for {
+      for{
         login <- post("/api/login", "token" -> token) !@ "Failed to log in" if (testSuccess(login))
         status <- login.get("/api/status") !@ "Failed to get status" if (testSuccess(status))
         otherStatus <- get("/api/status") if shouldnt(testSuccess(status))
