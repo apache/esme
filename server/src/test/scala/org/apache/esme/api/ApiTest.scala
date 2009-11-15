@@ -45,7 +45,7 @@ class ApiSpecsAsTest extends JUnit3(ApiSpecs)
 object ApiSpecsRunner extends ConsoleRunner(ApiSpecs)
 
 object ApiSpecs extends Specification with TestKit {
-  JettyTestServer.start
+ JettyTestServer.start 
 
   val baseUrl = JettyTestServer.urlFor("")
 
@@ -88,4 +88,6 @@ object ApiSpecs extends Specification with TestKit {
 
 
   }
+  
+
 }

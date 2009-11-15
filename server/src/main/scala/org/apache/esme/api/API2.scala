@@ -18,13 +18,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
- 
- /*
+
+/*
  * API2.scala
  *
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
- */
+ */            
 
 package org.apache.esme.api
 
@@ -46,7 +46,7 @@ import scala.xml.{NodeSeq, Text, Elem, XML, Node}
 import scala.collection.mutable.ListBuffer
 import java.util.logging._
 
-object API2 extends ApiHelper {
+object API2 extends ApiHelper with XmlHelper {
   val logger: Logger = Logger.getLogger("org.apache.esme.api")
 
   def dispatch: LiftRules.DispatchPF = {
@@ -57,13 +57,14 @@ object API2 extends ApiHelper {
     case Req("api2" :: "users" :: Nil, _, GetRequest) => allUsers
 // Add a method to get detail for a specific user
 
-// Document the fact that tag is no longer a parameter here
+// Document the fact that tag is no longer a parameter here                   
+    case Req("api2" :: "user" :: "messages" :: Nil, _, GetRequest)
+ 		if S.param("timeout").isDefined => waitForMsgs 
     case Req("api2" :: "user" :: "messages" :: Nil, _, GetRequest) => allUserMsgs
 // Document the new method for getting messages belonging to a particular tag
     case Req("api2" :: "user" :: "messages" :: "tag" :: tag :: Nil, _, GetRequest)
   		    => () => allUserMsgs(tag)
 // Possibly deprecate and move to api2/messages or api2/pools/poolName/messages
-// Add back long-poll option
     case Req("api2" :: "user" :: "messages" :: Nil, _, PostRequest) => () => addMsg
 
     case Req("api2" :: "user" :: "followees" :: Nil, _, GetRequest) => allFollowees         
@@ -105,7 +106,7 @@ object API2 extends ApiHelper {
   }
 
   def allSessions(): LiftResponse = {
-    val r: Box[NodeSeq] = 
+    val r: Box[Elem] = 
 		for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in"))
     	yield { 
 			<session>{userToXml(user)}</session>
@@ -115,7 +116,7 @@ object API2 extends ApiHelper {
   }      
 
   def addSession(): LiftResponse = {
-    val r: Box[NodeSeq] = if (User.loggedIn_?) Empty else
+    val r: Box[Elem] = if (User.loggedIn_?) Empty else
     for (token <- S.param("token") ?~ S.?("base_rest_api_err_missing_param", "token");
          auth <- AuthToken.find(By(AuthToken.uniqueId, token))
          ?~ "Token not found";
@@ -132,8 +133,10 @@ object API2 extends ApiHelper {
   } 
 
   def removeSession(): LiftResponse = {
-    User.logUserOut()
-    true
+    if (true) {
+		User.logUserOut()
+    	true
+	} else false
   } 
 
 
@@ -144,24 +147,24 @@ object API2 extends ApiHelper {
   }
        
   def allUserMsgs(): LiftResponse = {
-    val r: Box[Node] = 
+    val r: Box[Elem] = 
       for (user <- calcUser ?~  S.?("base_rest_api_err_param_not_found", "User");
         val lst = Mailbox.mostRecentMessagesFor(user.id, 40))
       yield {
-		<messages>{lst.flatMap{ case (msg, why, _) => msg.toXml % why.attr}}</messages>
+		<messages>{lst.flatMap{ case (msg, _, _) => msgToXml(msg)}}</messages>
 	  }
 
     r
   }
 
   def allUserMsgs(tag: String): LiftResponse = {
-	val r: Box[Node] =
+	val r: Box[Elem] =
       for (tagName <- Box(List(tag));
         tag <- Tag.find(By(Tag.name, tagName)))
       yield {
 	    <tag>
 		  <name>{tag.name}</name>
-		  <messages>{tag.findMessages.map(_.toXml)}</messages>
+		  <messages>{tag.findMessages.map(msgToXml(_))}</messages>
 	    </tag>
 	  }
 	
@@ -359,10 +362,25 @@ object API2 extends ApiHelper {
          id <- conversationId.map(toLong) ?~ S.?("base_rest_api_err_missing_param", "id")
     ) yield <conversation id={id.toString}>{
         Message.findAndPrime(By(Message.conversation, id),
-                            OrderBy(Message.id, Ascending)).map(_.toXml)
+                             OrderBy(Message.id, Ascending)).map(_.toXml)
       }</conversation>
 
     ret
+  }
+
+  def waitForMsgs(): LiftResponse = {
+    val future = new LAFuture[List[(Message, MailboxReason)]]()
+    
+    def waitForAnswer: Box[List[(Message, MailboxReason)]] = 
+      future.get(6L * 60L * 1000L)
+
+    var r: Box[NodeSeq] = 
+    for (act <- restActor.is ?~ "No REST actor";
+         val ignore = act ! ListenFor(future, 5 minutes);
+         answer <- waitForAnswer ?~ "Didn't get an answer")
+    yield answer.flatMap{ case (msg, reason) => msgToXml(msg) }
+
+    r
   }
 
   private def findAction(actionId: Box[String]): Box[Action] =
@@ -378,12 +396,9 @@ object API2 extends ApiHelper {
   	User.currentUser 
 
   def createTag(in: NodeSeq) = <api_response>{in}</api_response>
-
-  private def userToXml(user: User): Elem = 
-	<user><id>{user.id.toString}</id><nickname>{user.niceName}</nickname><image>{user.image}</image><whole_name>{user.wholeName}</whole_name></user>
   
   private def buildActor(userId: Long): RestActor = {
-   val ret = new RestActor
+    val ret = new RestActor
     ret ! StartUp(userId)
     ret
   }
@@ -393,31 +408,31 @@ object API2 extends ApiHelper {
   }
   
 
- class RestActor extends LiftActor {
+  class RestActor extends LiftActor {
     private var userId: Long = _
     private var msgs: List[(Message, MailboxReason)] = Nil
     private var listener: Box[LAFuture[List[(Message, MailboxReason)]]] = Empty
     
-   protected def messageHandler = {
+    protected def messageHandler = {
       case StartUp(userId) =>
-          this.userId = userId
-          Distributor ! Distributor.Listen(userId, this)
+        this.userId = userId
+        Distributor ! Distributor.Listen(userId, this)
 
-        case ByeBye =>
-          Distributor ! Distributor.Unlisten(userId, this)
+      case ByeBye =>
+        Distributor ! Distributor.Unlisten(userId, this)
           
       case UserActor.MessageReceived(msg, reason) =>
         msgs = (msg, reason) :: msgs
-      listener.foreach {
-        who =>
-          who.satisfy(msgs)
-        listener = Empty
-        msgs = Nil
-      }
+        listener.foreach {
+          who =>
+            who.satisfy(msgs)
+            listener = Empty
+            msgs = Nil
+        }
       
       case ReleaseListener =>
         listener.foreach(_.satisfy(Nil))
-      listener = Empty
+        listener = Empty
       
       case ListenFor(who, len) =>
         msgs match {
@@ -428,7 +443,7 @@ object API2 extends ApiHelper {
              
             case xs =>
               who.satisfy(xs)
-             msgs = Nil
+              msgs = Nil
               listener = Empty
         }
     }
@@ -443,10 +458,7 @@ object API2 extends ApiHelper {
 }                                                          
 
 // TODO:
-// 1. Get rid of calcUser and replace with User.currentUser ?~ S.?("base_rest_api_err_not_logged_in")
 // 2. Fix errors so that they properly indicate a missing parameter or 404
 // 3. Change changeAction so that if the "enabled" parameter doesn't show up it will simply use
 //    the current value for the action, not throw an error.
-// 4. Match based on the return content type header to determine what to return (default to XML)    
-// 5. Re-enable streaming message API (using comet approach)
-
+// 4. Match based on the return content type header to determine what to return (default to XML) 
