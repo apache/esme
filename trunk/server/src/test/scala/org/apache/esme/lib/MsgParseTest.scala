@@ -37,6 +37,7 @@ import org.mortbay.jetty.webapp.WebAppContext
 import org.apache.esme._
 import model._
 import net.liftweb.http._
+import testing.{ReportFailure, TestKit, HttpResponse, TestFramework}
 
 import net.sourceforge.jwebunit.junit.WebTester
 import _root_.junit.framework.AssertionFailedError
@@ -44,9 +45,23 @@ import _root_.junit.framework.AssertionFailedError
 class MsgParserSpecsAsTest extends JUnit3(MsgParserSpecs)
 object MsgParserSpecsRunner extends ConsoleRunner(MsgParserSpecs)
 
-object MsgParserSpecs extends Specification {
-  JettyTestServer.start
+object MsgParserSpecs extends Specification with TestKit { 
+  JettyTestServer.start 
 
+  val baseUrl = JettyTestServer.urlFor("")
+
+  implicit val reportError = new ReportFailure {
+    def fail(msg: String): Nothing = MsgParserSpecs.this.fail(msg)
+  }
+  
+    def shouldnt(f: => Unit): Unit =
+    try {
+      val x = f
+      fail("Shouldn't succeed")
+    } catch {
+      case _ => ()
+    }
+   
   type PFT = MsgParser.ParseResult[_]
   def parseMatch(name: String, matchr: PartialFunction[PFT, Any]) = new Matcher[PFT] {
     def apply(v: => PFT) = (matchr.isDefinedAt(v),
@@ -291,7 +306,8 @@ object MsgParserSpecs extends Specification {
         })
 
     }
-
+  
   }
+  
 
 }

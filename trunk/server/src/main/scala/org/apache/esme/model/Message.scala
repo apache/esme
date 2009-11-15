@@ -218,8 +218,24 @@ class Message extends LongKeyedMapper[Message] {
     def sourceAttr: Option[NodeSeq] = is match {
       case null | "" => None
       case xs => Some(Text(xs))
-    }
+     }
+   }
+ 
+  lazy val body: String = {
+  	val org = originalXml
+
+    (org \ "body").map(_.child map {
+      case e: Elem => e.text
+      case x => x.text
+    }).first.first
   }
+
+  lazy val metaData: String = {
+    val org = originalXml
+
+    (org \ "metadata").map(_.text).first
+  }
+
 
   object replyTo extends MappedLongForeignKey(this, Message)
 
