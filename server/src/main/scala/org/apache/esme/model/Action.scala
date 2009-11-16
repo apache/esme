@@ -171,7 +171,7 @@ class Action extends LongKeyedMapper[Action] {
     }
     val urlSourcePrefix = "url:"
     theAction.actionFunc match {
-      case a @ (FetchFeed(url)) => {
+      case a @ (FetchFeed(url, tags)) => {
         User.find(user) match {
           case Full(u) =>
             val msgList = Message.findAll(By(Message.source, urlSourcePrefix + url.uniqueId),
@@ -184,8 +184,8 @@ class Action extends LongKeyedMapper[Action] {
               }
 
             val feed = a match {
-              case FetchAtom(_) => new AtomFeed(u, url.url, urlSourcePrefix + url.uniqueId, 0, Nil)
-              case FetchRss(_) => new RssFeed(u, url.url, urlSourcePrefix + url.uniqueId, 0, Nil)
+              case FetchAtom(_, _) => new AtomFeed(u, url.url, urlSourcePrefix + url.uniqueId, 0, tags)
+              case FetchRss(_, _) => new RssFeed(u, url.url, urlSourcePrefix + url.uniqueId, 0, tags)
             }
             MessagePullActor ! MessagePullActor.StartPullActor(id, lastMsg, feed)
           
@@ -490,9 +490,9 @@ case object MinuteDateType extends DateType {
 sealed trait Performances
 case class MailTo(who: String, text: Option[String]) extends Performances
 case class HttpTo(url: String, user: String, password: String, headers: List[(String, String)], data: Option[String]) extends Performances
-case class FetchFeed(url: UrlStore) extends Performances
-case class FetchAtom(override val url: UrlStore) extends FetchFeed(url)
-case class FetchRss(override val url: UrlStore) extends FetchFeed(url)
+case class FetchFeed(url: UrlStore, tags: List[String]) extends Performances
+case class FetchAtom(override val url: UrlStore, override val tags: List[String]) extends FetchFeed(url, tags)
+case class FetchRss(override val url: UrlStore, override val tags: List[String]) extends FetchFeed(url, tags)
 case object PerformResend extends Performances
 case object PerformFilter extends Performances
 case object ScalaInterpret extends Performances
