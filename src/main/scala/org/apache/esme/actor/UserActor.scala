@@ -111,9 +111,10 @@ class UserActor extends LiftActor {
         f()
         
       case CreateMessage(text, tags, when, metaData, source, replyTo, pool) =>
-        val tagLst = if (pool == None) 
-                       tags.removeDuplicates.map(Tag.findOrCreate)
-                     else Nil
+        val tagLst = pool match {
+          case Empty => tags.removeDuplicates.map(Tag.findOrCreate)
+          case _ => Nil
+        }
 
         Message.create.author(userId).when(when).
         source(source).
@@ -270,12 +271,12 @@ class UserActor extends LiftActor {
               Distributor !
               Distributor.AddMessageToMailbox(id, msg, ResendReason(userId))
 
-            case FetchFeed(url) => MessagePullActor ! MessagePullActor.Fetch(td.performId)
+            case FetchFeed(_, _) => MessagePullActor ! MessagePullActor.Fetch(td.performId)
 
-            /*
-            case ScalaInterpret => if (msg.source.is != "scala")
+            case ScalaInterpret => logger.info("Scala interpreter is disabled!")
+            /*if (msg.source.is != "scala")
               ScalaInterpreter ! ScalaInterpreter.ScalaExcerpt(userId, msg.id.is, msg.pool.is, msg.getText)
-	      */
+            */
 
             case PerformFilter => Stats incr "messagesFiltered" // IGNORE
           }
