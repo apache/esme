@@ -31,8 +31,6 @@ import net.liftweb.actor._
 
 object PopStatsActor extends LiftActor {
 
-  // immutable maps of maps doesn't work well
-  // FIXME dpp asks why not?
   import scala.collection.mutable.Map
   
   private val actors: Map[StatParam,Map[Long,PopStatsActor]] = Map()
@@ -50,12 +48,12 @@ object PopStatsActor extends LiftActor {
     }
     
     case StopStats(what, period) => // TODO: not used
-      case TopStats(what, n, period) =>
-        (for (stat <- actors.get(what);
-              availableActor <- stat.get(period)) yield availableActor) match {
-		case Some(statActor) => forwardMessageTo(Top(n), statActor)
-		case _ => reply(Nil)
-              }
+    case TopStats(what, n, period) =>
+      (for (stat <- actors.get(what);
+            availableActor <- stat.get(period)) yield availableActor) match {
+              case Some(statActor) => forwardMessageTo(Top(n), statActor)
+              case _ => reply(Nil)
+            }
 
     case IncrStats(what, hitItem) =>
       for (stat <- actors.get(what);
@@ -79,37 +77,33 @@ object PopStatsActor extends LiftActor {
   case class IncrStats(what: StatParam, hitItem: Long)
 
   private class PopStatsActor(period: Long,
-			      refreshInterval: Long) extends LiftActor {
+                              refreshInterval: Long) extends LiftActor {
     private var queue: List[StatEvent] = List()
     private var stats: Map[Long,Int] = Map()
     private var running = true
 
     protected def messageHandler = {
-      case StartUp =>
+      case StartUp => ActorPing.schedule(this, Expire, refreshInterval)
 
-    case ByeBye =>
-      running = false
-
-    case Hit(id) =>
-      // FIXME this is an O(n) operation.
-      // use LiftBuffer or prepend (using ::)
-      queue += StatEvent(id, now)
-      stats += (id -> (stats.getOrElse(id,0) + 1))
-      
+      case ByeBye =>
+        running = false
+  
+      case Hit(id) =>
+        queue ::= StatEvent(id, now)
+        stats += (id -> (stats.getOrElse(id,0) + 1))
+        
       case Top(n) =>
-	val topList = stats.toList.sort{
+        val topList = stats.toList.sort{
           case ((_,freq1),(_,freq2)) =>
             freq2 < freq1
-	}.take(n)
+        }.take(n)
       reply(topList)
       
       case Expire => {
-	queue = queue.dropWhile{ event =>
-          val expired_? = event.when < now
-				if (expired_?) stats -= event.id
-				expired_?
-			      }.toList
-	}
+        val (live, expired) = queue.partition(_.when < now)
+        expired.foreach(stats -= _.id)
+        live
+      }
     }
     
     case class StatEvent(id: Long, when: Long)
