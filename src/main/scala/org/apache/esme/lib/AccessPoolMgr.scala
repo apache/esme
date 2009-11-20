@@ -176,7 +176,7 @@ object AccessPoolMgr {
      case d => Text(dateFormat.format(d))
    }
     
-    def disPlayUserName(uid: Long): NodeSeq = {
+    def displayUserName(uid: Long): NodeSeq = {
       User.find(uid) match {
         case Full(user) => <span>{user.nickname}</span>
         case _ => NodeSeq.Empty
@@ -188,9 +188,9 @@ object AccessPoolMgr {
         case Full(ap) => bind(
         "pool", in,
         "name" -> ap.getName,     
-        "creator" -> disPlayUserName(ap.creator),
+        "creator" -> displayUserName(ap.creator),
         "createdDate" -> getDateHtml(ap.createdDate),
-        "modifier" -> disPlayUserName(ap.modifier),
+        "modifier" -> displayUserName(ap.modifier),
         "lastModifyDate" -> getDateHtml(ap.lastModifyDate))
       case _ => NodeSeq.Empty
       }
@@ -206,40 +206,17 @@ object AccessPoolMgr {
     // get the current user
     val user = User.currentUser
 
-    def validateDeleteUser(in: Privilege): Boolean = {
-      //Delete current admin only if admin permissions by other users exist
-      !(in.permission.is == Permission.Admin &&
-      Privilege.find(By(Privilege.pool, in.pool),
-        By(Privilege.permission,Permission.Admin),
-        NotBy(Privilege.user, in.user)).isEmpty)
-    }
-    def deleteUserFromPool(in: Privilege) {
-    if(validateDeleteUser(in)) 
-    {
-      val userId = in.user.is
-      in.delete_!
-      Distributor ! Distributor.RefreshUser(userId)
-    }
-    else 
-      throw new Exception("No other admin users in pool!")
-      
-    }
-    def operationLinks(in: Privilege): NodeSeq = {
-      if (validateDeleteUser(in))
-    	  link("", () => deleteUserFromPool(in), Text("Delete"))//delete user from pool
-      else NodeSeq.Empty
-    }
+      // Distributor ! Distributor.RefreshUser(userId)
     def doRender(): NodeSeq = {
     val accessPool = AccessPool.find(By(AccessPool.id, poolId.is))  
-    Privilege.findAll(By(Privilege.pool, poolId.is)) match {
+    Privilege.findAll(By(Privilege.pool, poolId.is), NotBy(Privilege.permission, Permission.Denied)) match {
       case Nil => NodeSeq.Empty
       case xs => bind("pool", in,
                       "user" -> 
                       (lst => xs.flatMap(i => bind("user", lst,
                                                    "name" -> User.find(i.user).map(
                                                              _.nickname.is).getOrElse(""),
-                                                   "privilege" -> i.permission.is.toString,
-                                                   "operations" -> operationLinks(i)  
+                                                   "privilege" -> i.permission.is.toString
                       ))))
     }
     }
