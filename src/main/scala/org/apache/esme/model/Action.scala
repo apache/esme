@@ -45,7 +45,7 @@ object Action extends Action with LongKeyedMetaMapper[Action] {
   
   }
   
-   override def create: Action = {
+  override def create: Action = {
     val ap = super.create
     ap.createdDate(new Date())
     ap
@@ -68,6 +68,10 @@ object Action extends Action with LongKeyedMetaMapper[Action] {
   lazy val TrueFunc: TestFunc = {case _ => true}
   lazy val SentToMe: TestFunc = (m, u, c, r) => m.sentToIds.contains(u)
   
+  /**
+   * Returns a function, which determines if a set of events should trigger the action
+   * Note: in pattern matching, define more general cases later: order is important
+   */
   def toFunc(in: TestAction): TestFunc = in match {
     case AnyAction => TrueFunc
 
@@ -148,6 +152,10 @@ object Action extends Action with LongKeyedMetaMapper[Action] {
       (m, u, c, r) => ot.buildFunc(dt.buildFunc(c), what)
   }
   
+  /**
+   * Searches for regular actions recursively, since
+   * an action expression could have a nested structure of or/and operators and parentheses
+   */
   def regularActions(in: TestAction): List[RegularAction] = in match {
     case NotAction(a) => regularActions(a)
 
@@ -163,8 +171,23 @@ object Action extends Action with LongKeyedMetaMapper[Action] {
   }
 }
 
+/**
+ * The Action class represents some automatic message processing which is
+ * triggered when a certain condition is met:
+ * - a message which satisfies certain criteria is received
+ * - an internal event occurs- login, one user follows another
+ * - at regular intervals
+ *
+ * Both the condition and performance are parsed at least in the following stages:
+ * - when saving the action
+ * - when constructing the function to determine if the action should be triggered
+ */
 class Action extends LongKeyedMapper[Action] {
 
+  /**
+   * Actors related to regularly executed actions are started here
+   * This is done when the action is activated or at the start of the application
+   */
   def startActors() {
     for(regular <- regularActions) regular match { 
       case RegularAction(mins) => SchedulerActor ! SchedulerActor.StartRegular(this, mins * 60)
@@ -306,7 +329,10 @@ class PerformMatcher(val func: Action.TestFunc, val performId: Long,
 }
 
 
-
+/**
+ * The condition causing an action to be performed
+ * Note: toStr must return a String which would be parsed to an identical object!
+ */
 sealed trait TestAction {
   def toStr: String
 }

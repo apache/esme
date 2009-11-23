@@ -35,6 +35,19 @@ import scala.xml.{XML, NodeSeq, Node, Text}
 import org.apache.esme._
 import model._
 
+/**
+ * The MsgParser parses:
+ * - a message into its parts: text, usernames, hashtags, urls
+ * - the test condition for an action
+ * - what to perform for an action
+ *
+ * Several parsers are reused for the high-level parsers:
+ * - an URL parser based on RFC 1738 and extended with some parts of RFC 1630;
+ *     unique url will be stored similarly to an url-shortener service
+ * - a parser for an existing username
+ * - a parser for a hashtag, which returns an existing Tag
+ *     or creating a new one if it doesn't exist
+ */
 object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers {
   def parseMessage(in: String): Box[List[MsgInfo]] = begin(in) match {
     case Success(xs, _) => Full(xs)

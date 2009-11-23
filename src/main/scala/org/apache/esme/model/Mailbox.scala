@@ -33,6 +33,10 @@ import scala.xml._
 object Mailbox extends Mailbox with LongKeyedMetaMapper[Mailbox] {
   override def dbTableName = "mailbox" // define the DB table name
 
+  /**
+   * A list of the last messages are collected through the cached 
+   * Message.findMessages method
+   */
   def mostRecentMessagesFor(userId: Long, cnt: Int):
   List[(Message, MailboxReason, Boolean)] = {
     val mb = findAll(By(user, userId), OrderBy(id, Descending),
@@ -48,6 +52,14 @@ object Mailbox extends Mailbox with LongKeyedMetaMapper[Mailbox] {
   override def dbIndexes = Index(user, message) :: super.dbIndexes
 }
 
+/**
+ * The Mailbox is a list of references to message instances,
+ * which are in the user's timeline, along with additional data:
+ * why the message got to this timeline and any conversation it's part of
+ *
+ * The Message itself is never copied when it's put in a user's timeline:
+ * only another reference to it is created
+ */
 class Mailbox extends LongKeyedMapper[Mailbox] {
   def getSingleton = Mailbox // what's the "meta" server
   def primaryKeyField = id

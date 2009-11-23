@@ -39,6 +39,11 @@ import model._
 
 import scala.xml.{Elem}
 
+/**
+ * The Distributor actor forwards messages to the approprite user actor
+ * without the need for the sender to have a reference to it.
+ * If the actor is not started, Distributor starts it up in findOrCreateUser
+ */
 object Distributor extends LiftActor {
   protected def messageHandler = {
       case StartMeUp =>
