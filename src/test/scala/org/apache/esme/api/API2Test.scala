@@ -19,13 +19,13 @@
  * under the License.
  */
 
-package org.apache.esme.api
+package org.apache.esme.api 
 
 import org.specs._
 import org.specs.runner.JUnit3
 import org.specs.runner.ConsoleRunner
 import net.liftweb.util._
-import net.liftweb.common._
+import net.liftweb.common._ 
 import org.specs.matcher._
 import Helpers._
 import net.sourceforge.jwebunit.junit.WebTester
@@ -36,7 +36,7 @@ import org.mortbay.jetty.webapp.WebAppContext
 import org.apache.esme._
 import model._
 import net.liftweb.http._
-import testing.{ReportFailure, TestKit, HttpResponse, TestFramework}
+import testing.{ReportFailure, TestKit, HttpResponse, TestFramework}  
 
 import net.sourceforge.jwebunit.junit.WebTester
 import _root_.junit.framework.AssertionFailedError                 
@@ -48,31 +48,43 @@ object Api2Specs extends Specification with TestKit {
   JettyTestServer.start
 
   val baseUrl = JettyTestServer.urlFor("")
-
-  implicit val reportError = new ReportFailure {
-    def fail(msg: String): Nothing = Api2Specs.this.fail(msg)
-  }
   
-    def shouldnt(f: => Unit): Unit =
-    try {
-      val x = f
-      fail("Shouldn't succeed")
-    } catch {
-      case _ => ()
-    }
-                         
-  "allUsers" should {
-    "have a response code of 200" in {
-      API2.allUsers().toResponse.code must be equalTo(200)
+  val theUser = User.createAndPopulate.nickname("api_test").saveMe
+  val token = {
+    val toke = AuthToken.create.user(theUser).saveMe
+    toke.uniqueId.is
+  }                
+  
+  "API2" should {
+	"Login with a valid token results in a 200 response and a proper response body" in {
+      for{
+        session <- post("/api2/session", "token" -> token)    
+      } {
+        (session.xml \ "session" \ "user" \ "id").text must be equalTo(theUser.id.toString)
+		session.code must be equalTo(200)
+      }
     }
 
-	"return a node listing all users" in {                    
-	  API2.allUsers().toResponse.toString must include(
-"""<api_response><users><user><id>1</id><nickname>hash</nickname><image>None</image><whole_name>hash</whole_name></user></users></api_response>"""
-	  )                                         
-	}
-  }
+	"Attempt to create session with an invalid token returns 400 response" in {
+      for{
+        session <- post("/api2/session", "token" -> "0000000")
+      } {                   
+		session.code must be equalTo(400)
+      }
+    }
 
-                                    
+    "/users" in {
+      "Valid session" in {     
+        "have a response code of 200" in {
+          for {
+            session <- post("/api2/session", "token" -> token)
+            users <- session.get("/api2/users")
+          } {
+            users.code must be equalTo(200)
+          }
+        }
+	  }                
+    }
+  }                                    
 }
  

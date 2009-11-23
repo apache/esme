@@ -83,9 +83,14 @@ trait ApiHelper {
    * Build the Response based on the body 
    */  
   protected def buildResponse(success: Boolean, msg: Box[NodeSeq],  
-                            body: NodeSeq): LiftResponse =  
-  XmlResponse(createTag(body)) 
-
+                            body: NodeSeq): LiftResponse = {
+    if(success) {
+      XmlResponse(createTag(body))
+    } else {
+      XmlResponse(createTag(body))  // Need to return a 401 response here
+    }
+  }  
+  
   protected def buildResponseFromElem(success: Boolean, msg: Box[NodeSeq], body: Elem): LiftResponse = {
   	XmlResponse(createTag(body))                                                                                   
   }

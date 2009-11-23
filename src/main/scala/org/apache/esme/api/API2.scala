@@ -59,9 +59,11 @@ object API2 extends ApiHelper with XmlHelper {
 
 // Document the fact that tag is no longer a parameter here                   
     case Req("api2" :: "user" :: "messages" :: Nil, _, GetRequest)
- 		if S.param("timeout").isDefined => waitForMsgs 
-    case Req("api2" :: "user" :: "messages" :: Nil, _, GetRequest) => allUserMsgs
-// Document the new method for getting messages belonging to a particular tag
+ 	  if S.param("timeout").isDefined => waitForMsgs
+    case Req("api2" :: "user" :: "messages" :: Nil, _, GetRequest)
+      if S.param("history").isDefined => allUserMsgs   
+    case Req("api2" :: "user" :: "messages" :: Nil, _, GetRequest) => getNewMsgs
+// Document the new method for getting messages belonging to a particular tag      
     case Req("api2" :: "user" :: "messages" :: "tag" :: tag :: Nil, _, GetRequest)
   		    => () => allUserMsgs(tag)
 // Possibly deprecate and move to api2/messages or api2/pools/poolName/messages
@@ -117,12 +119,11 @@ object API2 extends ApiHelper with XmlHelper {
 
   def addSession(): LiftResponse = {
     val r: Box[Elem] = if (User.loggedIn_?) Empty else
-    for (token <- S.param("token") ?~ S.?("base_rest_api_err_missing_param", "token");
+    for{ token <- S.param("token")
          auth <- AuthToken.find(By(AuthToken.uniqueId, token))
-         ?~ "Token not found";
-         user <- auth.user.obj;
+         user <- auth.user.obj
          session <- S.session
-    ) yield {
+    } yield {
       User.logUserIn(user)
       val myActor = buildActor(user.id)
       restActor(Full(myActor))
@@ -149,10 +150,42 @@ object API2 extends ApiHelper with XmlHelper {
   def allUserMsgs(): LiftResponse = {
     val r: Box[Elem] = 
       for (user <- calcUser ?~  S.?("base_rest_api_err_param_not_found", "User");
-        val lst = Mailbox.mostRecentMessagesFor(user.id, 40))
+		val num = S.param("history").map(_.toInt) openOr 40;
+        val lst = Mailbox.mostRecentMessagesFor(user.id, num))
       yield {
 		<messages>{lst.flatMap{ case (msg, _, _) => msgToXml(msg)}}</messages>
 	  }
+
+    r
+  }
+
+  def getNewMsgs(): LiftResponse = {
+    val future = new LAFuture[List[(Message, MailboxReason)]]()
+  
+    def waitForAnswer: Box[List[(Message, MailboxReason)]] = 
+      future.get(60L * 1000L)
+
+    val r: Box[NodeSeq] = 
+      for (act <- restActor.is ?~ "No REST actor";
+		   val ignore = act ! ListenFor(future, 0 seconds);
+           answer <- waitForAnswer ?~ "Didn't get an answer")
+      yield answer.flatMap{ case (msg, reason) => msgToXml(msg) }
+
+    r
+  } 
+
+  def waitForMsgs(): LiftResponse = {
+    val future = new LAFuture[List[(Message, MailboxReason)]]()
+    
+    def waitForAnswer: Box[List[(Message, MailboxReason)]] = 
+      future.get(6L * 60L * 1000L)
+
+    var r: Box[NodeSeq] = 
+    for (act <- restActor.is ?~ "No REST actor";
+		 length <- S.param("timeout").map(_.toInt * 1000);
+         val ignore = act ! ListenFor(future, TimeSpan(length));
+         answer <- waitForAnswer ?~ "Didn't get an answer")
+    yield answer.flatMap{ case (msg, reason) => msgToXml(msg) }
 
     r
   }
@@ -368,21 +401,6 @@ object API2 extends ApiHelper with XmlHelper {
     ret
   }
 
-  def waitForMsgs(): LiftResponse = {
-    val future = new LAFuture[List[(Message, MailboxReason)]]()
-    
-    def waitForAnswer: Box[List[(Message, MailboxReason)]] = 
-      future.get(6L * 60L * 1000L)
-
-    var r: Box[NodeSeq] = 
-    for (act <- restActor.is ?~ "No REST actor";
-         val ignore = act ! ListenFor(future, 5 minutes);
-         answer <- waitForAnswer ?~ "Didn't get an answer")
-    yield answer.flatMap{ case (msg, reason) => msgToXml(msg) }
-
-    r
-  }
-
   private def findAction(actionId: Box[String]): Box[Action] =
   	for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in");
          id <- actionId ?~ S.?("base_rest_api_err_missing_param", "id");
@@ -436,15 +454,15 @@ object API2 extends ApiHelper with XmlHelper {
       
       case ListenFor(who, len) =>
         msgs match {
-            case Nil =>
-              listener.foreach(_.satisfy(Nil))
-              listener = Full(who)
-              ActorPing.schedule(this, ReleaseListener, len)
+          case Nil =>
+            listener.foreach(_.satisfy(Nil))
+            listener = Full(who)
+            ActorPing.schedule(this, ReleaseListener, len)
              
-            case xs =>
-              who.satisfy(xs)
-              msgs = Nil
-              listener = Empty
+          case xs =>
+            who.satisfy(xs)
+            msgs = Nil
+            listener = Empty
         }
     }
   }
@@ -453,7 +471,7 @@ object API2 extends ApiHelper with XmlHelper {
   private case class StartUp(userId: Long)
   private case object ByeBye
   private case class ListenFor(who: LAFuture[List[(Message, MailboxReason)]],
-			       howLong: TimeSpan)
+			       howLong: TimeSpan)                                  
   private case object ReleaseListener       
 }                                                          
 
