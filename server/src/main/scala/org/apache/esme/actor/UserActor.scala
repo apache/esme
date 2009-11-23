@@ -60,6 +60,12 @@ object UserActor {
 }
 
 
+/**
+ * The UserActor processes a user's messages
+ * The UserActor keeps track of pools a user belongs to, followers,
+ * active actions and tracking filters
+ */
+ 
 class UserActor extends LiftActor {
   import UserActor._
   
@@ -220,6 +226,9 @@ class UserActor extends LiftActor {
     case tz => Calendar.getInstance(tz)
   }
   
+  /**
+   * This method decides which actions should be applied to a message
+   */
   private def addToMailbox(msg: Message, reason: MailboxReason) {
     // if the message is not in my mailbox
     if (Mailbox.find(By(Mailbox.message, msg),

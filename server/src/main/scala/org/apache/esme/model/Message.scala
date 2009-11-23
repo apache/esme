@@ -62,6 +62,10 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
   private val idCache = new LRU[Long, Message](cacheSize)
 
 
+  /**
+   * A list of messages is requested from a simple cache
+   * The cache is filtered for messages which the user has permission to view
+   */
   def findMessages(in: Seq[Long]): Map[Long, Message] = synchronized {
     val il = in.toList
     val user = User.currentUser
@@ -166,6 +170,13 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
       }) openOr Nil
   }
   
+  /**
+   * Lift's findMapDb is overridden to ensure that message search will return
+   * only messages which the user has permission to view
+   *
+   * All Lift finder methods eventually call findMapDb, which makes it suitable
+   * to override to redefine some global behavior.
+   */
   override def findMapDb[T](dbId : ConnectionIdentifier, by : QueryParam[Message]*)(f : (Message) => Box[T]): List[T] = {
     // modify behavior of find methods so that results include only authorized pools of current user
     val viewablePools =

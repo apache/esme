@@ -75,6 +75,18 @@ object Privilege extends Privilege with LongKeyedMetaMapper[Privilege] {
   )(p => Full(p.pool.is)) :_*)
 }
 
+/**
+ * A Privilege defines a permission for a certain user in an access pool.
+ * This acts as a join table for the user:pool many-to-many relationship.
+ *
+ * Currently a user may only have one privilege type for a pool, where one
+ * permission type will also include all rights for more restricted ones,
+ * e.g. Write permission also includes Read permissions.
+ *
+ * In order to change to multiple Privileges per user or add another type,
+ * redefining the find* methods from the companion object should be all
+ * that is necessary.
+ */
 class Privilege extends LongKeyedMapper[Privilege] {
   def getSingleton = Privilege // what's the "meta" server
   def primaryKeyField = id
@@ -90,6 +102,9 @@ class Privilege extends LongKeyedMapper[Privilege] {
   ).map(_.permission.is >= permission).getOrElse(false)
 }
 
+/**
+ * Types of permissions a user can have a Privilege to have
+ */
 object Permission extends Enumeration {
   val Read = Value(0, "Read")
   val Write = Value(1, "Write")
