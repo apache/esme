@@ -38,14 +38,15 @@ object PopStatsActor extends LiftActor {
   protected def now = System.currentTimeMillis
   protected def messageHandler = {
     case StartStats(what, period, refresh) =>
-      if (!actors.contains(what))
+      if (!actors.contains(what)) {
         actors(what) = Map()
-    val stat = actors(what)
-    if(!stat.contains(period)) {
-      val statActor = new PopStatsActor(period, refresh)
-      stat(period) = statActor
-      statActor ! StartUp
-    }
+      }
+      val stat = actors(what)
+      if(!stat.contains(period)) {
+        val statActor = new PopStatsActor(period, refresh)
+        stat(period) = statActor
+        statActor ! StartUp
+      }
     
     case StopStats(what, period) => // TODO: not used
     case TopStats(what, n, period) =>
