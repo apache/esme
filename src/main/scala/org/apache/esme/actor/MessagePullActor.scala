@@ -40,16 +40,15 @@ object MessagePullActor extends LiftActor {
       }
 
     case StopPullActor(obj) => 
-      messagePullActors.get(obj).foreach {
-	pull =>
-	pull ! ByeBye
+      messagePullActors.get(obj).foreach { pull =>
+        pull ! ByeBye
         messagePullActors -= obj
       }
     
     case Fetch(obj) => 
-        messagePullActors.get(obj).foreach (
-          _ ! FetchMessages
-        )
+      messagePullActors.get(obj).foreach (
+        _ ! FetchMessages
+      )
   }
 
 
@@ -65,21 +64,23 @@ object MessagePullActor extends LiftActor {
   case class Fetch(any: Any)
 
 
-  private class MessagePullActor(messageProcessor: LiftActor, 
-			 private var lastMessage: Option[Msg],
-			 messageSource: UniqueMessageSource) extends LiftActor {
+  private class MessagePullActor(
+    messageProcessor: LiftActor, 
+    private var lastMessage: Option[Msg],
+    messageSource: UniqueMessageSource) extends LiftActor {
+      
     protected def messageHandler = {
       case StartUp => 
-	
-	case ByeBye => 
-	  
-          case (msgs: List[Msg]) => 
-            val lastMessages = messageSource.getLastSortedMessages(msgs, lastMessage)
-      for (message <- lastMessages) {
-        messageProcessor ! message
-        lastMessage = Some(message)
-        Stats incr "messagesPulled"
-      }
+        
+      case ByeBye => 
+          
+      case (msgs: List[Msg]) => 
+        val lastMessages = messageSource.getLastSortedMessages(msgs, lastMessage)
+        for (message <- lastMessages) {
+          messageProcessor ! message
+          lastMessage = Some(message)
+          Stats incr "messagesPulled"
+        }
       
       case FetchMessages => 
         this ! messageSource()
