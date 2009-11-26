@@ -57,28 +57,28 @@ object SchedulerActor extends LiftActor{
 
 
   private class SchedulerActor(messageProcessor: LiftActor, 
-			       user: Long, 
-			       everySeconds: Int, 
-			       reason: MailboxReason) extends LiftActor {
+                               user: Long, 
+                               everySeconds: Int, 
+                               reason: MailboxReason) extends LiftActor {
     private case object DoItDude
     private var running = true
     
     private def setupPing() {
       if (running)
-	ActorPing.schedule(this, DoItDude, everySeconds * 1000L)
+        ActorPing.schedule(this, DoItDude, everySeconds * 1000L)
     }
     
     setupPing()
     
     protected def messageHandler: PartialFunction[Any, Unit] = {
       case DoItDude =>
-	if (running) {
-	  sendMessage()
-	  setupPing()
-	}
+        if (running) {
+          sendMessage()
+          setupPing()
+        }
 
       case ByeBye =>
-	running = false
+        running = false
     }
       
     def sendMessage() {
@@ -86,18 +86,18 @@ object SchedulerActor extends LiftActor{
       val dateString = TimeHelpers.toInternetDate(now)
       Message.create.author(user).
       when(now).
-	source("every").
+        source("every").
       setTextAndTags("Regularly scheduled action: " + dateString, Nil, Empty).
       foreach{ msg =>
         // Noisy & can't be rejected
           // if (msg.save) {
         messageProcessor ! Distributor.AddMessageToMailbox(user, msg, reason)
               // }
-            }
-            Stats incr "schedulerMessagesCreated"
-            Stats incr "messagesCreated"
-            Stats incr "schedulerMessagesCreated"
-            Stats incr "messagesCreated"
+      }
+      Stats incr "schedulerMessagesCreated"
+      Stats incr "messagesCreated"
+      Stats incr "schedulerMessagesCreated"
+      Stats incr "messagesCreated"
     }
     
   }
