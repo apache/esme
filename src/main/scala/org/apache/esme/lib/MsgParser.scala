@@ -55,7 +55,7 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
   }
 
   lazy val begin: Parser[List[MsgInfo]] = 
-  startSpace ~> rep1(url | atName | hashTag | text) <~ spaceEOF
+  startSpace ~> rep1(url | atName | hashTag | emph | strong | text) <~ spaceEOF
 
   lazy val startSpace = rep(' ')
 
@@ -222,11 +222,21 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
 
   lazy val spaceEOF = rep(' ') ~ EOF
 
-  lazy val text: Parser[MsgText] = rep1(not(spaceEOF) ~ not(url) ~ not(atName) ~
-                                        not(hashTag) ~> anyChar) ^^ {
+  lazy val text: Parser[MsgText] =
+    rep1(not(spaceEOF) ~ not(url) ~ not(atName) ~ not(hashTag) ~ not(emph) ~ not(strong) ~>
+      anyChar) ^^ {
     case xs => MsgText(xs.mkString(""))
   }
 
+  lazy val emph: Parser[Emph] = '_' ~> rep1(not(spaceEOF) ~ not('_') ~ not(hashTag) ~ not(atName) ~> anyChar) <~ '_' ^^ {
+    case xs => Emph(xs.mkString)
+  }
+  
+  lazy val strong: Parser[Strong] = 
+  '*' ~> rep1(not(spaceEOF) ~ not('*') ~ not(hashTag) ~ not(atName) ~> anyChar) <~ '*' ^^ {
+    case xs => Strong(xs.mkString)
+  }
+  
   lazy val EOF: Parser[Elem] = elem("EOF", isEof _)
 
   def perform(in: String): Box[Performances] = _perform(in) match {
@@ -433,6 +443,10 @@ case class MsgText(text: String) extends MsgInfo
 case class AtName(user: User) extends MsgInfo
 case class HashTag(tag: Tag) extends MsgInfo
 case class URL(url: UrlStore) extends MsgInfo
+case class Emph(text: String) extends MsgInfo
+case class Strong(text: String) extends MsgInfo
 
 case class ResenderName(user: User)
 case class PoolName(pool: AccessPool)
+
+
