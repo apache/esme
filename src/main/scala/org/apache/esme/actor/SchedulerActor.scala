@@ -68,6 +68,7 @@ object SchedulerActor extends LiftActor{
         ActorPing.schedule(this, DoItDude, everySeconds * 1000L)
     }
     
+    sendMessage()
     setupPing()
     
     protected def messageHandler: PartialFunction[Any, Unit] = {
