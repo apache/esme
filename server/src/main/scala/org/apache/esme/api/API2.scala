@@ -56,18 +56,16 @@ object API2 extends ApiHelper with XmlHelper {
 	
     case Req("api2" :: "users" :: Nil, _, GetRequest) => allUsers
 // Add a method to get detail for a specific user
-
-// Document the fact that tag is no longer a parameter here                   
+                                                                          
     case Req("api2" :: "user" :: "messages" :: Nil, _, GetRequest)
  	  if S.param("timeout").isDefined => waitForMsgs
     case Req("api2" :: "user" :: "messages" :: Nil, _, GetRequest)
       if S.param("history").isDefined => allUserMsgs   
-    case Req("api2" :: "user" :: "messages" :: Nil, _, GetRequest) => getNewMsgs
-// Document the new method for getting messages belonging to a particular tag      
-    case Req("api2" :: "user" :: "messages" :: "tag" :: tag :: Nil, _, GetRequest)
-  		    => () => allUserMsgs(tag)
-// Possibly deprecate and move to api2/messages or api2/pools/poolName/messages
+    case Req("api2" :: "user" :: "messages" :: Nil, _, GetRequest) => getNewMsgs    
     case Req("api2" :: "user" :: "messages" :: Nil, _, PostRequest) => () => addMsg
+
+    case Req("api2" :: "user" :: "tags" :: tag :: "messages" :: Nil, _, GetRequest)
+  		    => () => allUserMsgs(tag)                                                 
 
     case Req("api2" :: "user" :: "followees" :: Nil, _, GetRequest) => allFollowees         
     case Req("api2" :: "user" :: "followees" :: Nil, _, PostRequest) => addFollowee
@@ -108,53 +106,66 @@ object API2 extends ApiHelper with XmlHelper {
   }
 
   def allSessions(): LiftResponse = {
-    val r: Box[Elem] = 
-		for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in"))
-    	yield { 
-			<session>{userToXml(user)}</session>
-		}
+    val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] = 
+	  for (user <- User.currentUser)
+      yield { 
+		(200,Map(),Full(<session>{userToXml(user)}</session>))
+	  }
 
+	val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+	  if(ret.isDefined) ret else Full((404,Map(),Empty))
+	
 	r
   }      
 
   def addSession(): LiftResponse = {
-    val r: Box[Elem] = if (User.loggedIn_?) Empty else
-    for{ token <- S.param("token")
-         auth <- AuthToken.find(By(AuthToken.uniqueId, token))
-         user <- auth.user.obj
-         session <- S.session
-    } yield {
-      User.logUserIn(user)
-      val myActor = buildActor(user.id)
-      restActor(Full(myActor))
-      <session>{userToXml(user)}</session>
+	val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] = if (User.loggedIn_?) Empty else
+    for(token <- S.param("token")) yield {
+      val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] = for {
+        auth <- AuthToken.find(By(AuthToken.uniqueId, token))
+        user <- auth.user.obj 
+        val user_xml: Elem = <session>{userToXml(user)}</session>
+      } yield {
+        User.logUserIn(user)
+        val myActor = buildActor(user.id)
+        restActor(Full(myActor))
+        (200,Map(),Full(user_xml))     
+      }
+
+      ret openOr (403,Map(),Empty)   
     }
 
     r
   } 
 
   def removeSession(): LiftResponse = {
-    if (true) {
+    val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] = 
+      if (User.loggedIn_?) {
 		User.logUserOut()
-    	true
-	} else false
+    	Full((200,Map(),Empty))
+	  } else Full((404,Map(),Empty))  
+	
+	r
   } 
 
 
   def allUsers(): LiftResponse = {      	
   	val users: NodeSeq = for (user <- User.findAll) yield userToXml(user)
-    val r: Elem = <users>{users}</users>
+    val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] = 
+      Full(if (User.loggedIn_?) (200,Map(),Full(<users>{users}</users>)) else (403,Map(),Empty))
+
 	r
   }
        
   def allUserMsgs(): LiftResponse = {
-    val r: Box[Elem] = 
+    val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
       for (user <- calcUser ?~  S.?("base_rest_api_err_param_not_found", "User");
 		val num = S.param("history").map(_.toInt) openOr 40;
         val lst = Mailbox.mostRecentMessagesFor(user.id, num))
-      yield {
-		<messages>{lst.flatMap{ case (msg, _, _) => msgToXml(msg)}}</messages>
-	  }
+      yield (200,Map(),Full(<messages>{lst.flatMap{ case (msg, reason, _) => msgToXml(msg) }}</messages>))
+
+    val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+      if(ret.isDefined) ret else Full((403,Map(),Empty))
 
     r
   }
@@ -165,11 +176,14 @@ object API2 extends ApiHelper with XmlHelper {
     def waitForAnswer: Box[List[(Message, MailboxReason)]] = 
       future.get(60L * 1000L)
 
-    val r: Box[NodeSeq] = 
+    val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] = 
       for (act <- restActor.is ?~ "No REST actor";
 		   val ignore = act ! ListenFor(future, 0 seconds);
            answer <- waitForAnswer ?~ "Didn't get an answer")
-      yield answer.flatMap{ case (msg, reason) => msgToXml(msg) }
+      yield (200,Map(),Full(<messages>{answer.flatMap{ case (msg, reason) => msgToXml(msg) }}</messages>))
+
+    val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+      if(ret.isDefined) ret else Full((403,Map(),Empty))
 
     r
   } 
@@ -180,225 +194,321 @@ object API2 extends ApiHelper with XmlHelper {
     def waitForAnswer: Box[List[(Message, MailboxReason)]] = 
       future.get(6L * 60L * 1000L)
 
-    var r: Box[NodeSeq] = 
-    for (act <- restActor.is ?~ "No REST actor";
-		 length <- S.param("timeout").map(_.toInt * 1000);
-         val ignore = act ! ListenFor(future, TimeSpan(length));
-         answer <- waitForAnswer ?~ "Didn't get an answer")
-    yield answer.flatMap{ case (msg, reason) => msgToXml(msg) }
+    val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =  
+      for (act <- restActor.is ?~ "No REST actor";
+		length <- S.param("timeout").map(_.toInt * 1000);
+        val ignore = act ! ListenFor(future, TimeSpan(length));
+        answer <- waitForAnswer ?~ "Didn't get an answer")
+      yield (200,Map(),Full(<messages>{answer.flatMap{ case (msg, reason) => msgToXml(msg) }}</messages>))
+
+    val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+      if(ret.isDefined) ret else Full((403,Map(),Empty))
 
     r
   }
 
   def allUserMsgs(tag: String): LiftResponse = {
-	val r: Box[Elem] =
-      for (tagName <- Box(List(tag));
-        tag <- Tag.find(By(Tag.name, tagName)))
+    val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =  
+      for (user <- User.currentUser;
+           tagName <- Box(List(tag));
+           tag <- Tag.find(By(Tag.name, tagName)))
       yield {
-	    <tag>
-		  <name>{tag.name}</name>
-		  <messages>{tag.findMessages.map(msgToXml(_))}</messages>
-	    </tag>
+	    val tag_xml = <tag><name>{tag.name}</name><messages>{tag.findMessages.map(msgToXml(_))}</messages></tag>
+	    (200,Map(),Full(tag_xml))
 	  }
 	
-	r  	
+    val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+      if(ret.isDefined) ret else Full((403,Map(),Empty))
+
+    r	
   } 
 
   def addMsg(): LiftResponse = {
 // Should return the created message
 
-    val r: Box[Boolean] =
-    for (user <- calcUser.map(_.id.is) ?~ S.?("base_rest_api_err_param_not_found", "User");
-         msg <- S.param("message") ?~ S.?("base_rest_api_err_missing_param", "message"))
-    yield {
-      val from: String = S.param("via") openOr "api"
-      val pool = for (poolName <- S.param("pool");
-                      p <- AccessPool.findPool(poolName,
+    val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] = 
+      for (user <- calcUser.map(_.id.is) ?~ S.?("base_rest_api_err_param_not_found", "User");
+        msg <- S.param("message") ?~ S.?("base_rest_api_err_missing_param", "message"))
+      yield {
+        val from: String = S.param("via") openOr "api"
+        val pool = for (poolName <- S.param("pool");
+                        p <- AccessPool.findPool(poolName,
                         S.param("realm") openOr AccessPool.Native)
-                      ) yield p.id.is
+                        ) yield p.id.is
 
-      val xml: Box[Elem] = S.param("metadata").flatMap(md =>
-        tryo(XML.loadString(md)))
+        val xml: Box[Elem] = 
+          S.param("metadata").flatMap(md =>
+            tryo(XML.loadString(md)))
 
-      Distributor !
-      Distributor.UserCreatedMessage(user, msg,
-                                     Tag.split(S.param("tags")
-                                               openOr ""),
-                                     millis,
-                                     xml,
-                                     from,
-                                     S.param("replyto").map(toLong),
-                                     pool)
-      true
-    }
+        Distributor !
+        Distributor.UserCreatedMessage(user, msg,
+                                       Tag.split(S.param("tags")
+                                                 openOr ""),
+                                       millis,
+                                       xml,
+                                       from,
+                                       S.param("replyto").map(toLong),
+                                       pool)
+        (200,Map(),Empty)
+      }
+
+    val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+      if(ret.isDefined) ret else Full((403,Map(),Empty))
+
     r
   }      
 
 
   def allFollowees(): LiftResponse = {
-    val followees: NodeSeq = calcUser.map(_.following)
-		.map(_.map(userToXml(_)))
-		.openOr(<no_followees/>)
+    val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+      for(user <- User.currentUser)
+      yield {
+        val followees: NodeSeq = 
+          calcUser.map(_.following)
+		                .map(_.map(userToXml(_)))
+		                .openOr(<no_followees/>)
+		(200,Map(),Full(<followees>{followees}</followees>))
+	  }
 
-    <followees>{followees}</followees>
+    val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+      if(ret.isDefined) ret else Full((403,Map(),Empty))
+
+    r
   }         
 
   def addFollowee(): LiftResponse = {
-    val r: Box[Node] =
-    for (user <- User.currentUser;
-         userName <- S.param("userId");
-         other <- User.findFromWeb(userName)
-    ) yield { 	
+    val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+      for (user <- User.currentUser;
+        userName <- S.param("userId");
+        other <- User.findFromWeb(userName))
+      yield { 	
 		user.follow(other)
-		userToXml(other)
-    }
+		(200,Map(),Full(userToXml(other)))
+      }
     
-	r
+    val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+      if(ret.isDefined) ret else Full((403,Map(),Empty))
+
+    r
   }   
 
   
   def removeFollow(userName: Box[String])(): LiftResponse = {
-    val r: Box[Boolean] =
-    for (user <- User.currentUser;
-         userName <- userName;
-         other <- User.findFromWeb(userName)
-    ) yield user.unfollow(other)
+    val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] = 
+      for (user <- User.currentUser;
+        userName <- userName;
+        other <- User.findFromWeb(userName))
+      yield {
+        user.unfollow(other)        
+        (200,Map(),Empty)
+      }
     
+    val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+      if(ret.isDefined) ret else Full((403,Map(),Empty))
+
     r
   }
 
   def allFollowers(): LiftResponse = {
-  	val followers: NodeSeq = calcUser.map(_.followers)
-		.map(_.map(userToXml(_)))
-		.openOr(<no_followers/>)
+    val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+      for(user <- User.currentUser)
+      yield {
+        val followees: NodeSeq = 
+          calcUser.map(_.following)
+		                .map(_.map(userToXml(_)))
+		                .openOr(<no_followees/>)
+		(200,Map(),Full(<followees>{followees}</followees>))
+	  }
 
-  	<followers>{followers}</followers>
+    val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+      if(ret.isDefined) ret else Full((403,Map(),Empty))
+
+    r
   }     
 
   def allTracking(): LiftResponse = {
-    val tracks: Box[NodeSeq] =
-    for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in"))
-    yield Tracking.findAll(By(Tracking.user, user)).flatMap(_.toXml)
+    val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+      for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in"))
+      yield {
+        val track_lst = Tracking.findAll(By(Tracking.user, user)).flatMap(_.toXml)
+        (200,Map(),Full(<tracks>{track_lst}</tracks>))
+      }
     
-	<tracks>{tracks}</tracks>
+    val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+      if(ret.isDefined) ret else Full((403,Map(),Empty))
+
+    r
   }   
 
   def addTracking(): LiftResponse = {
-    val ret: Box[Boolean] =
-    for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in");
-         toTrack <- (S.param("track") ?~ S.?("base_rest_api_err_missing_param", "track")) if toTrack.trim.length > 0)
-    yield
-    Tracking.create.user(user).regex(toTrack).save
+    val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] = 
+      for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in");
+           toTrack <- (S.param("track") ?~ S.?("base_rest_api_err_missing_param", "track")) if toTrack.trim.length > 0)
+      yield
+        (200,Map(),Full(<track>{Tracking.create.user(user).regex(toTrack).save}</track>))
 
-    ret
+	val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+	  if(ret.isDefined) ret else Full((403,Map(),Empty))
+
+	r
   }      
 
   def removeTracking(trackId: Box[String]): LiftResponse = {
-    val ret: Box[Boolean] =
-    for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in");
-         id <- trackId ?~ S.?("base_rest_api_err_missing_param", "id");
-         track <- Tracking.find(By(Tracking.id, id.toLong),
-                                By(Tracking.user, user)) ?~ "Couldn't find tracking item"
-    ) yield track.removed(true).save
+    val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+      for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in");
+           id <- trackId ?~ S.?("base_rest_api_err_missing_param", "id");
+           track <- Tracking.find(By(Tracking.id, id.toLong),
+                                  By(Tracking.user, user)) ?~ "Couldn't find tracking item")
+      yield {
+        track.removed(true).save
+        (200,Map(),Empty)
+      }
 
-    ret
+	val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+	  if(ret.isDefined) ret else Full((403,Map(),Empty))
+
+	r
   } 
 
   def allActions(): LiftResponse = {
-    val ret: Box[NodeSeq] =
-    for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in"))
-    yield user.performing.flatMap(_.toXml)
+    val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =       
+      for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in"))
+      yield (200,Map(),Full(<actions>{user.performing.flatMap(_.toXml)}</actions>))
 
-    ret
+	val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+	  if(ret.isDefined) ret else Full((403,Map(),Empty))
+
+	r
   }     
 
   def addAction(): LiftResponse = {
-    val ret: Box[NodeSeq] =
-    for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in");
-         name <- S.param("name") ?~ S.?("base_rest_api_err_missing_param", "name");
-         test <- S.param("test") ?~ S.?("base_rest_api_err_missing_param", "test");
-         action <- S.param("action") ?~ S.?("base_rest_api_err_missing_param", "action");
-         val a = Action.create.user(user).name(name);
-         a2 <- a.setTest(test);
-         a3 <- a.setAction(action)) yield a3.saveMe.toXml
+    val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+      for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in");
+           name <- S.param("name") ?~ S.?("base_rest_api_err_missing_param", "name");
+           test <- S.param("test") ?~ S.?("base_rest_api_err_missing_param", "test");
+           action <- S.param("action") ?~ S.?("base_rest_api_err_missing_param", "action");
+           val a = Action.create.user(user).name(name);
+           a2 <- a.setTest(test);
+           a3 <- a.setAction(action))
+       yield {
+         (200,Map(),Full(a3.saveMe.toXml))
+       }
 
-    ret
+	val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+	  if(ret.isDefined) ret else Full((403,Map(),Empty))
+
+	r
   } 
 
   def changeAction(actionId: Box[String]): LiftResponse = {
-    val ret: Box[Boolean] =
-    for (action <- findAction(actionId);
-         enabled <- S.param("enabled").map(toBoolean) ?~ S.?("base_rest_api_err_missing_param", "enable"))
-    yield action.disabled(!enabled).save
+    val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+      for (user <- User.currentUser;
+           action <- findAction(actionId);
+           enabled <- S.param("enabled").map(toBoolean) ?~ S.?("base_rest_api_err_missing_param", "enable"))
+      yield {
+        action.disabled(!enabled).save
+        (200,Map(),Full(action.toXml))
+      }
   
-    ret
+	val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+	  if(ret.isDefined) ret else Full((403,Map(),Empty))
+
+	r
   }
 
   def removeAction(actionId: Box[String]): LiftResponse = {
-    val ret: Box[Boolean] =
-    for (action <- findAction(actionId)) 
-    yield action.removed(true).save
+    val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =  
+      for (user <- User.currentUser;
+           action <- findAction(actionId)) 
+      yield {
+        action.removed(true).save
+        (200,Map(),Empty)
+      }
     
-    ret
+	val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+	  if(ret.isDefined) ret else Full((403,Map(),Empty))
+
+	r
   }              
 
   def allPools(): LiftResponse = {
-    val ret: Box[NodeSeq] =
-    for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in"))
-    yield AccessPool.findAll(In(AccessPool.id, Privilege.pool, By(Privilege.user, user)),
-                             OrderBy(AccessPool.id, Descending),
-                             MaxRows(20)).
-          flatMap(_.toXml)
-    ret
+    val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =  
+      for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in"))
+      yield {
+        val pools_lst = AccessPool.findAll(In(AccessPool.id,
+                                              Privilege.pool,
+                                              By(Privilege.user, user)),
+                                           OrderBy(AccessPool.id, Descending),
+                                           MaxRows(20)).flatMap(_.toXml)
+        (200,Map(),Full(<pools>{pools_lst}</pools>))
+      }
+
+	val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+	  if(ret.isDefined) ret else Full((403,Map(),Empty))
+
+	r
   }      
 
   def addPool(): LiftResponse = {
-    val r: Box[Boolean] =
-    for (user <- User.currentUser;
-         pool <- AccessPool.create.realm(AccessPool.Native).setName(S.param("poolName").openOr(""));
-         privilegeSaved = Privilege.create.pool(pool.saveMe).user(user).
-           permission(Permission.Admin).save
-    ) yield {
-      if (privilegeSaved) Distributor ! Distributor.AllowUserInPool(user.id.is, pool.id.is)
-      privilegeSaved
+    val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =   
+      for (user <- User.currentUser;
+           pool <- AccessPool.create.realm(AccessPool.Native).setName(S.param("poolName").openOr(""));
+           privilegeSaved = Privilege.create.pool(pool.saveMe)
+                                     .user(user)
+                                     .permission(Permission.Admin)
+                                     .save)
+      yield {
+        if (privilegeSaved) Distributor ! Distributor.AllowUserInPool(user.id.is, pool.id.is)
+        (200,Map(),Full(pool.toXml))
     }
     
-    r
+	val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+	  if(ret.isDefined) ret else Full((403,Map(),Empty))
+
+	r
   } 
 
   def addUserToPool(poolId: Box[String]): LiftResponse = {
-    val r: Box[Boolean] = 
-    for (adminUser <- User.currentUser;
-         poolName <- poolId ?~ S.?("base_rest_api_err_missing_param", "pool");
-         realm <- (S.param("realm") or Full(AccessPool.Native));
-         pool <- AccessPool.findPool(poolName, realm) ?~  S.?("base_rest_api_err_param_not_found", "Pool");
-         userName <- S.param("userId") ?~ S.?("base_rest_api_err_missing_param", "user");
-         user <- User.findFromWeb(userName) ?~  S.?("base_rest_api_err_param_not_found", "User");
-         permissionName <- (S.param("permission") or Full("Write"));
-         permission <- Box(Permission.valueOf(permissionName)) ?~ S.?("base_rest_api_err_param_not_found", "Permission")
-    ) yield if(Privilege.hasPermission(adminUser.id.is, pool.id.is, Permission.Admin)) {
-      val result = try {
-        Privilege.create.user(user).pool(pool).permission(permission).save
-      } catch {
-        case _: Exception => false
-      }
-      if (result) Distributor ! Distributor.AllowUserInPool(user.id.is, pool.id.is)
-      result
-    } else false // "User has no permission to administer pool"
+    val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] = 
+      for (adminUser <- User.currentUser;
+           poolName <- poolId ?~ S.?("base_rest_api_err_missing_param", "pool");
+           realm <- (S.param("realm") or Full(AccessPool.Native));
+           pool <- AccessPool.findPool(poolName, realm) ?~  S.?("base_rest_api_err_param_not_found", "Pool");
+           userName <- S.param("userId") ?~ S.?("base_rest_api_err_missing_param", "user");
+           user <- User.findFromWeb(userName) ?~  S.?("base_rest_api_err_param_not_found", "User");
+           permissionName <- (S.param("permission") or Full("Write"));
+           permission <- Box(Permission.valueOf(permissionName)) ?~ S.?("base_rest_api_err_param_not_found", "Permission"))
+      yield
+        if(Privilege.hasPermission(adminUser.id.is, pool.id.is, Permission.Admin)) {
+          val result = try {
+            Privilege.create.user(user).pool(pool).permission(permission).save
+          } catch {
+            case _: Exception => false
+          }
+
+          if (result) Distributor ! Distributor.AllowUserInPool(user.id.is, pool.id.is)
+            (200,Map(),Full(userToXml(user)))
+        } else (403,Map(),Empty) // "User has no permission to administer pool"
     
-    r
+	val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+	  if(ret.isDefined) ret else Full((403,Map(),Empty))
+
+	r
   }  
 
   def getConversation(conversationId: Box[String]): LiftResponse = {
-    val ret: Box[NodeSeq] =
-    for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in");
-         id <- conversationId.map(toLong) ?~ S.?("base_rest_api_err_missing_param", "id")
-    ) yield <conversation id={id.toString}>{
+    val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] = 
+      for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in");
+           id <- conversationId.map(toLong) ?~ S.?("base_rest_api_err_missing_param", "id"))
+      yield (200,Map(),Full(<conversation id={id.toString}>{
         Message.findAndPrime(By(Message.conversation, id),
                              OrderBy(Message.id, Ascending)).map(_.toXml)
-      }</conversation>
+      }</conversation>))
 
-    ret
+	val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+	  if(ret.isDefined) ret else Full((403,Map(),Empty))
+
+	r
   }
 
   private def findAction(actionId: Box[String]): Box[Action] =
