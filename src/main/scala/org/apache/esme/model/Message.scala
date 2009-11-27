@@ -210,14 +210,8 @@ class Message extends LongKeyedMapper[Message] {
 
 
   private[model] object text extends MappedText(this){
-    import scala.xml.transform.{RuleTransformer, RewriteRule}
     override lazy val asJsExp =
-      JE.Str(XML.loadString(is).map(new RuleTransformer(new RewriteRule {
-        override def transform(n: Node) = n match {
-          case e: Elem if "body" == e.label => <body>{digestedXHTML}</body>
-          case _ => n
-        }
-      })).mkString)
+      JE.Str(is.replaceFirst("(?<=<body>).*(?=</body>)", digestedXHTML.mkString))
   }
 
   object when extends MappedLong(this) {
