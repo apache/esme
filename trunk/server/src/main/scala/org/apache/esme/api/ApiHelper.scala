@@ -42,56 +42,31 @@ import Helpers._
 import scala.xml.{NodeSeq, Text, Elem, UnprefixedAttribute, Null, Node}  
   
 trait ApiHelper {  
-  implicit def boolToResponse(in: Boolean): LiftResponse =  
-  buildResponse(in, Empty, Text(""))  
-  
-  implicit def canBoolToResponse(in: Box[Boolean]): LiftResponse =  
-  buildResponse(in openOr false, in match {  
-      case Failure(msg, _, _) => Full(Text(msg))  
-      case _ => Empty  
-    }, Text(""))  
-  
-  implicit def pairToResponse(in: (Boolean, String)): LiftResponse =  
-  buildResponse(in._1, Full(Text(in._2)), Text(""))  
-  
-  implicit def nodeSeqToResponse(in: NodeSeq): LiftResponse =  
-  buildResponse(true, Empty, in)  
-  
-  implicit def listElemToResponse(in: Seq[Node]): LiftResponse =  
-  buildResponse(true, Empty, in)
+  /**
+   * This method converts from Rack/WSGI response format into the correct Lift response
+   */
 
-  implicit def elemToResponse(in: Elem): LiftResponse =
-  buildResponseFromElem(true, Empty, in)
-  
-  implicit def canNodeToResponse(in: Box[NodeSeq]): LiftResponse = in match {  
-    case Full(n) => buildResponse(true, Empty, n)  
-    case Failure(msg, _, _) => buildResponse(false, Full(Text(msg)), Text(""))  
-    case _ => buildResponse(false, Empty, Text(""))  
+  implicit def rackResponse(in: Box[Tuple3[Int,Map[String,String],Box[Elem]]]): LiftResponse = in match {
+    case Full((200,_,xml)) => buildResponse(true, Empty, xml openOr Text(""))
+    case Full((403,_,_)) => ForbiddenResponse()
+    case Full((404,_,_)) => NotFoundResponse()
+    case _ => InternalServerErrorResponse()   
   }  
   
   implicit def putResponseInBox(in: LiftResponse): Box[LiftResponse] = Full(in)
 
-  implicit def takeResponseOutOfBox(in: Box[LiftResponse]): LiftResponse =
-	in openOr false                                                   
-  
   /** 
    * The method that wraps the outer-most tag around the body 
-   */  
+   */   
+
   def createTag(in: NodeSeq): Elem  
   
   /** 
    * Build the Response based on the body 
    */  
+
   protected def buildResponse(success: Boolean, msg: Box[NodeSeq],  
-                            body: NodeSeq): LiftResponse = {
-    if(success) {
-      XmlResponse(createTag(body))
-    } else {
-      XmlResponse(createTag(body))  // Need to return a 401 response here
-    }
-  }  
-  
-  protected def buildResponseFromElem(success: Boolean, msg: Box[NodeSeq], body: Elem): LiftResponse = {
-  	XmlResponse(createTag(body))                                                                                   
-  }
+                            body: NodeSeq): LiftResponse = 
+    XmlResponse(createTag(body))
+
 }
