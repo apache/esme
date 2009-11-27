@@ -70,14 +70,14 @@ class Boot {
         Message, Mailbox, Tag,
         Relationship, MessageTag,
         AuthToken, UrlStore, Tracking,
-        Action, DidPerform, AccessPool,
+        Action, AccessPool,
         Privilege, UserAuth, UserCryptoSig)
     }
 
     Schemifier.schemify(true, Log.infoF _, User, ExtSession, Message,
       Mailbox, Tag,
       Relationship, MessageTag, AuthToken,
-      UrlStore, Tracking, Action, DidPerform,
+      UrlStore, Tracking, Action, 
       AccessPool, Privilege, UserAuth, UserCryptoSig)
 
     LiftRules.statelessDispatchTable.append {
