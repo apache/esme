@@ -316,6 +316,16 @@ class Message extends LongKeyedMapper[Message] {
               <xml:group> <a href={"/u/"+id}>{url}</a> </xml:group>)).
           getOrElse(Text("") )
 
+        case e: Elem if e.label == "em" =>
+          e.attribute("text").map(text =>
+            <em>{text}</em>).
+          getOrElse(e)
+        
+        case e: Elem if e.label == "strong" =>
+          e.attribute("text").map(text =>
+            <strong>{text}</strong>).
+          getOrElse(e)
+        
         case x => x
       })
   }
@@ -392,6 +402,12 @@ class Message extends LongKeyedMapper[Message] {
     tags.map(x => x.split(" ").mkString("_")) mkString " "
   }
 
+  /**
+   * Parse and format into XML
+   * Note that the text representation of the XML must be readable
+   * for clients that don't support markup formatting
+   * and is recommended to result in the same XML when parsed
+   */
   def setTextAndTags(in: String, tags: List[Tag], metaData: Box[Elem]): Box[Message] = {
     MsgParser.parseMessage(in).map{
       lst =>
@@ -403,8 +419,8 @@ class Message extends LongKeyedMapper[Message] {
               case MsgText(text) => Text(text)
               case URL(url) => <url id={url.id.toString}
                   url={url.url.toString} uniqueId={url.uniqueId.is} >{url.url.toString}</url>
-              case Emph(text) => <em>{text}</em>
-              case Strong(text) => <strong>{text}</strong>
+              case Emph(text) => <xml:group> <em text={text}>_{text}_</em> </xml:group>
+              case Strong(text) => <xml:group> <strong text={text}>*{text}*</strong> </xml:group>
             }
           }</body>
         <tags>{

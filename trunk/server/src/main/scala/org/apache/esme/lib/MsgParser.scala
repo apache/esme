@@ -228,15 +228,29 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
     case xs => MsgText(xs.mkString(""))
   }
 
-  lazy val emph: Parser[Emph] = '_' ~> rep1(not(spaceEOF) ~ not('_') ~ not(hashTag) ~ not(atName) ~> anyChar) <~ '_' ^^ {
-    case xs => Emph(xs.mkString)
+  lazy val begOrSpace: Parser[Int] = rep1(' ') ^^ {case lst => lst.length} | beginl ^^^ 0
+  lazy val spaceOrEnd: Parser[Int] = EOL ^^^ 0 | rep1(' ') ^^ {case lst => lst.length}
+
+  def peek[T](p: Parser[T]): Parser[T] = Parser { in =>
+    p(in) match {
+      case s @ Success(v, _) => Success(v, in)
+      case e @ Error(msg, _) => Error(msg, in)
+      case f @ Failure(msg, _) => Failure(msg, in)
+    }
+  }
+
+  lazy val beginl = Parser[Unit]{ in =>
+    if(in.pos.column==1) Success((), in) else Failure("", in)
   }
   
-  lazy val strong: Parser[Strong] = 
-  '*' ~> rep1(not(spaceEOF) ~ not('*') ~ not(hashTag) ~ not(atName) ~> anyChar) <~ '*' ^^ {
-    case xs => Strong(xs.mkString)
+  def surrounded(sep: String)(constructor: (String) => MsgInfo): Parser[MsgInfo] =
+    begOrSpace ~ accept(sep) ~> rep1(not(spaceEOF) ~ not(accept(sep)) ~ not(hashTag) ~ not(atName) ~> anyChar) <~ accept(sep) ~ peek(spaceOrEnd) ^^ {
+    case xs => constructor(xs.mkString)
   }
   
+  lazy val emph = surrounded("_"){Emph(_)}
+  lazy val strong = surrounded("*"){Strong(_)}
+
   lazy val EOF: Parser[Elem] = elem("EOF", isEof _)
 
   def perform(in: String): Box[Performances] = _perform(in) match {
