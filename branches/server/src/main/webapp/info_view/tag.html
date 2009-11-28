@@ -1,0 +1,44 @@
+<lift:surround with="default" at="content">
+    <script type="text/javascript" src="../scripts/esme_table_sorter.js">
+    </script>
+    <lift:TableSorterSnip/>
+    <lift:tag_display>
+        <div>
+            <fieldset>
+                <legend>
+                    <lift:loc>ui_tag_title</lift:loc> <b><tag:name/></b>
+                </legend>
+              <table id="esme-table" class="tablesorter">
+            <thead>
+                <tr>
+                    <th>
+                        <lift:loc>ui_tag_author</lift:loc>
+                    </th>
+                    <th>
+                        <lift:loc>ui_tag_message</lift:loc>
+                    </th>
+                    <th>
+                        <lift:loc>ui_tag_date</lift:loc>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                    <tag:each>
+                        <tr>
+                            <td>
+                                <item:author/>
+                            </td>
+                            <td>
+                                <item:body/>
+                            </td>
+                            <td>
+                                <item:date/>
+                            </td>
+                        </tr>
+                    </tag:each>
+                     </tbody>
+                </table>
+            </fieldset>
+        </div>
+    </lift:tag_display>
+</lift:surround>

@@ -1,0 +1,117 @@
+<lift:surround with="default" at="content">
+    <lift:Style.header/><lift:TableSorterSnip/><!-- STYLESHEETS <lift:Style.header /> -->
+    <link rel="stylesheet" type="text/css" href="../style/reset.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="../style/text.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="../style/grid.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="../style/layout.css" media="screen" />
+    <link type="text/css" href="../style/smoothness/jquery-ui-1.7.2.custom.css" rel="stylesheet" />
+    <!--[if IE 6]><link rel="stylesheet" type="text/css" href="../style/ie6.css" media="screen" /><![endif]--><!--[if gte IE 7]><link rel="stylesheet" type="text/css" href="../style/ie.css" media="screen" /><![endif]--><!-- JAVASCRIPT -->
+    <script type="text/javascript" src="../scripts/jquery-ui-1.7.2.custom.min.js">
+    </script>
+    <script type="text/javascript" src="../scripts/esme.js">
+    </script>
+    <script type="text/javascript" src="../scripts/esme_table_sorter.js">
+    </script>
+    <div class="demo">
+        <div class="ui-tabs ui-widget ui-widget-content ui-corner-all" id="tabs">
+            <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+                <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active">
+                    <a href="#tabs-1"><lift:loc>ui_stream_selected_stream</lift:loc></a>
+                </li>
+                <li class="ui-state-default ui-corner-top">
+                    <a href="#tabs-2"><lift:loc>ui_streams_filter</lift:loc></a>
+                </li>
+            </ul>
+            <div class="ui-tabs-panel ui-widget-content ui-corner-bottom" id="tabs-1">
+                <span id="StreamSpan">
+                    <lift:ignore>
+                        <!--
+                        The displayStreams snippet *MUST* appear on the page before
+                        the main snippet
+                        -->
+                    </lift:ignore>
+                    <lift:displayStream the_id="StreamSpan">
+                        <table id="esme-table" class="tablesorter">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <lift:loc>ui_streams_author</lift:loc>
+                                    </th>
+                                    <th>
+                                        <lift:loc>ui_streams_text</lift:loc>
+                                    </th>
+                                    <th>
+                                        <lift:loc>ui_streams_date</lift:loc>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <disp:item>
+                                    <tr>
+                                        <td>
+                                            <item:author/>
+                                        </td>
+                                        <td>
+                                            <item:text/>
+                                        </td>
+                                        <td>
+                                            <item:date/>
+                                        </td>
+                                    </tr>
+                                </disp:item>
+                            </tbody>
+                        </table>
+                    </lift:displayStream>
+                </span>
+            </div>
+            <div class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide" id="tabs-2">
+                <lift:streamFilters>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>
+                                    <lift:loc>ui_streams_filter_type</lift:loc>
+                                </th>
+                                <th>
+                                    <lift:loc>ui_streams_active</lift:loc>
+                                </th>
+                                <th>
+                                    <lift:loc>ui_streams_conditions</lift:loc>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tr>
+                            <td>
+                                <lift:loc>ui_streams_filter_by_resent</lift:loc>
+                            </td>
+                            <td>
+                                <main:filterResent/>
+                            </td>
+                            <td>
+                                <lift:loc>ui_streams_filter_resender</lift:loc>
+                            </td>
+                            <td>
+                                <main:resent/>
+                            </td>
+                            <br/>
+                        </tr>
+                        <tr>
+                            <td>
+                                <lift:loc>ui_streams_filter_by_pool</lift:loc>
+                            </td>
+                            <td>
+                                <main:filterPools/>
+                            </td>
+                            <td>
+                                <lift:loc>ui_streams_filter_pool</lift:loc>
+                            </td>
+                            <td>
+                                <main:pools/>
+                            </td>
+                        </tr>
+                    </table>
+                </lift:streamFilters>
+            </div>
+        </div>
+    </div><!-- End demo -->
+</lift:surround>

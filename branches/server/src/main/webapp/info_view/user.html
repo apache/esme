@@ -1,0 +1,111 @@
+<lift:surround with="default" at="content">
+    <lift:Style.header/><lift:TableSorterSnip/><!-- STYLESHEETS  -->
+    <link rel="stylesheet" type="text/css" href="../style/reset.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="../style/text.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="../style/grid.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="../style/layout.css" media="screen" />
+    <link type="text/css" href="../style/smoothness/jquery-ui-1.7.2.custom.css" rel="stylesheet" />
+    <!--[if IE 6]><link rel="stylesheet" type="text/css" href="../style/ie6.css" media="screen" /><![endif]--><!--[if gte IE 7]><link rel="stylesheet" type="text/css" href="../style/ie.css" media="screen" /><![endif]--><!-- JAVASCRIPT -->
+    <script type="text/javascript" src="../scripts/jquery-ui-1.7.2.custom.min.js">
+    </script>
+    <script type="text/javascript" src="../scripts/esme.js">
+    </script>
+    <script type="text/javascript" src="../scripts/esme_table_sorter.js">
+    </script>
+    <div class="demo">
+        <lift:user_info>
+            <div class="ui-tabs ui-widget ui-widget-content ui-corner-all" id="tabs">
+                <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+                    <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active">
+                        <a href="#tabs-1"><user:nicename/><lift:loc>ui_user_timeline</lift:loc></a>
+                    </li>
+                    <li class="ui-state-default ui-corner-top">
+                        <a href="#tabs-2"><user:nicename/><lift:loc>ui_user_messages</lift:loc></a>
+                    </li>
+                    <li class="ui-state-default ui-corner-top">
+                        <a href="#tabs-3"><lift:loc>ui_user_contacts</lift:loc></a>
+                    </li>
+                </ul>
+                <div class="ui-tabs-panel ui-widget-content ui-corner-bottom" id="tabs-1">
+                    <dl class="messages">
+                        <span id="following"><user:followButton/></span>
+                        <dd>
+                            <table id="esme-table" class="tablesorter">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <lift:loc>ui_user_author</lift:loc>
+                                        </th>
+                                        <th>
+                                            <lift:loc>ui_user_message</lift:loc>
+                                        </th>
+                                        <th>
+                                            <lift:loc>ui_user_date</lift:loc>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <user:timeline>
+                                        <tr>
+                                            <td>
+                                                <item:author/>
+                                            </td>
+                                            <td>
+                                                <item:body/>
+                                            </td>
+                                            <td>
+                                                <item:date/>
+                                            </td>
+                                        </tr>
+                                    </user:timeline>
+                                </tbody>
+                            </table>
+                        </dd>
+                    </dl>
+                </div>
+                <div class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide" id="tabs-2">
+                    <dl class="">
+                        <dd class="b-clouds">
+                            <table class="tablesorter">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <lift:loc>ui_user_message</lift:loc>
+                                        </th>
+                                        <th>
+                                            <lift:loc>ui_user_date</lift:loc>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <user:messages>
+                                    <tr>
+                                        <td>
+                                            <item:body/>
+                                        </td>
+                                        <td>
+                                            <item:date/>
+                                        </td>
+                                    </tr>
+                                </user:messages>
+                                </tbody>
+                            </table>
+                        </dd>
+                    </dl>
+                </div>
+                <div class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide" id="tabs-3">
+                    <dl class="">
+                        <dd class="b-contacts" style="height: 240px; overflow: auto">
+                            <b><lift:loc>ui_user_following</lift:loc></b>
+                            <lift:UserSnip.following user:userId=""/>
+                        </dd>
+                        <dd class="b-contacts" style="height: 240px; overflow: auto">
+                            <b><lift:loc>ui_user_followers</lift:loc></b>
+                            <lift:UserSnip.followers user:userId=""/>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </lift:user_info>
+    </div><!-- End demo -->
+</lift:surround>

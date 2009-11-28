@@ -1,0 +1,99 @@
+/* Caution! Ensure accessibility in print and other media types... */
+@media projection, screen { /* Use class for showing/hiding tab content, so that visibility can be better controlled in different media types... */
+   .ui-tabs-hide {
+       display: none !important;
+   }
+}
+
+/* Hide useless elements in print layouts... */
+@media print {
+   .tabs {
+       display: none;
+   }
+}
+
+/* Skin */
+.tabs {
+   list-style: none;
+   margin: 0 !important;
+	margin-left: 9px !important;
+   padding: 0 !important;
+}
+.tabs:after { /* clearing without presentational markup, IE gets extra treatment */
+   display: block;
+   clear: both;
+   content: " ";
+}
+.tabs li {
+  float: left;
+	list-style: none !important;
+  margin: 0 0 0 1px;
+}
+
+.tabs a, .tabs a span {
+   display: block;
+   padding: 0 10px;
+}
+.tabs a {
+   margin: 1px 0 0; /* position: relative makes opacity fail for disabled tab in IE */
+   padding: 6px 12px;
+   color: #fff;
+	background: #999;
+   font-weight: bold;
+   line-height: 1.2;
+   text-align: center;
+   text-decoration: none;
+   white-space: nowrap; /* required in IE 6 */    
+   outline: 0; /* prevent dotted border in Firefox */
+}
+.tabs .ui-tabs-selected a {
+   position: relative;
+   top: 1px;
+   z-index: 2;
+   margin-top: 0;
+   color: #111;
+	background: #e5e5e5;
+}
+.tabs a:hover { background: #666 !important; color: #fff;}
+li.new a { background: #61b4d6 !important;}
+li.new a:hover  { background: #498aa3 !important;}
+
+.ui-tabs-selected a:hover { background: #e5e5e5 !important;}
+
+.tabs a span {
+   width: 64px; /* IE 6 treats width as min-width */
+   min-width: 64px;
+   height: 18px; /* IE 6 treats height as min-height */
+   min-height: 18px;
+   padding-top: 6px;
+   padding-right: 0;
+}
+*>.tabs a span { /* hide from IE 6 */
+   width: auto;
+   height: auto;
+}
+.tabs .ui-tabs-selected a span {
+   padding-bottom: 1px;
+}
+
+
+.ui-tabs-disabled {
+   opacity: .4;
+   filter: alpha(opacity=40);
+}
+.ui-tabs-panel {
+   padding: 1em 8px;
+}
+.ui-tabs-loading em {
+   padding: 0 0 0 20px;
+   background: url("../images/loading.gif") no-repeat 0 50%;
+}
+
+/* Additional IE specific bug fixes... */
+* html .tabs { /* auto clear, @ IE 6 & IE 7 Quirks Mode */
+   display: inline-block;
+}
+*:first-child+html .tabs  { /* @ IE 7 Standards Mode - do not group selectors, otherwise IE 6 will ignore complete rule (because of the unknown + combinator)... */
+   display: inline-block;
+}
+

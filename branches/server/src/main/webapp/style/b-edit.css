@@ -1,0 +1,19 @@
+.b-edit .name
+{
+    font-size: 90%;
+
+    margin-left: 0.45em;
+
+    color: #fa801f;
+}
+
+
+.b-edit .bugs
+{
+    margin-top: 20px;
+}
+
+.b-edit .bugs p
+{
+    margin-top: 8px;
+}
