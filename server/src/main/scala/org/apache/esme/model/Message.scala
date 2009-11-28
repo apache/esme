@@ -72,6 +72,7 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
       (Map.empty, Nil)) {
       case ((map, left), id) =>
         if (idCache.contains(id) && (!user.isDefined || 
+                                     !idCache(id).pool.defined_? ||
                                      Privilege.findViewablePools(user.get.id.is).
                                                contains(idCache(id).pool.is))) {
           (map + (id -> idCache(id)), left)
