@@ -12,6 +12,7 @@
     </script>
     <script type="text/javascript" src="../scripts/esme_table_sorter.js">
     </script>
+    <script src="/scripts/display_messages.js" type="text/javascript"/>
     <div class="demo">
         <div class="ui-tabs ui-widget ui-widget-content ui-corner-all" id="tabs">
             <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
@@ -30,38 +31,10 @@
                         the main snippet
                         -->
                     </lift:ignore>
-                    <lift:displayStream the_id="StreamSpan">
-                        <table id="esme-table" class="tablesorter">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        <lift:loc>ui_streams_author</lift:loc>
-                                    </th>
-                                    <th>
-                                        <lift:loc>ui_streams_text</lift:loc>
-                                    </th>
-                                    <th>
-                                        <lift:loc>ui_streams_date</lift:loc>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <disp:item>
-                                    <tr>
-                                        <td>
-                                            <item:author/>
-                                        </td>
-                                        <td>
-                                            <item:text/>
-                                        </td>
-                                        <td>
-                                            <item:date/>
-                                        </td>
-                                    </tr>
-                                </disp:item>
-                            </tbody>
-                        </table>
-                    </lift:displayStream>
+                    <div class="b-list">
+                        <lift:displayStream the_id="StreamSpan"/>
+                        <lift:embed what="templates-hidden/timeline"/>
+                    </div>
                 </span>
             </div>
             <div class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide" id="tabs-2">

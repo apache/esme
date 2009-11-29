@@ -56,19 +56,18 @@ object ConversationMgr {
 
   def displayConversation(in: NodeSeq): NodeSeq = {
 
+    val jsId = "timeline_messages"                  
+
     val cid = S.param("cid").map(toLong).openOr(-1L)
 
     val msgs = Message.findAndPrime(By(Message.conversation, cid),
                                     OrderBy(Message.id, Descending))
 
-    msgs match {
-      case Nil => NodeSeq.Empty
-      case xs => bind("disp", in,
-                      "item" -> 
-                      (lst => xs.flatMap(i => bind("item", lst,
-                                                   "text" -> i.digestedXHTML,
-                                                   ))))
-    }
+    Script(
+      OnLoad(JsCrVar(jsId, JsArray(
+          msgs.map(m => JsObj(("message", m.asJs)) ) :_*)) &
+      JsFunc("displayMessages", JsVar(jsId), jsId).cmd)
+    )
 
   }
 
