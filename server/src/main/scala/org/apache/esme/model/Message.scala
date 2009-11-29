@@ -102,8 +102,24 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
     idCache.remove(msg.id)
   }
 
+  def indexMessage(msg: Message) {
+    for(session <- compass.map(_.openSession())) yield {
+      var tx:CompassTransaction = null
 
-  override def afterCommit = super.afterCommit
+      try {
+        tx = session.beginTransaction()
+        session.save(msg)
+        tx.commit();
+      } catch  {
+        case ce: CompassException =>
+          if (tx != null) tx.rollback();
+      } finally {
+        session.close();
+      }
+    }
+  }
+
+  override def afterCommit = indexMessage _ :: super.afterCommit
 
   private def saveTags(msg: Message) {
     msg.saveTheTags()
