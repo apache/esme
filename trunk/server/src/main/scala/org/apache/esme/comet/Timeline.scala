@@ -64,7 +64,7 @@ class Timeline extends CometActor {
       for ((id, reason, resent) <- messages;
            msg <- msgMap.get(id))
       yield (msg, reason, resent)
-    val jsId = "timeline_messages";
+    val jsId = "personal_timeline_messages";
 
     OnLoad(JsCrVar(jsId, JsArray(
         toDisplay.map{case (msg, reason, resent) =>
