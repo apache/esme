@@ -71,11 +71,14 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
     val (r1, left) = il.foldLeft[(Map[Long, Message], List[Long])](
       (Map.empty, Nil)) {
       case ((map, left), id) =>
-        if (idCache.contains(id) && (!user.isDefined || 
-                                     !idCache(id).pool.defined_? ||
-                                     Privilege.findViewablePools(user.get.id.is).
-                                               contains(idCache(id).pool.is))) {
-          (map + (id -> idCache(id)), left)
+        if (idCache.contains(id)) {
+          if (!user.isDefined || 
+              !idCache(id).pool.defined_? ||
+              Privilege.findViewablePools(user.get.id.is).
+                        contains(idCache(id).pool.is)) {
+            (map + (id -> idCache(id)), left)
+          } else
+            (map, left)
         } else (map, id :: left)
     }
 
