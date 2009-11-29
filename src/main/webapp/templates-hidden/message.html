@@ -68,7 +68,7 @@
                                                         </tr>
                                                     </thead>
                                                     <lift:comet type="Timeline"/>
-                                                    <tbody id="timeline_messages">
+                                                    <tbody id="personal_timeline_messages">
                                                         <tr id="message">
                                                             <td>
                                                                 <img id="avatar" src="/images/avatar.jpg" alt="Anonymous" width="50px"/>
@@ -120,54 +120,8 @@
                                         </dt>
                                         <dd>
                                             <div class="b-list">
-                                                <table>
-                                                    <thead>
-                                                        <tr>
-                                                            <th>
-                                                                <lift:loc>ui_messages_message_label_author</lift:loc>
-                                                            </th>
-                                                            <th>
-                                                                <lift:loc>ui_messages_message_label_message</lift:loc>
-                                                            </th>
-                                                            <th>
-                                                                <lift:loc>ui_messages_message_label_tags</lift:loc>
-                                                            </th>
-                                                        </tr>
-                                                    </thead>
-                                                    <lift:comet type="PublicTimeline"/>
-                                                    <tbody id="public_timeline_messages">
-                                                        <tr id="message">
-                                                            <td>
-                                                                <img id="avatar" src="/images/avatar.jpg" alt="Anonymous" width="50px"/>
-                                                                <div id="author">
-                                                                    -
-                                                                </div>
-                                                            </td>
-                                                            <td class="message">
-                                                                <div class="outer">
-                                                                    <div class="inner clear">
-                                                                        <p class="text" id="body">
-                                                                            -
-                                                                        </p>
-                                                                    </div>
-                                                                    <div class="metainfo">
-                                                                        <span id="pool">-</span>
-                                                                        <span id="reason">-</span>
-                                                                        <span id="when" class="date">-</span>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                            <td id="tags" class="tag">
-                                                                <p id="tag">
-                                                                    <a href="tag/tag1">-</a>
-                                                                </p>
-                                                                <p id="tag">
-                                                                    <a href="tag/tag2">-</a>
-                                                                </p>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
+                                                <lift:comet type="PublicTimeline"/>
+                                                <lift:embed what="templates-hidden/timeline"/>
                                             </div>
                                         </dd>
                                     </dl>
@@ -304,7 +258,7 @@
                                     </lift:UserSnip.links>
                                 </div>
                                     <div class="bugs">
-                                        <form action="/user_view/search" class="b-primay">
+                                        <form action="/info_view/search" class="b-primay">
                                             <input style="height: 20px; background: #c9d8ea;" name="term"/>
                                           <button class="btn" onclick="javascript:form.submit();">
                                             <lift:loc>ui_messages_search</lift:loc>
