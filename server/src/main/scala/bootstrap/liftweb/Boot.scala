@@ -108,7 +108,7 @@ class Boot {
         RewriteResponse(List("info_view", "conversation"), Map("cid" -> cid))
 
       case RewriteRequest(ParsePath("search" :: term :: Nil, "", _, _), _, _) =>
-        RewriteResponse(List("user_view", "search"), Map("term" -> term))
+        RewriteResponse(List("info_view", "search"), Map("term" -> term))
     }
 
     LiftRules.dispatch.append(UrlStore.redirectizer)
@@ -125,7 +125,6 @@ class Boot {
           Loc.Snippet("user_info", TagDisplay.userInfo))) ::
         Menu(Loc("about", List("static", "about"), S.?("base_menu_about"), Hidden)) ::
         Menu(Loc("tag", List("info_view", "tag"), "Tag", Hidden, Loc.Snippet("tag_display", TagDisplay.display))) ::
-        Menu(Loc("search", List("user_view", "search"), S.?("base_menu_search"), Hidden)) ::
         Menu(Loc("sign_up", List("signup"), S.?("base_menu_signup"),
           Snippet("signup", User.signupForm),
           Unless(User.loggedIn_? _, S.?("base_menu_sign_up_error")))) ::
@@ -139,7 +138,8 @@ class Boot {
         AuthMgr.menuItems :::
         AccessPoolMgr.menuItems :::
         StreamMgr.menuItems :::
-        ConversationMgr.menuItems
+        ConversationMgr.menuItems :::
+        SearchMgr.menuItems
 
     LiftRules.setSiteMap(SiteMap(entries: _*))
 
@@ -212,6 +212,7 @@ class Boot {
 
     // Dump information about session every 10 minutes
     SessionMaster.sessionWatchers = SessionInfoDumper :: SessionMaster.sessionWatchers
+    
   }
 
   private def makeUtf8(req: HTTPRequest) = {req.setCharacterEncoding("UTF-8")}

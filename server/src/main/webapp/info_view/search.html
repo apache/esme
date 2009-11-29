@@ -1,0 +1,11 @@
+<lift:surround with="default" at="content">
+  <script src="/scripts/display_messages.js" type="text/javascript"/>
+  
+  Search for <lift:searchTerm/>
+  <div class="b-list">
+    <lift:displaySearch/>
+    <lift:embed what="templates-hidden/timeline"/>
+  </div>
+
+</lift:surround>
+
