@@ -1,16 +1,12 @@
 <lift:surround with="default" at="content">
+    <script src="/scripts/display_messages.js" type="text/javascript"/>
     <fieldset>
         <legend>
             <lift:loc>ui_default_conversation</lift:loc>
         </legend>
-        <lift:displayConversation>
-            <disp:item>
-                <ul>
-                    <li>
-                        <item:text/>
-                    </li>
-                </ul>
-            </disp:item>
-        </lift:displayConversation>
+        <div class="b-list">
+            <lift:displayConversation/>
+            <lift:embed what="templates-hidden/timeline"/>
+        </div>
     </fieldset>
 </lift:surround>
