@@ -42,7 +42,6 @@ import org.openid4java.util._
 
 import org.apache.esme._
 import org.apache.esme.actor._
-import org.apache.esme.view._
 import java.net.URL
 import java.util.logging._
 import com.twitter.stats.Stats

@@ -37,7 +37,6 @@ import org.apache.esme._
 import model._
 import org.apache.esme.actor._
 import lib._
-import view._
 import snippet._
 import api._
 import net.liftweb._
