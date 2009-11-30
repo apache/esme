@@ -145,10 +145,6 @@ class Boot {
 
     S.addAround(ExtSession.requestLoans)
 
-    LiftRules.viewDispatch.append {
-      case "user_view" :: _ => Right(UserView)
-    }
-
     // REST APIs (new and old)
     LiftRules.dispatch.prepend(RestAPI.dispatch)
     LiftRules.dispatch.prepend(API2.dispatch)
