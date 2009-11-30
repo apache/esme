@@ -350,6 +350,20 @@ class Message extends LongKeyedMapper[Message] {
   }
 
   private lazy val originalXml = XML.loadString(text.is)
+  
+  def transformBody(ns: NodeSeq) = {
+    import scala.xml.transform.{RuleTransformer, RewriteRule}
+    toXml.map(new RuleTransformer(new RewriteRule{
+      override def transform(n: Node) = n match {
+        case e: Elem if "body" == e.label => <body>{ns}</body>
+        case _ => n
+      }
+    })).first
+  }
+  
+  lazy val toXHTML = transformBody(digestedXHTML)
+    
+  lazy val toPlainTextBody = transformBody(Text(getText))
 
   private [model] def saveTheTags() = synchronized {
     for (tag <- tagIds) {
