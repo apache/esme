@@ -41,7 +41,7 @@ import org.apache.esme._
 import model._
 import org.apache.esme.actor._
 
-import scala.xml.{NodeSeq, Text, Elem, XML}
+import scala.xml.{NodeSeq, Text, Elem, Node, XML}
 
 import scala.collection.mutable.ListBuffer
 import java.util.logging._
@@ -53,7 +53,12 @@ object RestAPI extends XMLApiHelper {
     case Req("api" :: "status" :: Nil, "", GetRequest) => status
     case Req("api" :: "login" :: Nil, "", PostRequest) => login
     case Req("api" :: "logout" :: Nil, "", GetRequest) => logout
-    case Req("api" :: "get_msgs" :: Nil, "", GetRequest) => getMsgs
+    case Req("api" :: "get_msgs" :: Nil, "", GetRequest) =>
+      () => getMsgs(_.toXml)
+    case Req("api" :: "get_xhtml_msgs" :: Nil, "", GetRequest) =>
+      () => getMsgs(_.toXHTML)
+    case Req("api" :: "get_text_msgs" :: Nil, "", GetRequest) =>
+      () => getMsgs(_.toPlainTextBody)
     case Req("api" :: "wait_for_msgs" :: Nil, "", GetRequest) =>
       waitForMsgs
       
@@ -313,7 +318,7 @@ object RestAPI extends XMLApiHelper {
     r
   }
 
-  def getMsgs(): LiftResponse = {
+  def getMsgs(format: Message => Node): LiftResponse = {
     val t: Box[NodeSeq] =
     for (tagName <- S.param("tag");
          tag <- Tag.find(By(Tag.name, tagName)))
@@ -322,7 +327,12 @@ object RestAPI extends XMLApiHelper {
     val r: Box[NodeSeq] = 
     t or (for (user <- calcUser ?~  S.?("base_rest_api_err_param_not_found", "User");
                val lst = Mailbox.mostRecentMessagesFor(user.id, 40))
-          yield lst.flatMap{ case (msg, why, _) => msg.toXml % why.attr})
+          yield lst.flatMap{ case (msg, why, _) =>
+            format(msg) match {
+              case e: Elem => e % why.attr
+              case x => x
+            }
+          })
     
     r
   }
