@@ -76,10 +76,10 @@ class RssFeed(user: User, rssURL: String, source: String, truncateChars: Int, ta
         // a hack to format text identically- difference in urls & trailing whitespace
         val lastMessageText = 
           Message.create.setTextAndTags(message.text, Nil, Empty).
-            get.getText.trim
+            get.body.trim
         msgs.takeWhile{ msg =>
           Message.create.setTextAndTags(msg.text, Nil, Empty).
-            get.getText.trim != lastMessageText
+            get.body.trim != lastMessageText
         }
       case None => msgs
     }
