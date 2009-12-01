@@ -207,7 +207,7 @@ abstract class TwitterAPI {
   }
   
   def userTimeline(userName: String): Box[TwitterResponse] = {
-    User.findFromWeb(userName).map(userTimeline) ?~ "User not found"
+    User.findFromWeb(userName).map(userTimeline) ?~ S.?("base_twitter_api_err_user_not_found")
   }
   
   def userTimeline(): Box[TwitterResponse] = {

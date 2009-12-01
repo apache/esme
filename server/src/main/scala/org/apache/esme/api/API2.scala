@@ -177,9 +177,9 @@ object API2 extends ApiHelper with XmlHelper {
       future.get(60L * 1000L)
 
     val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] = 
-      for (act <- restActor.is ?~ "No REST actor";
+      for (act <- restActor.is ?~ S.?("base_rest_api_err_no_rest_actor");
 		   val ignore = act ! ListenFor(future, 0 seconds);
-           answer <- waitForAnswer ?~ "Didn't get an answer")
+           answer <- waitForAnswer ?~ S.?("base_rest_api_err_no_answer"))
       yield (200,Map(),Full(<messages>{answer.flatMap{ case (msg, reason) => msgToXml(msg) }}</messages>))
 
     val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
@@ -358,7 +358,7 @@ object API2 extends ApiHelper with XmlHelper {
       for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in");
            id <- trackId ?~ S.?("base_rest_api_err_missing_param", "id");
            track <- Tracking.find(By(Tracking.id, id.toLong),
-                                  By(Tracking.user, user)) ?~ "Couldn't find tracking item")
+                                  By(Tracking.user, user)) ?~ S.?("base_rest_api_err_param_no_tracking"))
       yield {
         track.removed(true).save
         (200,Map(),Empty)
