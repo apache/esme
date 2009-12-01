@@ -186,7 +186,7 @@ object RestAPI extends XMLApiHelper {
     for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in");
          id <- S.param("trackid") ?~ S.?("base_rest_api_err_missing_param", "id");
          track <- Tracking.find(By(Tracking.id, id.toLong),
-                                By(Tracking.user, user)) ?~ "Couldn't find tracking item"
+                                By(Tracking.user, user)) ?~ S.?("base_rest_api_err_param_no_tracking")
     ) yield track.removed(true).save
 
     ret
@@ -275,9 +275,9 @@ object RestAPI extends XMLApiHelper {
       future.get(6L * 60L * 1000L)
 
     var r: Box[NodeSeq] = 
-    for (act <- restActor.is ?~ "No REST actor";
+    for (act <- restActor.is ?~ S.?("base_rest_api_err_no_rest_actor");
          val ignore = act ! ListenFor(future, 5 minutes);
-         answer <- waitForAnswer ?~ "Didn't get an answer")
+         answer <- waitForAnswer ?~ S.?("base_rest_api_err_no_answer"))
     yield answer.flatMap{ case (msg, reason) => msg.toXml % reason.attr}
 
     r
