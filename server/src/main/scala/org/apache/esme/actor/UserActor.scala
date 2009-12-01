@@ -284,7 +284,7 @@ class UserActor extends LiftActor {
 
             case ScalaInterpret => logger.info("Scala interpreter is disabled!")
             /*if (msg.source.is != "scala")
-              ScalaInterpreter ! ScalaInterpreter.ScalaExcerpt(userId, msg.id.is, msg.pool.is, msg.getText)
+              ScalaInterpreter ! ScalaInterpreter.ScalaExcerpt(userId, msg.id.is, msg.pool.is, msg.body)
             */
 
             case PerformFilter => Stats incr "messagesFiltered" // IGNORE

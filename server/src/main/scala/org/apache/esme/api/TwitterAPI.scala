@@ -128,7 +128,7 @@ abstract class TwitterAPI {
   def msgAttributes(msg: Message) = {
     Map("created_at" -> tf.format(new java.util.Date(msg.when.is)),
     "id" -> msg.id.is,
-    "text" -> msg.getText.trim,
+    "text" -> msg.body.trim,
     "source" -> msg.source,
     "truncated" -> false,
     "favorited" -> false,
