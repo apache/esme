@@ -44,10 +44,14 @@ import scala.xml._
 
 import java.util.Date
 import java.text.{DateFormat,SimpleDateFormat}
+import java.util.logging._
+
 /**
  * Manage the sitemap and related snippets for Access Pools
  */
 object AccessPoolMgr {
+  val logger: Logger = Logger.getLogger("org.apache.esme.lib.AccessPoolMgr")
+  logger.setLevel(Level.INFO)
   def loggedIn_? = User.loggedIn_?
 
   val ifIsLoggedIn = If(loggedIn_? _, strFuncToFailMsg(() => S.?("base_error_not_logged_in")))
@@ -85,6 +89,7 @@ object AccessPoolMgr {
               if(privilegeSaved && user.isDefined) {
                 Distributor ! Distributor.AllowUserInPool(user.get.id.is, p.id.is)
                 S.notice(S.?("base_pool_msg_new_pool"))
+                logger.info("ACCESS: " + S.?("base_pool_msg_new_pool") + " " + name)
               } else
                 S.error(S.?("base_error_general"))
             case _ => S.error(S.?("base_error_general"))
