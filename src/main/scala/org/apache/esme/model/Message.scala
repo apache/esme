@@ -245,14 +245,7 @@ class Message extends LongKeyedMapper[Message] {
      }
    }
  
-  lazy val body: String = {
-  	val org = originalXml
-
-    (org \ "body").map(_.child map {
-      case e: Elem => e.text
-      case x => x.text
-    }).first.first
-  }
+  lazy val body: String = originalXml \ "body" text
 
   lazy val metaData: String = {
     val org = originalXml
@@ -363,7 +356,7 @@ class Message extends LongKeyedMapper[Message] {
   
   lazy val toXHTML = transformBody(digestedXHTML)
     
-  lazy val toPlainTextBody = transformBody(Text(getText))
+  lazy val toPlainTextBody = transformBody(Text(body))
 
   private [model] def saveTheTags() = synchronized {
     for (tag <- tagIds) {

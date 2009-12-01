@@ -91,7 +91,7 @@ object HttpSender extends LiftActor with GetPoster {
     replace("%f", followerName).
     replace("%i", user.imageUrl).
     replace("%w", user.wholeName).
-    replace("%s", msg.getText).
+    replace("%s", msg.body).
     replace("%t", msg.getTags).
     replace("%d", msg.getWhen.toString)
   }
