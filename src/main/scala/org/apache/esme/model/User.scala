@@ -60,7 +60,9 @@ object User extends User with KeyedMetaMapper[Long, User] {
     Message.create.author(in.id).
     when(Helpers.timeNow.getTime).
     source("profile").
-    setTextAndTags("User " + in.nickname + " changed profile. Name: " + in.wholeName + ", Image: " + in.imageUrl, Nil, Empty).
+    
+    setTextAndTags(S.?("base_user_msg_change", in.nickname, in.wholeName, in.imageUrl), Nil, Empty).
+ //   setTextAndTags("User " + in.nickname + " changed profile. Name: " + in.wholeName + ", Image: " + in.imageUrl, Nil, Empty).
      foreach{ msg =>
       if (msg.save) {
         Distributor ! Distributor.AddMessageToMailbox(in.id, msg, ProfileReason(in.id))
