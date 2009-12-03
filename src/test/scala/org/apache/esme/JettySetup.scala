@@ -62,7 +62,11 @@ object JettyTestServer {
 
   lazy val start = {
     server_.start()
-    User.create.nickname("hash").save
+    val session = new LiftSession(Helpers.randomString(20), "", Empty)
+
+    S.initIfUninitted(session) {
+      User.create.nickname("hash").save
+    }
   }
 
   def stop() = {
