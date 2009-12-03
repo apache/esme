@@ -45,7 +45,7 @@ class ApiSpecsAsTest extends JUnit3(ApiSpecs)
 object ApiSpecsRunner extends ConsoleRunner(ApiSpecs)
 
 object ApiSpecs extends Specification with TestKit {
- JettyTestServer.start 
+  JettyTestServer.start
 
   val baseUrl = JettyTestServer.urlFor("")
 
@@ -53,7 +53,10 @@ object ApiSpecs extends Specification with TestKit {
     def fail(msg: String): Nothing = ApiSpecs.this.fail(msg)
   }
 
-  val theUser = User.createAndPopulate.nickname("api_test").saveMe
+  val session = new LiftSession(Helpers.randomString(20), "", Empty)
+
+  val theUser = S.initIfUninitted(session) {User.createAndPopulate.nickname("api_test").saveMe}
+
   val token = {
     val toke = AuthToken.create.user(theUser).saveMe
     toke.uniqueId.is
@@ -88,6 +91,6 @@ object ApiSpecs extends Specification with TestKit {
 
 
   }
-  
+
 
 }
