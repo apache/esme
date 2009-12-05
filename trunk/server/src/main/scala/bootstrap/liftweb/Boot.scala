@@ -149,7 +149,7 @@ class Boot {
     LiftRules.dispatch.prepend(API2.dispatch)
 
     LiftRules.httpAuthProtectedResource.prepend {
-      case (ParsePath(TwitterAPI.ApiPath :: _, _, _, _)) => Full(AuthRole("user"))
+      case ParsePath(l, _, _, _) if l startsWith TwitterAPI.ApiPath => Full(AuthRole("user"))
     }
 
     LiftRules.authentication = TwitterAPI.twitterAuth
