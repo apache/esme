@@ -169,6 +169,7 @@ abstract class TwitterAPI {
   
   def userData(user: User) = {
     val lastMsg = Message.findAll(By(Message.author, user),
+                                  By(Message.pool, Empty),
                                   OrderBy(Message.id, Descending),
                                   MaxRows(1))
     userAttributes(user) +
@@ -200,6 +201,7 @@ abstract class TwitterAPI {
   def userTimeline(user: User): TwitterResponse = {
     val statusList = 
       Message.findAll(By(Message.author, user),
+                      By(Message.pool, Empty),
                       MaxRows(20),
                       OrderBy(Message.id, Descending)).
         map(msgData _)
@@ -235,7 +237,8 @@ abstract class TwitterAPI {
   def publicTimeline(): Box[TwitterResponse] = {
     val statusList =
       Message.findAll(OrderBy(Message.id, Descending),
-                      MaxRows(20)).
+                      MaxRows(20),
+                      By(Message.pool, Empty)).
         map(msgData _)
     Full(Right(Map("statuses" -> ("status", statusList) )))
   }
