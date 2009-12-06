@@ -67,6 +67,6 @@ trait ApiHelper {
 
   protected def buildResponse(success: Boolean, msg: Box[NodeSeq],  
                             body: NodeSeq): LiftResponse = 
-    XmlResponse(createTag(body))
+    XmlResponse(createTag(body)) 
 
 }
