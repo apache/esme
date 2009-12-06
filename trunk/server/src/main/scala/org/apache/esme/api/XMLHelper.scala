@@ -43,12 +43,19 @@ trait XmlHelper {
   protected def userToXml(user: User): Elem =
 <user><id>{user.id.toString}</id><nickname>{user.niceName}</nickname><image>{user.image}</image><whole_name>{user.wholeName}</whole_name></user> 
 	
-  protected def msgToXml(msg: Message): Elem = 
-<message>
+  protected def msgToXml(msg: Message): Elem = { 
+    val replyToTag: Elem =
+      if(msg.conversation.defined_?) <replyto>{msg.conversation}</replyto>
+      else <replyto></replyto>
+
+    val ret: Elem = <message>
   <id>{msg.id.toString}</id>
   <date>{toInternetDate(msg.when.is)}</date>
   <source>{msg.source.sourceAttr.getOrElse(Text(""))}</source>
   <body>{msg.body}</body>
-  <tags>{msg.tags}</tags>
-</message>        
+  <tags>{msg.tags}</tags>{replyToTag}
+</message>
+
+   ret        
+  }
 }

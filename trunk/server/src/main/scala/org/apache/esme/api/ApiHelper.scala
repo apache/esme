@@ -48,6 +48,7 @@ trait ApiHelper {
 
   implicit def rackResponse(in: Box[Tuple3[Int,Map[String,String],Box[Elem]]]): LiftResponse = in match {
     case Full((200,_,xml)) => buildResponse(true, Empty, xml openOr Text(""))
+    case Full((204,_,_)) => NoContentResponse()
     case Full((403,_,_)) => ForbiddenResponse()
     case Full((404,_,_)) => NotFoundResponse()
     case _ => InternalServerErrorResponse()   
