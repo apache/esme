@@ -47,8 +47,14 @@
         <repository>
             <id>opendmk</id>
             <name>Java Dynamic Management Kit</name>
-            <url>http://maven.tigase.org/</url>
-        </repository>
+            <url>http://maven.tigase.org/</url>    
+        </repository>                              
+		<repository>
+		  <id>Apache Repo</id>
+		  <name>Apache repository for Derby 10.5.1.1</name>
+		  <url>http://people.apache.org/repo/m1-ibiblio-rsync-repository</url>
+		  <layout>legacy</layout>
+		</repository>
     </repositories>
 
     <pluginRepositories>
@@ -141,17 +147,23 @@
             <artifactId>compass</artifactId>
             <version>${compass.version}</version>
         </dependency>
-
         <dependency>
             <groupId>postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>8.2-507.jdbc3</version>
-        </dependency>
+        </dependency>   
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
-            <version>10.2.2.0</version>
-        </dependency>
+            <version>10.5.1.1</version>
+        </dependency>       
+      <!--
+        <dependency>
+	        <groupId>com.h2database</groupId>
+	        <artifactId>h2</artifactId>
+	        <version>1.2.124</version>
+	    </dependency>
+	  -->  
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
