@@ -177,10 +177,13 @@ object API2 extends ApiHelper with XmlHelper {
       future.get(60L * 1000L)
 
     val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] = 
-      for (act <- restActor.is ?~ "No REST actor";
+      for (act <- restActor.is ?~ S.?("base_rest_api_err_no_rest_actor");
 		   val ignore = act ! ListenFor(future, 0 seconds);
-           answer <- waitForAnswer ?~ "Didn't get an answer")
-      yield (200,Map(),Full(<messages>{answer.flatMap{ case (msg, reason) => msgToXml(msg) }}</messages>))
+	       answer <- waitForAnswer ?~ S.?("base_rest_api_err_no_answer")) 
+      yield { 
+        if(answer.isEmpty) (204,Map(),Empty)          
+        else (200,Map(),Full(<messages>{answer.flatMap{ case (msg, reason) => msgToXml(msg) }}</messages>))
+      }
 
     val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
       if(ret.isDefined) ret else Full((403,Map(),Empty))
@@ -199,7 +202,10 @@ object API2 extends ApiHelper with XmlHelper {
 		length <- S.param("timeout").map(_.toInt * 1000);
         val ignore = act ! ListenFor(future, TimeSpan(length));
         answer <- waitForAnswer ?~ "Didn't get an answer")
-      yield (200,Map(),Full(<messages>{answer.flatMap{ case (msg, reason) => msgToXml(msg) }}</messages>))
+      yield {
+        if(answer.isEmpty) (204,Map(),Empty)          
+        else (200,Map(),Full(<messages>{answer.flatMap{ case (msg, reason) => msgToXml(msg) }}</messages>))
+      }
 
     val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
       if(ret.isDefined) ret else Full((403,Map(),Empty))
@@ -230,7 +236,7 @@ object API2 extends ApiHelper with XmlHelper {
       for (user <- calcUser.map(_.id.is) ?~ S.?("base_rest_api_err_param_not_found", "User");
         msg <- S.param("message") ?~ S.?("base_rest_api_err_missing_param", "message"))
       yield {
-        val from: String = S.param("via") openOr "api"
+        val from: String = S.param("via") openOr "api2"
         val pool = for (poolName <- S.param("pool");
                         p <- AccessPool.findPool(poolName,
                         S.param("realm") openOr AccessPool.Native)
@@ -342,8 +348,8 @@ object API2 extends ApiHelper with XmlHelper {
 
   def addTracking(): LiftResponse = {
     val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] = 
-      for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in");
-           toTrack <- (S.param("track") ?~ S.?("base_rest_api_err_missing_param", "track")) if toTrack.trim.length > 0)
+      for (user <- User.currentUser;
+           toTrack <- S.param("track") if toTrack.trim.length > 0)
       yield
         (200,Map(),Full(<track>{Tracking.create.user(user).regex(toTrack).save}</track>))
 
@@ -355,10 +361,10 @@ object API2 extends ApiHelper with XmlHelper {
 
   def removeTracking(trackId: Box[String]): LiftResponse = {
     val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
-      for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in");
-           id <- trackId ?~ S.?("base_rest_api_err_missing_param", "id");
+      for (user <- User.currentUser;
+           id <- trackId;
            track <- Tracking.find(By(Tracking.id, id.toLong),
-                                  By(Tracking.user, user)) ?~ "Couldn't find tracking item")
+                                  By(Tracking.user, user)) ?~ S.?("base_rest_api_err_param_no_tracking"))
       yield {
         track.removed(true).save
         (200,Map(),Empty)
@@ -498,12 +504,18 @@ object API2 extends ApiHelper with XmlHelper {
 
   def getConversation(conversationId: Box[String]): LiftResponse = {
     val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] = 
-      for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in");
-           id <- conversationId.map(toLong) ?~ S.?("base_rest_api_err_missing_param", "id"))
-      yield (200,Map(),Full(<conversation id={id.toString}>{
-        Message.findAndPrime(By(Message.conversation, id),
-                             OrderBy(Message.id, Ascending)).map(_.toXml)
-      }</conversation>))
+      for (user <- User.currentUser;
+           id <- conversationId.map(toLong))
+      yield {
+        val messages = 
+          Message.findAndPrime(By(Message.conversation, id),
+                               OrderBy(Message.id, Ascending))
+        
+        if(messages.isEmpty)
+          (404,Map(),Empty)
+        else
+          (200,Map(),Full(<conversation id={id.toString}>{messages.map(_.toXml)}</conversation>))
+      }
 
 	val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
 	  if(ret.isDefined) ret else Full((403,Map(),Empty))
