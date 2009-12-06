@@ -213,7 +213,8 @@ object OpenIDAuthModule extends AuthModule {
               RedirectResponse(from, S responseCookies :_*)
 
             case (Full(id), _) =>
-              S.error(S.?("base_user_err_openid_not_reg",id.getIdentifier()))
+              findOrCreate(id.getIdentifier())
+              //S.error(S.?("base_user_err_openid_not_reg",id.getIdentifier()))
               RedirectResponse(from, S responseCookies :_*)
 
 
@@ -245,11 +246,12 @@ object OpenIDAuthModule extends AuthModule {
   }
   
   def findOrCreate(openId: String): User =
-  UserAuth.find(By(UserAuth.authType, moduleName), By(UserAuth.authKey, openId)).flatMap(_.user.obj) match {
-    case Full(user) => user
-    case _ => val user = User.createAndPopulate
-      UserAuth.create.authType(moduleName).user(user).authKey(openId).save
-      user
+    UserAuth.find(By(UserAuth.authType, moduleName), By(UserAuth.authKey, openId)).flatMap(_.user.obj) match {
+      case Full(user) => user
+      case _ => val user = User.createAndPopulate.nickname(openId).saveMe
+        UserAuth.create.authType(moduleName).user(user).authKey(openId).save
+        User.logUserIn(user)
+        user
   }
 
   def unapply(openId: Identifier): Option[User] =
