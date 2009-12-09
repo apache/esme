@@ -60,6 +60,7 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
 
   private val idCache = new LRU[Long, Message](cacheSize)
 
+  private val stemmer:PorterStemmer = new PorterStemmer()
 
   /**
    * A list of messages is requested from a simple cache
@@ -214,10 +215,73 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
     logger.fine("Modified query: " + modifiedQueryParams)
     super.findMapDb(dbId, modifiedQueryParams:_*)(f)
   }
+
+  // Compounds a bunch of (String, Int) elements so that [(String1, Int1), (String2, Int2)] becomes [(StringN, Int1+Int2)]
+  //  if String1 and String2 have the same stem (according to the Porter stemming algorithm). StringN is the shorter of
+  //  String1 and String2
+  private[model] def compoundStem(llsi: List[(String,Int)]): List[(String,Int)] = {
+    val stemCache = llsi.foldLeft[Map[String, String]](Map.empty){
+      case (map, (str, _)) => if (map.contains(str)) map
+        else map + (str -> stemWord(str))
+    }
+    def shortWord(a: String, b: String): String =
+    if (a.length < b.length) a else b
+
+    val stemToWord: Map[String, String] = Map(
+      // create a map from stem to all the words that
+      // stem down to that word
+      stemCache.toList.
+      foldLeft[Map[String, List[String]]](Map.empty){
+        case (map, (word, stem)) =>
+          map + (stem -> (word :: map.getOrElse(stem, Nil)))
+      }.toList.
+      // convert the list of stemmed words to the shortest word
+      // matching the stem
+      map{
+        case (key, value) => (key, value.reduceLeft(shortWord))
+      } :_*)
+
+    llsi.foldLeft[Map[String, Int]](Map.empty){
+      case (map, (str, cnt)) =>
+        val sw = stemCache(str)
+        map + (sw -> (map.getOrElse(sw, 0) + cnt))
+    }.toList.map{ case (stem, cnt) => (stemToWord(stem), cnt)}
+  }
+  
+  def centreWeightedTopNWordFreqs(messages: List[Message], n:Int):List[(String, Float)] = {
+    val weights = compoundStem(messages.flatMap(_.wordFrequencies))
+
+    // Start with the top N tags
+    val sortedWeights = weights.sort(_._2 > _._2).take(n)
+
+    // And create a normalized cente-weighted list, e.g. smallest, small, Larger, BIG, *HUGE*, BIG, Larger, small, smallest
+    TagUtils.normalize(TagUtils.everyEven(sortedWeights).reverse ::: TagUtils.everyOdd(sortedWeights))
+  }
+
+  /**
+   * Stem an incoming string
+   */
+  def stemWord(in: String): String = stemmer.synchronized {
+    stemmer.setCurrent(in)
+    stemmer.stem()
+    stemmer.getCurrent()
+  }
+  
+  def transformBody(ns: NodeSeq) = {
+    import scala.xml.transform.{RuleTransformer, RewriteRule}
+    toXml.map(new RuleTransformer(new RewriteRule{
+      override def transform(n: Node) = n match {
+        case e: Elem if "body" == e.label => <body>{ns}</body>
+        case _ => n
+      }
+    })).first
+  }
 }
 
 @Searchable
 class Message extends LongKeyedMapper[Message] {
+  import Message._
+  
   def getSingleton = Message // what's the "meta" server
   def primaryKeyField = id
 
@@ -343,16 +407,6 @@ class Message extends LongKeyedMapper[Message] {
   }
 
   private lazy val originalXml = XML.loadString(text.is)
-  
-  def transformBody(ns: NodeSeq) = {
-    import scala.xml.transform.{RuleTransformer, RewriteRule}
-    toXml.map(new RuleTransformer(new RewriteRule{
-      override def transform(n: Node) = n match {
-        case e: Elem if "body" == e.label => <body>{ns}</body>
-        case _ => n
-      }
-    })).first
-  }
   
   lazy val toXHTML = transformBody(digestedXHTML)
     
@@ -516,55 +570,4 @@ class Message extends LongKeyedMapper[Message] {
     tags.map((_, 1)).toList
   }
 
-  def centreWeightedTopNWordFreqs(messages: List[Message], n:Int):List[(String, Float)] = {
-    val weights = compoundStem(messages.flatMap(_.wordFrequencies))
-
-    // Start with the top N tags
-    val sortedWeights = weights.sort(_._2 > _._2).take(n)
-
-    // And create a normalized cente-weighted list, e.g. smallest, small, Larger, BIG, *HUGE*, BIG, Larger, small, smallest
-    TagUtils.normalize(TagUtils.everyEven(sortedWeights).reverse ::: TagUtils.everyOdd(sortedWeights))
-  }
-
-  /**
-   * Stem an incoming string
-   */
-  private val stemmer:PorterStemmer = new PorterStemmer()
-  def stemWord(in: String): String = stemmer.synchronized {
-    stemmer.setCurrent(in)
-    stemmer.stem()
-    stemmer.getCurrent()
-  }
-
-  // Compounds a bunch of (String, Int) elements so that [(String1, Int1), (String2, Int2)] becomes [(StringN, Int1+Int2)]
-  //  if String1 and String2 have the same stem (according to the Porter stemming algorithm). StringN is the shorter of
-  //  String1 and String2
-  private[model] def compoundStem(llsi: List[(String,Int)]): List[(String,Int)] = {
-    val stemCache = llsi.foldLeft[Map[String, String]](Map.empty){
-      case (map, (str, _)) => if (map.contains(str)) map
-        else map + (str -> stemWord(str))
-    }
-    def shortWord(a: String, b: String): String =
-    if (a.length < b.length) a else b
-
-    val stemToWord: Map[String, String] = Map(
-      // create a map from stem to all the words that
-      // stem down to that word
-      stemCache.toList.
-      foldLeft[Map[String, List[String]]](Map.empty){
-        case (map, (word, stem)) =>
-          map + (stem -> (word :: map.getOrElse(stem, Nil)))
-      }.toList.
-      // convert the list of stemmed words to the shortest word
-      // matching the stem
-      map{
-        case (key, value) => (key, value.reduceLeft(shortWord))
-      } :_*)
-
-    llsi.foldLeft[Map[String, Int]](Map.empty){
-      case (map, (str, cnt)) =>
-        val sw = stemCache(str)
-        map + (sw -> (map.getOrElse(sw, 0) + cnt))
-    }.toList.map{ case (stem, cnt) => (stemToWord(stem), cnt)}
-  }
 }
