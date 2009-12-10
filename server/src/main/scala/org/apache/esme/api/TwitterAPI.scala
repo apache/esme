@@ -218,8 +218,7 @@ abstract class TwitterAPI {
   
   def replies(user: User): TwitterResponse = {
     val statusList = 
-      Message.findAll(By(Message.author, user),
-                      NotNullRef(Message.conversation),
+      Message.findAll(In(Message.replyTo, Message.id, By(Message.author, user)),
                       MaxRows(20),
                       OrderBy(Message.id, Descending)).
         map(msgData _)
@@ -231,7 +230,7 @@ abstract class TwitterAPI {
   }
 
   def directMessages(): Box[TwitterResponse] = {
-    Full(Left("direct_messages" -> Nil))
+    Full(Right(Map("direct-messages" -> ("direct_message", Nil))))
   }
 
   def publicTimeline(): Box[TwitterResponse] = {
