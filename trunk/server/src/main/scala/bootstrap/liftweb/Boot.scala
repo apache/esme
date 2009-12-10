@@ -259,7 +259,7 @@ object DBVendor extends ConnectionManager {
     } else {
       val driverName = Props.mode match {
         case Props.RunModes.Test => "jdbc:derby:memory:esme_test_db;create=true"
-        case _ => "jdbc:derby:memory:esme_db;create=true"
+        case _ => "jdbc:derby:esme_db;create=true"
       }
 
       val dm = DriverManager.getConnection(driverName)
