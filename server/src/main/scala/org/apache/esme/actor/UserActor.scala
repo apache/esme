@@ -139,8 +139,6 @@ class UserActor extends LiftActor {
                                   By(Mailbox.user, userId));
                rtm <- Message.find(mb.message.is)) 
                  if (rtm.pool == msg.pool) msg.replyTo(rt)
-                 // workaround for compiler bug:
-                 else null
 
           msg.saveMe
           Stats incr "userMessagesCreated"
