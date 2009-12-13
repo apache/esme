@@ -101,7 +101,7 @@ object PopStatsActor extends LiftActor {
       reply(topList)
       
       case Expire => {
-        val (live, expired) = queue.partition(_.when > now)
+        val (live, expired) = queue.partition(_.when + period > now)
         expired.foreach(stats -= _.id)
         ActorPing.schedule(this, Expire, refreshInterval)
         live
