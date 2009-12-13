@@ -30,27 +30,29 @@ class PopStatsActorSpecsAsTest extends JUnit3(PopStatsActorSpecs)
 object PopStatsActorSpecsRunner extends ConsoleRunner(PopStatsActorSpecs)
 
 object PopStatsActorSpecs extends Specification {
+  val SendTimeout = 500
+  val ExpireTimeout = 3000
   
   "Popularity Stats" should {
     "Update top hits after inrcementing statistics" in {
-      PopStatsActor !? (100, PopStatsActor.StartStats(ResendStat, 2000, 1000))
+      PopStatsActor !? (SendTimeout, PopStatsActor.StartStats(ResendStat, ExpireTimeout, 1000))
 
-      PopStatsActor !? (100, PopStatsActor.IncrStats(ResendStat, 1))
-      val stats1 = PopStatsActor !? PopStatsActor.TopStats(ResendStat, 5, 2000)
+      PopStatsActor !? (SendTimeout, PopStatsActor.IncrStats(ResendStat, 1))
+      val stats1 = PopStatsActor !? PopStatsActor.TopStats(ResendStat, 5, ExpireTimeout)
       stats1 must beEqualTo(List(1 -> 1))
 
-      PopStatsActor !? (100, PopStatsActor.IncrStats(ResendStat, 3))
-      val stats2 = PopStatsActor !? PopStatsActor.TopStats(ResendStat, 5, 2000)
+      PopStatsActor !? (SendTimeout, PopStatsActor.IncrStats(ResendStat, 3))
+      val stats2 = PopStatsActor !? PopStatsActor.TopStats(ResendStat, 5, ExpireTimeout)
       stats2 must beEqualTo(List(3 -> 1, 1 -> 1))
 
-      PopStatsActor !? (100, PopStatsActor.IncrStats(ResendStat, 1))
-      val stats3 = PopStatsActor !? PopStatsActor.TopStats(ResendStat, 5, 2000)
+      PopStatsActor !? (SendTimeout, PopStatsActor.IncrStats(ResendStat, 1))
+      val stats3 = PopStatsActor !? PopStatsActor.TopStats(ResendStat, 5, ExpireTimeout)
       stats3 must beEqualTo(List(1 -> 2, 3 -> 1))
     }
     
     "Information should expire after timeout" in {
-      Thread.sleep(2000)
-      val stats = PopStatsActor !? PopStatsActor.TopStats(ResendStat, 5, 2000)
+      Thread.sleep(ExpireTimeout)
+      val stats = PopStatsActor !? PopStatsActor.TopStats(ResendStat, 5, ExpireTimeout)
       stats must beEqualTo(Nil)
     }
   }
