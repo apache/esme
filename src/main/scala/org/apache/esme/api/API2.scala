@@ -535,7 +535,7 @@ object API2 extends ApiHelper with XmlHelper {
   	S.param("user").flatMap(User.findFromWeb) or
   	User.currentUser 
 
-  def createTag(in: NodeSeq) = <api_response>{in}</api_response>
+  def createTag(in: NodeSeq) = <api>{in}</api>
   
   private def buildActor(userId: Long): RestActor = {
     val ret = new RestActor
@@ -562,12 +562,16 @@ object API2 extends ApiHelper with XmlHelper {
         Distributor ! Distributor.Unlisten(userId, this)
           
       case UserActor.MessageReceived(msg, reason) =>
-        msgs = (msg, reason) :: msgs
-        listener.foreach {
-          who =>
-            who.satisfy(msgs)
-            listener = Empty
-            msgs = Nil
+        reason match {
+          case r: RegularReason => {}
+          case _ =>
+            msgs = (msg, reason) :: msgs                          
+            listener.foreach {
+              who =>
+                who.satisfy(msgs)
+                listener = Empty
+                msgs = Nil
+            }     
         }
       
       case ReleaseListener =>
