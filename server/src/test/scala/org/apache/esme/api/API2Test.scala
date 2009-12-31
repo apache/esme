@@ -47,17 +47,29 @@ object Api2SpecsRunner extends ConsoleRunner(Api2Specs)
 object Api2Specs extends Specification with TestKit {
   JettyTestServer.start
 
-  val baseUrl = JettyTestServer.urlFor("/api2/")
+  val baseUrl = JettyTestServer.urlFor("/api2/")  
 
-  val session = new LiftSession(Helpers.randomString(20), "", Empty)    
-
-  val theUser = S.initIfUninitted(session) {User.createAndPopulate.nickname("api_test").saveMe}    
+  // Note "api_test" user is special. It has been set up with the integration-admin
+  // role in the test.default.props file.
+                                                                    
+  val theUser = find_or_create_user("api_test")    
   val token = {
     val toke = AuthToken.create.user(theUser).saveMe
     toke.uniqueId.is
   }           
 
-  val post_session = post("session", "token" -> token)
+  val post_session = post("session", "token" -> token) 
+
+  def find_or_create_user(userName: String): User = {
+    val users = User.findByNickname(userName)
+
+    if(users.length > 0)
+      users.head
+    else { 
+      val session = new LiftSession(Helpers.randomString(20), "", Empty)                          
+      S.initIfUninitted(session) {User.createAndPopulate.nickname(userName).saveMe}
+    }
+  }
 
   def sleep(wait: Long): Box[Boolean] = {
     Thread.sleep(wait)
@@ -71,6 +83,7 @@ object Api2Specs extends Specification with TestKit {
           session <- post_session
         } {
           (session.xml \ "session" \ "user" \ "id").text must be equalTo (theUser.id.toString)
+          (session.xml \ "session" \ "user" \ "nickname").text must be equalTo (theUser.niceName) 
           session.code must be equalTo 200
         }
       }
@@ -126,7 +139,7 @@ object Api2Specs extends Specification with TestKit {
         for{
           session <- post_session
           users <- session.get("users")
-        } {
+        } {                         
           users.code must be equalTo 200
         }
       }
@@ -134,6 +147,123 @@ object Api2Specs extends Specification with TestKit {
       "with no session returns 403 (forbidden)" in {
         for (session_res <- get("users")) {
           session_res.code must be equalTo 403
+        }
+      }
+    } 
+
+    "/users POST" in {
+      "with valid session" in {
+        for{
+          session <- post_session        
+          added_user <- session.post("users",
+            "nickname" -> "test_user5",
+            "password" -> "test_password")  
+          all_users <- session.get("users") 
+        } {                                                                                                        
+          added_user.code must be equalTo 200
+          (all_users.xml \ "users") must \\(<nickname>test_user5</nickname>)
+        }
+      }
+
+      "with a valid session but no role authorization returns 403 (forbidden)" in {
+		val new_user = find_or_create_user("tester")
+		val new_toke = AuthToken.create.user(new_user).saveMe
+		val new_token = new_toke.uniqueId.is        
+		
+        for{     
+		  sess <- post("session", "token" -> new_token)
+		  added_user <- sess.post("users",
+            "nickname" -> "test_user3",
+            "password" -> "test_password")
+        } {                 
+          added_user.code must be equalTo 403
+        }
+      } 
+
+      "with no session returns 403 (forbidden)" in {
+        for{
+          added_user <- post("users",
+            "nickname" -> "test_user",
+            "password" -> "test_password")
+        } {
+          added_user.code must be equalTo 403
+        }
+      }
+    }
+
+    "/users/USERID/tokens GET" in {
+      val new_user = find_or_create_user("tester")
+	  val new_toke = AuthToken.create.user(new_user).saveMe
+	  val new_token = new_toke.uniqueId.is
+
+      "with valid session" in {
+        for{
+          session <- post_session          
+          tokens <- session.get("users/"+new_user.id+"/tokens") 
+        } {                                                                                                        
+          tokens.code must be equalTo 200
+          tokens.xml must \\(<id>{new_token}</id>)
+        }
+      }
+
+      "with valid session but no role authorization returns 403 (forbidden)" in {
+		val new_user = find_or_create_user("tester")
+		val new_toke = AuthToken.create.user(new_user).saveMe
+		val new_token = new_toke.uniqueId.is        
+		
+        for{     
+		  sess <- post("session", "token" -> new_token)
+		  tokens <- sess.get("users/"+theUser.id+"/tokens")
+        } {                 
+          tokens.code must be equalTo 403
+        }
+      } 
+
+      "with no session returns 403 (forbidden)" in {
+        for{
+          tokens <- get("users/"+theUser.id+"/tokens")
+        } {                     
+          tokens.code must be equalTo 403
+        }
+      }
+    }        
+
+    "/users/USERID/tokens POST" in {
+      val new_user = find_or_create_user("tester")
+
+      "with valid session" in {
+        for{
+          session <- post_session          
+          new_token <- session.post("users/"+new_user.id+"/tokens",
+            "description" -> "test token")
+          tokens <- session.get("users/"+new_user.id+"/tokens")
+        } {                                                                                                        
+          new_token.code must be equalTo 200
+          new_token.xml must \\(<description>test token</description>) 
+          tokens.xml must \\(<description>test token</description>)
+        }
+      }
+
+      "with valid session but no role authorization returns 403 (forbidden)" in {
+		val new_user = find_or_create_user("tester")
+		val new_toke = AuthToken.create.user(new_user).saveMe
+		val new_token = new_toke.uniqueId.is        
+		
+        for{     
+		  sess <- post("session", "token" -> new_token)
+		  new_token <- sess.post("users/"+theUser.id+"/tokens",
+		    "description" -> "test token 2")
+        } {                 
+          new_token.code must be equalTo 403
+        }
+      } 
+
+      "with no session returns 403 (forbidden)" in {
+        for{
+          new_token <- post("users/"+theUser.id+"/tokens",
+		    "description" -> "test token 2")
+        } {                     
+          new_token.code must be equalTo 403
         }
       }
     }
@@ -147,6 +277,9 @@ object Api2Specs extends Specification with TestKit {
           mess_res <- session.get("user/messages")
         } {    
           mess_res.code must be equalTo 200
+
+          // Message structure   
+          (mess_res.xml \ "messages" \ "message" \ "author" \ "id").text must be equalTo (theUser.id.toString)
         }
       }
 
@@ -315,25 +448,26 @@ object Api2Specs extends Specification with TestKit {
       }
     }
 
-    /*
-    *   "/user/tracks/TRACKID DELETE" in {
-    *     "with valid session" in {
-    *       for {
-    *         sess <- post_session
-    *         create_track <- sess.post("user/tracks","track"->".*")
-    *         res <- sess.delete("user/tracks/1")
-    *       } {
-    *         res.code must be equalTo 200
-    *       }
-    *     }
-    *
-    *     "with no session returns 403 (forbidden)" in {
-    *       for(session_res <- delete("user/tracks/1")) {
-    *         session_res.code must be equalTo 403
-    *       }
-    *     }
-    *   }
-    */
+// fragile   
+    "/user/tracks/TRACKID DELETE" in {
+      "with valid session" in {
+        for {
+          sess <- post_session
+          create_track <- sess.post("user/tracks","track"->"hello")
+          res <- sess.delete("user/tracks/2")
+        } {           
+          res.code must be equalTo 200
+        }
+      }
+
+      "with no session returns 403 (forbidden)" in {
+        for {
+          res <- delete("user/tracks/1")
+        } {
+          res.code must be equalTo 403
+        }
+      }
+    }
 
     "/user/actions GET" in {
       "with valid session" in {
@@ -394,25 +528,27 @@ object Api2Specs extends Specification with TestKit {
     *   }
     */
 
-    /*
-    *   "/user/actions/ACTIONID DELETE" in {
-    *     "with valid session" in {
-    *       for {
-    *         sess <- post_session
-    *         res <- sess.delete("user/actions/1")
-    *       } {
-    *         res.code must be equalTo 200
-    *       }
-    *     }
-    *
-    *     "with no session returns 403 (forbidden)" in {
-    *       for(res <- delete("user/actions/1")) {
-    *         res.code must be equalTo 403
-    *       }
-    *     }
-    *   }
-    */
-
+// Brittle, brittle, brittle
+    "/user/actions/ACTIONID DELETE" in {
+      "with valid session" in {
+        for {
+          sess <- post_session 
+          create_action <- sess.post("user/actions",
+                                     "name" -> "Test action",
+                                     "test" -> "every 5 mins",
+                                     "action" -> "rss:http://blog.com/feed.rss")
+          res <- sess.delete("user/actions/2")
+        } {                     
+          res.code must be equalTo 200
+        }
+      }
+ 
+      "with no session returns 403 (forbidden)" in {
+        for(res <- delete("user/actions/1")) {
+          res.code must be equalTo 403
+        }
+      }
+    }
 
 // This is very ... shall we say ... brittle
     "conversations/CONVERSATIONID GET" in {
@@ -420,14 +556,12 @@ object Api2Specs extends Specification with TestKit {
         for{
           sess <- post_session 
           mess_res <- sess.post("user/messages", "message"->"test")
-          wait <- sleep(1000)
-          messages <- sess.get("user/messages")                    
+          wait <- sleep(1000)                                
           mess_res <- sess.post("user/messages",
                                 "message" -> "test_convo",
-                                "replyto" -> 42)
-          wait2 <- sleep(1000)
-          messages2 <- sess.get("user/messages")
-          res <- sess.get("conversations/42")
+                                "replyto" -> 9)
+          wait2 <- sleep(1000)                 
+          res <- sess.get("conversations/9")
         } {
           res.code must be equalTo 200
         }
@@ -455,7 +589,7 @@ object Api2Specs extends Specification with TestKit {
           sess <- post_session
           res <- sess.get("pools")
         } {
-          res.code must be equalTo 200
+          res.code must be equalTo 200      
         }
       }
 
@@ -485,25 +619,31 @@ object Api2Specs extends Specification with TestKit {
 
     "/pools/POOLID/users POST" in {
 
-      /*
-      *     "with valid session" in {
-      *       for {
-      *         sess <- post_session
-      *         res <- sess.post("pools/1/users",{"realm"->"test_realm";
-      *                                                "userId"->1;
-      *                                                "permission"->"Write"})
-      *       } {
-      *         res.code must be equalTo 200
-      *       }
-      *     }
-      */
+      "with valid session" in {
+        for {
+          sess <- post_session
+          pool_res <- sess.post("pools", "poolName" -> "test_pool2")
+          res <- sess.post("pools/test_pool2/users","userId"->2)
+        } {
+          res.code must be equalTo 200
+        }
+      }
+
+//      "a pool name that already exists returns 403 (forbidden)" in {
+//        for {
+//          sess <- post_session
+//          pool_res <- sess.post("pools", "poolName" -> "test_pool2")
+//          res <- sess.post("pools", "poolName" -> "test_pool2")
+//        } {
+//          sess.code must be equalTo 403
+//        }
+//      }
 
       "with no session returns 403 (forbidden)" in {
-        for (res <- post("pools/1/users", {
-          "realm" -> "test_realm";
-          "userId" -> 2;
-          "permission" -> "Write"
-        })) {
+        for (res <- post("pools/1/users",
+                         "realm" -> "test_realm",
+                         "userId" -> 2,
+                         "permission" -> "Write")) {
           res.code must be equalTo 403
         }
       }

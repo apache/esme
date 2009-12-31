@@ -170,7 +170,13 @@ object User extends User with KeyedMetaMapper[Long, User] {
   def currentUserId: Box[String] = curUserId.is
 
   private object curUser extends RequestVar[Box[User]](currentUserId.flatMap(id => getSingleton.find(id)))
+  
+  private object currentRole extends RequestVar[Box[String]](currentUser.flatMap(u => Props.get("role."+u.niceName)))
 
+  def checkRole(role: String): Boolean = {
+    val userRole:String = currentRole.openOr("")
+    userRole.equals(role)
+  }
 
   def currentUser: Box[User] = curUser.is
 }
