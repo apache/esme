@@ -142,18 +142,21 @@ class Boot {
 
     LiftRules.setSiteMap(SiteMap(entries: _*))
 
-    S.addAround(ExtSession.requestLoans)
+    S.addAround(ExtSession.requestLoans)          
+
+    // API security rules
+    LiftRules.dispatch.append(API2.authorizationRules)
 
     // REST APIs (new and old)
     LiftRules.dispatch.prepend(RestAPI.dispatch)
-    LiftRules.dispatch.prepend(API2.dispatch)
+    LiftRules.dispatch.append(API2.dispatch)
 
     LiftRules.httpAuthProtectedResource.prepend {
       case ParsePath(l, _, _, _) if l startsWith TwitterAPI.ApiPath => Full(AuthRole("user"))
     }
 
     LiftRules.authentication = TwitterAPI.twitterAuth
-
+                               
     LiftRules.dispatch.append(TwitterXmlAPI.dispatch)
     LiftRules.dispatch.append(TwitterJsonAPI.dispatch)
 
