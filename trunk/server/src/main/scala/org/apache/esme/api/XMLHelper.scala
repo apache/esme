@@ -52,10 +52,25 @@ trait XmlHelper {
   <id>{msg.id.toString}</id>
   <date>{toInternetDate(msg.when.is)}</date>
   <source>{msg.source.sourceAttr.getOrElse(Text(""))}</source>
-  <body>{msg.body}</body>
+  <body>{msg.body}</body>  
+  {
+    msg.author.obj.map(u =>
+      <author><nickname>{u.niceName}</nickname><id>{u.id.toString}</id></author>
+    ) openOr Text("")
+  }
   <tags>{msg.tags}</tags>{replyToTag}
 </message>
 
    ret        
+  } 
+
+  protected def tokenToXml(t: AuthToken): Elem = {
+    <token><id>{t.uniqueId}</id><description>{t.description}</description></token>
   }
-}
+}         
+
+// TODO:
+//  1. Add user to the msgToXml() function
+//  2. Add trackToXml()
+//  3. Add actionToXml()
+//  4. Add poolToXml()

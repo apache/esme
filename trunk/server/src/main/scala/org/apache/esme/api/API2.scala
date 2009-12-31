@@ -20,16 +20,33 @@
  */
 
 /*
- * API2.scala
+ * API2.scala                        
  *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
+ * The structure of the API2 object is a dispatch rule table,
+ * which is a match against the Lift request object Req(). The match
+ * determines a function to call. The convention in our case is that
+ * the function has a return type of
+ * Box[Tuple3[Int,Map[String,String],Box[Elem]]]
+ * 
+ * This return type is inspired by Rack/WSGI and is implicitly
+ * converted to the correct type of Lift Response by the ApiHelper
+ * trait.
+ *
+ * The semantic structure of the response type
+ * Box[Tuple3[Int,Map[String,String],Box[Elem]]]
+ * is a Box (an Empty is converted to a 500 response) containing
+ * a 3-tuple, containing in order:
+ *   1. An Int representing the response code
+ *   2. A Map(String,String) representing response headers
+ *   3. A Box[Elem] containing the response body.
+ *
  */            
 
 package org.apache.esme.api
 
 import net.liftweb._
-import http._
+import http._  
+import auth._
 import actor._
 import rest._
 import util._
@@ -49,13 +66,24 @@ import java.util.logging._
 object API2 extends ApiHelper with XmlHelper {
   val logger: Logger = Logger.getLogger("org.apache.esme.api")
 
+  def authorizationRules: LiftRules.DispatchPF = {
+    case Req("api2" :: "users" :: Nil, _, PostRequest)
+      if !User.checkRole("integration-admin") => unAuthorized  
+    case Req("api2" :: "users" :: _ :: tokens :: Nil, _, GetRequest)
+      if !User.checkRole("integration-admin") => unAuthorized
+    case Req("api2" :: "users" :: _ :: tokens :: Nil, _, PostRequest)
+      if !User.checkRole("integration-admin") => unAuthorized
+  }
+
   def dispatch: LiftRules.DispatchPF = {
     case Req("api2" :: "session" :: Nil, _, GetRequest) => allSessions
     case Req("api2" :: "session" :: Nil, _, PostRequest) => addSession          
     case Req("api2" :: "session" :: Nil, _, DeleteRequest) => removeSession                      
 	
-    case Req("api2" :: "users" :: Nil, _, GetRequest) => allUsers
-// Add a method to get detail for a specific user
+    case Req("api2" :: "users" :: Nil, _, GetRequest) => allUsers 
+    case Req("api2" :: "users" :: Nil, _, PostRequest) => addUser  
+    case Req("api2" :: "users" :: id :: "tokens" :: Nil, _, GetRequest) => () => allTokens(id)
+    case Req("api2" :: "users" :: id :: "tokens" :: Nil, _, PostRequest) => () => addToken(id)
                                                                           
     case Req("api2" :: "user" :: "messages" :: Nil, _, GetRequest)
  	  if S.param("timeout").isDefined => waitForMsgs
@@ -64,8 +92,8 @@ object API2 extends ApiHelper with XmlHelper {
     case Req("api2" :: "user" :: "messages" :: Nil, _, GetRequest) => getNewMsgs    
     case Req("api2" :: "user" :: "messages" :: Nil, _, PostRequest) => () => addMsg
 
-    case Req("api2" :: "user" :: "tags" :: tag :: "messages" :: Nil, _, GetRequest)
-  		    => () => allUserMsgs(tag)                                                 
+    case Req("api2" :: "tags" :: tag :: "messages" :: Nil, _, GetRequest)
+  		    => () => allTagMsgs(tag)                                                 
 
     case Req("api2" :: "user" :: "followees" :: Nil, _, GetRequest) => allFollowees         
     case Req("api2" :: "user" :: "followees" :: Nil, _, PostRequest) => addFollowee
@@ -76,13 +104,11 @@ object API2 extends ApiHelper with XmlHelper {
 
     case Req("api2" :: "user" :: "tracks" :: Nil, _, GetRequest) => allTracking
     case Req("api2" :: "user" :: "tracks" :: Nil, _, PostRequest) => addTracking
-// Add a method to get detail for a specific track (or messages for the track?)
     case Req("api2" :: "user" :: "tracks" :: trackId :: Nil, _, DeleteRequest) => () 
 			=> removeTracking(Box(List(trackId)))
 
     case Req("api2" :: "user" :: "actions" :: Nil, _, GetRequest) => allActions 
     case Req("api2" :: "user" :: "actions" :: Nil, _, PostRequest) => addAction
-// Add a method to get detail of a specific action
     case Req("api2" :: "user" :: "actions" :: actionId :: Nil, _, PutRequest) => () 
 			=> changeAction(Box(List(actionId)))
     case Req("api2" :: "user" :: "actions" :: actionId :: Nil, _, DeleteRequest) => () 
@@ -90,19 +116,11 @@ object API2 extends ApiHelper with XmlHelper {
                                                                                 
     case Req("api2" :: "pools" :: Nil, _, GetRequest) => allPools 
     case Req("api2" :: "pools" :: Nil, _, PostRequest) => () => addPool 
-// Add a method to delete pool
-// Add a method to get the detail for a pool
-// Add a method to get the list of users in a pool
     case Req("api2" :: "pools" :: poolId :: "users" :: Nil, _, PostRequest) => () 
 			=> addUserToPool(Box(List(poolId))) 
-// Add a method to delete a user from a pool   
-// Add a method to get the messages from a pool
-// Add a method to post a new message to a pool
     
-// Add a method to get list of conversations
     case Req("api2" :: "conversations" :: conversationId :: Nil, _, GetRequest) => () 
 			=> getConversation(Box(List(conversationId)))
-// Add a method to post a message to a conversation??                          
   }
 
   def allSessions(): LiftResponse = {
@@ -128,7 +146,8 @@ object API2 extends ApiHelper with XmlHelper {
       } yield {
         User.logUserIn(user)
         val myActor = buildActor(user.id)
-        restActor(Full(myActor))
+        messageRestActor(Full(myActor))   
+        userRoles(AuthRole("integration-admin"))
         (200,Map(),Full(user_xml))     
       }
 
@@ -156,10 +175,67 @@ object API2 extends ApiHelper with XmlHelper {
 
 	r
   }
+
+  def addUser(): LiftResponse = {
+    val moduleName: String = "upw"
+    
+    val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] = {
+      for{
+        nickName <- S.param("nickname")
+        passWord <- S.param("password")      
+      } yield {
+       	User.findByNickname(nickName) match {
+          case user :: _ => (200,Map(),Full(userToXml(user)))
+          case _ =>
+            val user = User.createAndPopulate.nickname(nickName).saveMe                                
+            val salt = randomString(10)
+	        val md5 = Helpers.md5(salt + passWord)
+	        UserAuth.create
+	                .user(user)
+	                .authType(moduleName)
+	                .authKey(nickName)
+	                .authData(salt+";"+md5)
+	                .save
+            (200,Map(),Full(userToXml(user)))
+        }
+      }
+    }
+
+    r
+  } 
+
+  def allTokens(userId: String): LiftResponse = {
+    val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] = {
+      for{
+        user <- User.find(userId)
+      } yield {                  
+        val tokens: NodeSeq = user.authTokens.map(t => tokenToXml(t)) 
+        (200,Map(),Full(<tokens>{tokens}</tokens>))
+      }
+    }
+
+    r
+  }
+
+  def addToken(userId: String): LiftResponse = {
+    val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] = {
+      for{
+        user <- User.find(userId)
+      } yield {
+        val token: AuthToken = AuthToken.create
+          .user(user)
+          .description(S.param("description"))
+          .saveMe
+        (200,Map(),Full(tokenToXml(token)))
+      }
+    }
+
+    r
+  }
        
   def allUserMsgs(): LiftResponse = {
     val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
-      for (user <- calcUser ?~  S.?("base_rest_api_err_param_not_found", "User");
+      for (user <- User.currentUser;
 		val num = S.param("history").map(_.toInt) openOr 40;
         val lst = Mailbox.mostRecentMessagesFor(user.id, num))
       yield (200,Map(),Full(<messages>{lst.flatMap{ case (msg, reason, _) => msgToXml(msg) }}</messages>))
@@ -177,11 +253,11 @@ object API2 extends ApiHelper with XmlHelper {
       future.get(60L * 1000L)
 
     val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] = 
-      for (act <- restActor.is ?~ S.?("base_rest_api_err_no_rest_actor");
+      for (act <- messageRestActor.is ?~ S.?("base_rest_api_err_no_rest_actor");
 		   val ignore = act ! ListenFor(future, 0 seconds);
 	       answer <- waitForAnswer ?~ S.?("base_rest_api_err_no_answer")) 
       yield { 
-        if(answer.isEmpty) (204,Map(),Empty)          
+        if(answer.isEmpty) (304,Map(),Empty)          
         else (200,Map(),Full(<messages>{answer.flatMap{ case (msg, reason) => msgToXml(msg) }}</messages>))
       }
 
@@ -198,12 +274,12 @@ object API2 extends ApiHelper with XmlHelper {
       future.get(6L * 60L * 1000L)
 
     val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =  
-      for (act <- restActor.is ?~ "No REST actor";
+      for (act <- messageRestActor.is ?~ "No REST actor";
 		length <- S.param("timeout").map(_.toInt * 1000);
         val ignore = act ! ListenFor(future, TimeSpan(length));
         answer <- waitForAnswer ?~ "Didn't get an answer")
       yield {
-        if(answer.isEmpty) (204,Map(),Empty)          
+        if(answer.isEmpty) (304,Map(),Empty)          
         else (200,Map(),Full(<messages>{answer.flatMap{ case (msg, reason) => msgToXml(msg) }}</messages>))
       }
 
@@ -213,7 +289,7 @@ object API2 extends ApiHelper with XmlHelper {
     r
   }
 
-  def allUserMsgs(tag: String): LiftResponse = {
+  def allTagMsgs(tag: String): LiftResponse = {
     val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =  
       for (user <- User.currentUser;
            tagName <- Box(List(tag));
@@ -229,12 +305,10 @@ object API2 extends ApiHelper with XmlHelper {
     r	
   } 
 
-  def addMsg(): LiftResponse = {
-// Should return the created message
-
+  def addMsg(): LiftResponse = {      
     val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] = 
-      for (user <- calcUser.map(_.id.is) ?~ S.?("base_rest_api_err_param_not_found", "User");
-        msg <- S.param("message") ?~ S.?("base_rest_api_err_missing_param", "message"))
+      for (user <- User.currentUser.map(_.id.is);
+           msg <- S.param("message"))
       yield {
         val from: String = S.param("via") openOr "api2"
         val pool = for (poolName <- S.param("pool");
@@ -270,9 +344,9 @@ object API2 extends ApiHelper with XmlHelper {
       for(user <- User.currentUser)
       yield {
         val followees: NodeSeq = 
-          calcUser.map(_.following)
-		                .map(_.map(userToXml(_)))
-		                .openOr(<no_followees/>)
+          User.currentUser.map(_.following)
+		                  .map(_.map(userToXml(_)))
+		                  .openOr(<no_followees/>)
 		(200,Map(),Full(<followees>{followees}</followees>))
 	  }
 
@@ -320,9 +394,9 @@ object API2 extends ApiHelper with XmlHelper {
       for(user <- User.currentUser)
       yield {
         val followees: NodeSeq = 
-          calcUser.map(_.following)
-		                .map(_.map(userToXml(_)))
-		                .openOr(<no_followees/>)
+          User.currentUser.map(_.following)
+		                  .map(_.map(userToXml(_)))
+		                  .openOr(<no_followees/>)
 		(200,Map(),Full(<followees>{followees}</followees>))
 	  }
 
@@ -514,13 +588,17 @@ object API2 extends ApiHelper with XmlHelper {
         if(messages.isEmpty)
           (404,Map(),Empty)
         else
-          (200,Map(),Full(<conversation id={id.toString}>{messages.map(_.toXml)}</conversation>))
+          (200,Map(),Full(<conversation id={id.toString}>{messages.map(msgToXml(_))}</conversation>))
       }
 
 	val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
 	  if(ret.isDefined) ret else Full((403,Map(),Empty))
 
 	r
+  }   
+
+  def unAuthorized(): LiftResponse = {
+    Full((403,Map(),Empty))
   }
 
   private def findAction(actionId: Box[String]): Box[Action] =
@@ -530,23 +608,25 @@ object API2 extends ApiHelper with XmlHelper {
                              By(Action.id, id.toLong),
                              By(Action.removed, false))) yield action
 
-  
-  private def calcUser: Box[User] =
-  	S.param("user").flatMap(User.findFromWeb) or
-  	User.currentUser 
-
   def createTag(in: NodeSeq) = <api>{in}</api>
   
   private def buildActor(userId: Long): RestActor = {
     val ret = new RestActor
     ret ! StartUp(userId)
     ret
-  }
+  }                    
 
-  object restActor extends SessionVar[Box[RestActor]](Empty) {
+  object messageRestActor extends SessionVar[Box[RestActor]](Empty) {
     override def onShutdown(session: LiftSession) = this.is.map(_ ! ByeBye)
   }
   
+//  object tagRestActors extends SessionVar[Map[String,Box[RestActor]]](Map()) {
+//    override def onShutdown(session: LiftSession) = this.is.values.map(_ ! ByeBye)
+
+//    def findOrCreate(tag: String): Box[RestActor] => this.is.getOrElseUpdate(tag, createNew(tag))
+
+//    def createNew(tag: String): (Box[RestActor]) => ("placeholder",buildActor) 
+//  }
 
   class RestActor extends LiftActor {
     private var userId: Long = _
@@ -602,7 +682,18 @@ object API2 extends ApiHelper with XmlHelper {
 }                                                          
 
 // TODO:
-// 2. Fix errors so that they properly indicate a missing parameter or 404
+// 1. Make addMsg() return the created message when successful. 
+// 2. Add a method to get detail for a specific user                                                              
 // 3. Change changeAction so that if the "enabled" parameter doesn't show up it will simply use
 //    the current value for the action, not throw an error.
-// 4. Match based on the return content type header to determine what to return (default to XML) 
+// 4. Match based on the return content type header to determine what to return (default to XML)   
+// 5. Add a method to get detail for a specific track (or messages for the track?)    
+// 6. Add a method to get detail of a specific action
+// 7. Add a method to delete pool
+// 8. Add a method to get the detail for a pool
+// 9. Add a method to get the list of users in a pool
+// 10. Add a method to delete a user from a pool   
+// 11. Add a method to get the messages from a pool
+// 12. Add a method to post a new message to a pool        
+// 13. Add a method to get list of conversations
+// 14. Add a method to post a message to a conversation??                          
