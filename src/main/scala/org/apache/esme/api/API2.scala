@@ -80,6 +80,11 @@ object API2 extends ApiHelper with XmlHelper {
       if !User.checkRole("integration-admin") => unAuthorized
     case Req("api2" :: "users" :: _ :: tokens :: Nil, _, PostRequest)
       if !User.checkRole("integration-admin") => unAuthorized
+    case Req("api2" :: "pools" :: poolId :: _, _, GetRequest)
+      if !Privilege.hasPermission(
+        User.currentUserId.openOr("0").toLong,
+        poolId.toLong,
+        Permission.Read) => unAuthorized
   }
 
   def dispatch: LiftRules.DispatchPF = {
