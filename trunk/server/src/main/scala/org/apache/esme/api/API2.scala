@@ -61,7 +61,14 @@ import org.apache.esme.actor._
 import scala.xml.{NodeSeq, Text, Elem, XML, Node}
 
 import scala.collection.mutable.ListBuffer
-import java.util.logging._
+import java.util.logging._      
+
+import org.compass.annotations._
+import bootstrap.liftweb.Compass.compass
+import org.compass.core._
+import lucene.util._
+import org.apache.lucene.index.TermFreqVector
+import org.tartarus.snowball.ext.PorterStemmer
 
 object API2 extends ApiHelper with XmlHelper {
   val logger: Logger = Logger.getLogger("org.apache.esme.api")
@@ -117,7 +124,13 @@ object API2 extends ApiHelper with XmlHelper {
     case Req("api2" :: "pools" :: Nil, _, GetRequest) => allPools 
     case Req("api2" :: "pools" :: Nil, _, PostRequest) => () => addPool 
     case Req("api2" :: "pools" :: poolId :: "users" :: Nil, _, PostRequest) => () 
-			=> addUserToPool(Box(List(poolId))) 
+			=> addUserToPool(Box(List(poolId)))
+    case Req("api2" :: "pools" :: poolId :: "messages" :: Nil, _, GetRequest)
+ 	  if S.param("timeout").isDefined => () => waitForPoolMsgs(poolId)
+    case Req("api2" :: "pools" :: poolId :: "messages" :: Nil, _, GetRequest)
+      if S.param("history").isDefined => () => histPoolMsgs(poolId)   
+    case Req("api2" :: "pools" :: poolId :: "messages" :: Nil, _, GetRequest) => () 
+            => getPoolMsgs(poolId)
     
     case Req("api2" :: "conversations" :: conversationId :: Nil, _, GetRequest) => () 
 			=> getConversation(Box(List(conversationId)))
@@ -574,7 +587,101 @@ object API2 extends ApiHelper with XmlHelper {
 	  if(ret.isDefined) ret else Full((403,Map(),Empty))
 
 	r
-  }  
+  }      
+
+  def histPoolMsgs(poolId: String): LiftResponse = {
+    val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+      for (user <- User.currentUser;
+        val poolNum = poolId.toInt;
+		val num = S.param("history").map(_.toInt) openOr 40)		
+      yield {
+        val boxed_lst: Box[List[Message]] = 
+        for(session <- compass.map(_.openSession()); user <- User.currentUser)
+        yield {
+          var tx:CompassTransaction = null
+          var returnValue:List[Message] = Nil
+
+          try {
+            tx = session.beginTransaction()
+            val queryBuilder: CompassQueryBuilder = session.queryBuilder()
+
+            val query: CompassQuery = queryBuilder.bool()
+              .addMust(queryBuilder.term("pool", poolNum))
+              .toQuery()
+            
+            val hitlist = query
+              .addSort("when", CompassQuery.SortPropertyType.STRING, CompassQuery.SortDirection.REVERSE)
+              .hits().detach(0, num)
+             
+            val resourceList = hitlist.getResources.toList.asInstanceOf[List[Resource]]
+
+            val msgIds = resourceList.map(_.getId.toLong)
+            returnValue = Message.findMessages(msgIds).values.toList
+            tx.commit();
+          } catch  {
+            case ce: CompassException =>
+              if (tx != null) tx.rollback();
+          } finally {
+            session.close();
+          }
+          returnValue
+        }
+
+        val lst: List[Message] = boxed_lst.openOr(List()) 
+
+        (200,Map(),Full(<messages>{lst.flatMap(msgToXml(_))}</messages>))
+      } 
+
+    val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+      if(ret.isDefined) ret else Full((403,Map(),Empty))
+
+    r
+  }    
+
+  def getPoolMsgs(poolId: String): LiftResponse = {
+    val future = new LAFuture[List[(Message, MailboxReason)]]()
+  
+    def waitForAnswer: Box[List[(Message, MailboxReason)]] = 
+      future.get(60L * 1000L)
+
+    val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] = 
+      for (user <- User.currentUser;     
+           act <- poolRestActors.findOrCreate(poolId.toLong);
+		   val ignore = act ! ListenFor(future, 0 seconds);
+	       answer <- waitForAnswer) 
+      yield { 
+        if(answer.isEmpty) (304,Map(),Empty)          
+        else (200,Map(),Full(<messages>{answer.flatMap{ case (msg, reason) => msgToXml(msg) }}</messages>))
+      }
+
+    val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+      if(ret.isDefined) ret else Full((403,Map(),Empty))
+
+    r
+  } 
+
+  def waitForPoolMsgs(poolId: String): LiftResponse = {
+    val future = new LAFuture[List[(Message, MailboxReason)]]()
+    
+    def waitForAnswer: Box[List[(Message, MailboxReason)]] = 
+      future.get(6L * 60L * 1000L)
+
+    val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =  
+      for (user <- User.currentUser;
+           act <- poolRestActors.findOrCreate(poolId.toLong);
+	       length <- S.param("timeout").map(_.toInt * 1000);
+           val ignore = act ! ListenFor(future, TimeSpan(length));
+           answer <- waitForAnswer)
+      yield {
+        if(answer.isEmpty) (304,Map(),Empty)          
+        else (200,Map(),Full(<messages>{answer.flatMap{ case (msg, reason) => msgToXml(msg) }}</messages>))
+      }
+
+    val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+      if(ret.isDefined) ret else Full((403,Map(),Empty))
+
+    r
+  }
 
   def getConversation(conversationId: Box[String]): LiftResponse = {
     val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] = 
@@ -614,44 +721,81 @@ object API2 extends ApiHelper with XmlHelper {
     val ret = new RestActor
     ret ! StartUp(userId)
     ret
-  }                    
+  } 
+
+  private def buildPublicTimelineActor(matcher: Function1[Message,Boolean]): RestActor = {
+    val ret = new RestActor(matcher)
+    ret ! StartUpPublic
+    ret
+  }                  
 
   object messageRestActor extends SessionVar[Box[RestActor]](Empty) {
     override def onShutdown(session: LiftSession) = this.is.map(_ ! ByeBye)
   }
   
-//  object tagRestActors extends SessionVar[Map[String,Box[RestActor]]](Map()) {
-//    override def onShutdown(session: LiftSession) = this.is.values.map(_ ! ByeBye)
+  object poolRestActors extends SessionVar[Map[Long,RestActor]](Map()) {
+    override def onShutdown(session: LiftSession) = this.is.values.map(_ ! ByeByePublic)
 
-//    def findOrCreate(tag: String): Box[RestActor] => this.is.getOrElseUpdate(tag, createNew(tag))
+    def poolMatcher(msg: Message): Boolean =
+      msg.pool == 1
 
-//    def createNew(tag: String): (Box[RestActor]) => ("placeholder",buildActor) 
-//  }
+    def findOrCreate(pool: Long): Box[RestActor] = {
+      Full(this.getOrElse(pool, {
+        def partialMatcher(msg: Message) = { msg.pool == pool }
+        val newActor: RestActor = buildPublicTimelineActor(partialMatcher _)
+        this.update((oldMap) => oldMap+((pool, newActor)))
+        newActor
+      }))                                                               
+    }
+  }
 
-  class RestActor extends LiftActor {
-    private var userId: Long = _
+  class RestActor(msgMatch: Function1[Message,Boolean]) extends LiftActor {
+    private var userId: Box[Long] = Empty
     private var msgs: List[(Message, MailboxReason)] = Nil
     private var listener: Box[LAFuture[List[(Message, MailboxReason)]]] = Empty
-    
+
+    def this() = this((msgToTest: Message) => true)                      
+
     protected def messageHandler = {
       case StartUp(userId) =>
-        this.userId = userId
+        this.userId = Full(userId)
         Distributor ! Distributor.Listen(userId, this)
 
+      case StartUpPublic =>
+        Distributor ! Distributor.PublicTimelineListeners(this)
+
       case ByeBye =>
-        Distributor ! Distributor.Unlisten(userId, this)
+        Distributor ! Distributor.Unlisten(userId.openOr(0), this)  
+
+      case ByeByePublic =>
+        Distributor ! Distributor.PublicTimelineUnlisteners(this)
           
       case UserActor.MessageReceived(msg, reason) =>
         reason match {
           case r: RegularReason => {}
           case _ =>
-            msgs = (msg, reason) :: msgs                          
+            msg match {
+              case _ if msgMatch(msg) =>
+                msgs = (msg, reason) :: msgs                          
+                listener.foreach {
+                  who =>
+                    who.satisfy(msgs)
+                    listener = Empty
+                    msgs = Nil
+                }
+            }
+        } 
+                                                                 
+      case Distributor.NewMessage(msg) =>
+        msg match {
+          case _ if msgMatch(msg) =>
+            msgs = (msg, NoReason) :: msgs                          
             listener.foreach {
               who =>
                 who.satisfy(msgs)
                 listener = Empty
                 msgs = Nil
-            }     
+            }
         }
       
       case ReleaseListener =>
@@ -674,8 +818,10 @@ object API2 extends ApiHelper with XmlHelper {
   }
 
 
-  private case class StartUp(userId: Long)
-  private case object ByeBye
+  private case class StartUp(userId: Long) 
+  private case object StartUpPublic
+  private case object ByeBye      
+  private case object ByeByePublic
   private case class ListenFor(who: LAFuture[List[(Message, MailboxReason)]],
 			       howLong: TimeSpan)                                  
   private case object ReleaseListener       

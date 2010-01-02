@@ -275,7 +275,7 @@ object Api2Specs extends Specification with TestKit {
           mess_res1 <- session.post("user/messages", "message" -> "test message") 
           timeout <- sleep(2000)
           mess_res <- session.get("user/messages")
-        } {    
+        } {                  
           mess_res.code must be equalTo 200
 
           // Message structure   
@@ -648,5 +648,98 @@ object Api2Specs extends Specification with TestKit {
         }
       }
     }
+
+    "/pools/POOLID/messages GET" in {
+	  "with valid session and new messages" in {
+	    for{
+	      sess <- post_session 
+     	  pool_res <- sess.post("pools", "poolName" -> "test_pool3") 
+          init <- sess.get("pools/3/messages")
+          timeout <- sleep(2000)
+		  mess_res1 <- sess.post("user/messages",
+            "message" -> "test message for pool delta",
+            "pool" -> "test_pool3") 
+          timeout <- sleep(2000)
+          mess_res <- sess.get("pools/3/messages")
+        } {                                   
+          mess_res.code must be equalTo 200
+
+          // Message structure   
+          (mess_res.xml \ "messages") must \\(<id>{theUser.id.toString}</id>)
+          (mess_res.xml \ "messages") must \\(<body>test message for pool delta</body>)
+        }
+      }
+
+      "with no session returns 403 (forbidden)" in {
+        for (session_res <- get("pools/1/messages")) {
+          session_res.code must be equalTo 403
+        }
+      }
+
+      // Should be a 304, but this response type isn't implemented in Lift yet...
+      "when no new messages exist, returns 204 (no content)" in {
+        for (session <- post_session;
+             session_res1 <- session.get("pools/1/messages");
+             session_res <- session.get("pools/1/messages"))
+        {             
+          session_res.code must be equalTo 204
+        }                                                   
+      }
+    }
+
+    "/pools/POOLID/messages?history=10 GET" in {
+      "with valid session" in {
+        for{
+          sess <- post_session 
+          pool_res <- sess.post("pools", "poolName" -> "test_pool4") 
+		  mess_res <- sess.post("user/messages",
+            "message" -> "test message for pool history",
+            "pool" -> "test_pool4")
+          res <- sess.get("pools/4/messages?history=10")
+        } {                             
+          res.code must be equalTo 200  
+          (res.xml \ "messages") must \\(<id>{theUser.id.toString}</id>)
+          (res.xml \ "messages") must \\(<body>test message for pool history</body>)
+        }
+      }
+
+      "with no session returns 403 (forbidden)" in {
+        for (session_res <- get("pools/1/messages?history=10")) {
+          session_res.code must be equalTo 403
+        }
+      }
+    }
+
+    "/pools/POOLID/messages?timeout=2 GET" in {
+      "with valid session" in {
+        for{
+          sess <- post_session 
+          pool_res <- sess.post("pools", "poolName" -> "test_pool5")    
+          init <- sess.get("pool/5/messages") 
+		  mess_res <- sess.post("user/messages",
+            "message" -> "test message for pool timeout",
+            "pool" -> "test_pool5") 
+          res <- sess.get("pools/5/messages?timeout=2")
+        } {                               
+          res.code must be equalTo 200
+        }
+      }
+
+      "with no session returns 403 (forbidden)" in {
+        for (session_res <- get("pools/1/messages?timeout=2")) {
+          session_res.code must be equalTo 403
+        }
+      }
+
+	// Should be a 304, but this response type isn't implemented in Lift yet...
+      "when no new messages exist, returns 204 (no content)" in {
+        for (session <- post_session;
+          session_res1 <- session.get("pools/1/messages");
+          session_res <- session.get("pools/1/messages?timeout=2"))
+        {             
+          session_res.code must be equalTo 204
+        }                                                   
+      }
+    }   
   }
 }
