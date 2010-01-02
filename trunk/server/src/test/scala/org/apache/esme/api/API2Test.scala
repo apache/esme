@@ -668,7 +668,7 @@ object Api2Specs extends Specification with TestKit {
           (mess_res.xml \ "messages") must \\(<id>{theUser.id.toString}</id>)
           (mess_res.xml \ "messages") must \\(<body>test message for pool delta</body>)
         }
-      }
+      }  
 
       "with no session returns 403 (forbidden)" in {
         for (session_res <- get("pools/1/messages")) {
@@ -722,6 +722,28 @@ object Api2Specs extends Specification with TestKit {
           res <- sess.get("pools/5/messages?timeout=2")
         } {                               
           res.code must be equalTo 200
+        }
+      }    
+
+      "with valid session and new messages but no pool authorization returns 403 (forbidden)" in {
+		val new_user = find_or_create_user("tester6")
+		val new_toke = AuthToken.create.user(new_user).saveMe
+		val new_token = new_toke.uniqueId.is        
+		
+		for{
+	      sess <- post_session
+	      sessNoAuth <- post("session", "token" -> new_token)  
+     	  pool_res <- sess.post("pools", "poolName" -> "test_pool6") 
+          init <- sessNoAuth.get("pools/6/messages")
+          timeout <- sleep(2000)
+		  mess_res1 <- sess.post("user/messages",
+            "message" -> "test message for pool delta",
+            "pool" -> "test_pool6") 
+          timeout <- sleep(2000)
+          mess_res <- sessNoAuth.get("pools/6/messages")
+        } {                                       
+          mess_res.code must be equalTo 403
+          init.code must be equalTo 403
         }
       }
 
