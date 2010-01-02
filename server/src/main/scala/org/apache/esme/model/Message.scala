@@ -480,7 +480,10 @@ class Message extends LongKeyedMapper[Message] {
   def getTags:String = {
     // Create a string of space-separated tags, with the spaces in each tag converted to underscores
     tags.map(x => x.split(" ").mkString("_")) mkString " "
-  }
+  } 
+
+  @SearchableProperty{val termVector=TermVector.YES, val analyzer="pool"}
+  def getPool = pool.is
 
   /**
    * Parse and format into XML
