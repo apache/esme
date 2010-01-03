@@ -354,7 +354,7 @@ object Api2Specs extends Specification with TestKit {
           mess_res <- session.post("user/messages",
             "message" -> "test POST message",
             "tags" -> "test,tag",
-            "pool" -> 1)
+            "pool" -> "test_pool1")
           all_msgs <- session.get("user/messages?timeout=2")
         } {          
           println(all_msgs.xml)
