@@ -350,9 +350,17 @@ object Api2Specs extends Specification with TestKit {
       "with valid session" in {
         for{
           session <- post_session
-          mess_res <- session.post("user/messages", "message" -> "test message")
-        } {
+          res <- session.post("pools", "poolName" -> "test_pool1")
+          mess_res <- session.post("user/messages",
+            "message" -> "test POST message",
+            "tags" -> "test,tag",
+            "pool" -> 1)
+          all_msgs <- session.get("user/messages?timeout=2")
+        } {          
+          println(all_msgs.xml)
           mess_res.code must be equalTo 200
+          (all_msgs.xml \ "messages") must \\(<body>test POST message</body>)
+          (all_msgs.xml \ "messages") must \\(<tags><tag>Test</tag><tag>Tag</tag></tags>)
         }
       }
 
@@ -604,14 +612,14 @@ object Api2Specs extends Specification with TestKit {
       "with valid session" in {
         for{
           sess <- post_session
-          res <- sess.post("pools", "poolName" -> "test_pool")
+          res <- sess.post("pools", "poolName" -> "test_pool2")
         } {
           res.code must be equalTo 200
         }
       }
 
       "with no session returns 403 (forbidden)" in {
-        for (res <- post("pools", "poolName" -> "test_pool")) {
+        for (res <- post("pools", "poolName" -> "failed_test_pool")) {
           res.code must be equalTo 403
         }
       }
@@ -622,8 +630,8 @@ object Api2Specs extends Specification with TestKit {
       "with valid session" in {
         for {
           sess <- post_session
-          pool_res <- sess.post("pools", "poolName" -> "test_pool2")
-          res <- sess.post("pools/test_pool2/users","userId"->2)
+          pool_res <- sess.post("pools", "poolName" -> "test_pool3")
+          res <- sess.post("pools/3/users","userId"->2,"permission"->"Write")
         } {
           res.code must be equalTo 200
         }
@@ -653,14 +661,14 @@ object Api2Specs extends Specification with TestKit {
 	  "with valid session and new messages" in {
 	    for{
 	      sess <- post_session 
-     	  pool_res <- sess.post("pools", "poolName" -> "test_pool3") 
-          init <- sess.get("pools/3/messages")
+     	  pool_res <- sess.post("pools", "poolName" -> "test_pool4") 
+          init <- sess.get("pools/4/messages")
           timeout <- sleep(2000)
 		  mess_res1 <- sess.post("user/messages",
             "message" -> "test message for pool delta",
-            "pool" -> "test_pool3") 
+            "pool" -> "test_pool4") 
           timeout <- sleep(2000)
-          mess_res <- sess.get("pools/3/messages")
+          mess_res <- sess.get("pools/4/messages")
         } {                                   
           mess_res.code must be equalTo 200
 
@@ -691,11 +699,11 @@ object Api2Specs extends Specification with TestKit {
       "with valid session" in {
         for{
           sess <- post_session 
-          pool_res <- sess.post("pools", "poolName" -> "test_pool4") 
+          pool_res <- sess.post("pools", "poolName" -> "test_pool5") 
 		  mess_res <- sess.post("user/messages",
             "message" -> "test message for pool history",
-            "pool" -> "test_pool4")
-          res <- sess.get("pools/4/messages?history=10")
+            "pool" -> "test_pool5")
+          res <- sess.get("pools/5/messages?history=10")
         } {                             
           res.code must be equalTo 200  
           (res.xml \ "messages") must \\(<id>{theUser.id.toString}</id>)
@@ -714,12 +722,12 @@ object Api2Specs extends Specification with TestKit {
       "with valid session" in {
         for{
           sess <- post_session 
-          pool_res <- sess.post("pools", "poolName" -> "test_pool5")    
-          init <- sess.get("pool/5/messages") 
+          pool_res <- sess.post("pools", "poolName" -> "test_pool6")    
+          init <- sess.get("pool/6/messages") 
 		  mess_res <- sess.post("user/messages",
             "message" -> "test message for pool timeout",
-            "pool" -> "test_pool5") 
-          res <- sess.get("pools/5/messages?timeout=2")
+            "pool" -> "test_pool6") 
+          res <- sess.get("pools/6/messages?timeout=2")
         } {                               
           res.code must be equalTo 200
         }
@@ -733,14 +741,14 @@ object Api2Specs extends Specification with TestKit {
 		for{
 	      sess <- post_session
 	      sessNoAuth <- post("session", "token" -> new_token)  
-     	  pool_res <- sess.post("pools", "poolName" -> "test_pool6") 
-          init <- sessNoAuth.get("pools/6/messages")
+     	  pool_res <- sess.post("pools", "poolName" -> "test_pool7") 
+          init <- sessNoAuth.get("pools/7/messages")
           timeout <- sleep(2000)
 		  mess_res1 <- sess.post("user/messages",
             "message" -> "test message for pool delta",
-            "pool" -> "test_pool6") 
+            "pool" -> "test_pool7") 
           timeout <- sleep(2000)
-          mess_res <- sessNoAuth.get("pools/6/messages")
+          mess_res <- sessNoAuth.get("pools/7/messages")
         } {                                       
           mess_res.code must be equalTo 403
           init.code must be equalTo 403

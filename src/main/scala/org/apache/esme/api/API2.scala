@@ -129,7 +129,7 @@ object API2 extends ApiHelper with XmlHelper {
     case Req("api2" :: "pools" :: Nil, _, GetRequest) => allPools 
     case Req("api2" :: "pools" :: Nil, _, PostRequest) => () => addPool 
     case Req("api2" :: "pools" :: poolId :: "users" :: Nil, _, PostRequest) => () 
-			=> addUserToPool(Box(List(poolId)))
+			=> addUserToPool(poolId)
     case Req("api2" :: "pools" :: poolId :: "messages" :: Nil, _, GetRequest)
  	  if S.param("timeout").isDefined => () => waitForPoolMsgs(poolId)
     case Req("api2" :: "pools" :: poolId :: "messages" :: Nil, _, GetRequest)
@@ -333,7 +333,6 @@ object API2 extends ApiHelper with XmlHelper {
                         p <- AccessPool.findPool(poolName,
                         S.param("realm") openOr AccessPool.Native)
                         ) yield p.id.is
-
         val xml: Box[Elem] = 
           S.param("metadata").flatMap(md =>
             tryo(XML.loadString(md)))
@@ -566,16 +565,16 @@ object API2 extends ApiHelper with XmlHelper {
 	r
   } 
 
-  def addUserToPool(poolId: Box[String]): LiftResponse = {
+  def addUserToPool(poolId: String): LiftResponse = {
     val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] = 
       for (adminUser <- User.currentUser;
-           poolName <- poolId ?~ S.?("base_rest_api_err_missing_param", "pool");
            realm <- (S.param("realm") or Full(AccessPool.Native));
-           pool <- AccessPool.findPool(poolName, realm) ?~  S.?("base_rest_api_err_param_not_found", "Pool");
-           userName <- S.param("userId") ?~ S.?("base_rest_api_err_missing_param", "user");
-           user <- User.findFromWeb(userName) ?~  S.?("base_rest_api_err_param_not_found", "User");
+           pool <- AccessPool.find(By(AccessPool.id, poolId.toLong),
+	                    By(AccessPool.realm, realm));
+           userName <- S.param("userId");
+           user <- User.findFromWeb(userName);
            permissionName <- (S.param("permission") or Full("Write"));
-           permission <- Box(Permission.valueOf(permissionName)) ?~ S.?("base_rest_api_err_param_not_found", "Permission"))
+           permission <- Box(Permission.valueOf(permissionName)))
       yield
         if(Privilege.hasPermission(adminUser.id.is, pool.id.is, Permission.Admin)) {
           val result = try {
