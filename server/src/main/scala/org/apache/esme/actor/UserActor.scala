@@ -119,14 +119,6 @@ class UserActor extends LiftActor {
       case CreateMessage(text, tags, when, metaData, source, replyTo, pool) =>
         val tagLst = tags.removeDuplicates.map(Tag.findOrCreate)
 
-/* Removed to fix [ESME-151] - may have security implications?
- *
- *        val tagLst = pool match {
- *         case Empty => tags.removeDuplicates.map(Tag.findOrCreate)
- *         case _ => Nil
- *       }
- */
-
         Message.create.author(userId).when(when).
         source(source).
         setTextAndTags(text, tagLst, metaData).filter{ m =>
