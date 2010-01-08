@@ -48,8 +48,13 @@ import java.util.logging._
 
 object RestAPI extends XMLApiHelper {
   val logger: Logger = Logger.getLogger("org.apache.esme.api")
+  logger.setLevel(Level.INFO)
 
+  private val fakeSession = new LiftSession("/", "fakeSession", Empty)
+  
+ 
   def dispatch: LiftRules.DispatchPF = {
+    
     case Req("api" :: "status" :: Nil, "", GetRequest) => status
     case Req("api" :: "login" :: Nil, "", PostRequest) => login
     case Req("api" :: "logout" :: Nil, "", GetRequest) => logout
@@ -247,6 +252,7 @@ object RestAPI extends XMLApiHelper {
   }
 
   def login(): LiftResponse = {
+   
     val res: Box[Boolean] = if (User.loggedIn_?) Empty else
     for (token <- S.param("token") ?~ S.?("base_rest_api_err_missing_param", "token");
          auth <- AuthToken.find(By(AuthToken.uniqueId, token))
@@ -292,8 +298,8 @@ object RestAPI extends XMLApiHelper {
   
   def sendMsg(theUser: Box[Long], params: HasParams): LiftResponse = {
     val r: Box[Boolean] =
-    for (user <- theUser ?~ S.?("base_rest_api_err_param_not_found", "User");
-         msg <- params.param("message") ?~ S.?("base_rest_api_err_missing_param", "message"))
+    for (user <- theUser ?~ "User parameter is missing";
+         msg <- params.param("message") ?~ "message parameter is missing")
     yield {
       val from: String = params.param("via") openOr "api"
       val pool = for (poolName <- params.param("pool");
