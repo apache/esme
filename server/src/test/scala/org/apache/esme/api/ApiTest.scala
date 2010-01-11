@@ -150,8 +150,14 @@ object ApiSpecs extends Specification with TestKit {
       for{
         login <- post("/api/login", "token" -> token) !@ "Failed to log in" if (testSuccess(login))
         add_action <- login.post("/api/add_action", "name" -> "test", "test" -> "#moo", "action" -> "filter") !@ "Failed to add action" if (testSuccess(add_action))
+        add_action1 <- login.post("/api/add_action", "name" -> "1test", "test" -> "#moo", "action" -> "filter") !@ "Failed to add action with a name starting with a number" if (testSuccess(add_action1))
+        add_action2 <- login.post("/api/add_action", "name" -> "test1", "test" -> "#moo", "action" -> "filter") !@ "Failed to add action with a name including a number" if (testSuccess(add_action2))
+        add_action3 <- login.post("/api/add_action", "name" -> "test%", "test" -> "#moo", "action" -> "filter") !@ "Failed to add action with a name including a punctuation" if (testSuccess(add_action3))
+        add_action4 <- login.post("/api/add_action", "name" -> "t", "test" -> "#moo", "action" -> "filter") !@ "Failed to add action with a short name with one character" if (testSuccess(add_action4))
+        add_action5 <- login.post("/api/add_action", "name" -> "tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt", "test" -> "#moo", "action" -> "filter") !@ "Failed to add action with a long name" if (testSuccess(add_action5))
+
       } {
-        println(add_action.xml)
+        //println(add_action.xml)
       }
     }
     
@@ -162,7 +168,8 @@ object ApiSpecs extends Specification with TestKit {
         add_action1 <- login.post("/api/add_action", "name" -> "test", "test" -> "#moo") !@ "add_action should have failed: no action" if shouldnt(testSuccess(add_action1))
         add_action2 <- login.post("/api/add_action", "name" -> "test", "action" -> "filter") !@ "add_action should have failed: no test" if shouldnt(testSuccess(add_action2))
         add_action3 <- login.post("/api/add_action", "action" -> "filter", "test" -> "#moo") !@ "add_action should have failed: no name" if shouldnt(testSuccess(add_action3))
-        add_action4 <- login.post("/api/add_action", "name" -> "test", "test" -> "moo", "action" -> "filter") !@ "add_action should have failed: no name" if shouldnt(testSuccess(add_action3))
+        add_action4 <- login.post("/api/add_action", "name" -> "test", "test" -> "unkown", "action" -> "filter") !@ "add_action should have failed: unknown test" if shouldnt(testSuccess(add_action4))
+        add_action5 <- login.post("/api/add_action", "name" -> "test", "test" -> "moo", "action" -> "unknown") !@ "add_action should have failed: unknown action" if shouldnt(testSuccess(add_action5))
 
       } {
         println(add_action3.xml)
