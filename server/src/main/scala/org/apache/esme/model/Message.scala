@@ -476,10 +476,11 @@ class Message extends LongKeyedMapper[Message] {
   @SearchableProperty{val format="yyyy-MM-dd mm:ss"}
   def getWhen = new java.util.Date(when.is)
 
-  @SearchableProperty{val termVector=TermVector.YES, val analyzer="tag"}
+  @SearchableProperty{val termVector=TermVector.YES, val analyzer="default"}
   def getTags:String = {
-    // Create a string of space-separated tags, with the spaces in each tag converted to underscores
-    tags.map(x => x.split(" ").mkString("_")) mkString " "
+    // Create a string of space-separated tags, with the spaces in each tag converted to underscores 
+    val tagString: String = tags.map(x => x.split(" ").mkString("_")) mkString " "
+    tagString
   } 
 
   @SearchableProperty{val termVector=TermVector.YES, val analyzer="pool"}

@@ -356,8 +356,7 @@ object Api2Specs extends Specification with TestKit {
             "tags" -> "test,tag",
             "pool" -> "test_pool1")
           all_msgs <- session.get("user/messages?timeout=2")
-        } {          
-          println(all_msgs.xml)
+        } {                    
           mess_res.code must be equalTo 200
           (all_msgs.xml \ "messages") must \\(<body>test POST message</body>)
           (all_msgs.xml \ "messages") must \\(<tags><tag>Test</tag><tag>Tag</tag></tags>)
@@ -693,7 +692,7 @@ object Api2Specs extends Specification with TestKit {
           session_res.code must be equalTo 204
         }                                                   
       }
-    }
+    }    
 
     "/pools/POOLID/messages?history=10 GET" in {
       "with valid session" in {
@@ -704,19 +703,52 @@ object Api2Specs extends Specification with TestKit {
             "message" -> "test message for pool history",
             "pool" -> "test_pool5")
           res <- sess.get("pools/5/messages?history=10")
-        } {                             
-          res.code must be equalTo 200  
+        } {                                
+          res.code must be equalTo 200          
           (res.xml \ "messages") must \\(<id>{theUser.id.toString}</id>)
           (res.xml \ "messages") must \\(<body>test message for pool history</body>)
         }
-      }
+      }     
 
+      "with tag restrictions" in {
+        for{
+          sess <- post_session 
+          pool_res <- sess.post("pools", "poolName" -> "test_pool6") 
+		  mess_res <- sess.post("user/messages",
+            "message" -> "test message for pool #history",
+            "pool" -> "test_pool6")                      
+          mess_res <- sess.post("user/messages",
+	        "message" -> "test message for pool history with tags test, tag",
+	        "pool" -> "test_pool6",
+	        "tags" -> "test, tag") 
+	      mess_res <- sess.post("user/messages",
+	        "message" -> "test message for pool history with tag test",
+	        "pool" -> "test_pool6",
+	        "tags" -> "test,crazycrazy")
+	      mess_res <- sess.post("user/messages",
+	        "message" -> "test message for pool history with tag tag",
+	        "pool" -> "test_pool6",
+	        "tags" -> "tag")     
+	      wait <- sleep(2000)
+          res1 <- sess.get("pools/6/messages?history=10&filter_tags=test")
+          res2 <- sess.get("pools/6/messages?history=10&filter_tags=test,tag")
+        } {                    
+          res1.code must be equalTo 200   
+          res2.code must be equalTo 200
+          (res1.xml \ "messages") must \\(<id>{theUser.id.toString}</id>)
+          (res1.xml \ "messages") must \\(<body>test message for pool history with tag test</body>)
+          (res1.xml \ "messages") must \\(<body>test message for pool history with tags test, tag</body>)
+          (res2.xml \ "messages") must \\(<body>test message for pool history with tags test, tag</body>)
+          (res2.xml \ "messages").length must be equalTo 1
+        }
+      }   
+ 
       "with no session returns 403 (forbidden)" in {
         for (session_res <- get("pools/1/messages?history=10")) {
           session_res.code must be equalTo 403
         }
       }
-    }
+    }       
 
     "/pools/POOLID/messages?timeout=2 GET" in {
       "with valid session" in {
