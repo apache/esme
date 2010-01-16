@@ -609,10 +609,22 @@ object API2 extends ApiHelper with XmlHelper {
             tx = session.beginTransaction()
             val queryBuilder: CompassQueryBuilder = session.queryBuilder()
 
-            val query: CompassQuery = queryBuilder.bool()
+            val tagQuery = queryBuilder.bool()
+
+            for(tags <- S.param("filter_tags");
+                tag <- tags.split(",")) {
+              tagQuery.addMust(queryBuilder.term("tags", tag.split(" ").mkString("_")))   
+            }
+
+            val non_tag_query = queryBuilder.bool()
               .addMust(queryBuilder.term("pool", poolNum))
-              .toQuery()
+
             
+            val query = if(S.param("filter_tags").isDefined)
+              non_tag_query.addMust(tagQuery.toQuery).toQuery()                             
+            else
+              non_tag_query.toQuery()
+
             val hitlist = query
               .addSort("when", CompassQuery.SortPropertyType.STRING, CompassQuery.SortDirection.REVERSE)
               .hits().detach(0, num)

@@ -15,8 +15,7 @@
 
     </connection>
     <searchEngine >
-      <analyzer name="default" type="Stop" />
-      <analyzer name="tag" type="Standard" /> 
+      <analyzer name="default" type="Stop" />   
       <analyzer name="pool" type="Standard" />
       <analyzer name="stemming" type="Snowball" snowballType="English">
             <stopWords>
