@@ -85,9 +85,7 @@ class UserActor extends LiftActor {
 
   private def followers: List[Long] = User.followerIdsForUserId(userId)
   
-  private def canReadPool_?(poolId: Long) = pools contains poolId
-
-  private case class RunFunc(f: () => Unit)
+  private def canReadPool_?(poolId: Long) = pools contains poolId  
 
   protected def messageHandler = {
       case m @ Distributor.UserUpdated(_) =>
@@ -112,9 +110,6 @@ class UserActor extends LiftActor {
         
       case RefreshMe(user) => 
          pools = Privilege.findViewablePools(user)
-         
-      case RunFunc(f) =>
-        f()
         
       case CreateMessage(text, tags, when, metaData, source, replyTo, pool) =>
         val tagLst = tags.removeDuplicates.map(Tag.findOrCreate)
