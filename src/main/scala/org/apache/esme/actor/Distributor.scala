@@ -40,15 +40,12 @@ import model._
 import scala.xml.{Elem}
 
 /**
- * The Distributor actor forwards messages to the approprite user actor
+ * The Distributor actor forwards messages to the appropriate user actor
  * without the need for the sender to have a reference to it.
  * If the actor is not started, Distributor starts it up in findOrCreateUser
  */
 object Distributor extends LiftActor {
   protected def messageHandler = {
-      case StartMeUp =>
-        User.findAll.map(_.id.is).foreach(findOrCreateUser)
-
       case UserCreatedMessage(user, text, tags, when, 
                               metaData,
                               source,
@@ -99,9 +96,7 @@ object Distributor extends LiftActor {
         findOrCreateUser(userId) ! UserActor.Resend(msgId)
 
       case _ =>
-  }
-
-  private case object StartMeUp
+  }                             
 
   case class UserCreatedMessage(user: Long, text: String, tags: List[String],
                                 when: Long,
