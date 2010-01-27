@@ -81,7 +81,7 @@ class UserActor extends LiftActor {
   
   private var _mailbox: Array[(Long,MailboxReason,Boolean)] = Array()
   
-  private var pools: Set[Long] = Set()
+  private var pools: List[Long] = Nil
 
   private def followers: List[Long] = User.followerIdsForUserId(userId)
   
