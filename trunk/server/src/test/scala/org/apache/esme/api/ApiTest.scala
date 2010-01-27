@@ -39,7 +39,7 @@ import net.liftweb.http._
 
 import net.sourceforge.jwebunit.junit.WebTester
 import _root_.junit.framework.AssertionFailedError
-import testing.{ReportFailure, TestKit, HttpResponse, TestFramework}
+import testing.{ReportFailure, TestKit, HttpResponse, TestFramework, Response}
 
 class ApiSpecsAsTest extends JUnit3(ApiSpecs)
 object ApiSpecsRunner extends ConsoleRunner(ApiSpecs)
@@ -63,10 +63,14 @@ object ApiSpecs extends Specification with TestKit {
   }
 
 
-  private def testSuccess(resp: HttpResponse) {
-    resp.code must_== 200
-    resp.contentType.toLowerCase().startsWith("text/xml") must_== true
-    (resp.xml \ "@success").text must_== "true"
+  private def testSuccess(resp: Response) {
+    resp match {
+      case resp: HttpResponse =>
+        resp.code must_== 200
+        resp.contentType.toLowerCase().startsWith("text/xml") must_== true
+        (resp.xml \ "@success").text must_== "true"
+      case _ => fail("Not an HTTP Response")
+    }
   }
 
   def shouldnt(f: => Unit): Unit =
@@ -149,56 +153,53 @@ object ApiSpecs extends Specification with TestKit {
     "AddAction" in {
       for{
         login <- post("/api/login", "token" -> token) !@ "Failed to log in" if (testSuccess(login))
-        add_action <- login.post("/api/add_action", "name" -> "test", "test" -> "#moo", "action" -> "filter") !@ "Failed to add action" if (testSuccess(add_action))
-        add_action1 <- login.post("/api/add_action", "name" -> "1test", "test" -> "#moo", "action" -> "filter") !@ "Failed to add action with a name starting with a number" if (testSuccess(add_action1))
-        add_action2 <- login.post("/api/add_action", "name" -> "test1", "test" -> "#moo", "action" -> "filter") !@ "Failed to add action with a name including a number" if (testSuccess(add_action2))
-        add_action3 <- login.post("/api/add_action", "name" -> "test%", "test" -> "#moo", "action" -> "filter") !@ "Failed to add action with a name including a punctuation" if (testSuccess(add_action3))
-        add_action4 <- login.post("/api/add_action", "name" -> "t", "test" -> "#moo", "action" -> "filter") !@ "Failed to add action with a short name with one character" if (testSuccess(add_action4))
-        add_action5 <- login.post("/api/add_action", "name" -> "tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt", "test" -> "#moo", "action" -> "filter") !@ "Failed to add action with a long name" if (testSuccess(add_action5))
-        add_action6 <- login.post("/api/add_action", "name" -> "ttt", "test" -> "login", "action" -> "filter") !@ "Failed to add 'login' action" if (testSuccess(add_action6))
-        add_action7 <- login.post("/api/add_action", "name" -> "ttt", "test" -> "followed", "action" -> "filter") !@ "Failed to add 'followed' action" if (testSuccess(add_action7))
-        add_action8 <- login.post("/api/add_action", "name" -> "ttt", "test" -> "unfollowed", "action" -> "filter") !@ "Failed to add 'unfollowed' action" if (testSuccess(add_action8))
-        add_action9 <- login.post("/api/add_action", "name" -> "ttt", "test" -> "profile", "action" -> "filter") !@ "Failed to add 'profile' action" if (testSuccess(add_action9))
-        add_action10 <- login.post("/api/add_action", "name" -> "ttt", "test" -> "profile", "action" -> "resend") !@ "Failed to add  action with a 'resend' action" if (testSuccess(add_action10))
-        //add_action11 <- login.post("/api/add_action", "name" -> "ttt", "test" -> "profile", "action" -> "mailto:foo@bar.com") !@ "Failed to add  action with a 'mail' action" if (testSuccess(add_action11))
-        add_action12 <- login.post("/api/add_action", "name" -> "ttt", "test" -> "profile", "action" -> "http://foo.com/message/in") !@ "Failed to add  action with a 'http post' action" if (testSuccess(add_action12))
-        add_action13 <- login.post("/api/add_action", "name" -> "ttt", "test" -> "profile", "action" -> "atom:http://blog.com/feed.atom") !@ "Failed to add  action with a 'atom' action" if (testSuccess(add_action13))
-        add_action14 <- login.post("/api/add_action", "name" -> "ttt", "test" -> "profile", "action" -> "rss:http://blog.com/feed.rss") !@ "Failed to add  action with a 'rss' action" if (testSuccess(add_action14))
-        add_action15 <- login.post("/api/add_action", "name" -> "ttt", "test" -> "@api_test", "action" -> "rss:http://blog.com/feed.rss") !@ "Failed to add  action with a '@[user} test'" if (testSuccess(add_action15))
-        add_action16 <- login.post("/api/add_action", "name" -> "ttt", "test" -> "resent:api_test", "action" -> "rss:http://blog.com/feed.rss") !@ "Failed to add  action with a 'resent[:user} test'" if (testSuccess(add_action16))
-        add_pool <- login.post("/api/add_pool/ttt") !@ "Failed to add  a pool" if (testSuccess(add_pool))
-        add_action17 <- login.post("/api/add_action", "name" -> "ttt", "test" -> "pool:ttt", "action" -> "rss:http://blog.com/feed.rss") !@ "Failed to add  action with a 'pool[:pool} test'" if (testSuccess(add_action17))
-        add_action18 <- login.post("/api/add_action", "name" -> "ttt", "test" -> "every 7 mins", "action" -> "rss:http://blog.com/feed.rss") !@ "Failed to add  action with a 'every 7 mins' test'" if (testSuccess(add_action18))
-   //      add_action19 <- login.post("/api/add_action", "name" -> "ttt", "test" -> "50%", "action" -> "rss:http://blog.com/feed.rss") !@ "Failed to add  action with a '50%' test'" if (testSuccess(add_action19))
-         //add_action20 <- login.post("/api/add_action", "name" -> "ttt", "test" -> "every 7 mins &amp; @api_test", "action" -> "rss:http://blog.com/feed.rss") !@ "Failed to add  action with multiple tests'" if (testSuccess(add_action20))
-         //add_action21 <- login.post("/api/add_action", "name" -> "ttt", "test" -> "every 7 mins &amp; @api_test &amp; #moo", "action" -> "rss:http://blog.com/feed.rss") !@ "Failed to add  action with multiple tests'" if (testSuccess(add_action21))
+      } {
+        testSuccess(login.post("/api/add_action", "name" -> "test", "test" -> "#moo", "action" -> "filter") !@ "Failed to add action")
+        testSuccess(login.post("/api/add_action", "name" -> "1test", "test" -> "#moo", "action" -> "filter") !@ "Failed to add action with a name starting with a number")
+        testSuccess(login.post("/api/add_action", "name" -> "test1", "test" -> "#moo", "action" -> "filter") !@ "Failed to add action with a name including a number")
+        testSuccess(login.post("/api/add_action", "name" -> "test%", "test" -> "#moo", "action" -> "filter") !@ "Failed to add action with a name including a punctuation")
+        testSuccess(login.post("/api/add_action", "name" -> "t", "test" -> "#moo", "action" -> "filter") !@ "Failed to add action with a short name with one character")
+        testSuccess(login.post("/api/add_action", "name" -> "tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt", "test" -> "#moo", "action" -> "filter") !@ "Failed to add action with a long name")
+        testSuccess(login.post("/api/add_action", "name" -> "ttt", "test" -> "login", "action" -> "filter") !@ "Failed to add 'login' action")
+        testSuccess(login.post("/api/add_action", "name" -> "ttt", "test" -> "followed", "action" -> "filter") !@ "Failed to add 'followed' action")
+        testSuccess(login.post("/api/add_action", "name" -> "ttt", "test" -> "unfollowed", "action" -> "filter") !@ "Failed to add 'unfollowed' action")
+        testSuccess(login.post("/api/add_action", "name" -> "ttt", "test" -> "profile", "action" -> "filter") !@ "Failed to add 'profile' action")
+        testSuccess(login.post("/api/add_action", "name" -> "ttt", "test" -> "profile", "action" -> "resend") !@ "Failed to add  action with a 'resend' action")
+        //testSuccess(login.post("/api/add_action", "name" -> "ttt", "test" -> "profile", "action" -> "mailto:foo@bar.com") !@ "Failed to add  action with a 'mail' action")
+        testSuccess(login.post("/api/add_action", "name" -> "ttt", "test" -> "profile", "action" -> "http://foo.com/message/in") !@ "Failed to add  action with a 'http post' action")
+        testSuccess(login.post("/api/add_action", "name" -> "ttt", "test" -> "profile", "action" -> "atom:http://blog.com/feed.atom") !@ "Failed to add  action with a 'atom' action")
+        testSuccess(login.post("/api/add_action", "name" -> "ttt", "test" -> "profile", "action" -> "rss:http://blog.com/feed.rss") !@ "Failed to add  action with a 'rss' action")
+        testSuccess(login.post("/api/add_action", "name" -> "ttt", "test" -> "@api_test", "action" -> "rss:http://blog.com/feed.rss") !@ "Failed to add  action with a '@[user} test'")
+        testSuccess(login.post("/api/add_action", "name" -> "ttt", "test" -> "resent:api_test", "action" -> "rss:http://blog.com/feed.rss") !@ "Failed to add  action with a 'resent[:user} test'")
+        testSuccess(login.post("/api/add_pool/ttt") !@ "Failed to add  a pool")
+        testSuccess(login.post("/api/add_action", "name" -> "ttt", "test" -> "pool:ttt", "action" -> "rss:http://blog.com/feed.rss") !@ "Failed to add  action with a 'pool[:pool} test'")
+        testSuccess(login.post("/api/add_action", "name" -> "ttt", "test" -> "every 7 mins", "action" -> "rss:http://blog.com/feed.rss") !@ "Failed to add  action with a 'every 7 mins' test'")
+   //      testSuccess(login.post("/api/add_action", "name" -> "ttt", "test" -> "50%", "action" -> "rss:http://blog.com/feed.rss") !@ "Failed to add  action with a '50%' test'")
+         //testSuccess(login.post("/api/add_action", "name" -> "ttt", "test" -> "every 7 mins &amp; @api_test", "action" -> "rss:http://blog.com/feed.rss") !@ "Failed to add  action with multiple tests'")
+         //testSuccess(login.post("/api/add_action", "name" -> "ttt", "test" -> "every 7 mins &amp; @api_test &amp; #moo", "action" -> "rss:http://blog.com/feed.rss") !@ "Failed to add  action with multiple tests'")
 
-         } {
-         println(add_pool.xml)
       }
     }
       
      "AddActionNeg" in {
+      shouldnt(testSuccess(post("/api/add_action", "name" -> "test", "test" -> "#moo", "action" -> "filter") !@ "add_action should have failed: no login first"))
       for{
-        add_action <- post("/api/add_action", "name" -> "test", "test" -> "#moo", "action" -> "filter") !@ "add_action should have failed: no login first" if shouldnt(testSuccess(add_action))
         login <- post("/api/login", "token" -> token) !@ "Failed to log in" if (testSuccess(login))
-        add_action1 <- login.post("/api/add_action", "name" -> "test", "test" -> "#moo") !@ "add_action should have failed: no action" if shouldnt(testSuccess(add_action1))
-        add_action2 <- login.post("/api/add_action", "name" -> "test", "action" -> "filter") !@ "add_action should have failed: no test" if shouldnt(testSuccess(add_action2))
-        add_action3 <- login.post("/api/add_action", "action" -> "filter", "test" -> "#moo") !@ "add_action should have failed: no name" if shouldnt(testSuccess(add_action3))
-        add_action4 <- login.post("/api/add_action", "name" -> "test", "test" -> "unkown", "action" -> "filter") !@ "add_action should have failed: unknown test" if shouldnt(testSuccess(add_action4))
-        add_action5 <- login.post("/api/add_action", "name" -> "test", "test" -> "moo", "action" -> "unknown") !@ "add_action should have failed: unknown action" if shouldnt(testSuccess(add_action5))
-        add_action6 <- login.post("/api/add_action", "name" -> "test", "test" -> "@foo", "action" -> "filter") !@ "add_action should have failed: unknown user" if shouldnt(testSuccess(add_action6))
-        add_action7 <- login.post("/api/add_action", "name" -> "test", "test" -> "resent:foo", "action" -> "filter") !@ "add_action should have failed: unknown user" if shouldnt(testSuccess(add_action7))
-        add_action8 <- login.post("/api/add_action", "name" -> "test", "test" -> "pool:foo", "action" -> "filter") !@ "add_action should have failed: unknown pool" if shouldnt(testSuccess(add_action8))
-        add_action9 <- login.post("/api/add_action", "name" -> "test", "test" -> "every 0 mins", "action" -> "filter") !@ "add_action should have failed: no number" if shouldnt(testSuccess(add_action9))
-        add_action10 <- login.post("/api/add_action", "name" -> "test", "test" -> "every -1 mins", "action" -> "filter") !@ "add_action should have failed: no number" if shouldnt(testSuccess(add_action10))
-        add_action11 <- login.post("/api/add_action", "name" -> "test", "test" -> "every a mins", "action" -> "filter") !@ "add_action should have failed: no number" if shouldnt(testSuccess(add_action10))
-        //add_action12 <- login.post("/api/add_action", "name" -> "test", "test" -> "110%", "action" -> "filter") !@ "add_action should have failed: no number" if shouldnt(testSuccess(add_action10))
-        //add_action13 <- login.post("/api/add_action", "name" -> "test", "test" -> "j%", "action" -> "filter") !@ "add_action should have failed: no number" if shouldnt(testSuccess(add_action10))
-
       } {
-        println(add_action7.xml)
-        println(add_action8.xml)
+        shouldnt(testSuccess(login.post("/api/add_action", "name" -> "test", "test" -> "#moo") !@ "add_action should have failed: no action"))
+        shouldnt(testSuccess(login.post("/api/add_action", "name" -> "test", "action" -> "filter") !@ "add_action should have failed: no test"))
+        shouldnt(testSuccess(login.post("/api/add_action", "action" -> "filter", "test" -> "#moo") !@ "add_action should have failed: no name"))
+        shouldnt(testSuccess(login.post("/api/add_action", "name" -> "test", "test" -> "unkown", "action" -> "filter") !@ "add_action should have failed: unknown test"))
+        shouldnt(testSuccess(login.post("/api/add_action", "name" -> "test", "test" -> "moo", "action" -> "unknown") !@ "add_action should have failed: unknown action"))
+        shouldnt(testSuccess(login.post("/api/add_action", "name" -> "test", "test" -> "@foo", "action" -> "filter") !@ "add_action should have failed: unknown user"))
+        shouldnt(testSuccess(login.post("/api/add_action", "name" -> "test", "test" -> "resent:foo", "action" -> "filter") !@ "add_action should have failed: unknown user"))
+        shouldnt(testSuccess(login.post("/api/add_action", "name" -> "test", "test" -> "pool:foo", "action" -> "filter") !@ "add_action should have failed: unknown pool"))
+        shouldnt(testSuccess(login.post("/api/add_action", "name" -> "test", "test" -> "every 0 mins", "action" -> "filter") !@ "add_action should have failed: no number"))
+        shouldnt(testSuccess(login.post("/api/add_action", "name" -> "test", "test" -> "every -1 mins", "action" -> "filter") !@ "add_action should have failed: no number"))
+        shouldnt(testSuccess(login.post("/api/add_action", "name" -> "test", "test" -> "every a mins", "action" -> "filter") !@ "add_action should have failed: no number"))
+        //shouldnt(testSuccess(login.post("/api/add_action", "name" -> "test", "test" -> "110%", "action" -> "filter") !@ "add_action should have failed: no number"))
+        //shouldnt(testSuccess(login.post("/api/add_action", "name" -> "test", "test" -> "j%", "action" -> "filter") !@ "add_action should have failed: no number"))
+
       }
     }
 

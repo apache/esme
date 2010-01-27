@@ -272,7 +272,6 @@
                 <configuration>
                     <jvmArgs>
                         <jvmArg>-Xmx1024m</jvmArg>
-                        <jvmArg>-Xss1024k</jvmArg>
                     </jvmArgs>
                     <scalaVersion>${scala.version}</scalaVersion>
                 </configuration>
