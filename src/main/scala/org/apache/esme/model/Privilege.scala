@@ -57,19 +57,19 @@ object Privilege extends Privilege with LongKeyedMetaMapper[Privilege] {
                     
   }
   
-  def findViewablePools(userId: Long): Set[Long] =
-  Set(Privilege.findMap(
+  def findViewablePools(userId: Long): List[Long] =
+  List(Privilege.findMap(
     By(Privilege.user, userId),
     NotBy(Privilege.permission, Permission.Denied)
   )(p => Full(p.pool.is)) :_*)
 
-  def findWritablePools(userId: Long): Set[Long] = Set(Privilege.findMap(
+  def findWritablePools(userId: Long): List[Long] = List(Privilege.findMap(
     By(Privilege.user, userId),
     NotBy(Privilege.permission, Permission.Read),
     NotBy(Privilege.permission, Permission.Denied)
   )(p => Full(p.pool.is)) :_*)
 
-  def findAdminPools(userId: Long): Set[Long] = Set(Privilege.findMap(
+  def findAdminPools(userId: Long): List[Long] = List(Privilege.findMap(
     By(Privilege.user, userId),
     By(Privilege.permission, Permission.Admin)
   )(p => Full(p.pool.is)) :_*)
