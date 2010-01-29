@@ -217,21 +217,22 @@ object ApiSpecs extends Specification with TestKit {
         //println(add_pool.xml)
       }
     }
-     "AddPoolNeg" in {
+
+    "AddPoolNeg" in {
       for{
         add_pool <- post("/api/add_pool/ttt8787") !@ "add pool should have failed with no login" if shouldnt(testSuccess(add_pool))
         login <- post("/api/login", "token" -> token) !@ "Failed to log in" if (testSuccess(login))
-        add_pool1 <- login.post("/api/add_pool") !@ "add pool should have failed with no pool name" if shouldnt(testSuccess(add_pool1))
-       } {
-        println(add_pool.xml)
+        add_pool1 <- login.post("/api/add_pool")
+      } {
+        add_pool1.code must be equalTo 404
       }
     }
   
     "SendMessageTokenNeg1" in {
       for{
-        send_msg <- post("/api/send_msg", "token" -> "badtoken", "message" -> "mymessage") !@ "send_msg should have failed with bad token" if shouldnt(testSuccess(send_msg))
-       } {
-        println(send_msg.xml)
+        send_msg <- post("/api/send_msg", "token" -> "badtoken", "message" -> "mymessage") // !@ "send_msg should have failed with bad token" if shouldnt(testSuccess(send_msg))
+      } {               
+        send_msg.code must be equalTo 404
       }
     }
     "SendMessageTokenNeg" in {
