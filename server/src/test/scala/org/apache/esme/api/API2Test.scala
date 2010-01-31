@@ -24,6 +24,7 @@ import org.specs.runner.JUnit3
 import org.specs.runner.ConsoleRunner
 import net.liftweb.util._
 import net.liftweb.common._
+import net.liftweb.mapper.{By}
 import org.specs.matcher._
 import Helpers._
 import net.sourceforge.jwebunit.junit.WebTester
@@ -51,10 +52,7 @@ object Api2Specs extends Specification with TestKit {
   // role in the test.default.props file.
                                                                     
   val theUser = find_or_create_user("api_test")    
-  val token = {
-    val toke = AuthToken.create.user(theUser).saveMe
-    toke.uniqueId.is
-  }           
+  val token = find_or_create_token(theUser)
 
   val post_session = post("session", "token" -> token) 
 
@@ -66,6 +64,17 @@ object Api2Specs extends Specification with TestKit {
     else { 
       val session = new LiftSession(Helpers.randomString(20), "", Empty)                          
       S.initIfUninitted(session) {User.createAndPopulate.nickname(userName).saveMe}
+    }
+  }  
+
+  def find_or_create_token(tokenUser: User): String = {
+    val token: Box[AuthToken] = AuthToken.find(By(AuthToken.user,tokenUser))
+
+    if(token.isDefined)
+      token.open_!.uniqueId.is
+    else {
+      val toke = AuthToken.create.user(tokenUser).saveMe
+      toke.uniqueId.is
     }
   }
 
@@ -164,9 +173,8 @@ object Api2Specs extends Specification with TestKit {
       }
 
       "with a valid session but no role authorization returns 403 (forbidden)" in {
-		val new_user = find_or_create_user("tester")
-		val new_toke = AuthToken.create.user(new_user).saveMe
-		val new_token = new_toke.uniqueId.is        
+		val new_user = find_or_create_user("tester2")
+		val new_token = find_or_create_token(new_user)
 		
         for{     
 		  sess <- post("session", "token" -> new_token)
@@ -190,9 +198,8 @@ object Api2Specs extends Specification with TestKit {
     }
 
     "/users/USERID/tokens GET" in {
-      val new_user = find_or_create_user("tester")
-	  val new_toke = AuthToken.create.user(new_user).saveMe
-	  val new_token = new_toke.uniqueId.is
+      val new_user = find_or_create_user("tester3")
+	  val new_token = find_or_create_token(new_user)
 
       "with valid session" in {
         for{
@@ -205,9 +212,8 @@ object Api2Specs extends Specification with TestKit {
       }
 
       "with valid session but no role authorization returns 403 (forbidden)" in {
-		val new_user = find_or_create_user("tester")
-		val new_toke = AuthToken.create.user(new_user).saveMe
-		val new_token = new_toke.uniqueId.is        
+		val new_user = find_or_create_user("tester4")
+		val new_token = find_or_create_token(new_user)
 		
         for{     
 		  sess <- post("session", "token" -> new_token)
@@ -227,7 +233,7 @@ object Api2Specs extends Specification with TestKit {
     }        
 
     "/users/USERID/tokens POST" in {
-      val new_user = find_or_create_user("tester")
+      val new_user = find_or_create_user("tester5")
 
       "with valid session" in {
         for{
@@ -243,9 +249,8 @@ object Api2Specs extends Specification with TestKit {
       }
 
       "with valid session but no role authorization returns 403 (forbidden)" in {
-		val new_user = find_or_create_user("tester")
-		val new_toke = AuthToken.create.user(new_user).saveMe
-		val new_token = new_toke.uniqueId.is        
+		val new_user = find_or_create_user("tester6")
+		val new_token = find_or_create_token(new_user)
 		
         for{     
 		  sess <- post("session", "token" -> new_token)
@@ -765,8 +770,7 @@ object Api2Specs extends Specification with TestKit {
 
       "with valid session and new messages but no pool authorization returns 403 (forbidden)" in {
 		val new_user = find_or_create_user("tester6")
-		val new_toke = AuthToken.create.user(new_user).saveMe
-		val new_token = new_toke.uniqueId.is        
+		val new_token = find_or_create_token(new_user)
 		
 		for{
 	      sess <- post_session
