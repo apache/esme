@@ -1,0 +1,15 @@
+<lift:surround with="default" at="content">
+  <lift:editProfile form="post">
+    <table id="profile">
+      <tbody>
+        <tr> <td><lift:loc>ui_sign_up_nickname</lift:loc></td> <td><user:nickname/></td> </tr>
+        <tr> <td><lift:loc>ui_sign_up_firstname</lift:loc></td> <td><user:firstName/></td> </tr>
+        <tr> <td><lift:loc>ui_sign_up_lastname</lift:loc></td> <td><user:lastName/></td> </tr>
+        <tr> <td><lift:loc>ui_sign_up_image_url</lift:loc></td> <td><user:imageURL/></td> </tr>
+        <tr> <td><lift:loc>ui_sign_up_timezone</lift:loc></td> <td><user:timezone/></td> </tr>
+        <tr> <td><lift:loc>ui_sign_up_locale</lift:loc></td> <td><user:locale/></td> </tr>
+        <user:save/>
+      </tbody>
+    </table>
+  </lift:editProfile>
+</lift:surround>
