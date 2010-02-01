@@ -136,7 +136,8 @@ class Boot {
         AccessPoolMgr.menuItems :::
         StreamMgr.menuItems :::
         ConversationMgr.menuItems :::
-        SearchMgr.menuItems
+        SearchMgr.menuItems :::
+        ProfileMgr.menuItems
 
     LiftRules.setSiteMap(SiteMap(entries: _*))
 
