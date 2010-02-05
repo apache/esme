@@ -27,9 +27,9 @@
     <connection>
       <jdbc>
           <dataSourceProvider>
-              <driverManager  url="jdbc:stax://esmeapache?emulateLocators=true"
-                              username="esmeapache" password="esme"
-                              driverClass="com.staxnet.jdbc.Driver" />
+              <driverManager  url="jdbc:example"
+                              username="user" password="password"
+                              driverClass="com.example.jdbc.Driver" />
           </dataSourceProvider>
       </jdbc>
 
