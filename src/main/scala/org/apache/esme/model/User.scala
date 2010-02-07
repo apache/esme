@@ -346,7 +346,11 @@ class User extends KeyedMapper[Long, User] with UserIdAsString {// OpenIDProtoUs
       val others = getSingleton.findByNickname(str).
       // getSingleton.findAll(By(getSingleton.nickname, str)).
       filter(_.id.is != fieldOwner.id.is)
-      others.map(u => FieldError(this, <xml:group>Duplicate nickname: {str}</xml:group>))
+      others.map{u =>
+        val msg = "Duplicate nickname: " + str
+        S.error(msg)
+        FieldError(this, Text(msg))
+      }
     }
 
     private def validText(str: String): List[FieldError] =
