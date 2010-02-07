@@ -347,7 +347,7 @@ class User extends KeyedMapper[Long, User] with UserIdAsString {// OpenIDProtoUs
       // getSingleton.findAll(By(getSingleton.nickname, str)).
       filter(_.id.is != fieldOwner.id.is)
       others.map{u =>
-        val msg = "Duplicate nickname: " + str
+        val msg = S.?("base_user_err_duplicate_nickname", str)
         S.error(msg)
         FieldError(this, Text(msg))
       }
