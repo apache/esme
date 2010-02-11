@@ -67,6 +67,8 @@ object ProfileMgr {
                                  
       val openIdUrl = openID.map(_.authKey.is) getOrElse ""
       val from = "/profile_view/edit"
+
+      var pwd = ""
       
       def saveOpenID(openid: Box[Identifier], fo: Box[VerificationResult], exp: Box[Exception]): LiftResponse = {
         (openid, exp) match {
@@ -100,6 +102,26 @@ object ProfileMgr {
         }
       }
       
+      // TODO: unify with duplicate validation code in UserAuth
+      def checkPassword(confirm: String) {
+        import UserPwdAuthModule.moduleName
+        
+        if (pwd != "") {
+          if (pwd != confirm) {
+            S.error(S.?("base_user_err_mismatch_password"))
+          } else if (pwd.length < 6) {
+            S.error(S.?("base_user_err_password_too_short"))
+          } else {
+            for (userPwd <- UserAuth.find(By(UserAuth.user, user),
+                                          By(UserAuth.authType, moduleName))) {
+              val salt = randomString(10)
+              val md5 = Helpers.md5(salt + pwd)
+              userPwd.authData(salt+";"+md5).save
+            }
+          }
+        }
+      }
+      
       bind("user", in, "nickname" -> text(user.nickname, {_ =>}, "disabled" -> "true"),
                        "lastName" -> user.lastName.toForm,
                        "imageURL" -> user.imageUrl.toForm,
@@ -107,6 +129,8 @@ object ProfileMgr {
                        "timezone" -> user.timezone.toForm,
                        "locale" -> user.locale.toForm,
                        "openid" -> text(openIdUrl, registerOpenID(_)),
+                       "password" -> password(pwd, p => pwd = p.trim),
+                       "confirm" -> password(pwd, p => checkPassword(p.trim)),
                        "save" -> submit("Save", user.save))
     }).getOrElse(NodeSeq.Empty)
 
