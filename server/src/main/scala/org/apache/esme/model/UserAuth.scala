@@ -211,8 +211,7 @@ object OpenIDAuthModule extends AuthModule {
               RedirectResponse(from, S responseCookies :_*)
 
             case (Full(id), _) =>
-              findOrCreate(id.getIdentifier())
-              //S.error(S.?("base_user_err_openid_not_reg",id.getIdentifier()))
+              S.error(S.?("base_user_err_openid_not_reg",id.getIdentifier()))
               RedirectResponse(from, S responseCookies :_*)
 
 
