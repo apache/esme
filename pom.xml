@@ -274,7 +274,10 @@
         <testSourceDirectory>src/test/scala</testSourceDirectory>
 
         <plugins>
-
+            <plugin>
+                <groupId>org.apache.rat</groupId>
+                <artifactId>apache-rat-plugin</artifactId>
+            </plugin>
             <plugin>
                 <groupId>org.scala-tools</groupId>
                 <artifactId>maven-scala-plugin</artifactId>
