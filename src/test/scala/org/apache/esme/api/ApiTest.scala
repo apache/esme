@@ -25,8 +25,7 @@ import org.specs.runner.ConsoleRunner
 import net.liftweb.util._
 import net.liftweb.common._
 import org.specs.matcher._
-import Helpers._
-import net.sourceforge.jwebunit.junit.WebTester
+import Helpers._                                   
 import org.mortbay.jetty.Server
 import org.mortbay.jetty.servlet.{Context, FilterHolder}
 import org.mortbay.jetty.servlet.ServletHolder
@@ -34,8 +33,7 @@ import org.mortbay.jetty.webapp.WebAppContext
 import org.apache.esme._
 import model._
 import net.liftweb.http._
-
-import net.sourceforge.jwebunit.junit.WebTester
+                                                        
 import _root_.junit.framework.AssertionFailedError
 import testing.{ReportFailure, TestKit, HttpResponse, TestFramework, Response}
 
