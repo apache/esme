@@ -26,8 +26,7 @@ import org.specs.runner.ConsoleRunner
 import net.liftweb.util._
 import net.liftweb.common._
 import org.specs.matcher._
-import Helpers._
-import net.sourceforge.jwebunit.junit.WebTester
+import Helpers._                                    
 import org.mortbay.jetty.Server
 import org.mortbay.jetty.servlet.{Context, FilterHolder}
 import org.mortbay.jetty.servlet.ServletHolder
@@ -70,24 +69,7 @@ object JettyTestServer {
   def stop() = {
     server_.stop()
     server_.join()
-  }
-
-  def browse(startPath: String, f:(WebTester) => Unit) = {
-    val wc = new WebTester()
-    try {
-      wc.setScriptingEnabled(false)
-      wc.beginAt(JettyTestServer.urlFor(startPath))
-      f(wc)
-    } catch {
-      case exc: AssertionFailedError => {
-          System.err.println("serveur response: ", wc.getServeurResponse())
-          throw exc
-        }
-    } finally {
-      wc.closeBrowser()
-    }
-  }
-
+  }               
 }
 
 
