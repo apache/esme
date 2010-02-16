@@ -26,8 +26,7 @@ import net.liftweb.util._
 import net.liftweb.common._
 import org.specs.matcher._
 import Helpers._
-import MsgParser._
-import net.sourceforge.jwebunit.junit.WebTester
+import MsgParser._                                      
 import org.mortbay.jetty.Server
 import org.mortbay.jetty.servlet.{Context, FilterHolder}
 import org.mortbay.jetty.servlet.ServletHolder
@@ -36,8 +35,7 @@ import org.apache.esme._
 import model._
 import net.liftweb.http._
 import testing.{ReportFailure, TestKit, HttpResponse, TestFramework}
-
-import net.sourceforge.jwebunit.junit.WebTester
+                                                       
 import _root_.junit.framework.AssertionFailedError
 
 class MsgParserSpecsAsTest extends JUnit3(MsgParserSpecs)
