@@ -48,6 +48,9 @@ contains the main "ESME" server. the second directory "esme-java-client"
 contains an example of a java client that is using the our original REST
 API.
 
+Please note that ESME currently only works with JDK 1.6. We are hopeful
+that JDK 1.5 will soon be supported.
+
 You can build the ESME sources using the Maven 2 build system. Execute the
 following command in the ESME source directory to build the sources and
 to start the application via jetty:
