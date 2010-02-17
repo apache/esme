@@ -51,6 +51,11 @@
     </properties>
 
     <repositories>
+         <repository>
+               <id>Base</id>
+              <name>http://repo2.maven.org/maven2/</name>
+              <url>http://repo2.maven.org/maven2/</url>
+          </repository> 
         <repository>
             <id>scala-tools.org</id>
             <name>Scala-Tools Maven2 Repository</name>
@@ -72,13 +77,17 @@
             <name>Twitter Repo</name>
             <url>http://www.lag.net/nest</url>
         </repository>
-                       
-        <repository>
-		  <id>Apache Repo</id>
-		  <name>Apache repository for Derby 10.5.1.1</name>
-		  <url>http://people.apache.org/repo/m1-ibiblio-rsync-repository</url>
-		  <layout>legacy</layout>
-		</repository>
+         <repository>
+               <id>Configgy</id>
+              <name>http://www.lag.net/repo</name>
+              <url>http://www.lag.net/repo</url>
+          </repository>
+          <repository>
+             <id>Apache Repo</id> 
+              <name>Apache repository for Derby 10.5.1.1</name> 
+              <url>http://people.apache.org/repo/m1-ibiblio-rsync-repository</url> 
+              <layout>legacy</layout> 
+            </repository>                  
     </repositories>
 
     <pluginRepositories>
@@ -157,7 +166,7 @@
             <groupId>postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>8.2-507.jdbc3</version>
-        </dependency>   
+        </dependency> 
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
