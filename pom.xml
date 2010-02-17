@@ -22,12 +22,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.esme</groupId>
     <artifactId>esme-server</artifactId>
-    <version>0.3.0-SNAPSHOT</version>
+    <version>apache-esme-1.0-incubating</version>
     <packaging>war</packaging>
     <name>ESME</name>
     <inceptionYear>2008</inceptionYear>
     <properties>
-        <lift.version>1.1-SNAPSHOT</lift.version>
+        <lift.version>1.1-M8</lift.version>
         <scala.version>2.7.7</scala.version>
         <compass.version>2.1.1</compass.version>
         <lucene.version>2.4.0</lucene.version>
