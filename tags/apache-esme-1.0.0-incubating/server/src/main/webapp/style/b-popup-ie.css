@@ -1,0 +1,51 @@
+/*
+ Licensed to the Apache Software Foundation (ASF) under one   *
+ or more contributor license agreements.  See the NOTICE file *
+ distributed with this work for additional information        *
+ regarding copyright ownership.  The ASF licenses this file   *
+ to you under the Apache License, Version 2.0 (the            *
+ "License"); you may not use this file except in compliance   *
+ with the License.  You may obtain a copy of the License at   *
+                                                              *
+   http://www.apache.org/licenses/LICENSE-2.0                 *
+                                                              *
+ Unless required by applicable law or agreed to in writing,   *
+ software distributed under the License is distributed on an  *
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY       *
+ KIND, either express or implied.  See the License for the    *
+ specific language governing permissions and limitations      *
+ under the License.                                           *
+*/
+
+/* Shadows (begin) */ /**/
+    * html  .b-popup .b
+    {
+        h: expression((this.h != parentNode.offsetHeight) && (this.h = parentNode.offsetHeight, style.left = this.h % 0 ? 0 : -1) );
+    }
+
+    * html .b-popup .rt i
+    {
+        h: expression((this.h != parentNode.offsetHeight) && (this.h = parentNode.offsetHeight, style.right = this.h % 0 ? -1 : -2) );
+    }
+
+    * html .b-popup .rb
+    {
+        h: expression((this.h != parentNode.offsetHeight) && (this.h = parentNode.offsetHeight, style.right = this.h % 0 ? -1 : -2) );
+    }
+
+    * html .b-popup .rb i
+    {
+        h: expression((this.h != parentNode.offsetHeight) && (this.h = parentNode.offsetHeight, style.bottom = this.h % 0 ? 0 : -1) );
+    }
+
+    * html .b-popup .lb i
+    {
+        h: expression((this.h != parentNode.offsetHeight) && (this.h = parentNode.offsetHeight, style.bottom = this.h % 0 ? 0 : -1) );
+    }
+
+    * html .b-popup .lb
+    {
+        h: expression((this.h != parentNode.offsetHeight) && (this.h = parentNode.offsetHeight, style.left = this.h % 0 ? 0 : -1) );
+    }
+
+/* Shadows (end) */ /**/
