@@ -15,7 +15,5 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
- */
- 
-compass_config_file=/props/compass.jdbc.cfg.xml
-role.api_test=integration-admin
+ */                                
+               

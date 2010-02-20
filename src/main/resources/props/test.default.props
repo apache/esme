@@ -15,5 +15,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
- */
- role.api_test=integration-admin
+ */                                  
+
+compass_config_file=/props/compass.filesystem.cfg.xml
+role.api_test=integration-admin
