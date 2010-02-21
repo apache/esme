@@ -24,11 +24,6 @@ incubation status of the Apache ESME project.
 Building ESME
 =============
 
-There are two directories in this release. The first directory "server" 
-contains the main "ESME" server. the second directory "esme-java-client" 
-contains an example of a java client that is using the our original REST
-API.
-
 Please note that ESME currently only works with JDK 1.6. We are hopeful
 that JDK 1.5 will soon be supported.
 
