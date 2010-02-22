@@ -1,0 +1,81 @@
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one   *
+ or more contributor license agreements.  See the NOTICE file *
+ distributed with this work for additional information        *
+ regarding copyright ownership.  The ASF licenses this file   *
+ to you under the Apache License, Version 2.0 (the            *
+ "License"); you may not use this file except in compliance   *
+ with the License.  You may obtain a copy of the License at   *
+                                                              *
+   http://www.apache.org/licenses/LICENSE-2.0                 *
+                                                              *
+ Unless required by applicable law or agreed to in writing,   *
+ software distributed under the License is distributed on an  *
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY       *
+ KIND, either express or implied.  See the License for the    *
+ specific language governing permissions and limitations      *
+ under the License.                                           *
+-->
+ 
+ <lift:surround with="default" at="content">
+    <div>
+        <h2><lift:loc>ui_sign_up_intro</lift:loc></h2>
+        <lift:signup form="post">
+            <div>
+                <fieldset>
+                    <legend>
+                        <lift:loc>ui_sign_up_basic_info</lift:loc>
+                    </legend>
+                    <div>
+                        <signup:credentials/>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend>
+                        <lift:loc>ui_sign_up_details</lift:loc>
+                    </legend>
+                    <div>
+                        <label for="nickname">
+                            <lift:loc>ui_sign_up_nickname</lift:loc>
+                            <br/>
+                            <signup:nickname/> <lift:msg id="users_nickname"/>
+                        </label>
+                        <br/>
+                        <label for="firstname">
+                            <lift:loc>ui_sign_up_firstname</lift:loc>
+                            <br/>
+                            <signup:firstname/>
+                        </label>
+                        <br/>
+                        <label for="lastname">
+                            <lift:loc>ui_sign_up_lastname</lift:loc>
+                            <br/>
+                            <signup:lastname/>
+                        </label>
+                        <br/>
+                        <label for="image_url">
+                            <lift:loc>ui_sign_up_image_url</lift:loc>
+                            <br/>
+                            <signup:image_url/>
+                        </label>
+                        <br/>
+                        <label for="timezone">
+                            <lift:loc>ui_sign_up_timezone</lift:loc>
+                            <br/>
+                            <signup:timezone/>
+                        </label>
+                        <br/>
+                        <label for="locale">
+                            <lift:loc>ui_sign_up_locale</lift:loc>
+                            <br/>
+                            <signup:locale/>
+                        </label>
+                    </div>
+                </fieldset>
+            </div>
+            <label for="submit">
+                <signup:submit id="submit"/>
+            </label>
+        </lift:signup>
+    </div>
+</lift:surround>

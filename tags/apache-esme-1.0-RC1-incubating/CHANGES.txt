@@ -1,0 +1,43 @@
+ESME Change Log
+
+Release 1.0-incubating - 02/28/2010
+
+ESME-12 List of missing REST APIs functionality
+ESME-19 API functions for Administration-related activities
+ESME-26 The message parser should ignore # in urls
+ESME-40 Static Texts in Resource File
+ESME-47 Some Licensing Nits
+ESME-53 Implement access pools
+ESME-54 Restrict viewing messages to users with access to corresponding pools
+ESME-69 Revoke permissions from a user in a pool
+ESME-72  Add other attributes to the AccessPool object 
+ESME-73 Change REST-API to use new access pool attributes
+ESME-87 The current access pool UI doesn't allow users to be deleted to an access pool.
+ESME-89 Add create date to an action
+ESME-91 Add Create date to authorization token
+ESME-94 Conversation Page is broken
+ESME-95 User images aren't displayed on main messages page - public timleine
+ESME-96 ESME image for users with no avatars should use internal image
+ESME-97  Add user links to streams page
+ESME-100 Finish web UI
+ESME-101 Search is currently broken
+ESME-104 Profile link is missing 
+ESME-106  Remove msgformat.scala - it is no longer needed
+ESME-108 "View my pools" functionality 
+ESME-110 Wrong fields in the public timeline
+ESME-111 OpenID login/signon is broken
+ESME-113 When a message is creating containing a " character, it displays as &quot;
+ESME-125 Change Date format to make lists sortable: Users and Streams pages
+ESME-128 Textile Formatting Stripper for non-web clients 
+ESME-129 Delete old branches that are no longer needed 
+ESME-131 Message in HTTP Post action includes tags twice 
+ESME-132 Signup using username that already exists doesn't result in an error message
+ESME-133 Delete the scala file "didperform.scala" 
+ESME-134 UserView.scala contains old code that is no longer used 
+ESME-136 Complete basic test coverage for existing API2 methods
+ESME-141 Text replaced in post actions not used in the URL
+ESME-142 Get tests running on an in-memory DB (H2 or Derby)
+ESME-144 API2 message streaming method displays RegularReason type messages, which should not be displayed to the user
+ESME-150 POST /api2/pools/POOLID/users method does not work (403 - unauthorized)
+ESME-151 POST /api2/user/messages?message=something&pool=poolname&tags=#one,#two drops the tags (when posting to pool)
+ESME-154 LGPL code in ESME, review and remove before release
