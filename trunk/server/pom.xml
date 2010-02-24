@@ -87,7 +87,7 @@
               <name>Apache repository for Derby 10.5.1.1</name> 
               <url>http://people.apache.org/repo/m1-ibiblio-rsync-repository</url> 
               <layout>legacy</layout> 
-            </repository>                  
+            </repository>           
     </repositories>
 
     <pluginRepositories>
@@ -104,12 +104,6 @@
                 <groupId>org.scala-lang</groupId>
                 <artifactId>scala-library</artifactId>
                 <version>${scala.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>servlet-api</artifactId>
-                <version>2.5</version>
-                <scope>provided</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -172,13 +166,12 @@
             <artifactId>derby</artifactId>
             <version>10.5.1.1</version>
         </dependency>       
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
-            <scope>provided</scope>
-        </dependency>
-
+     <dependency>
+       <groupId>org.jboss.netty</groupId>
+       <artifactId>netty</artifactId>
+       <version>3.1.5.GA</version>
+       <scope>compile</scope>
+     </dependency>
 
         <dependency>
             <groupId>junit</groupId>
