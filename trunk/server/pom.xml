@@ -25,13 +25,32 @@
     <version>apache-esme-1.0-RC1-incubating</version>
     <packaging>war</packaging>
     <name>Apache Enterprise Social Messaging Experiment (ESME)</name>
+     <url>http://incubator.apache.org/esme</url>
+    <description>ESME is a social tool that takes the immediacy of messaging and applies it to real time business process problem solving</description>
     <inceptionYear>2008</inceptionYear>
+        <issueManagement>
+          <system>JIRA</system>
+         <url>http://issues.apache.org/jira/browse/ESME</url>
+     </issueManagement>
+     <ciManagement>
+         <system>Hudson</system>
+         <url>http://hudson.zones.apache.org/hudson/job/ESME</url>
+     </ciManagement>
     <licenses>
        <license>
            <name>The Apache Software License, Version 2.0</name>
            <url>LICENSE.txt</url>
        </license>
     </licenses>
+        <organization>
+       <name>Apache Software Foundation: Incubator</name>
+       <url>http://inciubator.apache.org</url>
+    </organization>
+      <scm>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/esme</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/esme</developerConnection>
+          <url>http://svn.apache.org/repos/asf/incubator/esme</url>
+     </scm>
     <mailingLists>
      <mailingList>
       <name>ESME Dev List</name>
@@ -40,7 +59,21 @@
       <post>esme-dev@incubator.apache.org</post>
       <archive>http://mail-archives.apache.org/mod_mbox/incubator-esme-dev/</archive>
     </mailingList>
-  </mailingLists>
+   </mailingLists>
+     <developers>
+    <developer>
+      <id>rhirsch</id>
+      <name>Dick Hirsch</name>
+      <email>rhirsch -at- apache.org</email>
+      <organization>Apache</organization>
+      <roles>
+        <role>Release Manager</role>
+        <role>Wiki Gardnener</role>
+        <role>Process Analyst</role>
+        <role>All-Arounder</role>
+      </roles>
+    </developer>
+    </developers>
     <properties>
         <lift.version>1.1-M8</lift.version>
         <scala.version>2.7.7</scala.version>
@@ -156,11 +189,7 @@
             <artifactId>compass</artifactId>
             <version>${compass.version}</version>
         </dependency>
-        <dependency>
-            <groupId>postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>8.2-507.jdbc3</version>
-        </dependency> 
+
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
