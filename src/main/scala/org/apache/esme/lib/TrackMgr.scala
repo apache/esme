@@ -71,10 +71,10 @@ object TrackMgr {
                       (lst => xs.flatMap(i => bind("item", lst,
                                                    "pattern" -> i.pattern,
                                                    "enabled" -> ajaxCheckbox(!i.disabled,
-                                                                             e => {i.disabled(!e).save; Noop} ),
+                                                                             e => {i.disabled(!e).save; S.notice(S.?("base_track_msg_active")); Noop} ),
                                                    "remove" -> 
                                                    ((bt: NodeSeq) => 
-                  ajaxButton(bt, () => {i.removed(true).save ; updateSpan()}))
+                  ajaxButton(bt, () => {i.removed(true).save ; S.notice(S.?("base_track_msg_removed")); updateSpan()}))
               ))))
     }
 
