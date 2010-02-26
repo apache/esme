@@ -75,7 +75,7 @@ abstract class TwitterAPI {
   import TwitterAPI._
   
   val tf = new java.text.SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", java.util.Locale.US)
-  val logger: Logger = Logger.getLogger("org.apache.esme.api")
+  val logger: Logger = Logger.getLogger("org.apache.esme.twitterapi")
   val method: String
   // TODO: twitter struct could be stronger typed- if recursive types are enabled
   type TwitterResponse = Either[(String,List[Any]),Map[String,Any]]
