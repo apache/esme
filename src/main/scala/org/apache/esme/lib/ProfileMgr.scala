@@ -78,6 +78,7 @@ object ProfileMgr {
         (openid, exp) match {
           case (Full(id), _) =>
             UserAuth.create.authType(OpenIDAuthModule.moduleName).user(user).authKey(id.getIdentifier()).save
+            S.notice(S.?("base_user_edit_openid_save"));
         
           case (_, Full(exp)) =>
             S.error(S.?("base_error_exception", exp.getMessage))
@@ -98,7 +99,7 @@ object ProfileMgr {
               case Empty =>
                 ESMEOpenIDVendor.loginAndRedirect(url, saveOpenID)
               // TODO: localize
-              case _ => S.error("This OpenID URL is registered with another user!")
+              case _ => S.error(S.?("base_user_edit_openid_duplicate"))
             }
           } else {
             for (auth <- openID) auth.delete_!
