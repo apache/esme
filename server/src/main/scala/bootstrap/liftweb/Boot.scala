@@ -244,30 +244,17 @@ object DBVendor extends ConnectionManager {
   private val maxPoolSize = 4
 
   private def createOne: Box[Connection] = try {
-    if (Props.getBool("use_prod_psql", false)) {
-      Class.forName("org.postgresql.Driver")
-      val dm = DriverManager.
-          getConnection("jdbc:postgresql://localhost/esme_prod",
-        Props.get("db_user", "dpp"),
-        Props.get("db_pwd", ""))
-      Full(dm)
-    } else if (Props.getBool("use_local_psql", false)) {
-      Class.forName("org.postgresql.Driver")
-      val dm = DriverManager.
-          getConnection("jdbc:postgresql://localhost/esme_dev",
-        Props.get("db_user", "dpp"),
-        Props.get("db_pwd", ""))
-      Full(dm)
-    } else {
-      val driverName = Props.mode match {
-        case Props.RunModes.Test => "jdbc:derby:memory:esme_test_db;create=true"
-        case _ => "jdbc:derby:esme_db;create=true"
-      }
-
-      val dm = DriverManager.getConnection(driverName)
-      Full(dm)
-    }
-  } catch {
+  
+    val driverClass = Props.get("db_driver", "org.apache.derby.jdbc.EmbeddedDriver")
+    val db_user = Props.get("db_user", "")
+    val db_pwd = Props.get("db_pwd", "")
+    val jdbc_connect = Props.get("jdbc_connect_url", "jdbc:derby:esme_db;create=true")
+    
+    Class.forName(driverClass)
+    val dm = DriverManager.getConnection(jdbc_connect, db_user, db_pwd)
+    Full(dm)
+      
+    } catch {
     case e: Exception => e.printStackTrace; Empty
   }
 
