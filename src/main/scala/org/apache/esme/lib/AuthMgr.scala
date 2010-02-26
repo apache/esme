@@ -84,7 +84,7 @@ object AuthMgr {
                                                    "createdDate" -> getDateHtml(i.createdDate),
                                                    "revoke" -> 
                                                    ((bt: NodeSeq) => 
-                  ajaxButton(bt, () => {i.delete_! ; updateSpan()}))
+                  ajaxButton(bt, () => {i.delete_! ; S.notice(S.?("base_token_msg_removed", i.description.is));updateSpan()}))
               ))))
     }
 
@@ -103,7 +103,7 @@ object AuthMgr {
       desc.trim match {
         case x if x.length < 3 => S.error(S.?("base_token_error_name_short"))
         case x => AuthToken.create.description(x).user(user).saveMe
-          S.notice(S.?("base_token_msg_new_token"))
+          S.notice(S.?("base_token_msg_new_token", x))
       }
 
       redisplayTokens() & SetValById(theInput, "")
