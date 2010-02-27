@@ -18,4 +18,4 @@
  */                                  
 compass_config_file=/props/compass.filesystem.cfg.xml
 role.api_test=integration-admin
-jdbc_connect_ur=jdbc:derby:memory:esme_test_db;create=true
+jdbc_connect_url=jdbc:derby:memory:esme_test_db;create=true
