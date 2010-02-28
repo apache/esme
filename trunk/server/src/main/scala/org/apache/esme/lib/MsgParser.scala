@@ -259,7 +259,7 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
   lazy val _perform: Parser[Performances] =
   (acceptCI("filter") ~ lineSpace ~ EOF ^^^ PerformFilter) |
   (acceptCI("resend") ~ lineSpace ~ EOF ^^^ PerformResend) |
-  (mailtoUrl ~ opt(rep(EOL) ~> rep1(anyChar)) <~ EOF ^^ {
+  (mailtoUrl ~ opt(rep1(not(EOF) ~ EOL) ~> rep1(anyChar)) <~ EOF ^^ {
     case mt ~ text => MailTo(mt, text.map(_ mkString))
   }) |
   (scheme ~ userPass ~ urlpart ~ rep(httpHeader) ~ httpData <~ EOF ^^ {
