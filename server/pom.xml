@@ -213,13 +213,11 @@
             <artifactId>commons-httpclient</artifactId>
             <version>3.1</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
-            <version>10.5.1.1</version>
+            <version>10.5.3.0_1</version>
         </dependency>       
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
