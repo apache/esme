@@ -105,7 +105,7 @@
             <name>Compass</name>
             <url>http://repo.compass-project.org</url>
         </repository>
-        <repository>
+         <repository>
             <id>scala-stats</id>
             <name>Twitter Repo</name>
             <url>http://www.lag.net/nest</url>
@@ -150,10 +150,9 @@
         </dependency>
        <dependency>
             <groupId>org.openid4java</groupId>
-            <artifactId>openid4java</artifactId>
+            <artifactId>openid4java-nodeps</artifactId>
             <version>0.9.5</version>
         </dependency>
-
         <dependency>
             <groupId>net.liftweb</groupId>
             <artifactId>lift-util</artifactId>
@@ -184,10 +183,35 @@
             <artifactId>lift-openid</artifactId>
             <version>${lift.version}</version>
         </dependency>
+         <dependency>
+            <groupId>net.liftweb</groupId>
+            <artifactId>lift-actor</artifactId>
+            <version>${lift.version}</version>
+        </dependency>
+         <dependency>
+            <groupId>net.liftweb</groupId>
+            <artifactId>lift-json</artifactId>
+            <version>${lift.version}</version>
+        </dependency>
+         <dependency>
+            <groupId>net.liftweb</groupId>
+            <artifactId>lift-common</artifactId>
+            <version>${lift.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.compass-project</groupId>
             <artifactId>compass</artifactId>
             <version>${compass.version}</version>
+        </dependency>
+         <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+            <version>2.4.0</version>
+        </dependency>
+         <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>3.1</version>
         </dependency>
 
         <dependency>
