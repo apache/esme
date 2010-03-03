@@ -29,6 +29,8 @@ import java.util.logging._
 
 import scala.xml._
 
+import java.util.regex.Matcher
+
 import org.compass.annotations._
 import bootstrap.liftweb.Compass.compass
 import org.compass.core._
@@ -293,7 +295,8 @@ class Message extends LongKeyedMapper[Message] {
 
   private[model] object text extends MappedText(this){
     override lazy val asJsExp =
-      JE.Str(is.replaceFirst("(?<=<body>).*(?=</body>)", digestedXHTML.mkString))
+      JE.Str(is.replaceFirst("(?<=<body>).*(?=</body>)",
+                             Matcher.quoteReplacement(digestedXHTML.mkString)))
   }
 
   object when extends MappedLong(this) {
