@@ -1,194 +1,68 @@
-<!--
- Licensed to the Apache Software Foundation (ASF) under one   *
- or more contributor license agreements.  See the NOTICE file *
- distributed with this work for additional information        *
- regarding copyright ownership.  The ASF licenses this file   *
- to you under the Apache License, Version 2.0 (the            *
- "License"); you may not use this file except in compliance   *
- with the License.  You may obtain a copy of the License at   *
-                                                              *
-   http://www.apache.org/licenses/LICENSE-2.0                 *
-                                                              *
- Unless required by applicable law or agreed to in writing,   *
- software distributed under the License is distributed on an  *
- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY       *
- KIND, either express or implied.  See the License for the    *
- specific language governing permissions and limitations      *
- under the License.                                           *
--->
- <html xmlns="http://www.w3.org/1999/xhtml" xmlns:lift="http://liftweb.net/" xml:lang="eng">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <title><lift:loc>ui_default_title</lift:loc></title>
-        <lift:Style.header/><script id="jquery" src="/classpath/jquery.js" type="text/javascript"/><script id="json" src="/classpath/json.js" type="text/javascript"/><script src="/scripts/display_messages.js" type="text/javascript"/>
+        <meta http-equiv="Content-Language" content="en-US" />
+        <meta http-equiv="Content-Script-Type" content="text/javascript" />
+        <meta http-equiv="Content-Style-Type" content="text/css" />
+        <meta http-equiv="imagetoolbar" content="no" />
+        <meta name="keywords" content="ESME" lang="en-US" />
+        <meta name="description" content="ESME" lang="en-US" />
+        <meta name="copyright" content="ESME" lang="en-US" />
+        <meta name="generator" content="" lang="en-US" />
+        <meta name="author" content="ESME Designed by Joy Reyes" lang="en-US" />
+        <meta name="Robots" content="index,follow,noodp" />
+        <link rel="stylesheet" href="src/style.css" type="text/css" media="screen" />
+        <script id="jquery" src="/classpath/jquery.js" type="text/javascript"/><script id="json" src="/classpath/json.js" type="text/javascript"/><script src="/scripts/display_messages.js" type="text/javascript"/>
     </head>
-    <body>
-        <div class="container">
-            <div class="head">
-                <img src="/images/esme.png" alt="ESME" /><img src="/images/ajax-loader.gif" style="display: none" id="ajax-loader"/>
-                <ul class="b-primary">
-                    <li>
-                        <lift:Menu.item name="sign_up"/>
-                    </li>
-                    <li>
-                        <lift:Menu.item name="EditUser"/>
-                    </li>
-                    <li>
-                        <lift:Menu.item name="about"/>
-                    </li>
-                    <li>
-                        <lift:Menu.item name="list_users"/>
-                    </li>
-                    <li>
-                        <lift:Menu.item name="trackMgt"/>
-                    </li>
-                    <li>
-                        <lift:Menu.item name="actionMgt"/>
-                    </li>
-                    <li>
-                        <lift:Menu.item name="authToken"/>
-                    </li>
-                    <li>
-                        <lift:Menu.item name="accessPools"/>
-                    </li>
-                    <li>
-                        <lift:Menu.item name="streams"/>
-                    </li>
-                    <li>
-                        <lift:Menu.item name="profile"/>
-                    </li>
-                    <li>
-                        <lift:Menu.item name="logout"/>
-                    </li>
-                </ul>
-            </div>
-            <table class="l-page l-page-massage">
-                <tbody>
-                    <tr>
-                        <td class="l-page-r">
-                            <div class="l-top">
-                                <div id="tabs">
-                                    <dl class="messages">
-                                        <dt class="caption">
-                                            <lift:loc>ui_messages_your_timeline</lift:loc>
-                                        </dt>
-                                        <dd>
-                                            <div class="b-list">
-                                                <table>
-                                                    <thead>
-                                                        <tr>
-                                                            <th>
-                                                                <lift:loc>ui_messages_message_label_author</lift:loc>
-                                                            </th>
-                                                            <th>
-                                                                <lift:loc>ui_messages_message_label_message</lift:loc>
-                                                            </th>
-                                                            <th>
-                                                                <lift:loc>ui_messages_message_label_tags</lift:loc>
-                                                            </th>
-                                                        </tr>
-                                                    </thead>
-                                                    <lift:comet type="Timeline"/>
-                                                    <tbody id="personal_timeline_messages">
-                                                        <tr id="message">
-                                                            <td>
-                                                                <img id="avatar" src="/images/avatar.jpg" alt="Anonymous" width="50px"/>
-                                                                <div id="author">
-                                                                    -
-                                                                </div>
-                                                            </td>
-                                                            <td class="message">
-                                                                <div class="outer">
-                                                                    <div class="inner clear">
-                                                                        <p class="text" id="body">
-                                                                            -
-                                                                        </p>
-                                                                    </div>
-                                                                    <div class="metainfo">
-                                                                        <span id="pool">-</span>
-                                                                        <span id="reason">-</span>
-                                                                        <span id="when" class="date">-</span>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                            <td id="tags" class="tag">
-                                                                <p id="tag">
-                                                                    <a href="tag/tag1">-</a>
-                                                                </p>
-                                                                <p id="tag">
-                                                                    <a href="tag/tag2">-</a>
-                                                                </p>
-                                                            </td>
-                                                            <td>
-                                                                <button id="resend" class="btn">
-                                                                    <lift:loc>ui_messages_message_label_resend</lift:loc>
-                                                                </button>
-                                                                <br/>
-                                                                <a href="#" id="reply"><lift:loc>ui_messages_message_label_reply</lift:loc></a>
-                                                                <br/>
-                                                                <a id="conversation"><lift:loc>ui_messages_message_label_conversation</lift:loc></a>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </dd>
-                                    </dl>
-                                    <lift:UserSnip.resendScript/>
-                                    <dl class="tagclouds">
-                                        <dt class="caption">
-                                            <lift:loc>ui_messages_message_label_public_timeline</lift:loc>
-                                        </dt>
-                                        <dd>
-                                            <div class="b-list">
-                                                <lift:comet type="PublicTimeline"/>
-                                                <lift:embed what="templates-hidden/timeline"/>
-                                            </div>
-                                        </dd>
-                                    </dl>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="l-page-l">
-                            <div class="b-edit">
-                                <h2 class="title"><lift:loc>ui_messages_message_label_welcome</lift:loc><span class="name"><lift:UserSnip.name/></span></h2>
-                                <div class="b-popup-c">
-                                    <div class="row clear">
+    <body id="back">
+        <div id="container-bg">
+            <div id="container">
+                <div id="header">
+                    <div id="logo">
+                        <h1><a href="/">ESME</a></h1>
+                    </div>
+                    <div id="top-menu">
+                        <ul>
+                            <li>
+                                <a href="/">Public Timeline</a>
+                                | 
+                            </li>
+                            <li>
+                                <a href="">Settings</a>
+                                | 
+                            </li>
+                        </ul>
+                        <lift:Menu.item name="logout">
+                           <img src="images/btn-signout.gif" alt="" />
+                         </lift:Menu.item>
+                    </div>
+                </div><!--// ENDS HEADER -->
+                <div id="left">
+                    <div id="back-header">
+                        <!---UPDATE BOX-->
+                        <div class="container-update">
+                            <h3><lift:loc>ui_messages_message_label_message_request</lift:loc></h3>
+                            <form action="" method="post">
+                                <div id="form-update">
+                                    <div class="post-form-row">
                                         <label>
-                                            <lift:loc>ui_messages_message_label_message_request</lift:loc>
+                                            Share with
                                         </label>
-                                        <textarea rows="4" cols="20" id="textdude" style="width: 90%"/>
-                                    </div>
-                                    <div class="row clear" style="display: none;" id="reply-to-div">
-                                        <lift:loc>ui_messages_message_label_message_reply</lift:loc>
-                                        <span id="reply-to-span">&nbsp;</span>
-                                        <button onclick="clearReplyTo()">
-                                            <lift:loc>ui_messages_message_label_message_remove_reply</lift:loc>
-                                        </button>
-                                    </div>
-                                    <div class="row clear" style="display: none">
-                                        <label>
-                                            <lift:loc>ui_messages_message_label_message_tag</lift:loc>
-                                        </label>
-                                        <input id="tagdude" style="width: 90%"/>
-                                        <div class="note clear">
-                                            <span class="l"><lift:loc>ui_messages_message_label_message_tag_note</lift:loc></span>
-                                            <span class="r"><lift:loc>ui_messages_message_label_message_tag_not_required</lift:loc></span>
-                                        </div>
-                                    </div>
-                                    <div class="row clear">
-                                        <label>
-                                            <lift:loc>ui_messages_message_label_message_pool</lift:loc>
-                                        </label>
-                                        <select id="access_pool">
+                                        <select name="access_pool" class="inputBox2">
                                             <option id="0"><lift:loc>ui_messages_message_label_message_pool_public</lift:loc></option>
                                             <lift:UserSnip.accessPools/>
                                         </select>
                                     </div>
-                                    <div class="row clear">
-                                        <button class="btn" onclick="javascript:post_msg();">
-                                            <lift:loc>ui_messages_message_update</lift:loc>
-                                        </button>
+                                    <div class="row clear" style="display: none">
+                                        <input id="tagdude" style="width: 90%"/>
+                                    </div>
+                                    <div class="post-form-row">
+                                        <textarea class="inputBox2" id="textdude" rows="5" cols="80%"></textarea>
+                                        <div class="update-btn">
+                                            <input type="image" onclick="javascript:post_msg();" src="images/btn-update.gif" />
+                                        </div>
                                     </div>
                                     <script>
                                         // <![CDATA[
@@ -196,13 +70,13 @@
                                         
                                         function setReplyTo(id, text){
                                             currentConvNumber = id;
-                                            document.getElementById('reply-to-div').style.display = "block";
+                                            //document.getElementById('reply-to-div').style.display = "block";
                                             jQuery('#reply-to-span').html(text);
                                         }
                                         
                                         function clearReplyTo(){
                                             currentConvNumber = 0;
-                                            document.getElementById('reply-to-div').style.display = "none";
+                                            // document.getElementById('reply-to-div').style.display = "none";
                                         }
                                         
                                         function clearResend(id){
@@ -213,89 +87,167 @@
                                     </script>
                                     <lift:UserSnip.postScript/>
                                 </div>
-                                <div class="b-cloud">
-                                    <lift:comet type="TagCloud"/>
-                                </div>
-                                <div class="b-stats">
-                                    <p id="stats-para">
-                                        <lift:loc>ui_messages_message_label_popular</lift:loc>
-                                    </p>
-                                    <lift:UserSnip.popular>
-                                        <table>
-                                            <thead>
-                                                <tr>
-                                                    <th>
-                                                        <lift:loc>ui_messages_message_header_popular_resent</lift:loc>
-                                                    </th>
-                                                    <th>
-                                                        <lift:loc>ui_messages_message_header_popular_message</lift:loc>
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <disp:item>
-                                                    <tr>
-                                                        <td>
-                                                            <item:freq/>
-                                                        </td>
-                                                        <td>
-                                                            <item:author/>:<item:text/><!--<item:date/>-->
-                                                        </td>
-                                                    </tr>
-                                                </disp:item>
-                                            </tbody>
-                                        </table>
-                                    </lift:UserSnip.popular>
-                                </div>
-                                <div class="b-stats">
-                                    <p id="stats-para">
-                                        <lift:loc>ui_messages_message_label_popular_links</lift:loc>
-                                    </p>
-                                    <lift:UserSnip.links>
-                                        <table>
-                                            <thead>
-                                                <tr>
-                                                    <th>
-                                                        <lift:loc>ui_messages_message_header_popular_links_clicked</lift:loc>
-                                                    </th>
-                                                    <th>
-                                                        <lift:loc>ui_messages_message_header_popular_links_link</lift:loc>
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <disp:item>
-                                                    <tr>
-                                                        <td>
-                                                            <item:freq/>
-                                                        </td>
-                                                        <td>
-                                                            <item:url/>
-                                                        </td>
-                                                    </tr>
-                                                </disp:item>
-                                            </tbody>
-                                        </table>
-                                    </lift:UserSnip.links>
-                                </div>
-                                    <div class="bugs">
-                                        <form action="/info_view/search" class="b-primay">
-                                            <input style="height: 20px; background: #c9d8ea;" name="term"/>
-                                          <button class="btn" onclick="javascript:form.submit();">
-                                            <lift:loc>ui_messages_search</lift:loc>
-                                        </button>                                          
-                                        </form>
-                                    </div>
+                            </form>
+                        </div><!--END UPDATE BOX-->
+                    </div><lift:UserSnip.resendScript/>
+                    <!--updates-box
+                    <lift:comet type="Timeline"/> -->
+                    <div class="separator">
+                    </div>
+                    <div id="personal_timeline_messages">
+                        <div class="updates-box">
+                            <div class="avatar">
+                                <img src="images/avatar1.jpg" alt="" />
                             </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                            <div class="update2">
+                                <div class="author">
+                                </div>
+                                <p id="body">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mauris velit, feugiat quis varius ac, malesuada in lectus. Nunc suscipit condimentum eros vitae lacinia. 
+                                </p>
+                                in pool <div class="pool"></div><div id="when"> </div>
+                                <div class="actions">
+                                    <a href="#"><lift:loc>ui_messages_message_label_reply</lift:loc></a>
+                                    | <a href=""><lift:loc>ui_messages_message_label_resend</lift:loc></a>
+                                    | <a href="" id="conversation"><lift:loc>ui_messages_message_label_conversation</lift:loc></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--updates-box-->
+                    <div class="separator">
+                    </div>
+                    <div class="updates-box">
+                        <div class="avatar">
+                            <img src="images/avatar1.jpg" alt="" />
+                        </div>
+                        <div class="update2">
+                            <div class="info2">
+                                <a href="">Nickname</a>
+                            </div>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mauris velit, feugiat quis varius ac, malesuada in lectus. Nunc suscipit condimentum eros vitae lacinia. 
+                            <div class="time">
+                                in pool default 3 hours ago
+                            </div>
+                            <div class="actions">
+                                <a href="">reply</a>
+                                | <a href="">resend</a>
+                                | <a href="">conversation</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!--updates-box-->
+                    <div class="separator">
+                    </div>
+                    <div class="updates-box">
+                        <div class="avatar">
+                            <img src="images/avatar1.jpg" alt="" />
+                        </div>
+                        <div class="update2">
+                            <div class="info2">
+                                <a href="">Nickname</a>
+                            </div>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mauris velit, feugiat quis varius ac, malesuada in lectus. Nunc suscipit condimentum eros vitae lacinia. 
+                            <div class="time">
+                                in pool default 3 hours ago
+                            </div>
+                            <div class="actions">
+                                <a href="">reply</a>
+                                | <a href="">resend</a>
+                                | <a href="">conversation</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!--updates-box-->
+                    <div class="separator">
+                    </div>
+                </div>
+                <!--left-->
+                <div id="right">
+                    <div class="box-right-back">
+                        <div class="avatar">
+                            <img src="images/avatar2.gif" alt="" />
+                        </div><strong><lift:loc>ui_messages_message_label_welcome</lift:loc></strong>
+                        <div class="info4">
+                            <a href=""><span class="name"><lift:UserSnip.name/></span></a>
+                        </div>
+                        <ul class="main-links">
+                            <li>
+                                <lift:Menu.item name="list_users"/>
+                            </li>
+                            <li>
+                                <lift:Menu.item name="trackMgt"/>
+                            </li>
+                            <li>
+                                <lift:Menu.item name="actionMgt"/>
+                            </li>
+                            <li>
+                                <lift:Menu.item name="authToken"/>
+                            </li>
+                            <li>
+                                <lift:Menu.item name="accessPools"/>
+                            </li>
+                            <li>
+                                <lift:Menu.item name="streams"/>
+                            </li>
+                        </ul><!--search form-->
+                        <form action="/info_view/search" method="post">
+                            <div id="search">
+                                <div class="searchBox">
+                                    <input type="text" class="inputBox" name="term" value=""/>
+                                </div>
+                                <div class="searchButton">
+                                    <input type="image" onclick="javascript:form.submit();" src="images/btn-search.gif" style="padding:0;"/>
+                                </div>
+                            </div>
+                        </form><!--search form--><h3><a href="">Tags</a></h3>
+                        <div class="right-content">
+                            <a href="" class="style5">software</a>
+                            <a href="" class="style5">teaching</a>
+                            <a href="" class="style3">Technology</a>
+                            <a href="" class="style3">movies</a>
+                            <a href="" class="style2">twitter</a>
+                            <a href="" class="style1">ebook</a>
+                            <a href="" class="style4">web design</a>
+                            <a href="" class="style4">wordpress</a>
+                            <a href="" class="style1">work from home</a>
+                            <a href="" class="style2">illustrator</a>
+                            <a href="" class="style5">PHP</a>
+                            <a href="" class="style4">AJAX</a>
+                            <a href="" class="style1">wiki</a>
+                            <a href="" class="style3">virtual assistant</a>
+                            <a href="" class="style2">blogging</a>
+                            <a href="" class="style2">movies</a>
+                            <a href="" class="style5">youtube</a>
+                            <a href="" class="style3">free stuff</a>
+                            <a href="" class="style4">tutorials</a>
+                            <a href="" class="style1">articles</a>
+                            <a href="" class="style4">jQuery samples</a>
+                        </div>
+                        <h3><a href="">Popular Messages</a></h3>
+                        <div class="right-content">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus at odio vitae justo ultricies porttitor sit amet nec justo. Nam dictum sodales purus. 
+                        </div>
+                        <h3><a href="">Popular Links</a></h3>
+                        <div class="right-content">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus at odio vitae justo ultricies porttitor sit amet nec justo. Nam dictum sodales purus. 
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--// ENDS CONTAINER -->
         </div>
-        <div class="foot">
-            <center>
-                <lift:loc>ui_default_footer</lift:loc>
-            </center>
+        <!--// ENDS CONTAINER-BG -->
+        <div id="footer">
+            <div class="ftr-links">
+                <a href="index.html">home</a>
+                |<a href="services.html">services</a>
+                |<a href="mission.html">mission</a>
+                |
+                <br/>
+                Copyright &copy; 2009 ESME
+                <br/>
+            </div>
         </div>
     </body>
 </html>
