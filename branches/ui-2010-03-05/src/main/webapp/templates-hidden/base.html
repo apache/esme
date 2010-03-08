@@ -84,37 +84,66 @@
                                 </div>
                             </div>
                         </form><!--search form--><h3><a href="">Tags</a></h3>
-                        <div class="right-content">
-                            <a href="" class="style5">software</a>
-                            <a href="" class="style5">teaching</a>
-                            <a href="" class="style3">Technology</a>
-                            <a href="" class="style3">movies</a>
-                            <a href="" class="style2">twitter</a>
-                            <a href="" class="style1">ebook</a>
-                            <a href="" class="style4">web design</a>
-                            <a href="" class="style4">wordpress</a>
-                            <a href="" class="style1">work from home</a>
-                            <a href="" class="style2">illustrator</a>
-                            <a href="" class="style5">PHP</a>
-                            <a href="" class="style4">AJAX</a>
-                            <a href="" class="style1">wiki</a>
-                            <a href="" class="style3">virtual assistant</a>
-                            <a href="" class="style2">blogging</a>
-                            <a href="" class="style2">movies</a>
-                            <a href="" class="style5">youtube</a>
-                            <a href="" class="style3">free stuff</a>
-                            <a href="" class="style4">tutorials</a>
-                            <a href="" class="style1">articles</a>
-                            <a href="" class="style4">jQuery samples</a>
+                       <div class="right-content">
+                             <lift:comet type="TagCloud"/>
                         </div>
-                        <h3><a href="">Popular Messages</a></h3>
+                        <h3><a href=""><lift:loc>ui_messages_message_label_popular</lift:loc></a></h3>
                         <div class="right-content">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus at odio vitae justo ultricies porttitor sit amet nec justo. Nam dictum sodales purus. 
-                        </div>
-                        <h3><a href="">Popular Links</a></h3>
+                                        <lift:UserSnip.popular>
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>
+                                                        <lift:loc>ui_messages_message_header_popular_resent</lift:loc>
+                                                    </th>
+                                                    <th>
+                                                        <lift:loc>ui_messages_message_header_popular_message</lift:loc>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <disp:item>
+                                                    <tr>
+                                                        <td>
+                                                            <item:freq/>
+                                                        </td>
+                                                        <td>
+                                                            <item:author/>:<item:text/><!--<item:date/>-->
+                                                        </td>
+                                                    </tr>
+                                                </disp:item>
+                                            </tbody>
+                                        </table>
+                                    </lift:UserSnip.popular> 
+                                     </div>
+                        <h3><a href=""><lift:loc>ui_messages_message_label_popular_links</lift:loc></a></h3>
                         <div class="right-content">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus at odio vitae justo ultricies porttitor sit amet nec justo. Nam dictum sodales purus. 
-                        </div>
+                                  <lift:UserSnip.links>
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>
+                                                        <lift:loc>ui_messages_message_header_popular_links_clicked</lift:loc>
+                                                    </th>
+                                                    <th>
+                                                        <lift:loc>ui_messages_message_header_popular_links_link</lift:loc>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <disp:item>
+                                                    <tr>
+                                                        <td>
+                                                            <item:freq/>
+                                                        </td>
+                                                        <td>
+                                                            <item:url/>
+                                                        </td>
+                                                    </tr>
+                                                </disp:item>
+                                            </tbody>
+                                        </table>
+                                    </lift:UserSnip.links>                        </div>
                     </div>
                 </div>
             </div>
