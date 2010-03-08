@@ -404,19 +404,19 @@ ul.main-links  {
 	color:#07376d;
 	font-size:80%;
 }
-.style1{
+.tagstyle5{
 	font-size:80%;
 }
-.style2 {
+.tagstyle4 {
 	font-size:100%;
 }
-.style3 {
+.tagstyle3 {
 	font-size:120%;
 }
-.style4 {
+.tagstyle2 {
 	font-size:140%;
 }
-.style5 {
+.tagstyle1 {
 	font-size:160%;
 }
 .actions {
@@ -496,4 +496,3 @@ img, img a {border:0px; }
 
 .clear {clear:both; height:20px; }
 
-.container-update, .container-tabs {behavior: url("src/iepngfix.htc");}
