@@ -64,31 +64,15 @@ class TagCloud extends CometActor /* with MsgFormat*/ {
 
   def render = {
     val messages = lookupMessages()
-    //Sort the tags & words to put the most prominent in the middle
-    <div id="tagcloud">
-      <p id="tag-para">Tags</p>
-      <p>
+    //Sort the tags & words to put the most prominent in the middle 
+    <p>
         {
           for ((name, weight) <- Tag.centreWeightedTopNTagFreqs(messages, 20))
           yield <xml:group><a href={"/tag/" + name}
-              style={"font-size: "+(0.5F + weight)+"em; text-decoration: none;"}>{
+              style={"font-size: "+(0.5F + weight)+"em;"}>{
                 name}</a> </xml:group>
         }
-      </p>
-      <p/>
-      {/*
-      <p id="word-para">Words</p>
-      <p>
-        {
-          for ((name, weight) <- Message.centreWeightedTopNWordFreqs(messages, 20))
-          yield <xml:group><a href={"/search/" + name}
-              style={"font-size: "+(0.5F + weight)+"em; text-decoration: none;"}>{
-                name}</a> </xml:group>
-        }
-      </p>
-      */
-      }
-    </div>
+    </p>
   }
 
 

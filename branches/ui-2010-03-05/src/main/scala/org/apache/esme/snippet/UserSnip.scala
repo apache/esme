@@ -148,13 +148,12 @@ class UserSnip extends DispatchSnippet {
     {Script(JsonPoster.jsCmd)}
     {Script(Function("post_msg", List(),
                      JsonPoster.call("post",
-                                      JsObj("msg" -> ValById("textdude"),
-                                            "tags" -> ValById("tagdude"),
-                                            "access_pool" -> ValById("access_pool"),
+                                      JsObj("msg" -> ValById("vMsg"),
+                                            "tags" -> ValById("vTag"),
+                                            "access_pool" -> ValById("vPool"),
                                             "reply-to" -> JsVar("currentConvNumber"))) &
-                     SetValById("textdude", "") &
-                     SetValById("tagdude", "") &
-                     SetValById("access_pool", "0") &
+                     SetValById("vMsg", "") &
+                     SetValById("vPool", "0") &
                      JsRaw("clearReplyTo();")
         ))
     }

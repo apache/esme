@@ -68,6 +68,9 @@ function displayMessages(msgArray, elementId)
       if (!msgAuthor.imageurl)
       	msgAuthor.imageurl="/images/avatar.jpg"
       	
+     if (!msgPool)
+      	msgPool="public"
+      	
       var avatar = newMsg.find('#avatar')
       .attr('src', msgAuthor.imageurl)
       .attr('alt',msgAuthor.firstname + ' ' + msgAuthor.lastname);
