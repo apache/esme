@@ -10,11 +10,48 @@
 		       <h1><span><lift:loc>custom_opening_main_title</lift:loc></span></h1>
 		       <p><lift:loc>custom_opening_main_body</lift:loc> </p>
 		</div><!--container-2nd-level-->
+	 <link rel="stylesheet" href="../style/style.css" type="text/css" media="screen" />
 	</div><!--container-2nd-level-bg-->
 	<!--END BLUE HEADER-->	
-	
-	<script src="/scripts/display_messages_start.js" type="text/javascript"/>
+      <script id="jquery" src="/classpath/jquery.js" type="text/javascript"/><script id="json" src="/classpath/json.js" type="text/javascript"/><script src="/scripts/display_single_message.js" type="text/javascript"/>
+
 	 <lift:comet type="SinglePublicTimeline"/>
+	 
+	                    <!--updates-box -->
+                    <lift:comet type="SinglePublicTimeline"/> 
+                    <div class="separator">
+                    </div>
+                    <table>
+                      <tbody id="timeline_messages">
+                       <tr id="message">
+                      <div id="timeline_messages">
+                       <div class="updates-box">
+                        <div class="avatar">
+                            <img id="avatar" src="/images/avatar.jpg" alt="Anonymous" width="50px"/>
+                        </div>
+                        <div class="update2">
+                            <div class="info2" >
+                                <a href="" id="author">-</a>
+                            </div>
+                            <div id="body">-</div>
+                            <div class="time">
+                                <table><tr><td><div id="pool"> -</div></td><td>   </td><td> <div id="when"> -</div></td><td><div id="reason"> -</div></td><td> <div id="source"> -</div></td></tr></table>
+                            </div>
+                            <div id="tags" class="tags">
+                                <p id="tag">
+                                  <a href="tag/tag1">-</a>
+                                </p>
+                                <p id="tag">
+                                  <a href="tag/tag2">-</a>
+                                </p>
+                            </div>
+                        </div>
+                      </div>
+                      </div>
+                      </tr>
+                       </tbody>
+                     </table>
+                    <!--updates-box
 
 	<div class="gray-box">
 		<h1>Now on ESME</h1>
@@ -23,7 +60,7 @@
 			<div class="tag"><a href="">mac</a>, <a href="">design</a>, <a href="">graphics</a>, <a href="">photoshop</a>, <a href="">cs3</a></div>	
 			<div class="info"><a href="">Nickname</a> 3 hours ago</div>
 		</div>
-	</div><!--gray-box
+	</div>
 	
 	<div class="tags-box">
 		<a href="" class="style5">software</a> 
