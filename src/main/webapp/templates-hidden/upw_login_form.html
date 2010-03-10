@@ -1,23 +1,27 @@
 
+
+
 	<div id="login-box">
+	
+
 		<div class="top-login"></div>
 		<div class="mid-login">
-			<form action="/authentication/login" method="post" >
+			<form name="loginFrm" action="javascript:login()" method="post" >
 				<div class="form">
 						<div class="post-form-row">
-							<label>Username</label>
+							<label> <lift:loc>ui_login_email</lift:loc></label>
 							<input type="text" name="username" value="" class="inputBox2"/><!--narrow input field-->
 						</div>	
 						<div class="post-form-row">
 		
-							<label>Password</label>
+							<label><lift:loc>ui_login_password</lift:loc></label>
 							<input type="password" name="password" value="" class="inputBox2"/><!--narrow input field-->
 						</div>	
 						
 						<div class="line"></div>
 						
-						<div class="post-form-row">
-							<label>Or Login using Open ID</label>
+						<div class="post-form-row"> 
+							<label><lift:loc>ui_login_openid</lift:loc></label>
 							<input type="text" name="openID" value="" class="inputBox2"/><!--narrow input field-->
 						</div>	
 						
@@ -39,4 +43,4 @@
                     <div class="box-right">
                         <h3><a href="http://en.wikipedia.org/wiki/Microblogging"><lift:loc>custom_heading_3_title</lift:loc></a></h3>
                         <lift:loc>custom_heading_3_body</lift:loc></div>
-	</div><!--login-box-->
+	</div><!--login-box  "-->
