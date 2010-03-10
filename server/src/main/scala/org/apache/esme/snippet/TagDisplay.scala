@@ -64,7 +64,9 @@ object TagDisplay {
          "nicename" -> user.niceName,
          "followButton" -> followOrNot,
          "timeline" -> bindTag(Mailbox.mostRecentMessagesFor(user.id, 50).map(_._1)) _,
-         "messages" -> bindTag(Message.findAll(By(Message.author, user), MaxRows(50), OrderBy(Message.id, Descending))) _,
+         "messages" -> bindTag(Message.findAll(In(Message.id, Mailbox.message, By(Mailbox.user, user)),
+                                               MaxRows(50),
+                                               OrderBy(Message.id, Descending))) _,
          AttrBindParam("userId", Text(user.id.toString),"userId")
     )
   
