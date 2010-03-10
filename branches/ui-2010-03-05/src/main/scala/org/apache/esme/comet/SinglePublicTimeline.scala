@@ -67,7 +67,7 @@ class SinglePublicTimeline extends CometActor {
   }
 
   override def lowPriority = {
-    case ForceRender =>
+    case SingleForceRender =>
       reRender(false)
 
     case Distributor.NewMessage(msg) =>
@@ -84,4 +84,4 @@ class SinglePublicTimeline extends CometActor {
   }
 }
 
-case object ForceRender
+case object SingleForceRender
