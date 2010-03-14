@@ -702,7 +702,8 @@ object Api2Specs extends Specification with TestKit {
           pool_res <- sess.post("pools", "poolName" -> "test_pool5") 
 		  mess_res <- sess.post("user/messages",
             "message" -> "test message for pool history",
-            "pool" -> "test_pool5")
+            "pool" -> "test_pool5")                
+          timeout <- sleep(2000)
           res <- sess.get("pools/5/messages?history=10")
         } {                                
           res.code must be equalTo 200          
