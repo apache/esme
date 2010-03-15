@@ -84,6 +84,7 @@ object JsonResender extends JsonHandler{
 class UserSnip extends DispatchSnippet {
   def dispatch: DispatchIt = 
   Map("name" -> userName _,
+      "userImage" -> userImage _,
       "postScript" -> postScript _,
       "followers" -> followers _,
       "following" -> following _,
@@ -132,6 +133,13 @@ class UserSnip extends DispatchSnippet {
     S.redirectTo("/user_mgt/edit")
     
     Text(User.currentUser.map(_.wholeName) openOr "")
+  }
+  
+  def userImage(in: NodeSeq) = {
+    if (User.currentUser.map(_.needsChange_?) openOr false)
+    S.redirectTo("/user_mgt/edit")
+    
+    Text(User.currentUser.map(_.image_url) openOr "")
   }
 
   def accessPools(in: NodeSeq): NodeSeq = {

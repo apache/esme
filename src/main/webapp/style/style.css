@@ -1,3 +1,22 @@
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one   *
+ or more contributor license agreements.  See the NOTICE file *
+ distributed with this work for additional information        *
+ regarding copyright ownership.  The ASF licenses this file   *
+ to you under the Apache License, Version 2.0 (the            *
+ "License"); you may not use this file except in compliance   *
+ with the License.  You may obtain a copy of the License at   *
+                                                              *
+   http://www.apache.org/licenses/LICENSE-2.0                 *
+                                                              *
+ Unless required by applicable law or agreed to in writing,   *
+ software distributed under the License is distributed on an  *
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY       *
+ KIND, either express or implied.  See the License for the    *
+ specific language governing permissions and limitations      *
+ under the License.                                           *
+-->
+
 /* reset - don't modify */
 body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,blockquote,th,td{margin:0;padding:0;}
 table{border-collapse:collapse;border-spacing:0;}
@@ -19,6 +38,14 @@ body#back { background:#fff url(../images/bg-back.jpg) repeat-x;}
 
 #container-bg { margin: 0 auto; width: 890px; }
 #container { width: 890px; float:left; }
+
+div#error_major {
+	font-weight:bold;
+}
+
+#note_major {
+	font-weight:bold, italic;
+}
 
 /* LINKS - DEFAULT COLORS ARE SET IN BASE.CSS, CHANGE THESE COLORS AS NEEDED.
 *******************************************************************************/
@@ -53,7 +80,7 @@ div#logo h1 a{
 #top-menu {
 	float:right;
 	text-align:right;
-	width:275px;
+	width:300px;
 	margin-top:15px;
 }
 #top-menu ul {
@@ -473,6 +500,41 @@ ul#toc li.current a {
     background-position: 100% -62px;
     color: #fff;
     font-weight: bold;
+}
+
+.box-title-aux {
+	float:left;
+	width:196px;
+	padding:10px 10px;
+	margin-top:10px;
+}
+
+.box-title-aux h3 {
+	float:left;
+	background: url(../images/heading.gif) no-repeat;
+	color:#fff;
+	height:29px;
+	width:195px;
+	padding:10px 0 0 20px;
+	margin:10px 0 10px -20px;
+	font-size:140%;
+}
+* html .box-title-aux h3 {
+	width:155px;
+	padding:10px 0 0 10px;
+	margin:10px 0 10px -25px;
+	font-size:140%;
+}
+.box-title-aux h3 a{
+	display: block;
+	height:29px;
+	width:215px;
+	color:#fff;
+}
+* html .box-title-aux h3 {
+	position: relative; 
+	left: 0px;
+	margin-left:-10px;
 }
 
 

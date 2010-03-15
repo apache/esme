@@ -60,7 +60,6 @@ object User extends User with KeyedMetaMapper[Long, User] {
     source("profile").
     
     setTextAndTags(S.?("base_user_msg_change", in.nickname, in.wholeName, in.imageUrl), Nil, Empty).
- //   setTextAndTags("User " + in.nickname + " changed profile. Name: " + in.wholeName + ", Image: " + in.imageUrl, Nil, Empty).
      foreach{ msg =>
       if (msg.save) {
         Distributor ! Distributor.AddMessageToMailbox(in.id, msg, ProfileReason(in.id))
@@ -252,12 +251,23 @@ class User extends KeyedMapper[Long, User] with UserIdAsString {// OpenIDProtoUs
     case (_, l) if l.length > 1 => l
     case (_, _) => niceName
   }
+  
+  /**
+   * URL to the image that the user has provided def image_url: String = new URL(imageUrl).toString
+   */
+ 
+  
+  
+  def image_url: String = (imageUrl.is) match {
+    case (f) if f.length > 1 => f
+    case (_) => "/images/avatar.jpg"
+  }
 
   def needsChange_? : Boolean = this.nickname.is.startsWith("chang") &&
   this.firstName.startsWith("Unkn") && this.lastName.startsWith("Unkn")
 
   def image: Option[NodeSeq] = tryo(Text((new URL(imageUrl)).toString)).toOption
-
+  
   def tracking: List[Tracking] =
   Tracking.findAll(By(Tracking.user, this),
                    By(Tracking.disabled, false),
