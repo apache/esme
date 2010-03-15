@@ -16,66 +16,60 @@
  specific language governing permissions and limitations      *
  under the License.                                           *
 -->
- 
- <lift:surround with="default" at="content">
-    <div>
-        <h2><lift:loc>ui_sign_up_intro</lift:loc></h2>
-        <lift:signup form="post">
-            <div>
-                <fieldset>
-                    <legend>
-                        <lift:loc>ui_sign_up_basic_info</lift:loc>
-                    </legend>
-                    <div>
-                        <signup:credentials/>
-                    </div>
-                </fieldset>
-                <fieldset>
-                    <legend>
-                        <lift:loc>ui_sign_up_details</lift:loc>
-                    </legend>
-                    <div>
-                        <label for="nickname">
-                            <lift:loc>ui_sign_up_nickname</lift:loc>
+
+<lift:surround with="default" at="login">
+    <div id="signup-box">
+     <div id="mid-signup">
+        <h2><label><lift:loc>ui_sign_up_intro</lift:loc> </label></h2>
+             <lift:signup form="post">
+                <div class="form">
+                        <div>
+                            <signup:credentials/>
+                        </div>
+                        <div>
+                            <div class="post-form-row">
+                                <label for="nickname">
+                                    <lift:loc>ui_sign_up_nickname</lift:loc>
+                                    <br/>
+                                    <signup:nickname class="inputBox2"/>
+                                </label>
+                            </div>
+                            <label for="firstname">
+                                <lift:loc>ui_sign_up_firstname</lift:loc>
+                                <br/>
+                                <signup:firstname/>
+                            </label>
                             <br/>
-                            <signup:nickname/> <lift:msg id="users_nickname"/>
-                        </label>
-                        <br/>
-                        <label for="firstname">
-                            <lift:loc>ui_sign_up_firstname</lift:loc>
+                            <label for="lastname">
+                                <lift:loc>ui_sign_up_lastname</lift:loc>
+                                <br/>
+                                <signup:lastname/>
+                            </label>
                             <br/>
-                            <signup:firstname/>
-                        </label>
-                        <br/>
-                        <label for="lastname">
-                            <lift:loc>ui_sign_up_lastname</lift:loc>
+                            <label for="image_url">
+                                <lift:loc>ui_sign_up_image_url</lift:loc>
+                                <br/>
+                                <signup:image_url/>
+                            </label>
                             <br/>
-                            <signup:lastname/>
-                        </label>
-                        <br/>
-                        <label for="image_url">
-                            <lift:loc>ui_sign_up_image_url</lift:loc>
+                            <label for="timezone">
+                                <lift:loc>ui_sign_up_timezone</lift:loc>
+                                <br/>
+                                <signup:timezone/>
+                            </label>
                             <br/>
-                            <signup:image_url/>
-                        </label>
-                        <br/>
-                        <label for="timezone">
-                            <lift:loc>ui_sign_up_timezone</lift:loc>
-                            <br/>
-                            <signup:timezone/>
-                        </label>
-                        <br/>
-                        <label for="locale">
-                            <lift:loc>ui_sign_up_locale</lift:loc>
-                            <br/>
-                            <signup:locale/>
-                        </label>
-                    </div>
-                </fieldset>
-            </div>
-            <label for="submit">
-                <signup:submit id="submit"/>
-            </label>
-        </lift:signup>
+                            <label for="locale">
+                                <lift:loc>ui_sign_up_locale</lift:loc>
+                                <br/>
+                                <signup:locale/>
+                            </label>
+                        </div>
+                </div>
+                <label for="submit">
+                    <signup:submit id="submit"/>
+                </label>
+            </lift:signup>
+        </div>
+
     </div>
 </lift:surround>

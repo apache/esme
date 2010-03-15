@@ -16,15 +16,21 @@
  specific language governing permissions and limitations      *
  under the License.                                           *
 -->
-<lift:surround with="default" at="content">
+<lift:surround with="base" at="left">
+    <lift:Style.header/><lift:TableSorterSnip/><!-- STYLESHEETS <lift:Style.header /> -->
+    <link rel="stylesheet" type="text/css" href="../style/reset.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="../style/text.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="../style/grid.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="../style/layout.css" media="screen" />
     <script src="/scripts/display_messages.js" type="text/javascript"/>
-    <fieldset>
-        <legend>
-            <lift:loc>ui_default_conversation</lift:loc>
-        </legend>
+        <script type="text/javascript" src="../scripts/esme_table_sorter.js">
+    </script>
+    <div class="box-title-aux">
+   <h3><a href=""><lift:loc>ui_default_conversation</lift:loc></a></h3>
+     </div>
         <div class="b-list">
             <lift:displayConversation/>
             <lift:embed what="templates-hidden/timeline"/>
         </div>
-    </fieldset>
+       
 </lift:surround>

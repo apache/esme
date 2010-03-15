@@ -20,6 +20,7 @@
 package org.apache.esme.comet
 
 import net.liftweb.http._
+import net.liftweb.mapper._
 import net.liftweb.util._
 import net.liftweb.common._
 import net.liftweb.util.Helpers._
@@ -35,50 +36,52 @@ import lib._
 
 import java.text._
 
-class TagCloud extends CometActor /* with MsgFormat*/ {
-
+class SinglePublicTimeline extends CometActor {
   private var messages: List[Long] = Nil
-  
+  private var lastRender = millis
+  private var scheduled = false
+
   override def localSetup() {
     super.localSetup()
-    for (user <- User.currentUser) {
-      Distributor ! Distributor.Listen(user.id, this)
-      Distributor !? (2000, Distributor.LatestMessages(user.id, 40)) match {
-        case Full(msg: List[(Long,MailboxReason,Boolean)]) => messages = msg map {_._1}
-        case x =>
-      }
-    }
+    Distributor ! Distributor.PublicTimelineListeners(this) 
+    messages = Message.findAll(By(Message.pool, Empty),
+        OrderBy(Message.id, Descending), 
+                               MaxRows(1)).map(_.id.is)
   }
   
   override def localShutdown() {
     super.localShutdown()
-    for (user <- User.currentUser) {
-      Distributor ! Distributor.Unlisten(user.id, this)
-    }
+    Distributor ! Distributor.PublicTimelineUnlisteners(this)
   }
-
-  private def lookupMessages(): List[Message] = {
-    val mm = Message.findMessages(messages)
-    messages.flatMap(mm.get)
-  }
-
+  
   def render = {
-    val messages = lookupMessages()
-    //Sort the tags & words to put the most prominent in the middle 
-    <p>
-        {
-          for ((name, weight) <- Tag.centreWeightedTopNTagFreqs(messages, 20))
-          yield <xml:group><a href={"/tag/" + name}
-              style={"font-size: "+(0.5F + weight)+"em;"}>{
-                name}</a> </xml:group>
-        }
-    </p>
-  }
+    lastRender = millis
+    scheduled = false
+    val msgMap = Message.findMessages(messages)
+    val toDisplay = messages.flatMap(msgMap.get)
+    val jsId = "timeline_messages";
 
+    OnLoad(JsCrVar(jsId, JsArray(
+        toDisplay.map(m => JsObj(("message", m.asJs)) ) :_*)) &
+    JsFunc("displayMessages", JsVar(jsId), jsId).cmd)
+  }
 
   override def lowPriority = {
-    case UserActor.MessageReceived(msg, _) =>
-      messages = (msg.id.is :: messages).take(40)
+    case SingleForceRender =>
       reRender(false)
+
+    case Distributor.NewMessage(msg) =>
+      if (!msg.pool.defined_?)
+        messages = (msg.id.is :: messages).take(40)
+
+      if ((millis - lastRender) < 30000L) {
+        if (!scheduled) {
+          scheduled = true    
+          ActorPing.schedule(this, ForceRender, 30000L)
+        }
+      }
+      else reRender(false)
   }
 }
+
+case object SingleForceRender

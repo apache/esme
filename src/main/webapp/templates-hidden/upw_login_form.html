@@ -16,20 +16,48 @@
  specific language governing permissions and limitations      *
  under the License.                                           *
 -->
- <form method="post" action="/authentication/login">
-    <label for="username">
-        <lift:loc>ui_login_user</lift:loc>
-        <br/>
-        <input type="text" name="username" value="" id="username"/>
-    </label>
-    <br/>
-    <label for="password">
-        <lift:loc>ui_login_password</lift:loc>
-        <br/>
-        <input type="password" name="password" value="" id="password"/>
-    </label>
-    <br/>
-    <label for="login">
-        <input type="submit" value="Login" id="login"/>
-    </label>
-</form>
+
+        
+	<div id="login-box">
+	
+
+		<div class="top-login"></div>
+		<div class="mid-login">
+			<form name="loginFrm" action="javascript:login()" method="post" >
+				<div class="form">
+						<div class="post-form-row">
+							<label> <lift:loc>ui_login_email</lift:loc></label>
+							<input type="text" name="username" value="" class="inputBox2"/><!--narrow input field-->
+						</div>	
+						<div class="post-form-row">
+		
+							<label><lift:loc>ui_login_password</lift:loc></label>
+							<input type="password" name="password" value="" class="inputBox2"/><!--narrow input field-->
+						</div>	
+						
+						<div class="line"></div>
+						
+						<div class="post-form-row"> 
+							<label><lift:loc>ui_login_openid</lift:loc></label>
+							<input type="text" name="openID" value="" class="inputBox2"/><!--narrow input field-->
+						</div>	
+						
+				</div>
+				<div class="login-btn">
+					<input type="image" src="images/btn-signon.gif" />
+					
+				</div>
+			</form>
+		</div>
+		<div class="bot-login"></div>
+		<div class="box-right">
+                        <h3><a href="http://www.apache.org/"><lift:loc>custom_heading_1_title</lift:loc></a></h3>
+                       <p><lift:loc>custom_heading_1_body</lift:loc></p>
+                       </div>
+                    <div class="box-right">
+                        <h3><a href="http://incubator.apache.org/"><lift:loc>custom_heading_2_title</lift:loc></a></h3>
+                        <lift:loc>custom_heading_2_body</lift:loc></div>
+                    <div class="box-right">
+                        <h3><a href="http://en.wikipedia.org/wiki/Microblogging"><lift:loc>custom_heading_3_title</lift:loc></a></h3>
+                        <lift:loc>custom_heading_3_body</lift:loc></div>
+	</div><!--login-box  "-->
