@@ -92,7 +92,7 @@ class Boot {
 
     TableSorter.init
 
-    LiftRules.siteMapFailRedirectLocation = List("static", "about")
+    LiftRules.siteMapFailRedirectLocation = List("index", "Home")
 
     LiftRules.rewrite.prepend {
       case RewriteRequest(ParsePath("user" :: user :: Nil, "", _, _), _, _) =>
@@ -111,7 +111,7 @@ class Boot {
     LiftRules.dispatch.append(UrlStore.redirectizer)
 
 
-    LiftRules.siteMapFailRedirectLocation = List("static", "about")
+    LiftRules.siteMapFailRedirectLocation = List("index", "Home")
 
     UserAuth.register(UserPwdAuthModule)
     UserAuth.register(OpenIDAuthModule)
