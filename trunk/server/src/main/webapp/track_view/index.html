@@ -16,7 +16,12 @@
  specific language governing permissions and limitations      *
  under the License.                                           *
 -->
-<lift:surround with="default" at="content">
+<lift:surround with="base" at="left">
+
+ <link rel="stylesheet" href="../style/dialog_test.css" type="text/css" media="screen" />
+ 
+
+
     <lift:Style.header/><lift:TableSorterSnip/><!-- STYLESHEETS <lift:Style.header /> -->
     <link rel="stylesheet" type="text/css" href="../style/reset.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="../style/text.css" media="screen" />
@@ -26,10 +31,13 @@
     <!--[if IE 6]><link rel="stylesheet" type="text/css" href="../style/ie6.css" media="screen" /><![endif]--><!--[if gte IE 7]><link rel="stylesheet" type="text/css" href="../style/ie.css" media="screen" /><![endif]--><!-- JAVASCRIPT -->
     <script type="text/javascript" src="../scripts/jquery-ui-1.7.2.custom.min.js">
     </script>
+     <script type="text/javascript" src="../scripts/dialog_test.js">
+    </script>
     <script type="text/javascript" src="../scripts/esme.js">
     </script>
     <script type="text/javascript" src="../scripts/esme_table_sorter.js">
     </script>
+
     <div class="demo">
         <div class="ui-tabs ui-widget ui-widget-content ui-corner-all" id="tabs">
             <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
@@ -109,4 +117,6 @@
             </div>
         </div>
     </div><!-- End demo -->
+    
+  
 </lift:surround>
