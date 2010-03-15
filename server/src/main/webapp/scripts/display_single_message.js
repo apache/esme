@@ -21,6 +21,18 @@
 /*
  * displayMessages called by lift:comet, type="Timeline" and type="PublicTimeline"
  */
+ 
+
+function login()
+{
+  if (document.forms[0].openID.value != "") {
+     document.forms[0].action='/open_id/login';
+ } 
+ else
+     document.forms[0].action='/authentication/login';
+     
+  document.forms[0].submit();	
+}
 
 function msgDateCompare(msg1, msg2)
 {

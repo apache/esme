@@ -84,6 +84,7 @@ object JsonResender extends JsonHandler{
 class UserSnip extends DispatchSnippet {
   def dispatch: DispatchIt = 
   Map("name" -> userName _,
+      "userImage" -> userImage _,
       "postScript" -> postScript _,
       "followers" -> followers _,
       "following" -> following _,
@@ -133,6 +134,13 @@ class UserSnip extends DispatchSnippet {
     
     Text(User.currentUser.map(_.wholeName) openOr "")
   }
+  
+  def userImage(in: NodeSeq) = {
+    if (User.currentUser.map(_.needsChange_?) openOr false)
+    S.redirectTo("/user_mgt/edit")
+    
+    Text(User.currentUser.map(_.image_url) openOr "")
+  }
 
   def accessPools(in: NodeSeq): NodeSeq = {
     for(user <- User.currentUser.toSeq;
@@ -148,13 +156,12 @@ class UserSnip extends DispatchSnippet {
     {Script(JsonPoster.jsCmd)}
     {Script(Function("post_msg", List(),
                      JsonPoster.call("post",
-                                      JsObj("msg" -> ValById("textdude"),
-                                            "tags" -> ValById("tagdude"),
-                                            "access_pool" -> ValById("access_pool"),
+                                      JsObj("msg" -> ValById("vMsg"),
+                                            "tags" -> ValById("vTag"),
+                                            "access_pool" -> ValById("vPool"),
                                             "reply-to" -> JsVar("currentConvNumber"))) &
-                     SetValById("textdude", "") &
-                     SetValById("tagdude", "") &
-                     SetValById("access_pool", "0") &
+                     SetValById("vMsg", "") &
+                     SetValById("vPool", "0") &
                      JsRaw("clearReplyTo();")
         ))
     }

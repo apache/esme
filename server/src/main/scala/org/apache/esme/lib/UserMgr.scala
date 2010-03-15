@@ -85,9 +85,9 @@ object UserMgr {
 
   private def profileImage(imageUrl: String): NodeSeq = {
     if (imageUrl.length > 0) 
-      <img src={imageUrl}/>
+      <img width="30px" src={imageUrl}/>
     else
-      <p/>
+      <img width="30px" src="/images/avatar.jpg"/>
   }
 
 }

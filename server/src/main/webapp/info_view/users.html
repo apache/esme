@@ -16,14 +16,13 @@
  specific language governing permissions and limitations      *
  under the License.                                           *
 -->
-<lift:surround with="default" at="content">
+<lift:surround with="base" at="left">
     <script type="text/javascript" src="../scripts/esme_table_sorter.js">
     </script>
     <lift:TableSorterSnip/>
-    <fieldset style="width: 80em">
-        <legend>
-            <lift:loc>ui_user_list_title</lift:loc>
-        </legend>
+    <div class="box-title-aux">
+      <h3><a href=""><lift:loc>ui_user_list_title</lift:loc></a></h3>
+     </div>
         <table id="esme-table" class="tablesorter">
             <thead>
                 <tr>
@@ -67,5 +66,4 @@
                 </lift:displayUsers>
             </tbody>
         </table>
-    </fieldset>
 </lift:surround>
