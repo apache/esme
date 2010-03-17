@@ -150,7 +150,7 @@ object StreamMgr {
          "pools" -> ajaxSelect(pools,
                                Empty,
                                p => {pool = p.toLong
-                                     redisplay()},
+                                     S.notice(S.?("base_streams_filter_pool_active"));redisplay()},
                                "id" -> poolInput),
          "filterResent" -> ajaxCheckbox(false,
                                         r_? => {filterResent = r_?
@@ -158,7 +158,7 @@ object StreamMgr {
                                         "id" -> filterResentInput),
          "filterPools" -> ajaxCheckbox(false,
                                        p_? => {filterPools = p_?
-                                               redisplay()},
+                                               S.notice(S.?("base_streams_filter_pool"));redisplay()},
                                        "id" -> filterPoolsInput)
     )
     
