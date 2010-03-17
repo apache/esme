@@ -85,11 +85,7 @@ function displayMessages(msgArray, elementId)
           msgReason = "caused by " + r;
         break
       }
-      var msgTags = jQuery(cometMsg.text).find('tags > tag').get();
-      for (var tagIndex=0; tagIndex < msgTags.length; tagIndex++) {
-        // Replace each tag element with the plain tag text
-        msgTags[tagIndex] = jQuery(msgTags[tagIndex]).attr('name');
-      }
+      
 
       // Put the marshalled data into a copy of the template
       var newMsg = msgTemplate.clone(true).attr('id',msgId);
@@ -129,13 +125,6 @@ function displayMessages(msgArray, elementId)
           '/conversation/' + msgConversation);
       } else {
         conversation.css("display", "none");
-      }
-      for (var tagIndex=0; tagIndex < msgTags.length; tagIndex++) {
-        var newTag = tagTemplate.clone(true).attr('id',msgTags[tagIndex]);
-        newTag.find('a')
-        .attr('href','tag/'+msgTags[tagIndex])
-        .text(msgTags[tagIndex]);
-        newTag.insertBefore(newMsg.find('#tag:first'));
       }
 
       // Remove any old tags from the template
