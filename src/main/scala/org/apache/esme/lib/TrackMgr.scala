@@ -21,9 +21,12 @@ package org.apache.esme.lib
 
 import net.liftweb._
 import http._
-import SHtml._
 import js._
-import JsCmds._
+import js.jquery._
+import http.jquery._
+import JqJsCmds._
+import JsCmds._ 
+import SHtml._
 import JE._
 
 import sitemap._
@@ -71,10 +74,10 @@ object TrackMgr {
                       (lst => xs.flatMap(i => bind("item", lst,
                                                    "pattern" -> i.pattern,
                                                    "enabled" -> ajaxCheckbox(!i.disabled,
-                                                                             e => {i.disabled(!e).save; S.notice(S.?("base_track_msg_active", i.pattern, e)); Noop} ),
+                                                                             e => {i.disabled(!e).save;  Noop} ),
                                                    "remove" -> 
                                                    ((bt: NodeSeq) => 
-                  ajaxButton(bt, () => { S.notice(S.?("base_track_msg_removed", i.pattern)); i.removed(true).save ; updateSpan()}))
+                  ajaxButton(bt, () => { i.removed(true).save ; updateSpan(); }))
               ))))
     }
 
@@ -91,12 +94,17 @@ object TrackMgr {
     
     def addTrack(what: String): JsCmd = {
       what.trim match {
-        case x if x.length < 3 => S.error(S.?("base_track_error_name_short"))
-        case x => Tracking.create.regex(x).user(user).saveMe
-          S.notice(S.?("base_track_msg_success", x))
+        case x if x.length < 3 => DisplayMessage("messages", <b>{S.?("base_track_error_name_short")}</b>,  3 seconds, 3 seconds)
+        case x if x.length > 30 => DisplayMessage("messages", <b>{S.?("base_track_error_name_long")}</b>,  3 seconds, 3 seconds)  
+        case x => Tracking.create.regex(x).user(user).saveMe 
+        redisplayTracking()
+        SetValById(theInput, "")
+        DisplayMessage("messages", <b>{S.?("base_track_msg_success", x)}</b>,  3 seconds, 3 seconds)
+        
+          
       }
 
-      redisplayTracking() & SetValById(theInput, "")
+      
     }
 
     bind("main", in,

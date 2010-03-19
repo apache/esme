@@ -82,6 +82,14 @@ class Boot {
         if r.param("token").isDefined =>
         () => RestAPI.sendMsgWithToken(r)
     }
+    
+    //Added exceptions to the log
+    LiftRules.exceptionHandler.prepend {
+      case (_, _, exception) => {
+        Log.error(exception.getStackTrace.toString)
+        RedirectResponse("/")
+      }
+    } 
 
     LiftRules.dispatch.append(ESMEOpenIDVendor.dispatchPF)
 

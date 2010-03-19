@@ -21,9 +21,12 @@ package org.apache.esme.lib
 
 import net.liftweb._
 import http._
-import SHtml._
 import js._
-import JsCmds._
+import js.jquery._
+import http.jquery._
+import JqJsCmds._
+import JsCmds._ 
+import SHtml._
 import JE._
 
 import sitemap._
@@ -74,22 +77,24 @@ object AccessPoolMgr {
   def addPool(in: NodeSeq): NodeSeq = {
     val theInput = "new_pool"
     val user = User.currentUser 
-    
+    val redisplayPool = updatePool.is
+       
     def addNewPool(name: String) = {
       name.trim match {
-        case x if x.length < 3 => S.error(S.?("base_pool_error_name_short"))
+        case x if x.length < 3 => DisplayMessage("messages", <b>{S.?("base_pool_error_name_short")}</b>,  3 seconds, 3 seconds)
         case x => {
           val pool = AccessPool.create.realm(AccessPool.Native).setName(name)
           pool match {
-            case Failure(_,_,_) => S.error(S.?("base_pool_msg_duplicate_name_pool"))
+            case Failure(_,_,_) => DisplayMessage("messages", <b>{S.?("base_pool_msg_duplicate_name_pool",name)}</b>,  3 seconds, 2 seconds)
             case Full(p: AccessPool) => val privilegeSaved =
               Privilege.create.pool(p.saveMe).user(user).permission(Permission.Admin).save
               if(privilegeSaved && user.isDefined) {
-                Distributor ! Distributor.AllowUserInPool(user.get.id.is, p.id.is)
-                S.notice(S.?("base_pool_msg_new_pool"))
+                Distributor ! Distributor.AllowUserInPool(user.get.id.is, p.id.is)         
                 logger.info("ACCESS: " + S.?("base_pool_msg_new_pool") + " " + name)
+                SetValById(theInput, "")
+                DisplayMessage("messages", <b>{S.?("base_pool_msg_new_pool",name)}</b>,  3 seconds, 2 seconds) 
               } else
-                S.error(S.?("base_error_general"))
+                DisplayMessage("messages", <b>{S.?("base_pool_msg_no_permission")}</b>,  3 seconds, 2 seconds)
             case _ => S.error(S.?("base_error_general"))
           }
         }
@@ -132,15 +137,18 @@ object AccessPoolMgr {
     def addPoolUser(permission: String): JsCmd = {
       val r: Box[Boolean] = 
       for (admin <- adminUser;
-           p <- AccessPool.find(pool) ?~ S.?("base_pool_err_pool_not_found");
-           user <- User.findFromWeb(username) ?~ S.?("base_pool_err_user_not_found")
+           p <- AccessPool.find(pool) ?~ DisplayMessage("messages", <b>{S.?("base_pool_err_pool_not_found")}</b>,  3 seconds, 2 seconds);
+           user <- User.findFromWeb(username) ?~ DisplayMessage("messages", <b>{S.?("base_pool_err_pool_not_found")}</b>,  3 seconds, 2 seconds)
       ) yield if(Privilege.hasPermission(admin.id.is, p.id.is, Permission.Admin)) {
         val result = try {
           Privilege.create.user(user).pool(p).permission(Permission(permission.toInt)).save
         } catch {
           case _: Exception => false
         }
-        if (result) Distributor ! Distributor.AllowUserInPool(user.id.is, p.id.is)
+        if (result) {
+        	Distributor ! Distributor.AllowUserInPool(user.id.is, p.id.is)
+        	DisplayMessage("messages", <b>{S.?("base_pool_msg_permission_set")}</b>,  3 seconds, 2 seconds)
+       }
         result
       } else false // "User has no permission to administer pool"
       r match {
