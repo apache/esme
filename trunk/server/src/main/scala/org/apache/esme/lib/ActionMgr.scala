@@ -21,9 +21,12 @@ package org.apache.esme.lib
 
 import net.liftweb._
 import http._
-import SHtml._
 import js._
-import JsCmds._
+import js.jquery._
+import http.jquery._
+import JqJsCmds._
+import JsCmds._ 
+import SHtml._
 import JE._
 
 import sitemap._
@@ -36,6 +39,10 @@ import common._
 import Helpers._
 
 import model._
+import JqJsCmds._
+import JsCmds._ 
+import SHtml._
+
 
 import java.util.Date
 import java.text.{DateFormat,SimpleDateFormat}
@@ -66,13 +73,15 @@ object ActionMgr {
    }
 
   def displayActions(in: NodeSeq): NodeSeq = {
+  
     // get the span name to update
     val spanName = S.attr("the_id") openOr "TokenSpan"
     // get the current user
     val user = User.currentUser
 
     // bind the dynamic content to the incoming nodeseq
-    def doRender(): NodeSeq =
+    
+    def doRender(): NodeSeq =   
     Action.findAll(By(Action.user, user), By(Action.removed, false),
                    OrderBy(Action.id, Ascending)) match {
       case Nil => NodeSeq.Empty
@@ -81,14 +90,16 @@ object ActionMgr {
                       (lst => xs.flatMap(i => bind("item", lst,
                                                    "name" -> i.name.is,
                                                    "enabled" -> ajaxCheckbox(!i.disabled,
-                                                                             e => {i.disabled(!e).save; S.notice(S.?("base_action_msg_active")); Noop} ),
+                                                                             e => {i.disabled(!e).save; DisplayMessage("messages", <b>Action activity changed</b>,  3 seconds, 3 seconds); Noop} ),
                                                    "test" -> i.testText,
                                                    "action" -> i.actionText,
                                                    "createdDate" -> getDateHtml(i.createdDate),
                                                    "remove" -> 
                                                    ((bt: NodeSeq) => 
-                  ajaxButton(bt, () => {i.removed(true).save ; S.notice(S.?("base_action_msg_removed", i.name.is)); updateSpan()}))
+                  ajaxButton(bt, () => {i.removed(true).save ; DisplayMessage("messages", <b>Action removed</b>,  3 seconds, 3 seconds); updateSpan()}))
               ))))
+   
+
     }
 
     def updateSpan(): JsCmd = SetHtml(spanName, doRender())
@@ -115,15 +126,16 @@ object ActionMgr {
              a2 <- a1.setTest(test))
         yield a2.validate
 
+
+          
         act match {
           case Full(Nil) =>
             toSave.save 
-            S.notice(S.?("base_action_msg_new_action", name))
             redisplay() &
             SetValById(mainName, "") &
             SetValById(mainAction, "") &
-            SetValById(mainTest, "")
-
+            SetValById(mainTest, "") &
+            DisplayMessage("messages", <b>{S.?("base_action_msg_new_action",name)}</b>,  3 seconds, 3 seconds) 
           case Full(xs) => S.error(xs); Noop
           case Failure(msg, _, _) => S.error(msg) ; Noop
           case _ => Noop
