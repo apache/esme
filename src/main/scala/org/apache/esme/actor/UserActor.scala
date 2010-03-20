@@ -246,9 +246,11 @@ class UserActor extends LiftActor {
         mb.saveMe
         Stats incr "messagesDelivered"
 
-        _mailbox = ((msg.id.is, reason, false) :: _mailbox.toList).take(500).toArray
-
-        listeners.foreach(_ ! MessageReceived(msg, reason))
+        // Only add to mailbox and notify listeners if there is a real message involved
+        if(msg.id.is != -1) {
+          _mailbox = ((msg.id.is, reason, false) :: _mailbox.toList).take(500).toArray
+          listeners.foreach(_ ! MessageReceived(msg, reason)) 
+        }                               
             
         toDo.foreach {
           td =>
@@ -268,7 +270,8 @@ class UserActor extends LiftActor {
               Distributor !
               Distributor.AddMessageToMailbox(id, msg, ResendReason(userId))
 
-            case FetchFeed(_, _) => MessagePullActor ! MessagePullActor.Fetch(td.performId)
+            case FetchFeed(_, _) => 
+              MessagePullActor ! MessagePullActor.Fetch(td.performId)    
 
             case ScalaInterpret => logger.info("Scala interpreter is disabled!")
             /*if (msg.source.is != "scala")
