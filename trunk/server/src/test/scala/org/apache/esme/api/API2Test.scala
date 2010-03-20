@@ -352,6 +352,7 @@ object Api2Specs extends Specification with TestKit {
             "message" -> "test POST message",
             "tags" -> "test,tag",
             "pool" -> "test_pool1")
+          timeout <- sleep(1000)
           all_msgs <- session.get("user/messages?timeout=2")
         } {                    
           mess_res.code must be equalTo 200
