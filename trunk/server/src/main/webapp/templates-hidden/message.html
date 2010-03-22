@@ -27,6 +27,7 @@
 				</h3>
 				<div id="form-update">
 				         <div id="messages"></div>
+				   
 					<div class="post-form-row">
 						<label><lift:loc>ui_messages_share</lift:loc></label>
 						<select id="vPool" class="inputBox2">
@@ -36,9 +37,13 @@
 							<lift:UserSnip.accessPools/>
 						</select>
 					</div>
-					<div class="row clear" style="display: none">
-						<input id="tagdude" style="width: 90%"/>
-					</div>
+					<div class="row clear" style="display: none" id="reply-to-div">
+                                            <b><lift:loc>ui_messages_message_label_message_reply</lift:loc></b>
+                                            <span id="reply-to-span">-</span>
+                                            <a href="javascript: clearReplyTo()">
+                                               <lift:loc>ui_messages_message_label_message_remove_reply</lift:loc>
+                                            </a>
+                                        </div>
 					<div class="post-form-row">
 						<textarea class="inputBox2" id="vMsg" rows="5" cols="80%"></textarea>
 						<div class="row clear" style="display: none">
@@ -54,13 +59,15 @@
                                         
                                         function setReplyTo(id, text){
                                             currentConvNumber = id;
-                                            //document.getElementById('reply-to-div').style.display = "block";
+                                            document.getElementById('reply-to-div').style.display = "block";
+                                            //document.getElementById('container-update').height = "172px";
                                             jQuery('#reply-to-span').html(text);
                                         }
                                         
                                         function clearReplyTo(){
                                             currentConvNumber = 0;
-                                            // document.getElementById('reply-to-div').style.display = "none";
+                                            document.getElementById('reply-to-div').style.display = "none";
+                                            document.getElementById('container-update').height = "152px";
                                         }
                                         
                                         function clearResend(id){
@@ -80,7 +87,6 @@
 		<!--updates-box -->
 		<!--updates-box -->
 		<lift:comet type="Timeline"/>
-		<div class="separator">                    </div>
 		<table>
 			<tbody id="personal_timeline_messages">
 				<tr id="message">
@@ -114,7 +120,7 @@
 									</table>
 								</div>
 								<div class="actions">
-									<a href="javascript:resend_msg();">
+									<a href="#"  id="resend">
 										<lift:loc>ui_messages_message_label_resend</lift:loc>
 									</a>
 									| <a href="#" id="reply">
@@ -127,6 +133,7 @@
 							</div>
 						</div>
 					</div>
+				<div class="separator">                    </div>
 				</tr>
 			</tbody>
 		</table>
