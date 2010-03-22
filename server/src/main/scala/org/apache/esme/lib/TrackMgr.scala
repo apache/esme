@@ -62,6 +62,10 @@ object TrackMgr {
     // get the span name to update
     val spanName = S.attr("the_id") openOr "TrackSpan"
     // get the current user
+    //  ajaxButton(bt, () => {i.removed(true).save ; updateSpan()}))
+    //  ajaxButton(bt, () => {ModalDialog(<lift:embed what="/info_view/tag"/>)}))
+
+    // ajaxButton(bt, () => {ModalDialog(<lift:embed what="/tag"/>)}))
     val user = User.currentUser
 
     // bind the dynamic content to the incoming nodeseq
@@ -77,7 +81,7 @@ object TrackMgr {
                                                                              e => {i.disabled(!e).save;  Noop} ),
                                                    "remove" -> 
                                                    ((bt: NodeSeq) => 
-                  ajaxButton(bt, () => { i.removed(true).save ; updateSpan(); }))
+                  ajaxButton(bt, () => {i.removed(true).save ; updateSpan() & DisplayMessage("messages", <b>{S.?("base_track_msg_removed", lst)}</b>,  3 seconds, 3 seconds)}))
               ))))
     }
 
@@ -97,9 +101,10 @@ object TrackMgr {
         case x if x.length < 3 => DisplayMessage("messages", <b>{S.?("base_track_error_name_short")}</b>,  3 seconds, 3 seconds)
         case x if x.length > 30 => DisplayMessage("messages", <b>{S.?("base_track_error_name_long")}</b>,  3 seconds, 3 seconds)  
         case x => Tracking.create.regex(x).user(user).saveMe 
-        redisplayTracking()
-        SetValById(theInput, "")
-        DisplayMessage("messages", <b>{S.?("base_track_msg_success", x)}</b>,  3 seconds, 3 seconds)
+                  redisplayTracking() &
+                  SetValById(theInput, "") &
+                  DisplayMessage("messages", <b>{S.?("base_track_msg_success", x)}</b>,  3 seconds, 3 seconds)
+                  
         
           
       }

@@ -90,13 +90,13 @@ object ActionMgr {
                       (lst => xs.flatMap(i => bind("item", lst,
                                                    "name" -> i.name.is,
                                                    "enabled" -> ajaxCheckbox(!i.disabled,
-                                                                             e => {i.disabled(!e).save; DisplayMessage("messages", <b>Action activity changed</b>,  3 seconds, 3 seconds); Noop} ),
+                                                                             e => {i.disabled(!e).save; DisplayMessage("messages", <b>{S.?("base_action_msg_active",i.name)}</b>,  3 seconds, 3 seconds) & Noop} ),
                                                    "test" -> i.testText,
                                                    "action" -> i.actionText,
                                                    "createdDate" -> getDateHtml(i.createdDate),
                                                    "remove" -> 
                                                    ((bt: NodeSeq) => 
-                  ajaxButton(bt, () => {i.removed(true).save ; DisplayMessage("messages", <b>Action removed</b>,  3 seconds, 3 seconds); updateSpan()}))
+                  ajaxButton(bt, () => {i.removed(true).save ; updateSpan() & DisplayMessage("messages", <b>{S.?("base_action_msg_removed",i.name)}</b>,  3 seconds, 3 seconds); }))
               ))))
    
 
