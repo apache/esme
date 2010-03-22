@@ -110,7 +110,7 @@
                                         <table>
                                             <thead>
                                                 <tr>
-                                                    <th>
+                                                    <th class="popular_th">
                                                         <lift:loc>ui_messages_message_header_popular_resent</lift:loc>
                                                     </th>
                                                     <th>
@@ -124,9 +124,10 @@
                                                         <td>
                                                             <item:freq/>
                                                         </td>
-                                                        <td>
-                                                            <item:author/>:<item:text/><!--<item:date/>-->
+                                                        <td text-align="center">
+                                                            <item:author/>: <item:text/><!--<item:date/>--> <item:authlink/> 
                                                         </td>
+                                                        
                                                     </tr>
                                                 </disp:item>
                                             </tbody>
@@ -139,7 +140,7 @@
                                         <table>
                                             <thead>
                                                 <tr>
-                                                    <th>
+                                                    <th font-weight="bold">
                                                         <lift:loc>ui_messages_message_header_popular_links_clicked</lift:loc>
                                                     </th>
                                                     <th>
@@ -150,7 +151,7 @@
                                             <tbody>
                                                 <disp:item>
                                                     <tr>
-                                                        <td>
+                                                        <td text-align="center">
                                                             <item:freq/>
                                                         </td>
                                                         <td>

@@ -21,9 +21,12 @@ package org.apache.esme.lib
 
 import net.liftweb._
 import http._
-import SHtml._
 import js._
-import JsCmds._
+import js.jquery._
+import http.jquery._
+import JqJsCmds._
+import JsCmds._ 
+import SHtml._
 import JE._
 
 import sitemap._
@@ -84,7 +87,7 @@ object AuthMgr {
                                                    "createdDate" -> getDateHtml(i.createdDate),
                                                    "revoke" -> 
                                                    ((bt: NodeSeq) => 
-                  ajaxButton(bt, () => {i.delete_! ; S.notice(S.?("base_token_msg_removed", i.description.is));updateSpan()}))
+                  ajaxButton(bt, () => {i.delete_! ; updateSpan() & DisplayMessage("messages", <b>{S.?("base_track_msg_removed", i.description.is)}</b>,  3 seconds, 3 seconds)}))
               ))))
     }
 
@@ -101,12 +104,13 @@ object AuthMgr {
     
     def addAuthToken(desc: String): JsCmd = {
       desc.trim match {
-        case x if x.length < 3 => S.error(S.?("base_token_error_name_short"))
+        case x if x.length < 3 => DisplayMessage("messages", <b>{S.?("base_token_error_name_short")}</b>,  3 seconds, 3 seconds)
         case x => AuthToken.create.description(x).user(user).saveMe
-          S.notice(S.?("base_token_msg_new_token", x))
+         redisplayTokens() & SetValById(theInput, "") &
+          DisplayMessage("messages", <b>{S.?("base_token_msg_new_token", x)}</b>,  3 seconds, 3 seconds)
       }
 
-      redisplayTokens() & SetValById(theInput, "")
+     
     }
 
     bind("main", in,

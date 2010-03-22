@@ -74,11 +74,17 @@ object AccessPoolMgr {
   
   object poolId extends RequestVar[Long](0)
 
+
+  /*
+  * Function for adding pools
+  *
+  */
   def addPool(in: NodeSeq): NodeSeq = {
+  
     val theInput = "new_pool"
     val user = User.currentUser 
-    val redisplayPool = updatePool.is
-       
+    
+      
     def addNewPool(name: String) = {
       name.trim match {
         case x if x.length < 3 => DisplayMessage("messages", <b>{S.?("base_pool_error_name_short")}</b>,  3 seconds, 3 seconds)
@@ -90,8 +96,8 @@ object AccessPoolMgr {
               Privilege.create.pool(p.saveMe).user(user).permission(Permission.Admin).save
               if(privilegeSaved && user.isDefined) {
                 Distributor ! Distributor.AllowUserInPool(user.get.id.is, p.id.is)         
-                logger.info("ACCESS: " + S.?("base_pool_msg_new_pool") + " " + name)
-                SetValById(theInput, "")
+                logger.info("ACCESS: " + S.?("base_pool_msg_new_pool",name)) 
+                SetValById(theInput, "")  &
                 DisplayMessage("messages", <b>{S.?("base_pool_msg_new_pool",name)}</b>,  3 seconds, 2 seconds) 
               } else
                 DisplayMessage("messages", <b>{S.?("base_pool_msg_no_permission")}</b>,  3 seconds, 2 seconds)
@@ -108,7 +114,12 @@ object AccessPoolMgr {
     
   }
 
+  /*
+  * Function for editing pools
+  *
+  */
   def editPool(in: NodeSeq): NodeSeq = {
+
     val redisplayPool = updatePool.is
     
     // redisplay pool detail
@@ -134,6 +145,11 @@ object AccessPoolMgr {
       
     val permissions = Permission.map(perm => (perm.id.toString, perm.toString)).collect
     
+    
+      /*
+       * Function for adding a user to a pool
+       *
+       */
     def addPoolUser(permission: String): JsCmd = {
       val r: Box[Boolean] = 
       for (admin <- adminUser;

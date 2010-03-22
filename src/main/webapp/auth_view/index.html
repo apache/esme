@@ -35,7 +35,8 @@
 	<script type="text/javascript" src="../scripts/jquery-ui-1.7.2.custom.min.js">    </script>
 	<script type="text/javascript" src="../scripts/esme.js">    </script>
 	<script type="text/javascript" src="../scripts/esme_table_sorter.js">    </script>
-	<div class="demo">
+        <div id="messages"></div>
+	<div class="b-list">
 		<div class="ui-tabs ui-widget ui-widget-content ui-corner-all" id="tabs">
 			<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
 				<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active">
@@ -68,7 +69,7 @@
 										<lift:loc>ui_token_list_create</lift:loc>
 									</th>
 									<th>
-										<lift:loc>ui_token_revoke</lift:loc>
+										
 									</th>
 								</tr>
 							</thead>
@@ -85,8 +86,8 @@
 											<item:createdDate/>
 										</td>
 										<td>
-											<item:revoke>
-												<img src="/images/delete.png"/>
+											<item:revoke style="background-color:#fff;">
+												<img valign="center" style="background-color:#fff;"  src="/images/delete.gif"/>
 											</item:revoke>
 										</td>
 									</tr>
@@ -108,13 +109,4 @@
 		</div>
 	</div>
 	<!-- End demo -->
-	<lift:Msgs>
-		<lift:error_msg>Error:</lift:error_msg>
-		<lift:notice_msg>FYI:</lift:notice_msg>
-		<lift:error_class>error_major</lift:error_class>
-		<lift:notice_msg>
-			<lift:loc>ui_base_note</lift:loc>
-		</lift:notice_msg>
-		<lift:notice_class>note_major</lift:notice_class>
-	</lift:Msgs>
 </lift:surround>
