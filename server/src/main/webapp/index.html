@@ -20,6 +20,7 @@
 <lift:UserSnip.loggedIn>
 	<logged:in>
 		<lift:surround with="message" at="content"/>
+		<div id="messages"></div>
 		<lift:Msgs>
 			<lift:error_msg>Error:</lift:error_msg>
 			<lift:notice_msg>FYI:</lift:notice_msg>
@@ -32,69 +33,46 @@
 	</logged:in>
 	<logged:out>
 		<lift:surround with="default" at="content">
+			<head>
+			<script id="jquery" src="/classpath/jquery.js" type="text/javascript"/>
+			<script id="json" src="/classpath/json.js" type="text/javascript"/>
+			<script src="/scripts/display_single_message.js" type="text/javascript"/>
+			<script src="/scripts/pretty.js" type="text/javascript"/>
+			<link rel="stylesheet" href="../style/style.css" type="text/css" media="screen" />
+			</head>
 			<!---BLUE HEADER-->
 			<div id="container-2nd-level-bg">
-				<div width="623px" id="container-2nd-level">
+				<div id="container-2nd-level">
 					<h1>
 						<span>
 							<lift:loc>custom_opening_main_title</lift:loc>
 						</span>
 					</h1>
-					<p>
-						<lift:loc>custom_opening_main_body</lift:loc>
-					</p>
+					<lift:loc>custom_opening_main_body</lift:loc>
 				</div>
 				<!--container-2nd-level-->
-				<link rel="stylesheet" href="../style/style.css" type="text/css" media="screen" />
+				
 			</div>
 			<!--container-2nd-level-bg-->
 			<!--END BLUE HEADER-->
-			<script id="jquery" src="/classpath/jquery.js" type="text/javascript"/>
-			<script id="json" src="/classpath/json.js" type="text/javascript"/>
-			<script src="/scripts/display_single_message.js" type="text/javascript"/>
-			<script src="/scripts/pretty.js" type="text/javascript"/>
+
 			<lift:comet type="SinglePublicTimeline"/>
 			<!--updates-box -->
-			<lift:comet type="SinglePublicTimeline"/>
-			<div class="separator">                    </div>
+			<div class="gray-box">
+			<h1>Now on ESME</h1>
 			<table>
-				<tbody id="timeline_messages">
-					<tr id="message">
-						<div id="timeline_messages">
-							<div class="updates-box">
-								<div class="avatar">
-									<img id="avatar" src="/images/avatar.jpg" alt="Anonymous" width="50px"/>
-								</div>
-								<div class="update2">
-									<div class="info2" >
-										<a href="" id="author">-</a>
-									</div>
-									<div id="body">-</div>
-									<div class="time">
-										<table>
-											<tr>
-												<td>
-													<div id="pool"> -</div>
-												</td>
-												<td>   </td>
-												<td>
-													<div id="when"> -</div>
-												</td>
-												<td>
-													<div id="reason"> -</div>
-												</td>
-												<td>
-													<div id="source"> -</div>
-												</td>
-											</tr>
-										</table>
-									</div>
-								</div>
-							</div>
-						</div>
-					</tr>
+			   <tbody id="timeline_messages">
+				<tr id="message">
+							
+				 <div class="avatar"> <img id="avatar" src="/images/avatar.jpg" alt="Anonymous" width="50px"/></div>
+				   <div class="update"> <div id="body">-</div>
+				   <div class="info"><a href="" id="author">-</a><div class="time"></div></div>
+				 </div>	
+				 <div class="time"> <div id="supp_data"> -</div> </div>	
+				</tr>
 				</tbody>
 			</table>
+			</div><!--gray-box-->
 		</lift:surround>
 	</logged:out>
 </lift:UserSnip.loggedIn>

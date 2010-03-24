@@ -103,11 +103,12 @@ function displayMessages(msgArray, elementId)
       .attr('src', msgAuthor.imageurl)
       .attr('alt',msgAuthor.firstname + ' ' + msgAuthor.lastname);
 
+
       newMsg.find('#body').html(msgBody);
-      newMsg.find('#pool').text(msgPool);
-      newMsg.find('#source').text(msgSource);
-      newMsg.find('#reason').text(msgReason);
-      newMsg.find('#when').text(msgDateStr);
+      newMsg.find('#supp_data').text(msgPool + " " + msgDateStr  + " " +  msgReason  + " " +   msgSource);
+      //newMsg.find('#source').text(msgSource);
+      //newMsg.find('#reason').text(msgReason);
+      //newMsg.find('#when').text(msgDateStr);
       var id = cometMsg.id;
       var resendButton = newMsg.find('#resend');
       if (cometResent) {
@@ -129,6 +130,7 @@ function displayMessages(msgArray, elementId)
 
       // Remove any old tags from the template
       newMsg.find('*[id=tag]').remove();
+      
 
       // Insert the updated copy of the message into the page
       newMsg.prependTo(msgInsertPt).show();
