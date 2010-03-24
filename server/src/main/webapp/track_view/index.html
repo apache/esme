@@ -17,43 +17,20 @@
  under the License.                                           *
 -->
 <lift:surround with="base" at="left">
-	<link rel="stylesheet" href="../style/dialog_test.css" type="text/css" media="screen" />
-	<lift:Style.header/>
-	<lift:TableSorterSnip/>
-	<!-- STYLESHEETS <lift:Style.header /> -->
-	<link rel="stylesheet" type="text/css" href="../style/reset.css" media="screen" />
-	<link rel="stylesheet" type="text/css" href="../style/text.css" media="screen" />
-	<link rel="stylesheet" type="text/css" href="../style/grid.css" media="screen" />
-	<link rel="stylesheet" type="text/css" href="../style/layout.css" media="screen" />
+<head>
+	<!-- STYLESHEETS  -->  
 	<link type="text/css" href="../style/smoothness/jquery-ui-1.7.2.custom.css" rel="stylesheet" />
-	<!--[if IE 6]>
-	<link rel="stylesheet" type="text/css" href="../style/ie6.css" media="screen" />
-	<![endif]-->
-	<!--[if gte IE 7]>
-	<link rel="stylesheet" type="text/css" href="../style/ie.css" media="screen" />
-	<![endif]-->
-	<!-- JAVASCRIPT -->
+	<link type="text/css" href="../style/jquery-ui.css" rel="stylesheet" />
+	<link type="text/css" href="../style/parseTheme.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="../style/test.css" media="screen" />
 	<script type="text/javascript" src="../scripts/jquery-ui-1.7.2.custom.min.js">    </script>
 	<script type="text/javascript" src="../scripts/dialog_test.js">    </script>
-	<script type="text/javascript" src="../scripts/esme.js">    </script>
-	<script type="text/javascript" src="../scripts/esme_table_sorter.js">    </script>
-	<div id="messages"></div>
-	<div class="demo">
-		<div class="ui-tabs ui-widget ui-widget-content ui-corner-all" id="tabs">
-			<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
-				<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active">
-					<a href="#tabs-1">
-						<lift:loc>ui_track_manage</lift:loc>
-					</a>
-				</li>
-				<li class="ui-state-default ui-corner-top">
-					<a href="#tabs-2">
-						<lift:loc>ui_track_new_track</lift:loc>
-					</a>
-				</li>
-			</ul>
-			<div class="ui-tabs-panel ui-widget-content ui-corner-bottom" id="tabs-1">
-				<span id="TrackSpan">
+		<lift:TableSorterSnip/>
+	</head>
+	
+<div class="demo">
+
+<span id="TrackSpan">
 					<lift:ignore>
 						<!--                        The displayTracking snippet *MUST* appear on the page before                        the main snippet                        -->
 						</lift:ignore>
@@ -92,39 +69,23 @@
 						</table>
 					</lift:displayTracking>
 				</span>
-			</div>
-			<div class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide" id="tabs-2">
-				<lift:form>
-					<lift:main>
-						<table>
-							<tr>
-								<td>
-									<lift:loc>ui_track_new_track_what</lift:loc>
-								</td>
-								<td>
-									<main:track/>
-								</td>
-							</tr>
-							<tr>
-								<td>                                </td>
-								<td>
-									<input type="submit" value="Add" />
-								</td>
-							</tr>
-						</table>
-					</lift:main>
-				</lift:form>
-			</div>
-		</div>
-	</div>
-	<!-- End demo -->
-	<lift:Msgs>
-		<lift:error_msg>Error:</lift:error_msg>
-		<lift:notice_msg>FYI:</lift:notice_msg>
-		<lift:error_class>error_major</lift:error_class>
-		<lift:notice_msg>
-			<lift:loc>ui_base_note</lift:loc>
-		</lift:notice_msg>
-		<lift:notice_class>note_major</lift:notice_class>
-	</lift:Msgs>
+
+
+<div id="dialog-form" title="Create new track">
+	<p class="validateTips">All form fields are required.</p>
+
+      <lift:form>
+       <lift:main>
+	<fieldset>
+		<label for="name"><lift:loc>ui_track_new_track_what</lift:loc></label>
+		<main:track class="text ui-widget-content ui-corner-all" />
+	</fieldset>
+	</lift:main>
+       </lift:form>
+</div>
+
+
+<button onclick="javascript:$('#dialog-form').dialog('open')" id="create-user">Create new track</button>
+
+</div><!-- End demo -->
 </lift:surround>

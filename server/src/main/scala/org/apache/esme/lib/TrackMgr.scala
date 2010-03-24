@@ -113,7 +113,7 @@ object TrackMgr {
     }
 
     bind("main", in,
-         "track" -> text("", addTrack, "id" -> theInput)
+         "track" -%> text("", addTrack, "id" -> theInput)
     )
     
   }
