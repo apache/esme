@@ -131,8 +131,7 @@ function displayMessages(msgArray, elementId)
       // Remove any old tags from the template
       newMsg.find('*[id=tag]').remove();
       
-
-      // Insert the updated copy of the message into the page
+  // Insert the updated copy of the message into the page
       newMsg.prependTo(msgInsertPt).show();
     }
   }
