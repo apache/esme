@@ -253,15 +253,15 @@ class User extends KeyedMapper[Long, User] with UserIdAsString {// OpenIDProtoUs
   }
   
   /**
-   * URL to the image that the user has provided def image_url: String = new URL(imageUrl).toString
+   * URL to the image that the user has provided 
    */
- 
-  
+   
   
   def image_url: String = (imageUrl.is) match {
     case (f) if f.length > 1 => f
     case (_) => "/images/avatar.jpg"
   }
+  
 
   def needsChange_? : Boolean = this.nickname.is.startsWith("chang") &&
   this.firstName.startsWith("Unkn") && this.lastName.startsWith("Unkn")

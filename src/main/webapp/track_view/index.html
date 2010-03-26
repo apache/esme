@@ -60,7 +60,7 @@
 										</td>
 										<td>
 											<item:remove>
-												<img src="/images/delete.png"/>
+												<img src="/images/deletenew.png"/>
 											</item:remove>
 										</td>
 									</tr>
@@ -74,14 +74,15 @@
 <div id="dialog-form" title="Create new track">
 	<p class="validateTips">All form fields are required.</p>
 
-      <lift:form>
+       <form id="track_new_dialog" onsubmit="false">
+
        <lift:main>
 	<fieldset>
 		<label for="name"><lift:loc>ui_track_new_track_what</lift:loc></label>
 		<main:track class="text ui-widget-content ui-corner-all" />
 	</fieldset>
 	</lift:main>
-       </lift:form>
+       </form>
 </div>
 
 
