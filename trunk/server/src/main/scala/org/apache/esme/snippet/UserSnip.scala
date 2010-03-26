@@ -26,13 +26,21 @@ import org.apache.esme.actor._
 import net.liftweb._
 import http._
 import js._
-import JsCmds._
+import js.jquery._
+import http.jquery._
+import JqJsCmds._
+import JsCmds._ 
+import SHtml._
 import JE._
 import util._
 import common._
 import Helpers._
 import TimeHelpers.intToTimeSpanBuilder
 import TimeHelpers.timeSpanToLong
+import Helpers.TimeSpan
+
+import net.liftweb.util.Helpers.pairToUnprefixed
+import scala.xml.MetaData
 
 import scala.xml.{NodeSeq, Text, Node}
 
@@ -40,6 +48,7 @@ object JsonPoster extends JsonHandler{
   def apply(in: Any): JsCmd = in match {
     case JsonCmd("post", _, map: Map[String, Any], _) =>
       println("Posting "+map)
+      DisplayMessage("messages", <b>Status updated</b>, 200, 200)
       for (msgObj <- map.get("msg");
            msg <- Box.asA[String](msgObj).map(_.trim) if msg.length > 0;
            tagObj <- map.get("tags");
@@ -52,6 +61,10 @@ object JsonPoster extends JsonHandler{
           case Some(x) if x > 0L => Some(x)
           case _ => None
         }
+        
+
+
+
         
         Distributor ! 
         Distributor.UserCreatedMessage(user.id, msg, 
@@ -135,6 +148,10 @@ class UserSnip extends DispatchSnippet {
     Text(User.currentUser.map(_.wholeName) openOr "")
   }
   
+
+   // Image of user as part of an img tag
+  def image: MetaData = ("src" -> (User.currentUser.map(_.image_url)openOr "/images/avatar.jpg"))
+  
   def userImage(in: NodeSeq) = {
     if (User.currentUser.map(_.needsChange_?) openOr false)
     S.redirectTo("/user_mgt/edit")
@@ -198,7 +215,7 @@ class UserSnip extends DispatchSnippet {
         }
       case _ => NodeSeq.Empty
     }
-
+    
   def links(in: NodeSeq): NodeSeq = 
     PopStatsActor !? PopStatsActor.TopStats(LinkClickedStat, 5, 1 week) match {
       case Nil => NodeSeq.Empty

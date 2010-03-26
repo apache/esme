@@ -64,7 +64,7 @@
 					
 					if (bValid) {
 						 //$('button[type=submit] .default').click(); 
-						 this.ownerDocument.forms[1].submit();   
+						 liftAjax.lift_ajaxHandler(jQuery("#track_new_dialog").serialize(), null, null, "javascript");  
 
 						$(this).dialog('close');
 					}
