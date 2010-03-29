@@ -1,0 +1,50 @@
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one   *
+ or more contributor license agreements.  See the NOTICE file *
+ distributed with this work for additional information        *
+ regarding copyright ownership.  The ASF licenses this file   *
+ to you under the Apache License, Version 2.0 (the            *
+ "License"); you may not use this file except in compliance   *
+ with the License.  You may obtain a copy of the License at   *
+                                                              *
+   http://www.apache.org/licenses/LICENSE-2.0                 *
+                                                              *
+ Unless required by applicable law or agreed to in writing,   *
+ software distributed under the License is distributed on an  *
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY       *
+ KIND, either express or implied.  See the License for the    *
+ specific language governing permissions and limitations      *
+ under the License.                                           *
+-->
+
+<lift:surround with="base" at="left">
+	<div id="left">
+		<!--updates-box -->
+		<lift:comet type="PublicTimeline"/>
+		<div>
+			<div id="timeline_messages">
+				<div class="updates-box" id="message">
+							
+				 <div class="avatar"> <img id="avatar" src="/images/avatar.jpg" alt="Anonymous" width="50px"/></div>
+				   <div class="update"> <div id="body">-</div>
+				   <div class="info"><a href="" id="author">-</a><div class="time"><div id="supp_data"> -</div></div></div>
+				 </div>	
+				 <div class="time">  </div>	
+									<div class="actions">
+									<a href="#"  id="resend">
+										<lift:loc>ui_messages_message_label_resend</lift:loc>
+									</a>
+									| <a href="#" id="reply">
+										<lift:loc>ui_messages_message_label_reply</lift:loc>
+									</a>
+									<a id="conversation">
+										|  <lift:loc>ui_messages_message_label_conversation</lift:loc>
+									</a>
+								</div>		
+				<div class="separator">                    </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--updates-box-->
+</lift:surround>

@@ -1,0 +1,125 @@
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one   *
+ or more contributor license agreements.  See the NOTICE file *
+ distributed with this work for additional information        *
+ regarding copyright ownership.  The ASF licenses this file   *
+ to you under the Apache License, Version 2.0 (the            *
+ "License"); you may not use this file except in compliance   *
+ with the License.  You may obtain a copy of the License at   *
+                                                              *
+   http://www.apache.org/licenses/LICENSE-2.0                 *
+                                                              *
+ Unless required by applicable law or agreed to in writing,   *
+ software distributed under the License is distributed on an  *
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY       *
+ KIND, either express or implied.  See the License for the    *
+ specific language governing permissions and limitations      *
+ under the License.                                           *
+-->
+
+<lift:surround with="base" at="left">
+	<lift:TableSorterSnip/>
+<head>
+	<!-- STYLESHEETS  -->  
+	<link type="text/css" href="../style/smoothness/jquery-ui-1.7.2.custom.css" rel="stylesheet" />
+	<link type="text/css" href="../style/jquery-ui.css" rel="stylesheet" />
+	<link type="text/css" href="../style/parseTheme.css" rel="stylesheet" />
+	<link type="text/css" href="../style/dialog.css" rel="stylesheet" />
+	<script type="text/javascript" src="../scripts/jquery-ui-1.7.2.custom.min.js">    </script>
+	<script type="text/javascript" src="../scripts/dialog_action.js">    </script>
+		<lift:TableSorterSnip/>
+	</head>
+	
+<div class="demo">
+ <div id="messages"></div>
+				<span id="TokenSpan">
+					<lift:ignore>
+						<!--      The displayActions snippet *MUST* appear on the page before      the main snippet      -->
+						</lift:ignore>
+					<lift:displayActions the_id="TokenSpan">
+						<table id="esme-table" class="tablesorter">
+							<thead>
+								<tr>
+									<th>
+										<lift:loc>ui_action_table_name</lift:loc>
+									</th>
+									<th>
+										<lift:loc>ui_action_table_enabled</lift:loc>
+									</th>
+									<th>
+										<lift:loc>ui_action_table_test</lift:loc>
+									</th>
+									<th>
+										<lift:loc>ui_action_table_action</lift:loc>
+									</th>
+									<th>
+										<lift:loc>ui_action_table_create_date</lift:loc>
+									</th>
+									<th>
+										
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+								<disp:item>
+									<tr>
+										<td>
+											<item:name/>
+										</td>
+										<td>
+											<item:enabled/>
+										</td>
+										<td>
+											<item:test/>
+										</td>
+										<td>
+											<item:action/>
+										</td>
+										<td>
+											<item:createdDate/>
+										</td>
+										<td>
+											<item:remove>
+												<img src="/images/deletenew.png"/>
+											</item:remove>
+										</td>
+									</tr>
+								</disp:item>
+							</tbody>
+						</table>
+					</lift:displayActions>
+				</span>
+<div id="dialog-form" title="Create new action">
+	<p class="validateTips"><lift:loc>ui_form_all_fields_required</lift:loc></p>
+
+       <form id="action_new_dialog" onsubmit="false">
+
+       <lift:main>
+	<fieldset>
+		<label for="name"><lift:loc>ui_action_new_action_name</lift:loc></label>
+		<main:name class="text ui-widget-content ui-corner-all" />
+		<label for="name"><lift:loc>ui_action_new_action_test</lift:loc></label>
+		<main:test class="text ui-widget-content ui-corner-all" />
+		<label for="name"><lift:loc>ui_action_table_action</lift:loc></label>
+		<main:action class="text ui-widget-content ui-corner-all" />
+	</fieldset>
+	</lift:main>
+       </form>
+</div>
+
+
+<button onclick="javascript:$('#dialog-form').dialog('open')" id="create-pool"><lift:loc>ui_action_new_action_add</lift:loc></button>
+
+</div><!-- End demo -->
+
+	<lift:Msgs>
+		<lift:error_msg>Error:</lift:error_msg>
+		<lift:notice_msg>FYI:</lift:notice_msg>
+		<lift:error_class>error_major</lift:error_class>
+		<lift:notice_msg>
+			<lift:loc>ui_base_note</lift:loc>
+		</lift:notice_msg>
+		<lift:notice_class>note_major</lift:notice_class>
+	</lift:Msgs>
+</lift:surround>
+

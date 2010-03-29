@@ -1,0 +1,119 @@
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one   *
+ or more contributor license agreements.  See the NOTICE file *
+ distributed with this work for additional information        *
+ regarding copyright ownership.  The ASF licenses this file   *
+ to you under the Apache License, Version 2.0 (the            *
+ "License"); you may not use this file except in compliance   *
+ with the License.  You may obtain a copy of the License at   *
+                                                              *
+   http://www.apache.org/licenses/LICENSE-2.0                 *
+                                                              *
+ Unless required by applicable law or agreed to in writing,   *
+ software distributed under the License is distributed on an  *
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY       *
+ KIND, either express or implied.  See the License for the    *
+ specific language governing permissions and limitations      *
+ under the License.                                           *
+-->
+
+<lift:surround with="base" at="left">
+	<div id="left">
+		<div id="back-header">
+			<!---UPDATE BOX -->
+			<div class="container-update">
+				<h3>
+					<lift:loc>ui_messages_message_label_message_request</lift:loc>
+				</h3>
+				<div id="form-update">
+				         <div id="messages"></div>
+				   
+					<div class="post-form-row">
+						<label><lift:loc>ui_messages_share</lift:loc></label>
+						<select id="vPool" class="inputBox2">
+							<option value="0">
+								<lift:loc>ui_messages_message_label_message_pool_public</lift:loc>
+							</option>
+							<lift:UserSnip.accessPools/>
+						</select>
+					</div>
+					<div class="row clear" style="display: none" id="reply-to-div">
+                                            <b><lift:loc>ui_messages_message_label_message_reply</lift:loc></b>
+                                            <span id="reply-to-span">-</span>
+                                            <a href="javascript: clearReplyTo()">
+                                               <lift:loc>ui_messages_message_label_message_remove_reply</lift:loc>
+                                            </a>
+                                        </div>
+					<div class="post-form-row">
+						<textarea class="inputBox2" id="vMsg" rows="5" cols="80%"></textarea>
+						<div class="row clear" style="display: none">
+							<input id="vTag" style="width: 90%"/>
+						</div>
+						<div class="update-btn">
+							<input type="image" onclick="javascript:post_msg();" src="images/btn-update.gif" />
+						</div>
+					</div>
+					<script>
+                                        // <![CDATA[
+                                        var currentConvNumber = 0;
+                                        
+                                        function setReplyTo(id, text){
+                                            currentConvNumber = id;
+                                            document.getElementById('reply-to-div').style.display = "block";
+                                            //document.getElementById('container-update').height = "172px";
+                                            jQuery('#reply-to-span').html(text);
+                                        }
+                                        
+                                        function clearReplyTo(){
+                                            currentConvNumber = 0;
+                                            document.getElementById('reply-to-div').style.display = "none";
+                                            document.getElementById('container-update').height = "152px";
+                                        }
+                                        
+                                        function clearResend(id){
+                                            document.getElementById(id).style.display = "none"
+                                        }
+                                        
+                                        // ]]>
+                                        
+                                        
+                                    </script>
+					<lift:UserSnip.postScript/>
+				</div>
+			</div>
+			<!--END UPDATE BOX-->
+			</div>
+		<lift:UserSnip.resendScript/>
+		<!--updates-box -->
+		<!--updates-box -->
+		<lift:comet type="Timeline"/>
+		
+			<div id="personal_timeline_messages">
+			<div class="updates-box" id="message">
+							
+				 <div class="avatar"> <img id="avatar" src="/images/avatar.jpg" alt="Anonymous" width="50px"/></div>
+				   <div class="update"> <div id="body">-</div>
+				   <div class="info"><a href="" id="author">-</a><div class="time"><div id="supp_data"> -</div></div></div>
+				 </div>	
+				 <div class="time">  </div>	
+									<div class="actions">
+									<a href="#"  id="resend">
+										<lift:loc>ui_messages_message_label_resend</lift:loc>
+									</a>
+									| <a href="#" id="reply">
+										<lift:loc>ui_messages_message_label_reply</lift:loc>
+									</a>
+									<a id="conversation">
+										|  <lift:loc>ui_messages_message_label_conversation</lift:loc>
+									</a>
+								</div>		
+				<div class="separator">                    </div>
+				</div>
+			
+			
+				
+			</div>
+	</div>
+	<!--updates-box-->
+</lift:surround>
+
