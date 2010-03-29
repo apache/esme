@@ -17,40 +17,20 @@
  under the License.                                           *
 -->
 <lift:surround with="base" at="left">
-	<lift:Style.header/>
-	<lift:TableSorterSnip/>
-	<!-- STYLESHEETS <lift:Style.header /> -->
-	<link rel="stylesheet" type="text/css" href="../style/reset.css" media="screen" />
-	<link rel="stylesheet" type="text/css" href="../style/text.css" media="screen" />
-	<link rel="stylesheet" type="text/css" href="../style/grid.css" media="screen" />
-	<link rel="stylesheet" type="text/css" href="../style/layout.css" media="screen" />
+<head>
+	<!-- STYLESHEETS  -->  
 	<link type="text/css" href="../style/smoothness/jquery-ui-1.7.2.custom.css" rel="stylesheet" />
-	<!--[if IE 6]>
-	<link rel="stylesheet" type="text/css" href="../style/ie6.css" media="screen" />
-	<![endif]-->
-	<!--[if gte IE 7]>
-	<link rel="stylesheet" type="text/css" href="../style/ie.css" media="screen" />
-	<![endif]-->
-	<!-- JAVASCRIPT -->
+	<link type="text/css" href="../style/jquery-ui.css" rel="stylesheet" />
+	<link type="text/css" href="../style/parseTheme.css" rel="stylesheet" />
+	<link type="text/css" href="../style/dialog.css" rel="stylesheet" />
 	<script type="text/javascript" src="../scripts/jquery-ui-1.7.2.custom.min.js">    </script>
-	<script type="text/javascript" src="../scripts/esme.js">    </script>
-	<script type="text/javascript" src="../scripts/esme_table_sorter.js">    </script>
+	<script type="text/javascript" src="../scripts/dialog_token.js">    </script>
+		<lift:TableSorterSnip/>
+	</head>
+	
+<div class="demo">
         <div id="messages"></div>
-	<div class="b-list">
-		<div class="ui-tabs ui-widget ui-widget-content ui-corner-all" id="tabs">
-			<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
-				<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active">
-					<a href="#tabs-1">
-						<lift:loc>ui_token_title_manage</lift:loc>
-					</a>
-				</li>
-				<li class="ui-state-default ui-corner-top">
-					<a href="#tabs-2">
-						<lift:loc>ui_token_title_create</lift:loc>
-					</a>
-				</li>
-			</ul>
-			<div class="ui-tabs-panel ui-widget-content ui-corner-bottom" id="tabs-1">
+
 				<span id="TokenSpan">
 					<lift:ignore>
 						<!--                        The displayTokens snippet *MUST* appear on the page before                        the main snippet                        -->
@@ -96,17 +76,22 @@
 						</table>
 					</lift:displayTokens>
 				</span>
-			</div>
-			<div class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide" id="tabs-2">
-				<lift:form>
-					<lift:main>
-						<lift:loc>ui_token_create_description</lift:loc>
-						<main:token/>
-						<input type="submit" value="Add" />
-					</lift:main>
-				</lift:form>
-			</div>
-		</div>
-	</div>
-	<!-- End demo -->
+<div id="dialog-form" title="Create new token">
+	<p class="validateTips"><lift:loc>ui_form_all_fields_required</lift:loc></p>
+
+       <form id="token_new_dialog" onsubmit="false">
+
+       <lift:main>
+	<fieldset>
+		<label for="name"><lift:loc>ui_token_create_description</lift:loc></label>
+		<main:token class="text ui-widget-content ui-corner-all" />
+	</fieldset>
+	</lift:main>
+       </form>
+</div>
+
+
+<button onclick="javascript:$('#dialog-form').dialog('open')" id="create-user"><lift:loc>ui_track_new_track</lift:loc></button>
+
+</div><!-- End demo -->
 </lift:surround>

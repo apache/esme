@@ -22,13 +22,14 @@
 	<link type="text/css" href="../style/smoothness/jquery-ui-1.7.2.custom.css" rel="stylesheet" />
 	<link type="text/css" href="../style/jquery-ui.css" rel="stylesheet" />
 	<link type="text/css" href="../style/parseTheme.css" rel="stylesheet" />
-	<link rel="stylesheet" type="text/css" href="../style/test.css" media="screen" />
+	<link type="text/css" href="../style/dialog.css" rel="stylesheet" />
 	<script type="text/javascript" src="../scripts/jquery-ui-1.7.2.custom.min.js">    </script>
-	<script type="text/javascript" src="../scripts/dialog_test.js">    </script>
+	<script type="text/javascript" src="../scripts/dialog_track.js">    </script>
 		<lift:TableSorterSnip/>
 	</head>
 	
 <div class="demo">
+ <div id="messages"></div>
 
 <span id="TrackSpan">
 					<lift:ignore>
@@ -72,7 +73,7 @@
 
 
 <div id="dialog-form" title="Create new track">
-	<p class="validateTips">All form fields are required.</p>
+	<p class="validateTips"><lift:loc>ui_form_all_fields_required</lift:loc></p>
 
        <form id="track_new_dialog" onsubmit="false">
 

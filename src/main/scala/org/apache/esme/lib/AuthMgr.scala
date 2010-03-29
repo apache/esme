@@ -68,6 +68,11 @@ object AuthMgr {
      case d => Text(dateFormat.format(d))
    }
 
+
+  /*
+   * Function to display Authorization tokens
+   *
+   */
   def displayTokens(in: NodeSeq): NodeSeq = {
     // get the span name to update
     val spanName = S.attr("the_id") openOr "TokenSpan"
@@ -87,7 +92,7 @@ object AuthMgr {
                                                    "createdDate" -> getDateHtml(i.createdDate),
                                                    "revoke" -> 
                                                    ((bt: NodeSeq) => 
-                  ajaxButton(bt, () => {i.delete_! ; updateSpan() & DisplayMessage("messages", <b>{S.?("base_track_msg_removed", i.description.is)}</b>,  3 seconds, 3 seconds)}))
+                  ajaxButton(bt, () => {i.delete_! ; updateSpan() & DisplayMessage("messages", <b>{S.?("base_token_msg_removed", i.description.is)}</b>,  3 seconds, 3 seconds)}))
               ))))
     }
 
@@ -102,6 +107,10 @@ object AuthMgr {
     val theInput = "token_input"
     val user = User.currentUser
     
+    /*
+     * Function to create a new authorization token
+     *
+     */
     def addAuthToken(desc: String): JsCmd = {
       desc.trim match {
         case x if x.length < 3 => DisplayMessage("messages", <b>{S.?("base_token_error_name_short")}</b>,  3 seconds, 3 seconds)
@@ -114,7 +123,7 @@ object AuthMgr {
     }
 
     bind("main", in,
-         "token" -> text("", addAuthToken, "id" -> theInput)
+         "token" -%> text("", addAuthToken, "id" -> theInput)
     )
     
   }

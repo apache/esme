@@ -63,7 +63,7 @@
                 <div id="right">
                     <div class="box-right-back">
                         <div class="avatar">
-                            <img lift:snippet="UserSnip.image" alt="" />
+                            <img lift:snippet="UserSnip.image" alt="" width="30px"/>
                         </div><strong><lift:loc>ui_messages_message_label_welcome</lift:loc></strong>
                         <div class="info4">
                             <a href=""><span class="name"><lift:UserSnip.name/></span></a>
@@ -108,22 +108,9 @@
                         <div class="right-content">
                                         <lift:UserSnip.popular>
                                         <table>
-                                            <thead>
-                                                <tr>
-                                                    <th class="popular_th">
-                                                        <lift:loc>ui_messages_message_header_popular_resent</lift:loc>
-                                                    </th>
-                                                    <th>
-                                                        <lift:loc>ui_messages_message_header_popular_message</lift:loc>
-                                                    </th>
-                                                </tr>
-                                            </thead>
                                             <tbody>
                                                 <disp:item>
                                                     <tr>
-                                                        <td>
-                                                            <item:freq/>
-                                                        </td>
                                                         <td text-align="center">
                                                             <item:author/>: <item:text/><!--<item:date/>--> 
                                                         </td>
@@ -138,22 +125,9 @@
                         <div class="right-content">
                                   <lift:UserSnip.links>
                                         <table>
-                                            <thead>
-                                                <tr>
-                                                    <th font-weight="bold">
-                                                        <lift:loc>ui_messages_message_header_popular_links_clicked</lift:loc>
-                                                    </th>
-                                                    <th>
-                                                        <lift:loc>ui_messages_message_header_popular_links_link</lift:loc>
-                                                    </th>
-                                                </tr>
-                                            </thead>
                                             <tbody>
                                                 <disp:item>
                                                     <tr>
-                                                        <td text-align="center">
-                                                            <item:freq/>
-                                                        </td>
                                                         <td>
                                                             <item:url/>
                                                         </td>
@@ -161,7 +135,8 @@
                                                 </disp:item>
                                             </tbody>
                                         </table>
-                                    </lift:UserSnip.links>                        </div>
+                                    </lift:UserSnip.links>                        
+                       </div>
                     </div>
                 </div>
             </div>

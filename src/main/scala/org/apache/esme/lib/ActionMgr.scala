@@ -145,9 +145,9 @@ object ActionMgr {
     
 
     bind("main", in,
-         "name" -> text(name, name = _, "id" -> mainName),
-         "test" -> textarea(test, test = _, "id" -> mainTest),
-         "action" -> textarea("", doSave, "id" -> mainAction)
+         "name" -%> text(name, name = _, "id" -> mainName),
+         "test" -%> textarea(test, test = _, "id" -> mainTest),
+         "action" -%> textarea("", doSave, "id" -> mainAction)
     )
   }
 }
