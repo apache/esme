@@ -25,7 +25,6 @@ import util._
 import common._
 import http.js._
 import Helpers._
-import java.util.logging._
 
 import scala.xml._
 

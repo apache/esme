@@ -42,7 +42,6 @@ import org.apache.esme.actor._
 import scala.xml.{NodeSeq, Text, Elem, Node, XML}
 
 import scala.collection.mutable.ListBuffer
-import java.util.logging._
 
 object RestAPI extends XMLApiHelper {
   val logger: Logger = Logger.getLogger("org.apache.esme.api")

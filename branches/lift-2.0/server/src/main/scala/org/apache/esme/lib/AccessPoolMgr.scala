@@ -45,7 +45,6 @@ import scala.xml._
 
 import java.util.Date
 import java.text.{DateFormat,SimpleDateFormat}
-import java.util.logging._
 
 /**
  * Manage the sitemap and related snippets for Access Pools

@@ -45,7 +45,6 @@ import org.apache.esme.actor._
 import scala.xml._
 
 import scala.collection.mutable.ListBuffer
-import java.util.logging._
 
 // operator to match on last elements of a List
 object ::> {def unapply[A] (l: List[A]) = l match {
