@@ -18,44 +18,20 @@
 -->
 
 <lift:surround with="base" at="left">
-	<lift:Style.header />
 	<lift:TableSorterSnip/>
-	<link rel="stylesheet" type="text/css" href="../style/reset.css" media="screen" />
-	<link rel="stylesheet" type="text/css" href="../style/text.css" media="screen" />
-	<link rel="stylesheet" type="text/css" href="../style/grid.css" media="screen" />
-	<link rel="stylesheet" type="text/css" href="../style/layout.css" media="screen" />
+<head>
+	<!-- STYLESHEETS  -->  
 	<link type="text/css" href="../style/smoothness/jquery-ui-1.7.2.custom.css" rel="stylesheet" />
-	<!--[if IE 6]>
-	<link rel="stylesheet" type="text/css" href="../style/ie6.css" media="screen" />
-	<![endif]-->
-	<!--[if gte IE 7]>
-	<link rel="stylesheet" type="text/css" href="../style/ie.css" media="screen" />
-	<![endif]-->
-	<!-- JAVASCRIPT -->
-	<script type="text/javascript" src="../scripts/jquery-ui-1.7.2.custom.min.js"></script>
-	<script type="text/javascript" src="../scripts/esme.js"></script>
-	<script type="text/javascript" src="../scripts/esme_table_sorter.js"></script>
-	 <div id="messages"></div>
-	<div class="demo">
-		<div class="ui-tabs ui-widget ui-widget-content ui-corner-all" id="tabs">
-			<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
-				<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active">
-					<a href="#tabs-1">
-						<lift:loc>ui_action_title</lift:loc>
-					</a>
-				</li>
-				<li class="ui-state-default ui-corner-top">
-					<a href="#tabs-2">
-						<lift:loc>ui_action_new_action</lift:loc>
-					</a>
-				</li>
-				<li class="ui-state-default ui-corner-top">
-					<a href="#tabs-3">
-						<lift:loc>ui_action_help</lift:loc>
-					</a>
-				</li>
-			</ul>
-			<div class="ui-tabs-panel ui-widget-content ui-corner-bottom" id="tabs-1">
+	<link type="text/css" href="../style/jquery-ui.css" rel="stylesheet" />
+	<link type="text/css" href="../style/parseTheme.css" rel="stylesheet" />
+	<link type="text/css" href="../style/dialog.css" rel="stylesheet" />
+	<script type="text/javascript" src="../scripts/jquery-ui-1.7.2.custom.min.js">    </script>
+	<script type="text/javascript" src="../scripts/dialog_action.js">    </script>
+		<lift:TableSorterSnip/>
+	</head>
+	
+<div class="demo">
+ <div id="messages"></div>
 				<span id="TokenSpan">
 					<lift:ignore>
 						<!--      The displayActions snippet *MUST* appear on the page before      the main snippet      -->
@@ -80,7 +56,7 @@
 										<lift:loc>ui_action_table_create_date</lift:loc>
 									</th>
 									<th>
-										<lift:loc>ui_action_table_delete</lift:loc>
+										
 									</th>
 								</tr>
 							</thead>
@@ -104,7 +80,7 @@
 										</td>
 										<td>
 											<item:remove>
-												<lift:loc>ui_action_table_delete</lift:loc>
+												<img src="/images/deletenew.png"/>
 											</item:remove>
 										</td>
 									</tr>
@@ -113,79 +89,29 @@
 						</table>
 					</lift:displayActions>
 				</span>
-			</div>
-			<div class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide" id="tabs-2">
-				<lift:form>
-					<lift:main>
-						<table>
-							<tr>
-								<td>
-									<lift:loc>ui_action_new_action_name</lift:loc>
-								</td>
-								<td>
-									<main:name/>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<lift:loc>ui_action_new_action_test</lift:loc>
-								</td>
-								<td>
-									<main:test/>
-								</td>
-							</tr>
-							<tr>
-								<td>
-									<lift:loc>ui_action_new_action_action</lift:loc>
-								</td>
-								<td>
-									<main:action/>
-								</td>
-							</tr>
-							<tr>
-								<td></td>
-								<td>
-									<input type="submit" value="Add" />
-								</td>
-							</tr>
-						</table>
-					</lift:main>
-				</lift:form>
-			</div>
-			<div class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide" id="tabs-3">
-				<b>
-					<lift:loc>ui_action_new_action_test</lift:loc>
-				</b>
-				<br />
-				<p>
-					@foo -- sender is @foo<br />
-					day = (0,1) -- sent on Sunday or Monday<br/>
-					#moo -- contains the #moo tag<br/>
-					50% -- success 50% of the time<br/>
-					@foo &amp; 50% -- half the time, something sent by @foo<br/>
-					login -- user has logged in<br/>
-					followed -- user is being followed<br/>
-					unfollowed -- user is being unfollowed<br/>
-					profile -- user changed profile<br/>
-					every N mins -- repeat action, N is an integer<br/>
-					pool:[mypool] -- message is in access pool mypool<br/>
-				resent:[user] -- message was resent by user        </p>
-				<br/>
-				<b>
-					<lift:loc>ui_action_new_action_action</lift:loc>
-				</b>
-				<br />
-				<p>
-					filter -- not put in your timeline<br />
-					resend -- sends the message to all your followers<br />
-					mailto:foo@bar.com -- sends the message to foo@bar.com<br/>
-					<a href="http://foo.com/message/in">http://foo.com/message/in</a> -- HTTP post, %s expands to message<br/>
-					atom:<a href="http://blog.com/feed.atom">http://blog.com/feed.atom</a> -- posts new messages from Atom feed<br/>
-				rss:<a href="http://blog.com/feed.rss">http://blog.com/feed.rss</a> -- posts new messages from RSS feed        </p>
-			</div>
-		</div>
-	</div>
-	<!-- End demo -->
+<div id="dialog-form" title="Create new action">
+	<p class="validateTips"><lift:loc>ui_form_all_fields_required</lift:loc></p>
+
+       <form id="action_new_dialog" onsubmit="false">
+
+       <lift:main>
+	<fieldset>
+		<label for="name"><lift:loc>ui_action_new_action_name</lift:loc></label>
+		<main:name class="text ui-widget-content ui-corner-all" />
+		<label for="name"><lift:loc>ui_action_new_action_test</lift:loc></label>
+		<main:test class="text ui-widget-content ui-corner-all" />
+		<label for="name"><lift:loc>ui_action_table_action</lift:loc></label>
+		<main:action class="text ui-widget-content ui-corner-all" />
+	</fieldset>
+	</lift:main>
+       </form>
+</div>
+
+
+<button onclick="javascript:$('#dialog-form').dialog('open')" id="create-pool"><lift:loc>ui_action_new_action_add</lift:loc></button>
+
+</div><!-- End demo -->
+
 	<lift:Msgs>
 		<lift:error_msg>Error:</lift:error_msg>
 		<lift:notice_msg>FYI:</lift:notice_msg>

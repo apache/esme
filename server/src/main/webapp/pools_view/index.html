@@ -17,39 +17,23 @@
  under the License.                                           *
 -->
 <lift:surround with="base" at="left">
-    <lift:Style.header/><lift:TableSorterSnip/><!-- STYLESHEETS <lift:Style.header /> -->
-    <link rel="stylesheet" type="text/css" href="../style/reset.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="../style/text.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="../style/grid.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="../style/layout.css" media="screen" />
-    <link type="text/css" href="../style/smoothness/jquery-ui-1.7.2.custom.css" rel="stylesheet" />
-    <!--[if IE 6]><link rel="stylesheet" type="text/css" href="../style/ie6.css" media="screen" /><![endif]--><!--[if gte IE 7]><link rel="stylesheet" type="text/css" href="../style/ie.css" media="screen" /><![endif]--><!-- JAVASCRIPT -->
-    <script type="text/javascript" src="../scripts/jquery-ui-1.7.2.custom.min.js">
-    </script>
-    <script type="text/javascript" src="../scripts/esme.js">
-    </script>
-    <script type="text/javascript" src="../scripts/esme_table_sorter.js">
-    </script>
-    <div id="messages"></div>
-    <div class="demo">
-        <div class="ui-tabs ui-widget ui-widget-content ui-corner-all" id="tabs">
-            <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
-                <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active">
-                    <a href="#tabs-1"><lift:loc>ui_pool_create</lift:loc></a>
-                </li>
-                <li class="ui-state-default ui-corner-top">
-                    <a href="#tabs-2"><lift:loc>ui_pool_manage</lift:loc></a>
-                </li>
-            </ul>
-            <div class="ui-tabs-panel ui-widget-content ui-corner-bottom" id="tabs-1">
-                <lift:form>
-                    <lift:addPool>
-                        <lift:loc>ui_pool_add</lift:loc>
-                        <add:poolName/><input type="submit" value="Add" />
-                    </lift:addPool>
-                </lift:form>
-            </div>
-            <div class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide" id="tabs-2">
+<head>
+	<!-- STYLESHEETS  -->  
+	<link type="text/css" href="../style/smoothness/jquery-ui-1.7.2.custom.css" rel="stylesheet" />
+	<link type="text/css" href="../style/jquery-ui.css" rel="stylesheet" />
+	<link type="text/css" href="../style/parseTheme.css" rel="stylesheet" />
+	<link type="text/css" href="../style/dialog.css" rel="stylesheet" />
+	<script type="text/javascript" src="../scripts/jquery-ui-1.7.2.custom.min.js">    </script>
+	<script type="text/javascript" src="../scripts/dialog_pool.js">    </script>
+		<lift:TableSorterSnip/>
+	</head>
+	
+<div class="demo">
+ <div id="messages"></div>
+ 
+
+ 
+ 
                 <span id="PoolDetailSpan">
                     <lift:ignore>
                         <!--
@@ -143,25 +127,54 @@
                             <br/>
                         </fieldset>
                         <br/>
+                      <button onclick="javascript:$('#dialog-form-user').dialog('open')" id="add-user"><lift:loc>ui_pool_add_user</lift:loc></button>
                     </lift:poolUsers>
+                    
+
                 </span>
-                <fieldset>
-                    <legend>
-                        <lift:loc>ui_pool_add_user</lift:loc>
-                    </legend>
+                
+                                 <fieldset>
                     <lift:form>
                         <lift:editPool>
                             <lift:loc>ui_pool_edit_label</lift:loc>
                             <edit:pool/>
-                            <br/>
-                            <lift:loc>ui_pool_edit_name</lift:loc>
-                            <edit:username/><edit:permission/>
-                            <br/>
-                            <input type="submit" value="Edit" />
                         </lift:editPool>
                     </lift:form>
                 </fieldset>
-            </div>
-        </div>
+        
+
+<div id="dialog-form" title="Create new  pool">
+	<p class="validateTips"><lift:loc>ui_form_all_fields_required</lift:loc></p>
+
+       <form id="pool_new_dialog" onsubmit="false">
+
+       <lift:addPool>
+	<fieldset>
+		<label for="poolName"><lift:loc>ui_pool_add</lift:loc></label>
+		<add:poolName class="text ui-widget-content ui-corner-all" />
+	</fieldset>
+	</lift:addPool>
+       </form>
+</div>
+
+<div id="dialog-form-user" title="Add a user to a pool">
+	<p class="validateTips"><lift:loc>ui_form_all_fields_required</lift:loc></p>
+
+       <form id="pool_new_user_dialog" onsubmit="false">
+
+       <lift:editPool>
+	<fieldset>
+		<label for="poolName"><lift:loc>ui_pool_add</lift:loc></label>
+		<edit:username class="text ui-widget-content ui-corner-all" />
+		<label for="permission"><lift:loc>ui_pool_list_user_role</lift:loc></label>
+		<edit:permission class="text ui-widget-content ui-corner-all" />
+	</fieldset>
+	</lift:editPool>
+       </form>
+</div>
+
+
+<button onclick="javascript:$('#dialog-form').dialog('open')" id="create-pool"><lift:loc>ui_pool_create</lift:loc></button>
+
     </div><!-- End demo -->
 </lift:surround>
