@@ -109,7 +109,7 @@ object AccessPoolMgr {
     }
 
     bind("add", in,
-         "poolName" -> text("", addNewPool, "id" -> theInput)
+         "poolName" -%> text("", addNewPool, "id" -> theInput)
     )
     
   }
@@ -185,7 +185,7 @@ object AccessPoolMgr {
                                                        redisplay() //redisplay pooluser and pool detail
                                                        },
                                                  "id" -> editPoolName),
-         "username" -> text(username, username = _, "id" -> editUsername),
+         "username" -%> text(username, username = _, "id" -> editUsername),
          "permission" -> select(permissions, Empty, addPoolUser, "id" -> editPermission)
     )
     
