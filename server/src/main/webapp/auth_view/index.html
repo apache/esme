@@ -17,81 +17,79 @@
  under the License.                                           *
 -->
 <lift:surround with="base" at="left">
-<head>
-	<!-- STYLESHEETS  -->  
-	<link type="text/css" href="../style/smoothness/jquery-ui-1.7.2.custom.css" rel="stylesheet" />
-	<link type="text/css" href="../style/jquery-ui.css" rel="stylesheet" />
-	<link type="text/css" href="../style/parseTheme.css" rel="stylesheet" />
-	<link type="text/css" href="../style/dialog.css" rel="stylesheet" />
-	<script type="text/javascript" src="../scripts/jquery-ui-1.7.2.custom.min.js">    </script>
-	<script type="text/javascript" src="../scripts/dialog_token.js">    </script>
+	<head>
+		<!-- STYLESHEETS  -->
+		<link type="text/css" href="../style/smoothness/jquery-ui-1.7.2.custom.css" rel="stylesheet" />
+		<link type="text/css" href="../style/jquery-ui.css" rel="stylesheet" />
+		<link type="text/css" href="../style/parseTheme.css" rel="stylesheet" />
+		<link type="text/css" href="../style/dialog.css" rel="stylesheet" />
+		<script type="text/javascript" src="../scripts/jquery-ui-1.7.2.custom.min.js">    </script>
+		<script type="text/javascript" src="../scripts/dialog_token.js">    </script>
 		<lift:TableSorterSnip/>
 	</head>
-	
-<div class="demo">
-        <div id="messages"></div>
-
-				<span id="TokenSpan">
-					<lift:ignore>
-						<!--                        The displayTokens snippet *MUST* appear on the page before                        the main snippet                        -->
-						</lift:ignore>
-					<lift:displayTokens the_id="TokenSpan">
-						<table id="esme-table" class="tablesorter">
-							<thead>
-								<tr>
-									<th>
-										<lift:loc>ui_token_create_description</lift:loc>
-									</th>
-									<th>
-										<lift:loc>ui_token_list_token</lift:loc>
-									</th>
-									<th>
-										<lift:loc>ui_token_list_create</lift:loc>
-									</th>
-									<th>
-										
-									</th>
-								</tr>
-							</thead>
-							<tbody>
-								<disp:item>
-									<tr>
-										<td>
-											<item:description/>
-										</td>
-										<td>
-											<item:uniqueId/>
-										</td>
-										<td>
-											<item:createdDate/>
-										</td>
-										<td>
-											<item:revoke style="background-color:#fff;">
-												<img valign="center" style="background-color:#fff;"  src="/images/delete.gif"/>
-											</item:revoke>
-										</td>
-									</tr>
-								</disp:item>
-							</tbody>
-						</table>
-					</lift:displayTokens>
-				</span>
-<div id="dialog-form" title="Create new token">
-	<p class="validateTips"><lift:loc>ui_form_all_fields_required</lift:loc></p>
-
-       <form id="token_new_dialog" onsubmit="false">
-
-       <lift:main>
-	<fieldset>
-		<label for="name"><lift:loc>ui_token_create_description</lift:loc></label>
-		<main:token class="text ui-widget-content ui-corner-all" />
-	</fieldset>
-	</lift:main>
-       </form>
-</div>
-
-
-<button onclick="javascript:$('#dialog-form').dialog('open')" id="create-user"><lift:loc>ui_track_new_track</lift:loc></button>
-
-</div><!-- End demo -->
+	<div class="demo">
+		<div id="messages"></div>
+		<span id="TokenSpan">
+			<lift:ignore>
+				<!--                        The displayTokens snippet *MUST* appear on the page before                        the main snippet                        -->
+				</lift:ignore>
+			<lift:displayTokens the_id="TokenSpan">
+				<table id="esme-table" class="tablesorter">
+					<thead>
+						<tr>
+							<th>
+								<lift:loc>ui_token_create_description</lift:loc>
+							</th>
+							<th>
+								<lift:loc>ui_token_list_token</lift:loc>
+							</th>
+							<th>
+								<lift:loc>ui_token_list_create</lift:loc>
+							</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						<disp:item>
+							<tr>
+								<td>
+									<item:description/>
+								</td>
+								<td>
+									<item:uniqueId/>
+								</td>
+								<td>
+									<item:createdDate/>
+								</td>
+								<td>
+									<item:revoke style="background-color:#fff;">
+										<img valign="center" style="background-color:#fff;"  src="/images/delete.gif"/>
+									</item:revoke>
+								</td>
+							</tr>
+						</disp:item>
+					</tbody>
+				</table>
+			</lift:displayTokens>
+		</span>
+		<div id="dialog-form" title="Create new token">
+			<p class="validateTips">
+				<lift:loc>ui_form_all_fields_required</lift:loc>
+			</p>
+			<form id="token_new_dialog" onsubmit="false">
+				<lift:main>
+					<fieldset>
+						<label for="name">
+							<lift:loc>ui_token_create_description</lift:loc>
+						</label>
+						<main:token class="text ui-widget-content ui-corner-all" />
+					</fieldset>
+				</lift:main>
+			</form>
+		</div>
+		<button onclick="javascript:$('#dialog-form').dialog('open')" id="create-user">
+			<lift:loc>ui_token_title_create</lift:loc>
+		</button>
+	</div>
+	<!-- End demo -->
 </lift:surround>

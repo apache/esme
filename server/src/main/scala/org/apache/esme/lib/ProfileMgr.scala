@@ -130,17 +130,17 @@ object ProfileMgr {
         }
       }
       
-      bind("user", in, "nickname" -> text(user.nickname, {_ =>}, "disabled" -> "true"),
-                       "lastName" -> user.lastName.toForm,
-                       "imageURL" -> user.imageUrl.toForm,
-                       "firstName" -> user.firstName.toForm,
-                       "timezone" -> user.timezone.toForm,
-                       "locale" -> user.locale.toForm,
-                       "email" -> text(email, e => email = e.trim.toLowerCase),
-                       "password" -> password(pwd, p => pwd = p.trim),
-                       "confirm" -> password(pwd, p => checkEmailPassword(p.trim)),
-                       "openid" -> text(openIdUrl, registerOpenID(_)),
-                       "save" -> submit("Save", user.save))
+      bind("user", in, "nickname" -%> text(user.nickname, {_ =>}, "disabled" -> "true"),
+                       "lastName" -%> user.lastName.toForm,
+                       "imageURL" -%> user.imageUrl.toForm,
+                       "firstName" -%> user.firstName.toForm,
+                       "timezone" -%> user.timezone.toForm,
+                       "locale" -%> user.locale.toForm,
+                       "email" -%> text(email, e => email = e.trim.toLowerCase),
+                       "password" -%> password(pwd, p => pwd = p.trim),
+                       "confirm" -%> password(pwd, p => checkEmailPassword(p.trim)),
+                       "openid" -%> text(openIdUrl, registerOpenID(_)),
+                       "save" -%> submit("Save", user.save))
     }).getOrElse(NodeSeq.Empty)
 
   }
