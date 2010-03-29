@@ -30,7 +30,6 @@ import org.apache.esme._
 import model._
 import lib._
 
-import java.util.logging._
 import java.util.{TimeZone, Calendar}
 import scala.xml.{Elem}
 import com.twitter.stats.Stats

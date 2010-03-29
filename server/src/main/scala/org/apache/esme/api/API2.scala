@@ -59,7 +59,7 @@ import org.apache.esme.actor._
 import scala.xml.{NodeSeq, Text, Elem, XML, Node}
 
 import scala.collection.mutable.ListBuffer
-import java.util.logging._      
+ 
 
 import org.compass.annotations._
 import bootstrap.liftweb.Compass.compass

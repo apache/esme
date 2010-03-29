@@ -28,7 +28,6 @@ import common._
 import Helpers._
 
 import scala.collection.mutable.HashMap
-import java.util.logging._
 
 import org.apache.esme.lib.TagUtils
 
