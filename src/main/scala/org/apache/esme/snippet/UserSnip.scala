@@ -216,6 +216,8 @@ class UserSnip extends DispatchSnippet {
       case _ => NodeSeq.Empty
     }
     
+    //, u.url.is
+    
   def links(in: NodeSeq): NodeSeq = 
     PopStatsActor !? PopStatsActor.TopStats(LinkClickedStat, 5, 1 week) match {
       case Nil => NodeSeq.Empty
@@ -227,7 +229,7 @@ class UserSnip extends DispatchSnippet {
                  UrlStore.find(linkId).map { u => bind(
                    "item", lst,
                    "freq" -> freq,
-                   "url" -> u.url.is
+                   "url" ->  link(u.url.is, () => (),Text(u.url.is))
                    )
                  }.getOrElse(NodeSeq.Empty)
                }

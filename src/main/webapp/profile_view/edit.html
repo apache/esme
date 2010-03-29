@@ -17,21 +17,77 @@
  under the License.                                           *
 -->
 <lift:surround with="base" at="left">
-  <lift:editProfile form="post">
-    <table id="profile">
-      <tbody>
-        <tr> <td><lift:loc>ui_sign_up_nickname</lift:loc></td> <td><user:nickname/></td> </tr>
-        <tr> <td><lift:loc>ui_sign_up_firstname</lift:loc></td> <td><user:firstName/></td> </tr>
-        <tr> <td><lift:loc>ui_sign_up_lastname</lift:loc></td> <td><user:lastName/></td> </tr>
-        <tr> <td><lift:loc>ui_sign_up_image_url</lift:loc></td> <td><user:imageURL/></td> </tr>
-        <tr> <td><lift:loc>ui_sign_up_timezone</lift:loc></td> <td><user:timezone/></td> </tr>
-        <tr> <td><lift:loc>ui_sign_up_locale</lift:loc></td> <td><user:locale/></td> </tr>
-        <tr> <td><lift:loc>ui_login_email</lift:loc></td> <td><user:email/></td> </tr>
-        <tr> <td><lift:loc>ui_login_password</lift:loc></td> <td><user:password/></td> </tr>
-        <tr> <td><lift:loc>ui_login_password_repeat</lift:loc></td> <td><user:confirm/></td> </tr>
-        <tr> <td><lift:loc>ui_sign_up_openid</lift:loc></td> <td><user:openid/></td> </tr>
-        <user:save/>
-      </tbody>
-    </table>
-  </lift:editProfile>
+
+<div id="back-header">
+	<h1><lift:loc>ui_profile_title</lift:loc></h1>
+		
+
+	<!---CONTENT BOX-->
+	<div class="container-settings">
+		  <lift:editProfile form="post">
+					<div id="form-signup">
+							<div class="post-form-row">
+								<label><lift:loc>ui_sign_up_nickname</lift:loc></label>
+								<user:nickname class="inputBox2"/>
+							</div>	
+							
+							<div class="post-form-row">
+								<label><lift:loc>ui_sign_up_firstname</lift:loc></label>
+								<user:firstName class="inputBox2"/>
+							</div>	
+							
+							<div class="post-form-row">
+								<label><lift:loc>ui_sign_up_lastname</lift:loc></label>
+								<user:lastName class="inputBox2"/>
+							</div>	
+							
+							<div class="post-form-row">
+								<label><lift:loc>ui_sign_up_image_url</lift:loc></label>
+								<user:imageURL class="inputBox2"/>
+							</div>	
+							
+							<div class="post-form-row">
+								<label><lift:loc>ui_sign_up_timezone</lift:loc></label>
+								<user:timezone class="inputBox2"/>
+							</div>	
+							
+							<div class="post-form-row">
+								<label><lift:loc>ui_sign_up_locale</lift:loc></label>
+								<user:locale class="inputBox2"/>
+							</div>
+							
+							<div class="post-form-row">
+								<label><lift:loc>ui_login_email</lift:loc></label>
+								<user:email class="inputBox2"/>
+							</div>	
+							
+							<div class="post-form-row">
+								<label><lift:loc>ui_login_password</lift:loc></label>
+								<user:password class="inputBox2"/>
+							</div>	
+							
+							<div class="post-form-row">
+								<label><lift:loc>ui_login_password_repeat</lift:loc></label>
+								<user:confirm class="inputBox2"/>
+							</div>	
+							
+							<div class="post-form-row">
+								<label><lift:loc>ui_sign_up_openid</lift:loc></label>
+								<user:openid class="inputBox2"/>
+							</div>	
+							
+							<div class="post-form-row">
+								<div class="submit-btn">
+									<user:save type="image" src="/images/btn-save.gif" />
+								</div>
+							</div>	
+							
+					</div><!--form-signup-->
+			 </lift:editProfile>
+	</div><!--container-settings-->
+	
+	<!--END CONTENT BOX-->	
+	</div>
+	
+	
 </lift:surround>
