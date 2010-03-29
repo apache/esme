@@ -27,7 +27,9 @@
 		<script type="text/javascript" src="../scripts/dialog_token.js">    </script>
 		<lift:TableSorterSnip/>
 	</head>
-	<div class="demo">
+	<div id="back-header">
+	<h1><lift:loc>ui_token_title</lift:loc></h1>
+	<div class="container-settings">
 		<div id="messages"></div>
 		<span id="TokenSpan">
 			<lift:ignore>
@@ -62,8 +64,8 @@
 									<item:createdDate/>
 								</td>
 								<td>
-									<item:revoke style="background-color:#fff;">
-										<img valign="center" style="background-color:#fff;"  src="/images/delete.gif"/>
+									<item:revoke>
+										<img valign="center" src="/images/cancel.png"/>
 									</item:revoke>
 								</td>
 							</tr>
@@ -90,6 +92,7 @@
 		<button onclick="javascript:$('#dialog-form').dialog('open')" id="create-user">
 			<lift:loc>ui_token_title_create</lift:loc>
 		</button>
+	</div>
 	</div>
 	<!-- End demo -->
 </lift:surround>

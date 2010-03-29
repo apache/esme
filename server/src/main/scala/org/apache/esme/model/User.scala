@@ -99,14 +99,14 @@ object User extends User with KeyedMetaMapper[Long, User] {
 
     def genForm(xhtml: NodeSeq): NodeSeq = {
       bind("signup", xhtml,
-           "nickname" _id_> user.nickname.toForm,
-           "firstname" _id_> user.firstName.toForm,
-           "lastname" _id_> user.lastName.toForm,
-           "image_url" _id_> user.imageUrl.toForm,
-           "timezone" _id_> user.timezone.toForm,
-           "locale" _id_> user.locale.toForm,
+           "nickname" -%> user.nickname.toForm,
+           "firstname" -%> user.firstName.toForm,
+           "lastname" -%> user.lastName.toForm,
+           "image_url" -%> user.imageUrl.toForm,
+           "timezone" -%> user.timezone.toForm,
+           "locale" -%> user.locale.toForm,
            "credentials" -> auth.toForm,
-           "submit" _id_> SHtml.submit(S.?("base_user_ui_signup"), doSubmit))
+           "submit" -%> SHtml.submit(S.?("base_user_ui_signup"), doSubmit))
     }
 
 

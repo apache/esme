@@ -27,6 +27,16 @@ import common._
 import Helpers._
 import http._
 
+import net.liftweb._
+import http._
+import js._
+import js.jquery._
+import http.jquery._
+import JqJsCmds._
+import JsCmds._ 
+import SHtml._
+import JE._
+
 import scala.xml._
 
 import org.apache.esme.actor._
@@ -145,9 +155,9 @@ object UserPwdAuthModule extends AuthModule {
     TemplateFinder.findAnyTemplate("templates-hidden" :: "upw_signup_form" :: Nil).map(
       xhtml =>
       bind("signup", xhtml,
-           "email" -> SHtml.text(email, s => email = s.trim.toLowerCase),
-           "pwd1" -> SHtml.password(pwd1, s => pwd1 = s.trim),
-           "pwd2" -> SHtml.password(pwd2, s => pwd2 = s.trim))
+           "email" -%> SHtml.text(email, s => email = s.trim.toLowerCase),
+           "pwd1" -%> SHtml.password(pwd1, s => pwd1 = s.trim),
+           "pwd2" -%> SHtml.password(pwd2, s => pwd2 = s.trim))
     ) openOr NodeSeq.Empty
 
     def validate: List[FieldError] = (
@@ -161,6 +171,7 @@ object UserPwdAuthModule extends AuthModule {
     ) ::: (
     if (pwd1 != pwd2) {
       val msg = S.?("base_user_err_mismatch_password")
+      DisplayMessage("messages", <b>{msg}</b>,  3 seconds, 3 seconds); 
       S.error(msg)
       List(FieldError(new FieldIdentifier {
         override def uniqueFieldId: Box[String] = Full("pwd1")

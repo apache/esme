@@ -17,22 +17,18 @@
  under the License.                                           *
 -->
 <lift:xml_group>
-    <label for="email">
-        <lift:loc>ui_login_email</lift:loc>
-        <br/>
-        <signup:email/><lift:msg id="email"/>
-    </label>
-    <br/>
-    <label for="pwd1">
-        <lift:loc>ui_login_password</lift:loc>
-        <br/>
-        <signup:pwd1/><lift:msg id="pwd1"/>
-    </label>
-    <br/>
-    <label for="pwd2">
-        <lift:loc>ui_login_password_repeat</lift:loc>
-        <br/>
-        <signup:pwd2/>
-    </label>
-    <br/>
+<div class="post-form-row">
+								<label><lift:loc>ui_login_email</lift:loc></label>
+								<signup:email class="inputBox2"/>
+							</div>	
+							
+							<div class="post-form-row">
+								<label><lift:loc>ui_login_password</lift:loc></label>
+								<signup:pwd1 class="inputBox2"/>
+							</div>	
+							
+							<div class="post-form-row">
+								<label> <lift:loc>ui_login_password_repeat</lift:loc></label>
+								<signup:pwd2 class="inputBox2"/>
+							</div>	
 </lift:xml_group>
