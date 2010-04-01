@@ -107,34 +107,25 @@
                         <h3><a href=""><lift:loc>ui_messages_message_label_popular</lift:loc></a></h3>
                         <div class="right-content">
                                         <lift:UserSnip.popular>
-                                        <table>
-                                            <tbody>
-                                                <disp:item>
-                                                    <tr>
-                                                        <td text-align="center">
-                                                            <item:author/>: <item:text/><!--<item:date/>--> 
-                                                        </td>
-                                                        
-                                                    </tr>
-                                                </disp:item>
-                                            </tbody>
-                                        </table>
+                                        <ul>
+                                            <disp:item>
+                                                <li>
+	                                                <item:author/>: <item:text/><!--<item:date/>--> 
+                                                </li>
+                                            </disp:item>
+                                        </ul>
                                     </lift:UserSnip.popular> 
                                      </div>
                         <h3><a href=""><lift:loc>ui_messages_message_label_popular_links</lift:loc></a></h3>
                         <div class="right-content">
                                   <lift:UserSnip.links>
-                                        <table>
-                                            <tbody>
-                                                <disp:item>
-                                                    <tr>
-                                                        <td>
-                                                            <item:url/>
-                                                        </td>
-                                                    </tr>
-                                                </disp:item>
-                                            </tbody>
-                                        </table>
+                                        <ul>
+                                            <disp:item>
+                                                <li>
+	                                                <item:url/>
+                                                </li>
+                                            </disp:item>
+                                        </ul>
                                     </lift:UserSnip.links>                        
                        </div>
                     </div>

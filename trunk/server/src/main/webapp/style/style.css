@@ -328,7 +328,16 @@ ul.main-links  {
 .right-content {
   float:left;
  font-size:90%;
+ width:100%;
+ word-wrap:break-word;
+}
 
+.right-content ul {
+	list-style-type:none;
+}
+
+.right-content li {
+	padding-bottom:1em;
 }
 
 
