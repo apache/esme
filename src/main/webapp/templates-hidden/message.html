@@ -26,28 +26,29 @@
 					<lift:loc>ui_messages_message_label_message_request</lift:loc>
 				</h3>
 				<div id="form-update">
-				         <div id="messages"></div>
-				   
-					<div class="post-form-row">
-						<label><lift:loc>ui_messages_share</lift:loc></label>
-						<select id="vPool" class="inputBox2">
-							<option value="0">
-								<lift:loc>ui_messages_message_label_message_pool_public</lift:loc>
-							</option>
-							<lift:UserSnip.accessPools/>
-						</select>
-					</div>
-					<div class="row clear" style="display: none" id="reply-to-div">
-                                            <b><lift:loc>ui_messages_message_label_message_reply</lift:loc></b>
-                                            <span id="reply-to-span">-</span>
-                                            <a href="javascript: clearReplyTo()">
-                                               <lift:loc>ui_messages_message_label_message_remove_reply</lift:loc>
-                                            </a>
-                                        </div>
+					<div id="messages"></div>
 					<div class="post-form-row">
 						<textarea class="inputBox2" id="vMsg" rows="5" cols="80%"></textarea>
 						<div class="row clear" style="display: none">
 							<input id="vTag" style="width: 90%"/>
+						</div>
+					</div>                   
+					<div class="row clear" style="display: none" id="reply-to-div">
+                    	<b><lift:loc>ui_messages_message_label_message_reply</lift:loc></b>
+                        <span id="reply-to-span">-</span>
+                        <a href="javascript: clearReplyTo()">
+                        	<lift:loc>ui_messages_message_label_message_remove_reply</lift:loc>
+                        </a>
+                    </div>
+					<div class="post-form-row">
+						<div class="share-select">
+							<label><lift:loc>ui_messages_share</lift:loc></label>
+							<select id="vPool" class="inputBox2">
+								<option value="0">
+									<lift:loc>ui_messages_message_label_message_pool_public</lift:loc>
+								</option>
+								<lift:UserSnip.accessPools/>
+							</select>                 
 						</div>
 						<div class="update-btn">
 							<input type="image" onclick="javascript:post_msg();" src="images/btn-update.gif" />
