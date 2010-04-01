@@ -192,10 +192,15 @@ label {
 }
 .login-btn, .update-btn, .submit-btn { 
 	float:right;	
-}
+}             
+.share-select {
+	float:left;
+}                  
 .update-btn {
-	margin-top:20px;
-	padding-top:10px;
+	margin-right:40px;
+}
+.update-btn, .share-select {
+	margin-top:10px;
 }
 #form-update label {
 	font-weight:bold;
@@ -216,7 +221,7 @@ textarea.inputBox2 {
 	float:left; 
 	background-color:#FFFFFF !important;	
 	border:1px solid #a7aaad; 
-	width:440px; 
+	width:95%; 
 	height:50px; 
 	padding:4px; 
 	margin-right:10px;color:#000;
@@ -532,7 +537,7 @@ h5 { font-size: 100%; }
 h6 { font-size: 80%; }
 img, img a {border:0px; }
 
-.clear {clear:both; height:20px; }
+.clear {clear:both;}
 
 /*
 .container-update, .container-tabs, .container-settings {behavior: url("src/iepngfix.htc");}
