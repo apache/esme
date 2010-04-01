@@ -367,7 +367,8 @@ ul.main-links  {
 .update {
 	float:left;
 	width:420px;
-	padding:0 10px;
+	padding:0 10px; 
+	word-wrap:break-word;
 }
 .update2 {
 	float:left;
