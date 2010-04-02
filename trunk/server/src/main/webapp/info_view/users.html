@@ -23,7 +23,7 @@
     <div class="box-title-aux">
       <h3><a href=""><lift:loc>ui_user_list_title</lift:loc></a></h3>
      </div>
-        <table id="esme-table" class="tablesorter">
+        <table id="esme-table" class="tablesorter">            
             <thead>
                 <tr>
                     <th>
@@ -50,10 +50,12 @@
                                 <item:imageUrl/>
                             </td>
                             <td>
-                                <item:nickname/>
+	                        	<div class="tb-sort-nickname">
+                                	<item:nickname/>
+								</div>
                             </td>
                             <td>
-                                <item:firstName/><item:lastName/>
+                                <item:firstName/> <item:lastName/>
                             </td>
                             <td>
                                 <item:lastMsg/>
