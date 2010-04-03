@@ -17,12 +17,15 @@
  under the License.                                           *
 -->
 <lift:surround with="base" at="left">
-    <script type="text/javascript" src="../scripts/esme_table_sorter.js">
-    </script>
+    <link rel="stylesheet" type="text/css" href="../style/style.css"/>
+    <script type="text/javascript" src="../scripts/esme_table_sorter.js"></script>
     <lift:TableSorterSnip/>
-    <div class="box-title-aux">
-      <h3><a href=""><lift:loc>ui_user_list_title</lift:loc></a></h3>
-     </div>
+    <div id="back-header">
+      <h1><b><lift:loc>ui_user_list_title</lift:loc></b></h1>
+     
+	<!---CONTENT BOX-->
+	<div class="container-settings">
+	
         <table id="esme-table" class="tablesorter">            
             <thead>
                 <tr>
@@ -68,4 +71,7 @@
                 </lift:displayUsers>
             </tbody>
         </table>
+      
+      </div><!--container-settings-->
+	</div><!--END CONTENT BOX-->	
 </lift:surround>
