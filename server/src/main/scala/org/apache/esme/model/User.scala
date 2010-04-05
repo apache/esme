@@ -106,7 +106,7 @@ object User extends User with KeyedMetaMapper[Long, User] {
            "timezone" -%> user.timezone.toForm,
            "locale" -%> user.locale.toForm,
            "credentials" -> auth.toForm,
-           "submit" -%> SHtml.submit(S.?("base_user_ui_signup"), doSubmit))
+           "submit" _id_> SHtml.submit(S.?("base_user_ui_signup"), doSubmit))
     }
 
 

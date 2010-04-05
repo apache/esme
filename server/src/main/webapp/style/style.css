@@ -43,6 +43,7 @@ body#back { background:#fff url(../images/bg-back.jpg) repeat-x;}
 *******************************************************************************/
 a:link, a:visited { color: #114e93; text-decoration:none; font-weight:bold; }
 a:hover { color: #88abd2; text-decoration:underline; }
+p { color: #5e5e5e; font-size:85%; font-family: Tahoma, Arial, Verdana, Helvetica; }
 
 /* HEADER
 *******************************************************************************/
