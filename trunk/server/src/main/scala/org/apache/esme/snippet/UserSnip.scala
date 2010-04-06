@@ -152,6 +152,10 @@ class UserSnip extends DispatchSnippet {
    // Image of user as part of an img tag
   def image: MetaData = ("src" -> (User.currentUser.map(_.image_url)openOr "/images/avatar.jpg"))
   
+  // Href used to display details about a user
+  def userDetailshref: MetaData = ("href" -> ("/user/" + (User.currentUser.map(_.nickname.is)openOr "default")))
+
+  
   def userImage(in: NodeSeq) = {
     if (User.currentUser.map(_.needsChange_?) openOr false)
     S.redirectTo("/user_mgt/edit")

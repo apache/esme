@@ -76,6 +76,7 @@ class AccessPool extends LongKeyedMapper[AccessPool] {
   }
   
   def getName() = name.is
+  def getDescription() = description.is
 
   private def sameName(name: String) = 
     AccessPool.findAll(By(AccessPool.name, name)).
@@ -84,6 +85,7 @@ class AccessPool extends LongKeyedMapper[AccessPool] {
   //define create and modify fields
   object createdDate extends MappedDateTime(this) 
   object creator extends MappedLongForeignKey(this,User)
+  object description extends MappedPoliteString(this, 64)
   object lastModifyDate extends MappedDateTime(this) 
   object modifier extends MappedLongForeignKey(this,User)
   
