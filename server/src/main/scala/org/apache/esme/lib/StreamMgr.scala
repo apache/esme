@@ -22,9 +22,12 @@ import java.text.SimpleDateFormat
 
 import net.liftweb._
 import http._
-import SHtml._
 import js._
-import JsCmds._
+import js.jquery._
+import http.jquery._
+import JqJsCmds._
+import JsCmds._ 
+import SHtml._
 import JE._
 
 import sitemap._
@@ -145,20 +148,20 @@ object StreamMgr {
          "resent" -> ajaxSelect(following,
                                 Empty,
                                 u => {resender = u.toLong
-                                      redisplay()},
+                                      redisplay() & DisplayMessage("messages", <b>{S.?("base_streams_filter_pool_active")}</b>,  3 seconds, 3 seconds)},
                                 "id" -> resenderInput),
          "pools" -> ajaxSelect(pools,
                                Empty,
                                p => {pool = p.toLong
-                                     S.notice(S.?("base_streams_filter_pool_active"));redisplay()},
+                                      redisplay() & DisplayMessage("messages", <b>{S.?("base_streams_filter_pool_active")}</b>,  3 seconds, 3 seconds)},
                                "id" -> poolInput),
          "filterResent" -> ajaxCheckbox(false,
                                         r_? => {filterResent = r_?
-                                                redisplay()},
+                                                 redisplay() & DisplayMessage("messages", <b>{S.?("base_streams_filter_pool")}</b>,  3 seconds, 3 seconds)},
                                         "id" -> filterResentInput),
          "filterPools" -> ajaxCheckbox(false,
                                        p_? => {filterPools = p_?
-                                               S.notice(S.?("base_streams_filter_pool"));redisplay()},
+                                       redisplay() & DisplayMessage("messages", <b>{S.?("base_streams_filter_pool")}</b>,  3 seconds, 3 seconds)},
                                        "id" -> filterPoolsInput)
     )
     
