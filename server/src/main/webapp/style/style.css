@@ -539,6 +539,25 @@ img, img a {border:0px; }
 
 .clear {clear:both;}
 
+/* Message Bar
+******************************************************************************/
+
+.esme_message_bar {
+color:#7B4104;
+display:block;
+font-family:Arial;
+font-size:14px;
+font-weight:bold;
+height:30px;
+left:0;
+line-height:30px;
+position:fixed;
+text-align:center;
+top:0;
+width:100%;
+z-index:10000;
+}
+
 /*
 .container-update, .container-tabs, .container-settings {behavior: url("src/iepngfix.htc");}
 */
