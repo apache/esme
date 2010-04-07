@@ -31,7 +31,7 @@
 	</head>
 	
 <div class="demo">
- <div id="messages"></div>
+ <div id="messages" class="esme_message_bar"></div>
 				<span id="TokenSpan">
 					<lift:ignore>
 						<!--      The displayActions snippet *MUST* appear on the page before      the main snippet      -->
@@ -107,8 +107,12 @@
        </form>
 </div>
 
+<br/>
+<br/>
+		<button onclick="javascript:$('#dialog-form').dialog('open')" id="create-user">
+			<lift:loc>ui_action_new_action_add</lift:loc>
+		</button>
 
-<button onclick="javascript:$('#dialog-form').dialog('open')" id="create-pool"><lift:loc>ui_action_new_action_add</lift:loc></button>
 
 </div><!-- End demo -->
 
