@@ -36,8 +36,8 @@ body { margin: 0; padding: 0; color:#000; line-height:18px; font-size:75%; font-
 body#home { background:#fff url(../images/bg-home.jpg) repeat-x;}
 body#back { background:#fff url(../images/bg-back.jpg) repeat-x;}
 
-#container-bg { margin: 0 auto; width: 890px; }
-#container { width: 890px; float:left; }
+#container-bg { margin: 0 auto; width: 930px; }
+#container { width: 930px; float:left; }
 
 /* LINKS - DEFAULT COLORS ARE SET IN BASE.CSS, CHANGE THESE COLORS AS NEEDED.
 *******************************************************************************/
@@ -357,7 +357,7 @@ ul.main-links  {
 	}
 .container-update {
 	
-	width: 563px; 
+	width: 550px; 
 	height:185px; 
 	padding:20px 30px; 
 	background: url(../images/bg-update.png) no-repeat; 
