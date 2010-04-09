@@ -89,7 +89,7 @@
 						</table>
 					</lift:displayActions>
 				</span>
-<div id="dialog-form" title="Create new action">
+<div id="dialog-form" title="Create new action" style="display: none">
 	<p class="validateTips"><lift:loc>ui_form_all_fields_required</lift:loc></p>
 
        <form id="action_new_dialog" onsubmit="false">
@@ -107,14 +107,16 @@
        </form>
 </div>
 
-<br/>
-<br/>
 		<button onclick="javascript:$('#dialog-form').dialog('open')" id="create-user">
 			<lift:loc>ui_action_new_action_add</lift:loc>
 		</button>
 
 
+
+
 </div><!-- End demo -->
+
+
 
 	<lift:Msgs>
 		<lift:error_msg>Error:</lift:error_msg>
