@@ -68,7 +68,12 @@ function displayMessages(msgArray, elementId)
     if (jQuery('#'+elementId+' #'+msgId).size() == 0)
     {
       var msgAuthor = cometMsg.author;
-      var msgBody = jQuery(cometMsg.text).find('body').html();
+      var msgText = cometMsg.text
+      var msgBody = jQuery(cometMsg.text).find("body").html();
+      
+      if (!msgBody)
+      	msgBody = cometMsg.text;
+                             
       var msgDateObj = new Date(parseInt(cometMsg.when));
       
       var msgDateStr = prettyDate(msgDateObj);
@@ -137,4 +142,3 @@ function displayMessages(msgArray, elementId)
   }
 }
 // ]]>
-
