@@ -59,6 +59,9 @@ function displayMessages(msgArray, elementId)
       var msgBody = jQuery(cometMsg.text).find('body').html();
       var msgDateObj = new Date(parseInt(cometMsg.when));
       
+      if (!msgBody)
+      	msgBody = cometMsg.text;
+      
       var msgDateStr = prettyDate(msgDateObj);
       
       var msgPool = '';
