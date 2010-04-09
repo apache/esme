@@ -45,10 +45,10 @@
                     <div id="top-menu">
                         <ul>
                             <li>
-                                 <lift:Menu.item name="public"/> | 
+                                 <lift:Menu.item donthide="true" name="public"/> | 
                             </li>
                             <li>
-                              <lift:Menu.item name="profile"/> | 
+                              <lift:Menu.item donthide="true" name="profile"/> | 
                             </li>
                         </ul>
                         <lift:Menu.item name="logout">
@@ -63,32 +63,32 @@
                 <div id="right">
                     <div class="box-right-back">
                         <div class="avatar">
-                            <img lift:snippet="UserSnip.image" alt="" width="90%"/>
+                            <img lift:snippet="UserSnip.image" alt="" width="80%"/>
                         </div><strong><lift:loc>ui_messages_message_label_welcome</lift:loc></strong>
                         <div class="info4">
                             <a lift:snippet="UserSnip.userDetailshref"><span class="name"><lift:UserSnip.name/></span></a>
                         </div>
                         <ul class="main-links">
                            <li>
-                                <lift:Menu.item name="Home"/>
+                                <lift:Menu.item donthide="true" name="Home"/>
                             </li>
                             <li>
-                                <lift:Menu.item name="list_users"/>
+                                <lift:Menu.item donthide="true" name="list_users"/>
                             </li>
                             <li>
-                                <lift:Menu.item name="trackMgt"/>
+                                <lift:Menu.item donthide="true" name="trackMgt"/>
                             </li>
                             <li>
-                                <lift:Menu.item name="actionMgt"/>
+                                <lift:Menu.item donthide="true" name="actionMgt"/>
                             </li>
                             <li>
-                                <lift:Menu.item name="authToken"/>
+                                <lift:Menu.item donthide="true" name="authToken"/>
                             </li>
                             <li>
-                                <lift:Menu.item name="accessPools"/>
+                                <lift:Menu.item donthide="true" name="accessPools"/>
                             </li>
                             <li>
-                                <lift:Menu.item name="streams"/>
+                                <lift:Menu.item donthide="true" name="streams"/>
                             </li>
                         </ul><!--search form-->
                         <form action="/info_view/search" method="post">
