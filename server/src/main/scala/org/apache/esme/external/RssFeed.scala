@@ -1,8 +1,6 @@
 package org.apache.esme.external
 
 /**
- * Copyright 2008-2009 WorldWide Conferencing, LLC
- * 
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
@@ -83,23 +81,6 @@ class RssFeed(user: User, rssURL: String, source: String, truncateChars: Int, ta
         }
       case None => msgs
     }
-  }.reverse  
-             
-  override def detPubSubHubbub:Boolean = {  
-    val r:Boolean = try {
-      val feedXml = XML.loadString(responseString)
-      val feedLinks = ( feedXml \\ "link" ) 
-      val pushLinks = for { 
-        tag <- feedLinks                
-        val link = ( tag \ "@href" ).text if ( tag \ "@rel" ).text == "hub"
-      } yield link
-
-      pushLinks.isEmpty == false
-    } catch {
-      case _ => false
-    }        
-
-    r
-  }
+  }.reverse
 }
 

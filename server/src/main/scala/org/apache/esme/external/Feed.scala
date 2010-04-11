@@ -1,8 +1,6 @@
 package org.apache.esme.external
 
 /**
- * Copyright 2008-2009 WorldWide Conferencing, LLC
- * 
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
@@ -58,10 +56,6 @@ abstract class Feed(val user: User, val url: String, val source: String, val tru
         )
     ).toList
   }
-
-  lazy val isPubSubHubbub: Boolean = detPubSubHubbub
-
-  protected def detPubSubHubbub:Boolean
   
   protected def getEntries(xml: Elem): NodeSeq
   
@@ -69,8 +63,8 @@ abstract class Feed(val user: User, val url: String, val source: String, val tru
   
   protected def getLink(xml: Node): String
   
-  protected def getDate(xml: Node): Long         
-
+  protected def getDate(xml: Node): Long
+  
   protected def responseString() = {
     // url.openConnection
     val httpClient = HttpSender.httpClient
