@@ -1,8 +1,6 @@
 package org.apache.esme.model
 
 /**
- * Copyright 2008-2009 WorldWide Conferencing, LLC
- * 
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
@@ -209,20 +207,8 @@ class Action extends LongKeyedMapper[Action] {
             val feed = a match {
               case FetchAtom(_, _) => new AtomFeed(u, url.url, urlSourcePrefix + url.uniqueId, 0, tags)
               case FetchRss(_, _) => new RssFeed(u, url.url, urlSourcePrefix + url.uniqueId, 0, tags)
-            }      
-
-// Pubsubhubbub - check if feed is PuSH-enabled. If it is, shut down the regular actor
-// then start up the PuSH subscription                                     
-
-            if(feed.isPubSubHubbub) {
-              SchedulerActor ! SchedulerActor.StopRegular(this.id.is)
-
-            } else {
-
-// If not PuSH-enabled, go ahead as before and start the message pull actor
-
-              MessagePullActor ! MessagePullActor.StartPullActor(id, lastMsg, feed)
             }
+            MessagePullActor ! MessagePullActor.StartPullActor(id, lastMsg, feed)
           
           case _ =>
         }

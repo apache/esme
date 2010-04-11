@@ -1,8 +1,6 @@
 package org.apache.esme.external
 
 /**
- * Copyright 2008-2009 WorldWide Conferencing, LLC
- * 
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
@@ -66,23 +64,6 @@ class AtomFeed(user: User, atomURL: String, source: String, truncateChars: Int, 
       node \ "updated"
       else published
     parseInternetDate(date text).getTime
-  }
-
-  override def detPubSubHubbub:Boolean = {
-    val r:Boolean = try {
-      val feedXml = XML.loadString(responseString)
-      val feedLinks = ( feedXml \\ "link" ) 
-      val pushLinks = for { 
-        tag <- feedLinks                
-        val link = ( tag \ "@href" ).text if ( tag \ "@rel" ).text == "hub"
-      } yield link
-
-      pushLinks.isEmpty == false
-    } catch {
-      case _ => false
-    }   
-
-    r   
   }
 }
 
