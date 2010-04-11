@@ -1,0 +1,86 @@
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one   *
+ or more contributor license agreements.  See the NOTICE file *
+ distributed with this work for additional information        *
+ regarding copyright ownership.  The ASF licenses this file   *
+ to you under the Apache License, Version 2.0 (the            *
+ "License"); you may not use this file except in compliance   *
+ with the License.  You may obtain a copy of the License at   *
+                                                              *
+   http://www.apache.org/licenses/LICENSE-2.0                 *
+                                                              *
+ Unless required by applicable law or agreed to in writing,   *
+ software distributed under the License is distributed on an  *
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY       *
+ KIND, either express or implied.  See the License for the    *
+ specific language governing permissions and limitations      *
+ under the License.                                           *
+-->
+
+<lift:surround with="base" at="left">
+	<lift:Style.header/>
+	<lift:TableSorterSnip/>
+	<!-- STYLESHEETS  -->
+	<link rel="stylesheet" type="text/css" href="../style/reset.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="../style/text.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="../style/grid.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="../style/layout.css" media="screen" />
+	<link type="text/css" href="../style/jqueryui-theme/jquery-ui-1.7.2.custom.css" rel="stylesheet" />
+	<!--[if IE 6]>
+	<link rel="stylesheet" type="text/css" href="../style/ie6.css" media="screen" />
+	<![endif]-->
+	<!--[if gte IE 7]>
+	<link rel="stylesheet" type="text/css" href="../style/ie.css" media="screen" />
+	<![endif]-->
+	<!-- JAVASCRIPT -->
+	<script type="text/javascript" src="../scripts/jquery-ui-1.7.2.custom.min.js">    </script>
+	<script type="text/javascript" src="../scripts/esme.js">    </script>
+	<script type="text/javascript" src="../scripts/esme_table_sorter.js">    </script>
+	<script src="/scripts/display_messages.js" type="text/javascript"/>
+	<script src="/scripts/pretty.js" type="text/javascript"/>
+	<div class="demo">
+		<div id="messages"></div>
+		
+		<lift:streamFilters>
+					<table class="tablesorter">
+						<thead>
+							<tr>
+								<th>
+									<lift:loc>ui_streams_filter_type</lift:loc>
+								</th>
+								<th>
+									<lift:loc>ui_streams_active</lift:loc>
+								</th>
+							</tr>
+						</thead>
+						<tr>
+							<td>
+								 <lift:loc>ui_streams_filter_resender</lift:loc> <main:resent/>
+							</td>
+							<td>
+								 <main:filterResent/>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<lift:loc>ui_streams_filter_pool</lift:loc> <main:pools/> 
+							</td>
+							<td>
+								<main:filterPools/>
+							</td>
+						</tr>
+					</table>
+				</lift:streamFilters>
+				
+ 			<span id="StreamSpan">
+					<lift:ignore>
+						<!--                        The displayStreams snippet *MUST* appear on the page before                        the main snippet                        -->
+						</lift:ignore>
+					<div class="b-list">
+						<lift:displayStream the_id="StreamSpan"/>
+						<lift:embed what="templates-hidden/timeline"/>
+					</div>
+				</span>
+	</div>
+	<!-- End demo -->
+</lift:surround>
