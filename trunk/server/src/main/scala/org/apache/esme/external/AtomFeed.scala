@@ -65,5 +65,22 @@ class AtomFeed(user: User, atomURL: String, source: String, truncateChars: Int, 
       else published
     parseInternetDate(date text).getTime
   }
+
+  override def detPubSubHubbub:Boolean = {
+    val r:Boolean = try {
+      val feedXml = XML.loadString(responseString)
+      val feedLinks = ( feedXml \\ "link" ) 
+      val pushLinks = for { 
+        tag <- feedLinks                
+        val link = ( tag \ "@href" ).text if ( tag \ "@rel" ).text == "hub"
+      } yield link
+
+      pushLinks.isEmpty == false
+    } catch {
+      case _ => false
+    }   
+
+    r   
+  }
 }
 

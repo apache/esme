@@ -33,7 +33,8 @@ import net.liftweb.mapper.{DB, ConnectionManager, Schemifier, DefaultConnectionI
 import java.sql.{Connection, DriverManager}
 import org.apache.esme._
 import model._
-import org.apache.esme.actor._
+import org.apache.esme.actor._          
+import org.apache.esme.external.PubSubHubbubReceiver
 import lib._
 import snippet._
 import api._
@@ -81,7 +82,7 @@ class Boot {
       case r@Req("api" :: "send_msg" :: Nil, "", PostRequest)
         if r.param("token").isDefined =>
         () => RestAPI.sendMsgWithToken(r)
-    }
+    }  
     
     //Added exceptions to the log
     LiftRules.exceptionHandler.prepend {
@@ -90,6 +91,9 @@ class Boot {
         RedirectResponse("/")
       }
     } 
+
+    // PubSubHubbub support
+    LiftRules.statelessDispatchTable.append(PubSubHubbubReceiver.dispatch)
 
     LiftRules.dispatch.append(ESMEOpenIDVendor.dispatchPF)
 
@@ -150,7 +154,7 @@ class Boot {
 
     LiftRules.setSiteMap(SiteMap(entries: _*))
 
-    S.addAround(ExtSession.requestLoans)          
+    S.addAround(ExtSession.requestLoans)       
 
     // API security rules
     LiftRules.dispatch.append(API2.authorizationRules)
