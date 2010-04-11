@@ -134,7 +134,7 @@ class Boot {
           Loc.Snippet("user_info", TagDisplay.userInfo))) ::
         Menu(Loc("about", List("static", "about"), S.?("base_menu_about"), Hidden)) ::
         Menu(Loc("tag", List("info_view", "tag"), "Tag", Hidden, Loc.Snippet("tag_display", TagDisplay.display))) ::
-        Menu(Loc("public", List("info_view", "public"), S.?("base_profile_public"))) ::
+        Menu(Loc("public", List("info_view", "public"), "Public")) ::
         Menu(Loc("sign_up", List("signup"), S.?("base_menu_signup"),
           Snippet("signup", User.signupForm),
           Unless(User.loggedIn_? _, S.?("base_menu_sign_up_error")))) ::
