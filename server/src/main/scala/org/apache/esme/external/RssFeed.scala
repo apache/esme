@@ -81,6 +81,23 @@ class RssFeed(user: User, rssURL: String, source: String, truncateChars: Int, ta
         }
       case None => msgs
     }
-  }.reverse
+  }.reverse  
+             
+  override def detPubSubHubbub:Boolean = {  
+    val r:Boolean = try {
+      val feedXml = XML.loadString(responseString)
+      val feedLinks = ( feedXml \\ "link" ) 
+      val pushLinks = for { 
+        tag <- feedLinks                
+        val link = ( tag \ "@href" ).text if ( tag \ "@rel" ).text == "hub"
+      } yield link
+
+      pushLinks.isEmpty == false
+    } catch {
+      case _ => false
+    }        
+
+    r
+  }
 }
 
