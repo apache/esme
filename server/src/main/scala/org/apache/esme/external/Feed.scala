@@ -56,6 +56,10 @@ abstract class Feed(val user: User, val url: String, val source: String, val tru
         )
     ).toList
   }
+
+  lazy val isPubSubHubbub: Boolean = detPubSubHubbub
+
+  protected def detPubSubHubbub:Boolean
   
   protected def getEntries(xml: Elem): NodeSeq
   
@@ -63,8 +67,8 @@ abstract class Feed(val user: User, val url: String, val source: String, val tru
   
   protected def getLink(xml: Node): String
   
-  protected def getDate(xml: Node): Long
-  
+  protected def getDate(xml: Node): Long         
+
   protected def responseString() = {
     // url.openConnection
     val httpClient = HttpSender.httpClient
