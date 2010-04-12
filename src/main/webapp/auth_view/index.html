@@ -25,11 +25,13 @@
 		<script type="text/javascript" src="../scripts/jquery-ui-1.7.2.custom.min.js">    </script>
 		<script type="text/javascript" src="../scripts/dialog_token.js">    </script>
 		<lift:TableSorterSnip/>
+		    <script type="text/javascript" src="../scripts/esme.js">
+    </script>
+    <script type="text/javascript" src="../scripts/esme_table_sorter_token.js"></script>
 	</head>
 	<div id="back-header">
 	<h1><lift:loc>ui_token_title</lift:loc></h1>
 	<div class="container-settings">
-		<div id="messages" class="esme_message_bar"></div>
 		<span id="TokenSpan">
 			<lift:ignore>
 				<!--                        The displayTokens snippet *MUST* appear on the page before                        the main snippet                        -->
@@ -73,7 +75,7 @@
 				</table>
 			</lift:displayTokens>
 		</span>
-		<div id="dialog-form" title="Create new token">
+		<div id="dialog-form" style="display: none" title="Create new token">
 			<p class="validateTips">
 				<lift:loc>ui_form_all_fields_required</lift:loc>
 			</p>
@@ -88,9 +90,12 @@
 				</lift:main>
 			</form>
 		</div>
-		<button onclick="javascript:$('#dialog-form').dialog('open')" id="create-user">
+		<div class="post-form-row">
+								<div class="submit-btn">
+<button onclick="javascript:$('#dialog-form').dialog('open')" id="create-user">
 			<lift:loc>ui_token_title_create</lift:loc>
-		</button>
+		</button>								</div>
+							</div>
 	</div>
 	</div>
 	<!-- End demo -->

@@ -18,7 +18,6 @@
 -->
 
 <lift:surround with="base" at="left">
-	<lift:TableSorterSnip/>
 <head>
 	<!-- STYLESHEETS  -->  
 	<link type="text/css" href="../style/jqueryui-theme/jquery-ui-1.7.2.custom.css" rel="stylesheet" />     
@@ -27,10 +26,14 @@
 	<script type="text/javascript" src="../scripts/jquery-ui-1.7.2.custom.min.js">    </script>
 	<script type="text/javascript" src="../scripts/dialog_action.js">    </script>
 		<lift:TableSorterSnip/>
+		    <script type="text/javascript" src="../scripts/esme.js">
+    </script>
+    <script type="text/javascript" src="../scripts/esme_table_sorter_action.js"></script>
 	</head>
 	
-<div class="demo">
- <div id="messages" class="esme_message_bar"></div>
+<div id="back-header">
+	<h1><lift:loc>ui_action_title</lift:loc></h1>
+<div class="container-settings">
 				<span id="TokenSpan">
 					<lift:ignore>
 						<!--      The displayActions snippet *MUST* appear on the page before      the main snippet      -->
@@ -106,13 +109,19 @@
        </form>
 </div>
 
-		<button onclick="javascript:$('#dialog-form').dialog('open')" id="create-user">
+<div class="post-form-row">
+								<div class="submit-btn">
+<button onclick="javascript:$('#dialog-form').dialog('open')" id="create-user">
 			<lift:loc>ui_action_new_action_add</lift:loc>
-		</button>
+		</button>								</div>
+							</div>
+
+		
 
 
 
 
+</div><!-- End demo -->
 </div><!-- End demo -->
 
 
