@@ -24,17 +24,17 @@
     </script>
 
 <div id="back-header">
-	<h1><b><lift:loc>ui_default_conversation</lift:loc></b></h1>
-		
-	<!---CONTENT BOX-->
+	<h1><lift:loc>ui_default_conversation</lift:loc></h1>
 	<div class="container-settings">
         <div class="b-list">
             <lift:displayConversation/>
-            <lift:embed what="templates-hidden/timeline"/>
+	    <lift:embed what="templates-hidden/message_core"/>
         </div>
 	</div><!--container-settings-->
 	
-	</div><!--END CONTENT BOX-->	    
+	</div>
+	</div>
+	<!-- End demo -->    
 </lift:surround>
 
 

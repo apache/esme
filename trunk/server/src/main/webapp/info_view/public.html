@@ -21,19 +21,7 @@
 	<div id="left">
 		<!--updates-box -->
 		<lift:comet type="PublicTimeline"/>
-		<div>
-			<div id="timeline_messages">
-				<div class="updates-box" id="message">
-							
-				 <div class="avatar"> <img id="avatar" alt="Anonymous" width="50px"/></div>
-				   <div class="update"> <div id="body">-</div>
-				   <div class="info"><a href="" id="author">-</a><div class="time"><div id="supp_data"> -</div></div></div>
-				 </div>	
-				 <div class="time">  </div>		
-				<div class="separator">                    </div>
-				</div>
-			</div>
-		</div>
+		<lift:embed what="templates-hidden/message_core"/>
 	</div>
 	<!--updates-box-->
 </lift:surround>

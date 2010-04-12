@@ -72,7 +72,7 @@ class SinglePublicTimeline extends CometActor {
 
     case Distributor.NewMessage(msg) =>
       if (!msg.pool.defined_?)
-        messages = (msg.id.is :: messages).take(40)
+        messages = (msg.id.is :: messages).take(1)
 
       if ((millis - lastRender) < 30000L) {
         if (!scheduled) {
