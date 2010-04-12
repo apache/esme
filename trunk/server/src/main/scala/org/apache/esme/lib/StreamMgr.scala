@@ -71,6 +71,7 @@ object StreamMgr {
     val spanName = S.attr("the_id") openOr "StreamSpan"
     // get the current user
     val user = User.currentUser
+    println("displayStream"); 
 
     // bind the dynamic content to the incoming nodeseq
     def doRender(): NodeSeq = {
@@ -148,20 +149,20 @@ object StreamMgr {
          "resent" -> ajaxSelect(following,
                                 Empty,
                                 u => {resender = u.toLong
-                                      redisplay() & DisplayMessage("messages", <b>{S.?("base_streams_filter_pool_active")}</b>,  3 seconds, 3 seconds)},
+                                      redisplay()},
                                 "id" -> resenderInput),
          "pools" -> ajaxSelect(pools,
                                Empty,
                                p => {pool = p.toLong
-                                      redisplay() & DisplayMessage("messages", <b>{S.?("base_streams_filter_pool_active")}</b>,  3 seconds, 3 seconds)},
+                                     redisplay()},
                                "id" -> poolInput),
          "filterResent" -> ajaxCheckbox(false,
                                         r_? => {filterResent = r_?
-                                                 redisplay() & DisplayMessage("messages", <b>{S.?("base_streams_filter_pool")}</b>,  3 seconds, 3 seconds)},
+                                                 redisplay()},
                                         "id" -> filterResentInput),
          "filterPools" -> ajaxCheckbox(false,
                                        p_? => {filterPools = p_?
-                                       redisplay() & DisplayMessage("messages", <b>{S.?("base_streams_filter_pool")}</b>,  3 seconds, 3 seconds)},
+                                       redisplay()},
                                        "id" -> filterPoolsInput)
     )
     

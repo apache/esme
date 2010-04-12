@@ -62,12 +62,8 @@ object TrackMgr {
     // get the span name to update
     val spanName = S.attr("the_id") openOr "TrackSpan"
     // get the current user
-    //  ajaxButton(bt, () => {i.removed(true).save ; updateSpan()}))
-    //  ajaxButton(bt, () => {ModalDialog(<lift:embed what="/info_view/tag"/>)}))
-
-    // ajaxButton(bt, () => {ModalDialog(<lift:embed what="/tag"/>)}))
     val user = User.currentUser
-
+    
     // bind the dynamic content to the incoming nodeseq
     def doRender(): NodeSeq =
     Tracking.findAll(By(Tracking.user, user), By(Tracking.removed, false),
@@ -79,9 +75,7 @@ object TrackMgr {
                                                    "pattern" -> i.pattern,
                                                    "enabled" -> ajaxCheckbox(!i.disabled,
                                                                              e => {i.disabled(!e).save;  Noop} ),
-                                                   "remove" -> 
-                                                   ((bt: NodeSeq) => 
-                  ajaxButton(bt, () => {i.removed(true).save ; updateSpan() & DisplayMessage("messages", <b>{S.?("base_track_msg_removed", lst)}</b>,  3 seconds, 3 seconds)}))
+                                                    "remove" -%> a(() => {i.removed(true).save ; updateSpan() & DisplayMessage("messages", <b>{S.?("base_track_msg_removed", i.pattern)}</b>,  3 seconds, 3 seconds)}, Text("delete"))
               ))))
     }
 
