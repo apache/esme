@@ -18,13 +18,8 @@
 -->
 
 <lift:surround with="base" at="left">
-	<lift:Style.header/>
 	<lift:TableSorterSnip/>
 	<!-- STYLESHEETS  -->
-	<link rel="stylesheet" type="text/css" href="../style/reset.css" media="screen" />
-	<link rel="stylesheet" type="text/css" href="../style/text.css" media="screen" />
-	<link rel="stylesheet" type="text/css" href="../style/grid.css" media="screen" />
-	<link rel="stylesheet" type="text/css" href="../style/layout.css" media="screen" />
 	<link type="text/css" href="../style/jqueryui-theme/jquery-ui-1.7.2.custom.css" rel="stylesheet" />
 	<!--[if IE 6]>
 	<link rel="stylesheet" type="text/css" href="../style/ie6.css" media="screen" />
@@ -34,11 +29,12 @@
 	<![endif]-->
 	<!-- JAVASCRIPT -->
 	<script type="text/javascript" src="../scripts/jquery-ui-1.7.2.custom.min.js">    </script>
-	<script type="text/javascript" src="../scripts/esme.js">    </script>
 	<script type="text/javascript" src="../scripts/esme_table_sorter.js">    </script>
 	<script src="/scripts/display_messages.js" type="text/javascript"/>
 	<script src="/scripts/pretty.js" type="text/javascript"/>
-	<div class="demo">
+	<div id="back-header">
+	<h1><lift:loc>ui_streams_manage</lift:loc></h1>
+	<div class="container-settings">
 		<div id="messages"></div>
 		
 		<lift:streamFilters>
@@ -78,9 +74,10 @@
 						</lift:ignore>
 					<div class="b-list">
 						<lift:displayStream the_id="StreamSpan"/>
-						<lift:embed what="templates-hidden/timeline"/>
+						 <lift:embed what="templates-hidden/message_core"/>
 					</div>
 				</span>
+	</div>
 	</div>
 	<!-- End demo -->
 </lift:surround>

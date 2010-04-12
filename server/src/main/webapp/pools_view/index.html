@@ -27,11 +27,9 @@
 		<lift:TableSorterSnip/>
 	</head>
 	
-<div class="demo">
- <div id="messages" class="esme_message_bar"></div>
- 
-
- 
+	<div id="back-header">
+	<h1><lift:loc>ui_pool_manage</lift:loc></h1>
+	<div class="container-settings">
  
                 <span id="PoolDetailSpan">
                     <lift:ignore>
@@ -126,15 +124,21 @@
                             <br/>
                         </fieldset>
                         <br/>
-                      <button onclick="javascript:$('#dialog-form-user').dialog('open')" id="add-user"><lift:loc>ui_pool_add_user</lift:loc></button>
+                        		<div class="post-form-row">
+								<div class="submit-btn">
+<button onclick="javascript:$('#dialog-form-user').dialog('open')" id="create-user">
+			<lift:loc>ui_pool_add_user</lift:loc>
+		</button>								</div>
+							</div>
+							
                     </lift:poolUsers>
                     
 
                 </span>
                 
-                                 <fieldset>
+                 <fieldset>
                     <lift:form>
-                        <lift:editPool>
+                        <lift:editPool class="inputBox2">
                             <lift:loc>ui_pool_edit_label</lift:loc>
                             <edit:pool/>
                         </lift:editPool>
@@ -142,7 +146,7 @@
                 </fieldset>
         
 
-<div id="dialog-form" title="Create new  pool">
+<div id="dialog-form" title="Create new  pool" style="display: none">
 	<p class="validateTips"><lift:loc>ui_form_all_fields_required</lift:loc></p>
 
        <form id="pool_new_dialog" onsubmit="false">
@@ -156,7 +160,7 @@
        </form>
 </div>
 
-<div id="dialog-form-user" title="Add a user to a pool">
+<div id="dialog-form-user" title="Add a user to a pool" style="display: none">
 	<p class="validateTips"><lift:loc>ui_form_all_fields_required</lift:loc></p>
 
        <form id="pool_new_user_dialog" onsubmit="false">
@@ -173,7 +177,14 @@
 </div>
 
 
-<button onclick="javascript:$('#dialog-form').dialog('open')" id="create-pool"><lift:loc>ui_pool_create</lift:loc></button>
+		<div class="post-form-row">
+								<div class="submit-btn">
+<button onclick="javascript:$('#dialog-form').dialog('open')" id="create-user">
+			<lift:loc>ui_pool_create</lift:loc>
+		</button>								</div>
+							</div>
 
-    </div><!-- End demo -->
+	</div>
+	</div>
+	<!-- End demo -->
 </lift:surround>
