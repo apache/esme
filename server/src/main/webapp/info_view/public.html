@@ -19,9 +19,15 @@
 
 <lift:surround with="base" at="left">
 	<div id="left">
+	<div id="back-header">
+	<h1><lift:loc>ui_public_title</lift:loc></h1>
+<div class="container-settings">
 		<!--updates-box -->
 		<lift:comet type="PublicTimeline"/>
 		<lift:embed what="templates-hidden/message_core"/>
 	</div>
 	<!--updates-box-->
+	
+	</div><!-- End demo -->
+</div><!-- End demo -->
 </lift:surround>

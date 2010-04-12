@@ -56,7 +56,7 @@
 			width: 350,
 			modal: true,
 			buttons: {
-				'Create a new pool': function() {
+				'Create': function() {
 					var bValid = true;
 					allFields.removeClass('ui-state-error');
 

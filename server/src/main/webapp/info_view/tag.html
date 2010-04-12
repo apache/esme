@@ -21,11 +21,10 @@
     </script>
     <lift:TableSorterSnip/>
     <lift:tag_display>
-        <div>
-            <fieldset>
-                <legend>
-                    <lift:loc>ui_tag_title</lift:loc> <b><tag:name/></b>
-                </legend>
+<div id="back-header">
+	<h1><lift:loc>ui_tag_title</lift:loc> '<tag:name/>'</h1>
+<div class="container-settings">
+
               <table id="esme-table" class="tablesorter">
             <thead>
                 <tr>
@@ -49,14 +48,14 @@
                             <td>
                                 <item:body/>
                             </td>
-                            <td>
+                            <td align="center">
                                 <item:date/>
                             </td>
                         </tr>
                     </tag:each>
                      </tbody>
                 </table>
-            </fieldset>
         </div>
+        </div><!-- End demo -->
     </lift:tag_display>
 </lift:surround>

@@ -53,7 +53,7 @@
 			width: 350,
 			modal: true,
 			buttons: {
-				'Create a new token': function() {
+				'Create': function() {
 					var bValid = true;
 					allFields.removeClass('ui-state-error');
 
