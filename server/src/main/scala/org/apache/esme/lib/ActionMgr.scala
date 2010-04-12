@@ -94,10 +94,8 @@ object ActionMgr {
                                                    "test" -> i.testText,
                                                    "action" -> i.actionText,
                                                    "createdDate" -> getDateHtml(i.createdDate),
-                                                   "remove" -> 
-                                                   ((bt: NodeSeq) => 
-                  ajaxButton(bt, () => {i.removed(true).save ; updateSpan() & DisplayMessage("messages", <b>{S.?("base_action_msg_removed",i.name)}</b>,  3 seconds, 3 seconds); }))
-              ))))
+                                                   "remove" -%> a(() => {i.removed(true).save ; updateSpan() & DisplayMessage("messages", <b>{S.?("base_action_msg_removed", i.name)}</b>,  3 seconds, 3 seconds)}, Text("delete"))
+                           ))))
    
 
     }
