@@ -180,7 +180,7 @@ object AccessPoolMgr {
     }
 
     bind("edit", in,
-         "pool" -> ajaxSelect(adminPools, Empty, p => {pool = p;
+         "pool" -%> ajaxSelect(adminPools, Empty, p => {pool = p;
                                                        poolId.set(p.toLong);
                                                        redisplay() //redisplay pooluser and pool detail
                                                        },

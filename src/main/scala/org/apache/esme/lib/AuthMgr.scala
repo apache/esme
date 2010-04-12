@@ -90,10 +90,8 @@ object AuthMgr {
                                                    "description" -> i.description.is,
                                                    "uniqueId" -> i.uniqueId.is,
                                                    "createdDate" -> getDateHtml(i.createdDate),
-                                                   "revoke" -> 
-                                                   ((bt: NodeSeq) => 
-                  ajaxButton(bt, () => {i.delete_! ; updateSpan() & DisplayMessage("messages", <b>{S.?("base_token_msg_removed", i.description.is)}</b>,  3 seconds, 3 seconds)}))
-              ))))
+                                                   "revoke" -%> a(() => {i.delete_! ; updateSpan() & DisplayMessage("messages", <b>{S.?("base_token_msg_removed", i.description.is)}</b>,  3 seconds, 3 seconds)}, Text("revoke"))
+             ))))
     }
 
     def updateSpan(): JsCmd = SetHtml(spanName, doRender())
