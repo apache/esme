@@ -53,13 +53,13 @@
 			width: 350,
 			modal: true,
 			buttons: {
-				'Create a new action': function() {
+				'Create': function() {
 					var bValid = true;
 					allFields.removeClass('ui-state-error');
 
 					bValid = bValid && checkLength(name_input,"Name",3,16);
-					bValid = bValid && checkLength(test_input,"Test",3,80);
-					bValid = bValid && checkLength(action_input,"Action",3,80);
+					bValid = bValid && checkLength(test_input,"Test",3,280);
+					bValid = bValid && checkLength(action_input,"Action",3,280);
 
 					bValid = bValid && checkRegexp(name_input,/^[a-z]([0-9a-z_])+$/i,"Name may consist of a-z, 0-9, underscores, begin with a letter.");
 					
