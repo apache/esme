@@ -50,11 +50,11 @@
 		
 		$("#dialog-form").dialog({
 			autoOpen: false,
-			height: 200,
+			height: 250,
 			width: 350,
 			modal: true,
 			buttons: {
-				'Create a new track': function() {
+				'Create': function() {
 					var bValid = true;
 					allFields.removeClass('ui-state-error');
 
@@ -64,9 +64,10 @@
 					
 					if (bValid) {
 						 //$('button[type=submit] .default').click(); 
-						 liftAjax.lift_ajaxHandler(jQuery("#track_new_dialog").serialize(), null, null, "javascript");  
+						 liftAjax.lift_ajaxHandler(jQuery("#track_new_dialog").serialize(), null, null, "javascript"); 
 
-						$(this).dialog('close');
+						$(this).dialog('close');						
+						 
 					}
 				},
 				Cancel: function() {
@@ -82,4 +83,5 @@
 	});
 
 // ]]>
+
 

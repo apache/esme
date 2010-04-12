@@ -19,7 +19,8 @@
 
 $(document).ready(function() 
     { 
-        $("#esme-table").tablesorter(); 
+        $("#esme-table").tablesorter({ headers: { 0: { sorter: false}, 1: {sorter: false} } }); 
     } 
 ); 
    
+
