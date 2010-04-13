@@ -34,6 +34,8 @@
         <meta name="Robots" content="index,follow,noodp" />
         <link rel="stylesheet" href="../style/style.css" type="text/css" media="screen" />
         <script id="jquery" src="/classpath/jquery.js" type="text/javascript"/><script id="json" src="/classpath/json.js" type="text/javascript"/><script src="/scripts/display_messages.js" type="text/javascript"/> <script src="/scripts/pretty.js" type="text/javascript"/> 
+         <script src="/scripts/jquery.ifixpng.js" type="text/javascript"/>
+         <script src="/scripts/png_correct.js" type="text/javascript"/>
     </head>
     <body id="back">
      <div id="messages" class="esme_message_bar" style="display: none"></div>
@@ -90,6 +92,9 @@
                             </li>
                             <li>
                                 <lift:Menu.item donthide="true" name="accessPools"/>
+                            </li>
+                            <li>
+                                <lift:Menu.item donthide="true" name="contacts"/>
                             </li>
                         </ul><!--search form-->
                         <form action="/info_view/search" method="post">
