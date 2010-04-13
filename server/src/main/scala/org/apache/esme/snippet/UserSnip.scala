@@ -94,7 +94,10 @@ object JsonResender extends JsonHandler{
   }
 }
 
+
+
 class UserSnip extends DispatchSnippet {
+
   def dispatch: DispatchIt = 
   Map("name" -> userName _,
       "userImage" -> userImage _,
@@ -116,8 +119,9 @@ class UserSnip extends DispatchSnippet {
     map(_.child).firstOption.getOrElse(NodeSeq.Empty)
   }
 
+  // <img width="50px" href="{(u.image_url.is)openOr "/images/avatar.jpg"}" alt="Anonymous" id="avatar" />
   def userFmt(u: User): Node = 
-  <li><a href={"/user/"+urlEncode(u.nickname.is)}>{u.niceName}</a> {u.firstName} {u.lastName}</li>
+  <li> <a href={"/user/"+urlEncode(u.nickname.is)}>{u.niceName}</a> {u.firstName} {u.lastName}</li>
 
   def calcUser: Box[User] =
   S.attr("userId").flatMap(s => User.find(toLong(s))) or User.currentUser
