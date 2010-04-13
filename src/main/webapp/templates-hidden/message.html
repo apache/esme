@@ -32,23 +32,27 @@
 						<div class="row clear" style="display: none">
 							<input id="vTag" style="width: 90%"/>
 						</div>
-					</div>                   
+					</div>
 					<div class="row clear" style="display: none" id="reply-to-div">
-                    	<p><lift:loc>ui_messages_message_label_message_reply</lift:loc>
-                        <span id="reply-to-span">-</span>
-                        <a href="javascript: clearReplyTo()">
-                        	<lift:loc>ui_messages_message_label_message_remove_reply</lift:loc>
-                        </a></p>
-                    </div>
+						<p>
+							<lift:loc>ui_messages_message_label_message_reply</lift:loc>
+							<span id="reply-to-span">-</span>
+							<a href="javascript: clearReplyTo()">
+								<lift:loc>ui_messages_message_label_message_remove_reply</lift:loc>
+							</a>
+						</p>
+					</div>
 					<div class="post-form-row">
 						<div class="share-select">
-							<label><lift:loc>ui_messages_share</lift:loc></label>
+							<label>
+								<lift:loc>ui_messages_share</lift:loc>
+							</label>
 							<select id="vPool" class="inputBox2">
 								<option value="0">
 									<lift:loc>ui_messages_message_label_message_pool_public</lift:loc>
 								</option>
 								<lift:UserSnip.accessPools/>
-							</select>                 
+							</select>
 						</div>
 						<div class="update-btn">
 							<input type="image" onclick="javascript:post_msg();" src="images/btn-update.gif" />
@@ -75,10 +79,8 @@
                                             document.getElementById(id).style.display = "none"
                                         }
                                         
-                                        // ]]>
-                                        
-                                        
-                                    </script>
+                                        // ]]>						
+                                        </script>
 					<lift:UserSnip.postScript/>
 				</div>
 			</div>
@@ -86,35 +88,36 @@
 			</div>
 		<lift:UserSnip.resendScript/>
 		<!--updates-box -->
-		<!--updates-box -->
 		<lift:comet type="Timeline"/>
-		
-			<div id="personal_timeline_messages">
+		<div id="personal_timeline_messages">
 			<div class="updates-box" id="message">
-							
-				 <div class="avatar"> <img id="avatar" alt="Anonymous" width="50px"/></div>
-				   <div class="update"> <div id="body">-</div>
-				   <div class="info"><a href="" id="author">-</a><div class="time"><div id="supp_data"> -</div></div></div>
-				 </div>	
-				 <div class="time">  </div>	
-									<div class="actions">
-									<a href="#"  id="resend">
-										<lift:loc>ui_messages_message_label_resend</lift:loc>
-									</a>
-									| <a href="#" id="reply">
-										<lift:loc>ui_messages_message_label_reply</lift:loc>
-									</a>
-									<a id="conversation">
-										|  <lift:loc>ui_messages_message_label_conversation</lift:loc>
-									</a>
-								</div>		
-				<div class="separator">                    </div>
+				<div class="avatar">
+					<img id="avatar" width="50px"/>
 				</div>
-			
-			
-				
+				<div class="update">
+					<div id="body"></div>
+					<div class="info">
+						<a href="" id="author"></a>
+						<div class="time">
+							<div id="supp_data"></div>
+						</div>
+					</div>
+				</div>
+				<div class="time">  </div>
+				<div class="actions">
+					<a href="#"  id="resend">
+						<lift:loc>ui_messages_message_label_resend</lift:loc>
+					</a>
+					| <a href="#" id="reply">
+						<lift:loc>ui_messages_message_label_reply</lift:loc>
+					</a>
+					<a id="conversation">
+						|  <lift:loc>ui_messages_message_label_conversation</lift:loc>
+					</a>
+				</div>
+				<div class="separator">                    </div>
 			</div>
+		</div>
 	</div>
-	<!--updates-box-->
 </lift:surround>
 
