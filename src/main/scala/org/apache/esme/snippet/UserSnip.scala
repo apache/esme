@@ -119,26 +119,23 @@ class UserSnip extends DispatchSnippet {
     map(_.child).firstOption.getOrElse(NodeSeq.Empty)
   }
 
-  // <img width="50px" href="{(u.image_url.is)openOr "/images/avatar.jpg"}" alt="Anonymous" id="avatar" />
   def userFmt(u: User): Node = 
-  <li> <a href={"/user/"+urlEncode(u.nickname.is)}>{u.niceName}</a> {u.firstName} {u.lastName}</li>
+   <li> <img width="30px" src={(u.image_url)} id="avatar" /> <a href={"/user/"+urlEncode(u.nickname.is)}>{u.niceName}</a> {u.firstName} {u.lastName}</li>
+
+
 
   def calcUser: Box[User] =
   S.attr("userId").flatMap(s => User.find(toLong(s))) or User.currentUser
 
   def followers(in: NodeSeq): NodeSeq = 
-  <ul>
     {
       calcUser.toList.flatMap(_.followers.map(userFmt))
     }
-  </ul>
 
   def following(in: NodeSeq): NodeSeq =
-  <ul>
     {
       calcUser.toList.flatMap(_.following.map(userFmt))
     }
-  </ul>
 
   def loginForm(in: NodeSeq): NodeSeq =
   if (User.loggedIn_?) NodeSeq.Empty

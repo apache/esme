@@ -18,18 +18,13 @@
 -->
 
 <lift:surround with="base" at="left">
-    <lift:Style.header/><lift:TableSorterSnip/><!-- STYLESHEETS  -->
-    <link rel="stylesheet" type="text/css" href="../style/reset.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="../style/text.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="../style/grid.css" media="screen" />
+    <!-- STYLESHEETS  -->
     <link rel="stylesheet" type="text/css" href="../style/layout.css" media="screen" />
     <link type="text/css" href="../style/jqueryui-theme/jquery-ui-1.7.2.custom.css" rel="stylesheet" />
-    <!--[if IE 6]><link rel="stylesheet" type="text/css" href="../style/ie6.css" media="screen" /><![endif]--><!--[if gte IE 7]><link rel="stylesheet" type="text/css" href="../style/ie.css" media="screen" /><![endif]--><!-- JAVASCRIPT -->
     <script type="text/javascript" src="../scripts/jquery-ui-1.7.2.custom.min.js">
     </script>
     <script type="text/javascript" src="../scripts/esme.js">
     </script>
-    <script type="text/javascript" src="../scripts/esme_table_sorter.js"></script>
 <div id="back-header">
 	<h1><lift:loc>base_profile_contacts</lift:loc></h1>
 	<div class="container-settings">
@@ -45,14 +40,18 @@
                 <div class="ui-tabs-panel ui-widget-content ui-corner-bottom" id="tabs-1">
                     <dl>
                         <dd class="b-contacts" style="height: 240px; overflow: auto">
+                          <ul>
                             <lift:UserSnip.following user:userId=""/>
+                             </ul>
                         </dd>
                     </dl>
                 </div>
                 <div class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide" id="tabs-2">
                     <dl>
                          <dd class="b-contacts" style="height: 240px; overflow: auto">
+                         <ul>
                             <lift:UserSnip.followers user:userId=""/>
+                            </ul>
                         </dd>
                     </dl>
                 </div>

@@ -262,6 +262,7 @@ class User extends KeyedMapper[Long, User] with UserIdAsString {// OpenIDProtoUs
     case (_) => "/images/avatar.jpg"
   }
   
+ 
 
   def needsChange_? : Boolean = this.nickname.is.startsWith("chang") &&
   this.firstName.startsWith("Unkn") && this.lastName.startsWith("Unkn")
