@@ -45,7 +45,7 @@ a:link, a:visited { color: #114e93; text-decoration:none; font-weight:bold; }
 a:hover { color: #88abd2; text-decoration:underline; }
 
 
-/* Input box focus
+/* Input box focus like in twitter
 *
 */
 
@@ -54,6 +54,12 @@ input[type=text]:focus, input[type=password]:focus, textarea:focus {
       border-color: rgba(82,168,236,0.75) !important;
       outline: medium none);
 }
+
+.focus {
+  background-color: #FCFAE0 !important;
+}
+
+.aura-add-site li.focus, tr.esme-tr.highlight.focus, tr.esme-tr.focus {background:#fcfae0;}
 
 /* HEADER
 *******************************************************************************/
@@ -264,6 +270,7 @@ ul.main-links  {
 	list-style:none;
 	margin:20px 0 10px 15px;
 	padding:0;
+	color: #88abd2; 
 }
 .main-links li {
 	padding:3px 0;
@@ -508,6 +515,25 @@ ul#toc li.current a {
 	background: url(../images/bg-tabs.png) no-repeat; 
 	margin-bottom:20px; 
 }
+/* User messages
+*******************************************************************************/
+
+.user_name {
+	float:left;
+	width:60px;
+	word-wrap:break-word;
+}
+
+.user_message {
+	float:left;
+	width:300px;
+	background:#fff;
+	word-wrap:break-word;
+}
+
+.user_row {
+	background:#fff;
+}
 
 /* SIGNUP/SETTINGS FORM STYLE
 *******************************************************************************/
@@ -571,4 +597,5 @@ z-index:10000;
 
 /*
 .container-update, .container-tabs, .container-settings {behavior: url("src/iepngfix.htc");}
+*/epngfix.htc");}
 */
