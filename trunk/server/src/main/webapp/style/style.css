@@ -105,7 +105,7 @@ div#logo h1 a{
 	color:#2788e1;
 }
 
-#left, #right {
+#left, #right, #container-aux {
 	position:relative;
 }
 #home #left {
@@ -515,6 +515,15 @@ ul#toc li.current a {
 	background: url(../images/bg-tabs.png) no-repeat; 
 	margin-bottom:20px; 
 }
+
+.container-aux {
+	float:left; 
+	width: 563px; 
+	height:400px; 
+	padding:20px 30px; 
+	background: url(../images/bg-tabs.png) no-repeat; 
+	margin-bottom:20px; 
+}
 /* User messages
 *******************************************************************************/
 
@@ -580,6 +589,7 @@ img, img a {border:0px; }
 ******************************************************************************/
 
 .esme_message_bar {
+background:#fff;
 color:#7B4104;
 display:block;
 font-family:Arial;

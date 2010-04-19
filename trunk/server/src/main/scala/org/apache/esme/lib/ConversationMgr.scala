@@ -64,7 +64,7 @@ object ConversationMgr {
     Script(
       OnLoad(JsCrVar(jsId, JsArray(
           msgs.map(m => JsObj(("message", m.asJs)) ) :_*)) &
-      JsFunc("displayMessages", JsVar(jsId), jsId).cmd)
+      JsFunc(" displayMessages", JsVar(jsId), jsId).cmd)
     )
 
   }
