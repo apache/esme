@@ -31,9 +31,10 @@
     </script>
     <script type="text/javascript" src="../scripts/esme_table_sorter.js"></script>
 <div id="back-header">
-	<h1><lift:loc>ui_user_single_title</lift:loc></h1>
+       <lift:user_info>
+	<h1><lift:loc>ui_user_single_title</lift:loc> <i>'<user:nicename/>'</i></h1>
 	<div class="container-settings">
-        <lift:user_info>
+        <span id="following"><user:followButton/></span>
             <div class="ui-tabs ui-widget ui-widget-content ui-corner-all" id="tabs">
                 <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
                     <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active">
@@ -48,7 +49,6 @@
                 </ul>
                 <div class="ui-tabs-panel ui-widget-content ui-corner-bottom" id="tabs-1">
                     <dl class="messages">
-                        <span id="following"><user:followButton/></span>
                         <dd>
                             <table id="esme-table" class="tablesorter">
                                 <thead>
@@ -126,8 +126,9 @@
                     </dl>
                 </div>
             </div>
-        </lift:user_info>
+
 	</div>
+	        </lift:user_info>
 	</div>
 	<!-- End demo --> 
 </lift:surround>

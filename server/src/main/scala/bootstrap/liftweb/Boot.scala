@@ -119,7 +119,7 @@ class Boot {
     LiftRules.dispatch.append(UrlStore.redirectizer)
 
 
-    LiftRules.siteMapFailRedirectLocation = List("index", "Home")
+    LiftRules.siteMapFailRedirectLocation = List("index")
 
     UserAuth.register(UserPwdAuthModule)
     UserAuth.register(OpenIDAuthModule)
