@@ -14,7 +14,7 @@
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY       *
  KIND, either express or implied.  See the License for the    *
  specific language governing permissions and limitations      *
- under the License.                                           *
+ under the License.                                           * 
 */
 
 // <![CDATA[
@@ -29,7 +29,10 @@ function msgDateCompare(msg1, msg2)
 
 function displayMessages(msgArray, elementId)
 {
-  // Select the first element in table id="timeline_messages"
+	
+	//
+
+ // Select the first element in table id="timeline_messages"
   //  with id="message" as the message template
   if (msgTemplate == null) {
     //                                    var msgTemplate = jQuery('span.'+spanId+' message:first');

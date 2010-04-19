@@ -71,7 +71,6 @@ object StreamMgr {
     val spanName = S.attr("the_id") openOr "StreamSpan"
     // get the current user
     val user = User.currentUser
-    println("displayStream"); 
 
     // bind the dynamic content to the incoming nodeseq
     def doRender(): NodeSeq = {
