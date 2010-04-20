@@ -186,7 +186,7 @@ object AccessPoolMgr {
                                                        },
                                                  "id" -> editPoolName),
          "username" -%> text(username, username = _, "id" -> editUsername),
-         "permission" -> select(permissions, Empty, addPoolUser, "id" -> editPermission)
+         "permission" -%> select(permissions, Empty, addPoolUser, "id" -> editPermission)
     )
     
   }
