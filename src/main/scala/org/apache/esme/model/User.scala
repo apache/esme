@@ -82,8 +82,16 @@ object User extends User with KeyedMetaMapper[Long, User] {
     val auth = UserAuth.defaultAuthModule.createHolder()
     val snippetName = S.invokedAs
 
+
+    def processEntryAdd() {
+        Log.info("processEntryAdd: " + firstName + ", " + lastName)
+    }
+
+
+
     def doSubmit() {
       S.mapSnippet(snippetName, genForm)
+      Log.info("doSubmit: ")
       user.validate ::: auth.validate match {
         case Nil =>
           user.save
@@ -106,7 +114,8 @@ object User extends User with KeyedMetaMapper[Long, User] {
            "timezone" -%> user.timezone.toForm,
            "locale" -%> user.locale.toForm,
            "credentials" -> auth.toForm,
-           "submit" _id_> SHtml.submit(S.?("base_user_ui_signup"), doSubmit))
+           "submit" -%> SHtml.submit(S.?("base_user_ui_signup"), doSubmit _),
+    ) ++ SHtml.hidden(doSubmit _)
     }
 
 
