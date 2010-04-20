@@ -34,8 +34,8 @@
 
 	
 			<div class="post-form-row">
-								<div class="submit-btn">
-<input type="image" onclick="javascript:$('#dialog-form').dialog('open')" id="create-user" src="../images/new1.gif" />
+								<div class="submit-btn tipelement" title="Create a new pool." >
+<input type="image" onclick="javascript:$('#dialog-form').dialog('open')" id="create-pool" src="../images/new1.gif" />
 							</div>
 							</div>
  
@@ -134,9 +134,9 @@
                             <br/>
                         </fieldset>
                         <br/>
-                        		<div class="post-form-row">
-								<div class="submit-btn">
-<input type="image" onclick="javascript:$('#dialog-form-user').dialog('open')" id="create-user" src="../images/add1.gif" />							
+                        		<div class="post-form-row tipelement" title="Add a user to an existing pool.">
+								<div class="submit-btn" >
+<input type="image" onclick="javascript:$('#dialog-form-user').dialog('open')" id="create-user" src="../images/add1.gif"/>							
 							</div>
 							</div>
 							
@@ -147,7 +147,7 @@
                 
                 <fieldset>
                     <lift:form>
-                        <lift:editPool class="inputBox2">
+                        <lift:editPool class="inputBox2 tipelement" title="Select a pool to edit" >
                             <lift:loc>ui_pool_edit_label</lift:loc>
                             <edit:pool/>
                         </lift:editPool>
@@ -164,7 +164,7 @@
        <lift:addPool>
 	<fieldset>
 		<label for="poolName"><lift:loc>ui_pool_add</lift:loc></label>
-		<add:poolName class="text ui-widget-content ui-corner-all" />
+		<add:poolName class="text ui-widget-content ui-corner-all tipelement" title="This is name of your new pool" />
 	</fieldset>
 	</lift:addPool>
        </form>
@@ -178,9 +178,9 @@
        <lift:editPool>
 	<fieldset>
 		<label for="poolName"><lift:loc>ui_pool_add</lift:loc></label>
-		<edit:username class="text ui-widget-content ui-corner-all" />
+		<edit:username class="text ui-widget-content ui-corner-all tipelement" title="This is the user that will be added to a pool." />
 		<label for="permission"><lift:loc>ui_pool_list_user_role</lift:loc></label>
-		<edit:permission class="text ui-widget-content ui-corner-all" />
+		<edit:permission class="text ui-widget-content ui-corner-all tipelement" title="This is the type of permission that the new user will have." />
 	</fieldset>
 	</lift:editPool>
        </form>

@@ -68,7 +68,7 @@
 										<td>
 											<item:name/>
 										</td>
-										<td>
+										<td class="tipelement" title="This checkbox determines whether this action is active or not." >
 											<item:enabled/>
 										</td>
 										<td>
@@ -99,16 +99,16 @@
 		<label for="name"><lift:loc>ui_action_new_action_name</lift:loc></label>
 		<main:name class="text ui-widget-content ui-corner-all tipelement" title="This is the name of your action" />
 		<label for="name"><lift:loc>ui_action_new_action_test</lift:loc></label>
-		<main:test class="text ui-widget-content ui-corner-all tipelement" title="@foo -- sender is @foo or #moo -- contains the #moo tag" />
+		<main:test class="text ui-widget-content ui-corner-all tipelement" title="This is the message trait that will be tested. If it is true, the action will be fired. Examples: '@foo' -- sender is @foo or '#moo' -- contains the #moo tag" />
 		<label for="name"><lift:loc>ui_action_table_action</lift:loc></label>
-		<main:action class="text ui-widget-content ui-corner-all" />
+		<main:action class="text ui-widget-content ui-corner-all tipelement" title="This is the action that will be performed when your action fires." />
 	</fieldset>
 	</lift:main>
        </form>
 </div>
 
 <div class="post-form-row">
-<div class="submit-btn">
+<div class="submit-btn tipelement" title="Create a new action." >
      <input src="../images/new1.gif" id="create-user" onclick="javascript:$('#dialog-form').dialog('open')" type="image" />
 </div>
 </div>							
