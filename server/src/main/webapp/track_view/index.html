@@ -74,7 +74,7 @@
 				</span>
 
 
-<div id="dialog-form" style="display: none" title="Create new track">
+<div id="dialog-form" style="display: none" title="Create a new track">
 	<p class="validateTips"><lift:loc>ui_form_all_fields_required</lift:loc></p>
 
        <form id="track_new_dialog" onsubmit="false">
@@ -82,14 +82,14 @@
        <lift:main>
 	<fieldset>
 		<label for="name"><lift:loc>ui_track_new_track_what</lift:loc></label>
-		<main:track class="text ui-widget-content ui-corner-all" />
+		<main:track class="text ui-widget-content ui-corner-all tipelement" title="This is the text that you want to follow." />
 	</fieldset>
 	</lift:main>
        </form>
 </div>
 
 <div class="post-form-row">
-								<div class="submit-btn">
+								<div class="submit-btn tipelement" title="Create a new track" >
 								        <input type="image" onclick="javascript:$('#dialog-form').dialog('open')" id="create-user" src="../images/new1.gif" />
 								</div>
 							</div>
