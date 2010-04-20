@@ -35,7 +35,7 @@
 				<div id="form-update">
 					<div id="messages"></div>
 					<div class="post-form-row">
-						<textarea class="inputBox2" id="vMsg" rows="5" cols="80%"></textarea>
+						<textarea class="inputBox2 tipelement" title="Enter your status message here." id="vMsg" rows="5" cols="80%"></textarea>
 						<div class="row clear" style="display: none">
 							<input id="vTag" style="width: 90%"/>
 						</div>
@@ -54,7 +54,7 @@
 							<label>
 								<lift:loc>ui_messages_share</lift:loc>
 							</label>
-							<select id="vPool" class="inputBox2">
+							<select id="vPool" class="inputBox2 tipelement" title="Select the pool in which your message should be submitted">
 								<option value="0">
 									<lift:loc>ui_messages_message_label_message_pool_public</lift:loc>
 								</option>
@@ -72,14 +72,12 @@
                                         function setReplyTo(id, text){
                                             currentConvNumber = id;
                                             document.getElementById('reply-to-div').style.display = "block";
-                                            //document.getElementById('container-update').height = "172px";
                                             jQuery('#reply-to-span').html(text);
                                         }
                                         
                                         function clearReplyTo(){
                                             currentConvNumber = 0;
                                             document.getElementById('reply-to-div').style.display = "none";
-                                            document.getElementById('container-update').height = "152px";
                                         }
                                         
                                         function clearResend(id){
