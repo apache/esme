@@ -18,111 +18,107 @@
 -->
 
 <lift:surround with="base" at="left">
-<head>
-	<!-- STYLESHEETS  -->  
-	<link type="text/css" href="../style/jqueryui-theme/jquery-ui-1.7.2.custom.css" rel="stylesheet" />     
-	<link type="text/css" href="../style/parseTheme.css" rel="stylesheet" />
-	<link type="text/css" href="../style/dialog.css" rel="stylesheet" />
-	<script type="text/javascript" src="../scripts/jquery-ui-1.7.2.custom.min.js">    </script>
-	<script type="text/javascript" src="../scripts/dialog_action.js">    </script>
+	<head>
+		<!-- STYLESHEETS  -->
+		<link type="text/css" href="../style/jqueryui-theme/jquery-ui-1.7.2.custom.css" rel="stylesheet" />
+		<link type="text/css" href="../style/parseTheme.css" rel="stylesheet" />
+		<link type="text/css" href="../style/dialog.css" rel="stylesheet" />
+		<script type="text/javascript" src="../scripts/jquery-ui-1.7.2.custom.min.js">    </script>
+		<script type="text/javascript" src="../scripts/dialog_action.js">    </script>
 		<lift:TableSorterSnip/>
-		    <script type="text/javascript" src="../scripts/esme.js">
-    </script>
-    <script type="text/javascript" src="../scripts/esme_table_sorter_action.js"></script>
+		<script type="text/javascript" src="../scripts/esme.js">    </script>
+		<script type="text/javascript" src="../scripts/esme_table_sorter_action.js"></script>
 	</head>
-	
-<div id="back-header">
-	<h1><lift:loc>ui_action_title</lift:loc></h1>
-<div class="container-settings">
-				<span id="TokenSpan">
-					<lift:ignore>
-						<!--      The displayActions snippet *MUST* appear on the page before      the main snippet      -->
-						</lift:ignore>
-					<lift:displayActions the_id="TokenSpan">
-						<table id="esme-table" class="tablesorter">
-							<thead>
+	<div id="back-header">
+		<h1>
+			<lift:loc>ui_action_title</lift:loc>
+		</h1>
+		<div class="container-settings">
+			<span id="TokenSpan">
+				<lift:ignore>
+					<!--      The displayActions snippet *MUST* appear on the page before      the main snippet      -->
+					</lift:ignore>
+				<lift:displayActions the_id="TokenSpan">
+					<table id="esme-table" class="tablesorter">
+						<thead>
+							<tr>
+								<th class="tipelement" title="This is the name of the action.">
+									<lift:loc>ui_action_table_name</lift:loc>
+								</th>
+								<th class="tipelement" title="This checkbox determines whether this action is active or not." >
+									<lift:loc>ui_action_table_enabled</lift:loc>
+								</th>
+								<th class="tipelement" title="This is the test that is checked to see if the action is fired.">
+									<lift:loc>ui_action_table_test</lift:loc>
+								</th>
+								<th class="tipelement" title="This is the activity that occurs when the action is fired.">
+									<lift:loc>ui_action_table_action</lift:loc>
+								</th>
+								<th class="tipelement" title="This is the timestamp when the action was created.">
+									<lift:loc>ui_action_table_create_date</lift:loc>
+								</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							<disp:item>
 								<tr>
-									<th>
-										<lift:loc>ui_action_table_name</lift:loc>
-									</th>
-									<th>
-										<lift:loc>ui_action_table_enabled</lift:loc>
-									</th>
-									<th>
-										<lift:loc>ui_action_table_test</lift:loc>
-									</th>
-									<th>
-										<lift:loc>ui_action_table_action</lift:loc>
-									</th>
-									<th>
-										<lift:loc>ui_action_table_create_date</lift:loc>
-									</th>
-									<th>
-										
-									</th>
+									<td>
+										<item:name/>
+									</td>
+									<td >
+										<item:enabled/>
+									</td>
+									<td>
+										<item:test/>
+									</td>
+									<td>
+										<item:action/>
+									</td>
+									<td>
+										<item:createdDate/>
+									</td>
+									<td align="center" class="tipelement" title="You can delete the action.">
+										<item:remove/>
+									</td>
 								</tr>
-							</thead>
-							<tbody>
-								<disp:item>
-									<tr>
-										<td>
-											<item:name/>
-										</td>
-										<td class="tipelement" title="This checkbox determines whether this action is active or not." >
-											<item:enabled/>
-										</td>
-										<td>
-											<item:test/>
-										</td>
-										<td>
-											<item:action/>
-										</td>
-										<td>
-											<item:createdDate/>
-										</td>
-										<td align="center">
-											<item:remove/>
-										</td>
-									</tr>
-								</disp:item>
-							</tbody>
-						</table>
-					</lift:displayActions>
-				</span>
-<div id="dialog-form" title="Create new action" style="display: none">
-	<p class="validateTips"><lift:loc>ui_form_all_fields_required</lift:loc></p>
-
-       <form id="action_new_dialog" onsubmit="false">
-
-       <lift:main>
-	<fieldset>
-		<label for="name"><lift:loc>ui_action_new_action_name</lift:loc></label>
-		<main:name class="text ui-widget-content ui-corner-all tipelement" title="This is the name of your action" />
-		<label for="name"><lift:loc>ui_action_new_action_test</lift:loc></label>
-		<main:test class="text ui-widget-content ui-corner-all tipelement" title="This is the message trait that will be tested. If it is true, the action will be fired. Examples: '@foo' -- sender is @foo or '#moo' -- contains the #moo tag" />
-		<label for="name"><lift:loc>ui_action_table_action</lift:loc></label>
-		<main:action class="text ui-widget-content ui-corner-all tipelement" title="This is the action that will be performed when your action fires." />
-	</fieldset>
-	</lift:main>
-       </form>
-</div>
-
-<div class="post-form-row">
-<div class="submit-btn tipelement" title="Create a new action." >
-     <input src="../images/new1.gif" id="create-user" onclick="javascript:$('#dialog-form').dialog('open')" type="image" />
-</div>
-</div>							
-
-		
-
-
-
-
-</div><!-- End demo -->
-</div><!-- End demo -->
-
-
-
+							</disp:item>
+						</tbody>
+					</table>
+				</lift:displayActions>
+			</span>
+			<div id="dialog-form" title="Create new action" style="display: none">
+				<p class="validateTips">
+					<lift:loc>ui_form_all_fields_required</lift:loc>
+				</p>
+				<form id="action_new_dialog" onsubmit="false">
+					<lift:main>
+						<fieldset>
+							<label for="name">
+								<lift:loc>ui_action_new_action_name</lift:loc>
+							</label>
+							<main:name class="text ui-widget-content ui-corner-all tipelement" title="This is the name of your action" />
+							<label for="name">
+								<lift:loc>ui_action_new_action_test</lift:loc>
+							</label>
+							<main:test class="text ui-widget-content ui-corner-all tipelement" title="This is the message trait that will be tested. If it is true, the action will be fired. Examples: '@foo' -- sender is @foo or '#moo' -- contains the #moo tag" />
+							<label for="name">
+								<lift:loc>ui_action_table_action</lift:loc>
+							</label>
+							<main:action class="text ui-widget-content ui-corner-all tipelement" title="This is the action that will be performed when your action fires." />
+						</fieldset>
+					</lift:main>
+				</form>
+			</div>
+			<div class="post-form-row">
+				<div class="submit-btn tipelement" title="Create a new action." >
+					<input src="../images/new1.gif" id="create-user" onclick="javascript:$('#dialog-form').dialog('open')" type="image" />
+				</div>
+			</div>
+		</div>
+		<!-- End demo -->
+		</div>
+	<!-- End demo -->
 	<lift:Msgs>
 		<lift:error_msg>Error:</lift:error_msg>
 		<lift:notice_msg>FYI:</lift:notice_msg>
@@ -133,4 +129,5 @@
 		<lift:notice_class>note_major</lift:notice_class>
 	</lift:Msgs>
 </lift:surround>
+
 

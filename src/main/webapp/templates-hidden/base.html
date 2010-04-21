@@ -50,15 +50,16 @@
                     <div id="top-menu">
                         <ul>
                             <li>
-                                 <lift:Menu.item donthide="true" name="public"/> | 
+                                 <lift:Menu.item donthide="true" name="public" a:class="tipelement" a:title="The public timeline includes messages from all users not only those you are following. "/>  |  
                             </li>
                             <li>
-                              <lift:Menu.item donthide="true" name="list_users"/> | 
+                              <lift:Menu.item donthide="true" name="list_users" a:class="tipelement" a:title="Users are listed along with their details. "/>  | 
                             </li>
                              <li>
-                              <lift:Menu.item donthide="true" name="streams" />  
+                               <lift:Menu.item donthide="true" name="streams" a:class="tipelement" a:title="Streams allow you to view pools or the messages sent by particular users. "/>
                             </li>
                         </ul>
+
                         <lift:Menu.item name="logout">
                            <img src="../images/btn-signout.gif" alt="" class="tipelement" title="Log out of ESME." />
                          </lift:Menu.item>
@@ -78,26 +79,27 @@
                         </div>
                         <ul class="main-links">
                            <li>
-                                <lift:Menu.item donthide="true" name="Home"/>
+                                <lift:Menu.item donthide="true" name="Home" a:class="tipelement" a:title="This is the your timeline."/>
                             </li>
                             <li>
-                                <lift:Menu.item donthide="true" name="profile"/>     
+                                <lift:Menu.item donthide="true" name="profile" a:class="tipelement" a:title="You can change your profile."/>     
                             </li>
                             <li>
-                                <lift:Menu.item donthide="true" name="trackMgt"/>
+                                <lift:Menu.item donthide="true" name="trackMgt" a:class="tipelement" a:title="You can track words."/>
                             </li>
                             <li>
-                                <lift:Menu.item donthide="true" name="actionMgt"/>
+                                <lift:Menu.item donthide="true" name="actionMgt" a:class="tipelement" a:title="You can create actions to fire when certain events occur"/>
                             </li>
                             <li>
-                                <lift:Menu.item donthide="true" name="authToken"/>
+                                <lift:Menu.item donthide="true" name="authToken" a:class="tipelement" a:title="You can create tokens to use when accessing ESME via other clients."/>
                             </li>
                             <li>
-                                <lift:Menu.item donthide="true" name="accessPools"/>
+                                <lift:Menu.item donthide="true" name="accessPools" a:class="tipelement" a:title="You can create access pools to restrict access top certain messages."/>
                             </li>
                             <li>
-                                <lift:Menu.item donthide="true" name="contacts"/>
+                                <lift:Menu.item donthide="true" name="contacts" a:class="tipelement" a:title="You can manage your followers and those you follow."/>
                             </li>
+
                         </ul><!--search form-->
                         <form action="/info_view/search" method="post">
                             <div id="search">
@@ -108,11 +110,11 @@
                                     <input type="image" onclick="javascript:form.submit();" src="../images/btn-search.gif" style="padding:0;"/>
                                 </div>
                             </div>
-                        </form><!--search form--><h3><a href=""><lift:loc>ui_messages_message_label_tag_cloud</lift:loc></a></h3>
+                        </form><!--search form--><h3><a href=""  class ="tipelement" title="These are tags that appear often in your timeline."><lift:loc>ui_messages_message_label_tag_cloud</lift:loc></a></h3>
                        <div class="right-content">
                              <lift:comet type="TagCloud"/>
                         </div>
-                        <h3><a href=""><lift:loc>ui_messages_message_label_popular</lift:loc></a></h3>
+                        <h3><a href="" class ="tipelement" title="These are popular messages that users have resent often"><lift:loc>ui_messages_message_label_popular</lift:loc></a></h3>
                         <div class="right-content">
                                         <lift:UserSnip.popular>
                                         <ul>
@@ -124,7 +126,7 @@
                                         </ul>
                                     </lift:UserSnip.popular> 
                                      </div>
-                        <h3><a href=""><lift:loc>ui_messages_message_label_popular_links</lift:loc></a></h3>
+                        <h3><a href="" class ="tipelement" title="These are popular links that users have clicked often."><lift:loc>ui_messages_message_label_popular_links</lift:loc></a></h3>
                         <div class="right-content">
                                   <lift:UserSnip.links>
                                         <ul>
