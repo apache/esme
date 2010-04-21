@@ -17,18 +17,22 @@
  under the License.                                           *
 -->
 <lift:xml_group>
-<div class="post-form-row">
-								<label><lift:loc>ui_login_email</lift:loc></label>
-								<signup:email class="inputBox2"/>
-							</div>	
-							
-							<div class="post-form-row">
-								<label><lift:loc>ui_login_password</lift:loc></label>
-								<signup:pwd1 class="inputBox2"/>
-							</div>	
-							
-							<div class="post-form-row">
-								<label> <lift:loc>ui_login_password_repeat</lift:loc></label>
-								<signup:pwd2 class="inputBox2"/>
-							</div>	
+	<div class="post-form-row">
+		<label>
+			<lift:loc>ui_login_email</lift:loc>
+		</label>
+		<signup:email class="inputBox2 tipelement" title="This is your email. "/>
+	</div>
+	<div class="post-form-row">
+		<label>
+			<lift:loc>ui_login_password</lift:loc>
+		</label>
+		<signup:pwd1 class="inputBox2 tipelement" title="This is your password"/>
+	</div>
+	<div class="post-form-row">
+		<label>
+			<lift:loc>ui_login_password_repeat</lift:loc>
+		</label>
+		<signup:pwd2 class="inputBox2" title="Please enter your password again to make sure that it is correct"/>
+	</div>
 </lift:xml_group>
