@@ -594,11 +594,12 @@ img, img a {border:0px; }
 
 .clear {clear:both;}
 
+
 /* Message Bar
 ******************************************************************************/
 
 .esme_message_bar {
-background:#07376d;
+background:#FFFFFF;
 color:#7B4104;
 display:block;
 font-family:Arial;

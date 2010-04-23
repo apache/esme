@@ -19,7 +19,9 @@
 
 $(document).ready(function() 
     { 
-      $("#esme-table").tablesorter({ headers: { 1: { sorter: false}, 3: {sorter: false} } }); 
+        $("#esme-table").tablesorter({
+        	 widgets: ['zebra'],
+        	  headers: { 1: { sorter: false}, 3: {sorter: false} } }); 
     } 
 ); 
    
