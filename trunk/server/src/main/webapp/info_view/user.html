@@ -33,7 +33,7 @@
 <div id="back-header">
        <lift:user_info>
 	<h1><lift:loc>ui_user_single_title</lift:loc> <i>'<user:nicename/>'</i></h1>
-	<div class="container-settings">
+	<div class="container-aux">
         <span id="following"><user:followButton/></span>
             <div class="ui-tabs ui-widget ui-widget-content ui-corner-all" id="tabs">
                 <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
@@ -66,11 +66,11 @@
                                 </thead>
                                 <tbody>
                                     <user:timeline>
-                                        <tr>
+                                        <tr class="user_row">
                                             <td>
                                                 <item:author/>
                                             </td>
-                                            <td>
+                                            <td class ="user_message">
                                                 <item:body/>
                                             </td>
                                             <td>
@@ -99,8 +99,8 @@
                                 </thead>
                                 <tbody>
                                 <user:messages>
-                                    <tr>
-                                        <td>
+                                    <tr class="user_row">
+                                        <td class ="user_message">
                                             <item:body/>
                                         </td>
                                         <td>
