@@ -48,7 +48,6 @@
 								<pool:name/>
 							</i>
 						</legend>
-						<br/>
 						<table class="tablesorter">
 							<thead>
 								<tr>
@@ -83,21 +82,16 @@
 								</tr>
 							</tbody>
 						</table>
-						<br/>
 					</fieldset>
-					<br/>
 				</lift:poolDetail>
 			</span>
 			<span id="PoolSpan">
+			     
 				<lift:ignore>
-					<!--                        The poolUsers snippet *MUST* appear on the page before                        the editPool snippet                        -->
-					</lift:ignore>
+					<!--  The poolUsers snippet *MUST* appear on the page before the editPool snippet                        -->
+				</lift:ignore>
 				<lift:poolUsers the_id="PoolSpan">
-					<fieldset>
-						<legend>
 							<b><lift:loc>ui_pool_list_users</lift:loc></b>
-						</legend>
-						<br/>
 						<table id="esme-table" class="tablesorter">
 							<thead>
 								<tr>
@@ -122,9 +116,6 @@
 								</pool:user>
 							</tbody>
 						</table>
-						<br/>
-					</fieldset>
-					<br/>
 					<div class="post-form-row">
 						<div class="submit-btn tipelement" title="Add a user to an existing pool." >
 							<input type="image" onclick="javascript:$('#dialog-form-user').dialog('open')" id="create-user" src="../images/add1.gif"/>
@@ -132,14 +123,14 @@
 					</div>
 				</lift:poolUsers>
 			</span>
-			<fieldset>
+			<div class="pool_select">
 				<lift:form>
 					<lift:editPool class="inputBox2" >
 						<lift:loc>ui_pool_edit_label</lift:loc>
 						<edit:pool class="tipelement" title="Select a pool to edit"/>
 					</lift:editPool>
 				</lift:form>
-			</fieldset>
+			</div>
 			<div id="dialog-form" title="Create new  pool" style="display: none">
 				<p class="validateTips">
 					<lift:loc>ui_form_all_fields_required</lift:loc>
