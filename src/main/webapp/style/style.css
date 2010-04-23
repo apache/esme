@@ -59,7 +59,11 @@ input[type=text]:focus, input[type=password]:focus, textarea:focus {
   background-color: #FCFAE0 !important;
 }
 
-.aura-add-site li.focus, tr.esme-tr.highlight.focus, tr.esme-tr.focus {background:#fcfae0;}
+.thatsyou {
+	font-weight:bold;
+	color:#114e93;
+}
+
 
 /* HEADER
 *******************************************************************************/
@@ -368,6 +372,12 @@ ul.main-links  {
 *******************************************************************************/
 #content { margin:0 auto; display:block; width: 851px; padding:20px 10px 0px 10px; }
 
+.tr_hover {
+	background-color:#CCCCCC;
+	color:red; 
+}
+
+
 /* UPDATES
 *******************************************************************************/
 #back-header {
@@ -519,7 +529,6 @@ ul#toc li.current a {
 .container-aux {
 	float:left; 
 	width: 563px; 
-	height:400px; 
 	padding:20px 30px; 
 	background: url(../images/bg-tabs.png) no-repeat; 
 	margin-bottom:20px; 
@@ -589,7 +598,7 @@ img, img a {border:0px; }
 ******************************************************************************/
 
 .esme_message_bar {
-background:#fff;
+background:#07376d;
 color:#7B4104;
 display:block;
 font-family:Arial;
@@ -605,7 +614,3 @@ width:100%;
 z-index:10000;
 }
 
-/*
-.container-update, .container-tabs, .container-settings {behavior: url("src/iepngfix.htc");}
-*/epngfix.htc");}
-*/

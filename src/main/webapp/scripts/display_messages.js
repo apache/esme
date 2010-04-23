@@ -73,6 +73,7 @@ function displayMessages(msgArray, elementId)
       var msgConversation = cometMsg.conversation;
       var msgReason = ""
       for (r in cometReason) {
+      	msgSource = ""
         if (r == "resent_from")
           msgReason = "resent by " + cometReason[r].nickname;
         else

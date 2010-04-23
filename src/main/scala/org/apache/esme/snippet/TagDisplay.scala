@@ -47,8 +47,6 @@ object TagDisplay {
    
     def updateFollow: JsCmd = SetHtml("following", followOrNot)
 
-
-
     def followOrNot: NodeSeq = {
       User.currentUser match {
         case Full(u) if u != user =>
@@ -56,17 +54,17 @@ object TagDisplay {
           ajaxButton(S.?("base_ui_unfollow"), () => {u.unfollow(user); updateFollow})
           else ajaxButton(S.?("base_ui_follow"), () => {u.follow(user); updateFollow})
 
-        case _ => NodeSeq.Empty
+        case _ => <xml:group> <div class="thatsyou">{S.?("base_user_thats_you")}</div></xml:group> 
       }
     }
 
+
     bind("user", in,
+         "nicename" -> user.niceName,
          "nicename" -> user.niceName,
          "followButton" -> followOrNot,
          "timeline" -> bindTag(Mailbox.mostRecentMessagesFor(user.id, 50).map(_._1)) _,
-         "messages" -> bindTag(Message.findAll(In(Message.id, Mailbox.message, By(Mailbox.user, user)),
-                                               MaxRows(50),
-                                               OrderBy(Message.id, Descending))) _,
+         "messages" -> bindTag(Message.findAll(By(Message.author, user), OrderBy(Message.id, Descending), MaxRows(50))) _,
          AttrBindParam("userId", Text(user.id.toString),"userId")
     )
   

@@ -17,12 +17,11 @@
  under the License.                                           *
 -->
 <lift:surround with="base" at="left">
-    <script type="text/javascript" src="../scripts/esme_table_sorter.js">
-    </script>
+    <script type="text/javascript" src="../scripts/esme_table_sorter_tag.js"></script>
     <lift:TableSorterSnip/>
     <lift:tag_display>
 <div id="back-header">
-	<h1><lift:loc>ui_tag_title</lift:loc> '<tag:name/>'</h1>
+	<h1><lift:loc>ui_tag_title</lift:loc><i> '<tag:name/>'</i></h1>
 <div class="container-settings">
 
               <table id="esme-table" class="tablesorter">
