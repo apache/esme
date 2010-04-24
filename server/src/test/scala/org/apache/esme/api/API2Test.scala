@@ -555,7 +555,8 @@ object Api2Specs extends Specification with TestKit {
       }
     }
 
-// This is very ... shall we say ... brittle
+// This is very ... shall we say ... brittle  
+// Also adding in a check to make sure that the message contains the reply-to message ID
     "conversations/CONVERSATIONID GET" in {
       "with valid session" in {
         for{
@@ -568,7 +569,11 @@ object Api2Specs extends Specification with TestKit {
           wait2 <- sleep(1000)                 
           res <- sess.get("conversations/9")
         } {
-          res.code must be equalTo 200
+          res.code must be equalTo 200  
+          ( res.xml \\ "message" ).last must \\(<conversation>9</conversation>)
+          ( res.xml \\ "message" ).last must \\(<replyto>9</replyto>)
+          ( res.xml \\ "message" ).first must \\(<conversation>9</conversation>)
+          ( res.xml \\ "message" ).first must \\(<replyto></replyto>)
         }
       }
 

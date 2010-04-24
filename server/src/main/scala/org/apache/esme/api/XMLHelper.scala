@@ -42,13 +42,18 @@ trait XmlHelper {
 <user><id>{user.id.toString}</id><nickname>{user.niceName}</nickname><image>{user.image}</image><whole_name>{user.wholeName}</whole_name></user> 
 	
   protected def msgToXml(msg: Message): Elem = { 
-    val replyToTag: Elem =
-      if(msg.conversation.defined_?) <replyto>{msg.conversation}</replyto>
-      else <replyto></replyto>  
+    val conversationTag: Elem =
+      if(msg.conversation.defined_?) <conversation>{msg.conversation}</conversation>
+      else <conversation></conversation>  
+
     val tags: NodeSeq = 
       for(tag<-msg.tags) yield {
         <tag>{tag}</tag>
       }
+
+    val replyToTag: Elem =
+      if(msg.replyTo.defined_?) <replyto>{msg.replyTo}</replyto>
+      else <replyto></replyto>  
 
     val ret: Elem = <message>
   <id>{msg.id.toString}</id>
@@ -60,7 +65,7 @@ trait XmlHelper {
       <author><nickname>{u.niceName}</nickname><id>{u.id.toString}</id></author>
     ) openOr Text("")
   }
-  <tags>{tags}</tags>{replyToTag}
+  <tags>{tags}</tags>{replyToTag}{conversationTag}
 </message>
 
    ret        
