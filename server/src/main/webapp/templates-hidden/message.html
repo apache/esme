@@ -69,15 +69,17 @@
                                         // <![CDATA[
                                         var currentConvNumber = 0;
                                         
-                                        function setReplyTo(id, text){
+                                        function setReplyTo(id, text, msgPool){
                                             currentConvNumber = id;
                                             document.getElementById('reply-to-div').style.display = "block";
                                             jQuery('#reply-to-span').html(text);
+											jQuery('#vPool').val(msgPool);
                                         }
                                         
                                         function clearReplyTo(){
                                             currentConvNumber = 0;
                                             document.getElementById('reply-to-div').style.display = "none";
+											jQuery('#vPool').val(0);
                                         }
                                         
                                         function clearResend(id){
