@@ -79,7 +79,9 @@ function displayMessages(msgArray, elementId)
       var msgDateStr = prettyDate(msgDateObj);
       
       var msgPool = '';
-      if (cometMsg.pool) msgPool = 'in pool ' + cometMsg.pool.name;
+      if (cometMsg.pool) msgPool = 'in pool ' + cometMsg.pool.name;     
+      var msgPoolId = 0;
+      if (cometMsg.pool) msgPoolId = cometMsg.pool.id;
       var msgSource = cometMsg.source;
       var msgConversation = cometMsg.conversation;
       var msgReason = ""
@@ -125,7 +127,7 @@ function displayMessages(msgArray, elementId)
                                      'clearResend("resend_' + id + '")');
       }
       newMsg.find('#reply').attr('href',
-        "javascript:setReplyTo(" + id + ", '"+ msgBody + "')");
+        "javascript:setReplyTo(" + id + ", '"+ msgBody + "', " + msgPoolId + ")");
       var conversation = newMsg.find('#conversation');
       if (msgConversation != 0) {
         conversation.attr('href',
