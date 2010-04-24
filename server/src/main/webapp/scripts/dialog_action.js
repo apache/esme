@@ -57,11 +57,8 @@
 					var bValid = true;
 					allFields.removeClass('ui-state-error');
 
-					bValid = bValid && checkLength(name_input,"Name",3,16);
-					bValid = bValid && checkLength(test_input,"Test",3,280);
-					bValid = bValid && checkLength(action_input,"Action",3,280);
-
-					bValid = bValid && checkRegexp(name_input,/^[a-z]([0-9a-z_])+$/i,"Name may consist of a-z, 0-9, underscores, begin with a letter.");
+					bValid = bValid && checkLength(name_input,"Name",3,64);
+					bValid = bValid && checkRegexp(name_input,/^[a-z]([\w\s_])+$/i,"Name may consist of letters, digits, underscores, and spaces, begin with a letter.");
 					
 					if (bValid) {
 						 liftAjax.lift_ajaxHandler(jQuery("#action_new_dialog").serialize(), null, null, "javascript");  
