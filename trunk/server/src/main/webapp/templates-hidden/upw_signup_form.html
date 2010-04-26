@@ -18,21 +18,21 @@
 -->
 <lift:xml_group>
 	<div class="post-form-row">
-		<label>
+		<label class="main">
 			<lift:loc>ui_login_email</lift:loc>
 		</label>
-		<signup:email class="inputBox2 tipelement" title="This is your email. "/>
+		<signup:email class="inputBox2 tipelement email required" minlength="3" title="This is your email. "/>
 	</div>
 	<div class="post-form-row">
-		<label>
+		<label class="main">
 			<lift:loc>ui_login_password</lift:loc>
 		</label>
-		<signup:pwd1 class="inputBox2 tipelement" title="This is your password"/>
+		<signup:pwd1 class="inputBox2 tipelement required alphanumeric nowhitespace" minlength="6"  title="This is your password"/>
 	</div>
 	<div class="post-form-row">
-		<label>
+		<label class="main">
 			<lift:loc>ui_login_password_repeat</lift:loc>
 		</label>
-		<signup:pwd2 class="inputBox2" title="Please enter your password again to make sure that it is correct"/>
+		<signup:pwd2 class="inputBox2  tipelement required alphanumeric nowhitespace" minlength="6" title="Please enter your password again to make sure that it is correct"/>
 	</div>
 </lift:xml_group>
