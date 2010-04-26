@@ -22,7 +22,14 @@
 	
 
 		<div class="top-login"></div>
+
 		<div class="mid-login">
+	         <lift:Msgs>
+                     <lift:error_class>error_major</lift:error_class>
+                     <lift:notice_msg><lift:loc>ui_base_note</lift:loc></lift:notice_msg>
+                     <lift:notice_class>note_major</lift:notice_class>
+                 </lift:Msgs>
+
 			<form name="loginFrm" action="javascript:login()" method="post" >
 				<div class="form">
 						<div class="post-form-row">

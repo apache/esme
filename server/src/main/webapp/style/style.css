@@ -140,6 +140,25 @@ div#logo h1 a{
 	}
 
 
+/*Validation Errors
+*********************************************************************************/
+
+ form.validateForm label.error, label.error {
+     color:red;
+     font-style:italic;
+}
+
+#validateForm label.error {
+    display:inline;
+    width:auto;
+    margin-left:253px;
+}
+
+input.error {
+border:1px dotted red;
+}
+
+
 /*BLUE HEADER - HOME
 *********************************************************************************/
 #container-2nd-level-bg {
@@ -187,6 +206,12 @@ div#logo h1 a{
 	height:22px; 
 	position:relative; 
 	top:-13px;
+}
+
+.error_major ul {
+	list-style-type:none;
+	color:red;
+	font-weight:bold;
 }
 .inputBox2 { 
 	background-color:#FFFFFF !important;	
@@ -559,7 +584,7 @@ ul#toc li.current a {
 	margin-right:40px;
 	}
 
-#form-signup label, #form-settings label {
+#form-signup label.main, #form-settings label.main {
 	font-weight:bold;
 	color:#000;
 	margin-top: 5px;
@@ -613,5 +638,8 @@ text-align:center;
 top:0;
 width:100%;
 z-index:10000;
+}
+
+000;
 }
 
