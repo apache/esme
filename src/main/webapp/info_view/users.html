@@ -18,6 +18,7 @@
 -->
 <lift:surround with="base" at="left">
     <link rel="stylesheet" type="text/css" href="../style/style.css"/>
+     <script type="text/javascript" src="../scripts/jquery.tablesorter.pager.js"></script>
     <script type="text/javascript" src="../scripts/esme_table_sorter_users.js"></script>
     <lift:TableSorterSnip/>
     <div id="back-header">
@@ -71,7 +72,19 @@
                 </lift:displayUsers>
             </tbody>
         </table>
-      
+         <div style="top: 635px; position: absolute;" id="pager" class="pager">
+	<form>
+		<img src="../images/first.png" class="first"/>
+		<img src="../images/prev.png" class="prev"/>
+	        <input disabled="true" value="1/100" class="inputBox2 pagedisplay" type="text"/>
+		<img src="../images/next.png" class="next"/>
+		<img src="../images/last.png" class="last"/>
+		<select class="pagesize">
+			<option  value="5">5</option>
+			<option  selected="selected" value="10">10</option>
+		</select>
+	</form>
+      </div>
       </div><!--container-settings-->
 	</div><!--END CONTENT BOX-->	
 </lift:surround>

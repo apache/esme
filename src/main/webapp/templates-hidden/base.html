@@ -38,6 +38,7 @@
         <script id="json" src="/classpath/json.js" type="text/javascript"/>
         <script src="../scripts/jquery.TipTip.js" type="text/javascript"/> 
         <script src="../scripts/esme_tool_tip.js" type="text/javascript"/> 
+        <script src="/scripts/jquery.validate.js" type="text/javascript"/> 
     </head>
     <body id="back">
      <div id="messages" class="esme_message_bar" style="display: none"></div>
@@ -101,10 +102,10 @@
                             </li>
 
                         </ul><!--search form-->
-                        <form action="/info_view/search" method="post">
+                        <form action="/info_view/search" method="post" id = "validateForm">
                             <div id="search">
                                 <div class="searchBox">
-                                    <input type="text" class="inputBox" name="term" value=""/>
+                                    <input type="text" class="inputBox required alphanumeric nowhitespace" name="term" value=""/>
                                 </div>
                                 <div class="searchButton">
                                     <input type="image" onclick="javascript:form.submit();" src="../images/btn-search.gif" style="padding:0;"/>

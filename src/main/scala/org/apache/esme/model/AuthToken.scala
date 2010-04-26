@@ -48,9 +48,26 @@ class AuthToken extends LongKeyedMapper[AuthToken] {
   def getSingleton = AuthToken // what's the "meta" server
   def primaryKeyField = id
 
+  def findByDescription(str: String): List[AuthToken] =
+  AuthToken.findAll(By(description, str))
+
   object id extends MappedLongIndex(this)
   object user extends MappedLongForeignKey(this, User)
-  object description extends MappedPoliteString(this, 64)
+  object description extends MappedPoliteString(this, 64) {
+  
+    private def validateDescription(str: String): List[FieldError] = {
+      val others = getSingleton.findByDescription(str).
+      filter(_.id.is != fieldOwner.id.is)
+      others.map{u =>
+        val msg = S.?("base_token_err_duplicate_token", str)
+        S.error(msg)
+        FieldError(this, Text(msg))
+      }
+    }
+
+
+    override def validations = validateDescription _ :: super.validations
+  }
    //define createfields
   object createdDate extends MappedDateTime(this)
   
