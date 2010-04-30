@@ -59,7 +59,7 @@ import org.apache.esme.actor._
 import scala.xml.{NodeSeq, Text, Elem, XML, Node}
 
 import scala.collection.mutable.ListBuffer
-import java.util.logging._      
+ 
 
 import org.compass.annotations._
 import bootstrap.liftweb.Compass.compass
@@ -69,7 +69,7 @@ import org.apache.lucene.index.TermFreqVector
 import org.tartarus.snowball.ext.PorterStemmer
 
 object API2 extends ApiHelper with XmlHelper {
-  val logger: Logger = Logger.getLogger("org.apache.esme.api")
+  val logger: Logger = Logger("org.apache.esme.api2")
 
   def authorizationRules: LiftRules.DispatchPF = {
     case Req("api2" :: "users" :: Nil, _, PostRequest)
