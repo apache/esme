@@ -45,7 +45,6 @@ import org.apache.esme.actor._
 import scala.xml._
 
 import scala.collection.mutable.ListBuffer
-import java.util.logging._
 
 // operator to match on last elements of a List
 object ::> {def unapply[A] (l: List[A]) = l match {
@@ -75,7 +74,7 @@ abstract class TwitterAPI {
   import TwitterAPI._
   
   val tf = new java.text.SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", java.util.Locale.US)
-  val logger: Logger = Logger.getLogger("org.apache.esme.twitterapi")
+  val logger: Logger = Logger("org.apache.esme.twitterapi")
   val method: String
   // TODO: twitter struct could be stronger typed- if recursive types are enabled
   type TwitterResponse = Either[(String,List[Any]),Map[String,Any]]
