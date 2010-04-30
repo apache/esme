@@ -36,8 +36,7 @@ object Tag extends Tag with MetaProtoTag[Tag] {
 
   def cacheSize = 500
   
-  val logger: Logger = Logger.getLogger("org.apache.esme.model")
-  logger.setLevel(Level.WARNING);
+  val logger: Logger = Logger("org.apache.esme.model")
   
   private var listeners: List[LiftActor] = Nil
   private var cloud: List[(String, Float)] = Nil

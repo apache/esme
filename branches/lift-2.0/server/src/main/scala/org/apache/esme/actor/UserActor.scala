@@ -53,7 +53,7 @@ object UserActor {
   case class Resend(msgId: Long)
   case class MessageReceived(msg: Message, reason: MailboxReason)
   
-  val logger: Logger = Logger.getLogger("org.apache.esme.actor")
+  val logger: Logger = Logger("org.apache.esme.actor")
 }
 
 
