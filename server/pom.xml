@@ -75,7 +75,7 @@
     </developer>
     </developers>
     <properties>
-        <lift.version>1.1-M8</lift.version>
+        <lift.version>2.0-SNAPSHOT</lift.version>
         <scala.version>2.7.7</scala.version>
         <compass.version>2.1.1</compass.version>
         <lucene.version>2.4.0</lucene.version>

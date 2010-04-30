@@ -25,7 +25,6 @@ import util._
 import common._
 import http.js._
 import Helpers._
-import java.util.logging._
 
 import scala.xml._
 
@@ -42,8 +41,7 @@ import org.apache.esme._
 import lib._
 
 object Message extends Message with LongKeyedMetaMapper[Message] {
-  val logger: Logger = Logger.getLogger("org.apache.esme.model.Message")
-  logger.setLevel(Level.INFO)
+  val logger: Logger = Logger ("org.apache.esme.model.Message")
 
   private def fixConversation(msg: Message) {
     if (!msg.conversation.defined_? && msg.replyTo.defined_?) {
@@ -212,7 +210,7 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
       case _ => Nil
     }
     val modifiedQueryParams = by ++ newQueryParams
-    logger.fine("Modified query: " + modifiedQueryParams)
+    logger.info("Modified query: " + modifiedQueryParams)
     super.findMapDb(dbId, modifiedQueryParams:_*)(f)
   }
 
