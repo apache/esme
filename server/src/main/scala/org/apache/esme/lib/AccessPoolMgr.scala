@@ -50,8 +50,7 @@ import java.text.{DateFormat,SimpleDateFormat}
  * Manage the sitemap and related snippets for Access Pools
  */
 object AccessPoolMgr {
-  val logger: Logger = Logger.getLogger("org.apache.esme.lib.AccessPoolMgr")
-  logger.setLevel(Level.INFO)
+  val logger: Logger = Logger("org.apache.esme.lib.AccessPoolMgr")
   def loggedIn_? = User.loggedIn_?
 
   val ifIsLoggedIn = If(loggedIn_? _, strFuncToFailMsg(() => S.?("base_error_not_logged_in")))
