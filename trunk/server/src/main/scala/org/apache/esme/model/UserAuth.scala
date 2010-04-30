@@ -37,6 +37,8 @@ import JsCmds._
 import SHtml._
 import JE._
 
+import net.liftweb.openid._
+
 import scala.xml._
 
 import org.apache.esme.actor._
@@ -272,7 +274,7 @@ object OpenIDAuthModule extends AuthModule {
 }
 
 
-object ESMEOpenIDVendor extends OpenIdVendor {
+object ESMEOpenIDVendor extends OpenIDVendor {
   type UserType = User
   type ConsumerType = ESMEOpenIDConsumer
 
@@ -302,7 +304,7 @@ object ESMEOpenIDVendor extends OpenIdVendor {
   def createAConsumer = new ESMEOpenIDConsumer
 }
 
-class ESMEOpenIDConsumer extends OpenIdConsumer[User]
+class ESMEOpenIDConsumer extends OpenIDConsumer[User]
 {
   override val manager = {
 
