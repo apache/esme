@@ -129,7 +129,8 @@ class UserActor extends LiftActor {
                rtm <- Message.find(mb.message.is)) 
                  if (rtm.pool == msg.pool) msg.replyTo(rt)
 
-          msg.saveMe
+          msg.saveMe           
+
           Stats incr "userMessagesCreated"
           Stats incr "messagesCreated"
 
@@ -149,8 +150,10 @@ class UserActor extends LiftActor {
                                                 IHaveValidatedThisSQL("dpp", "Aug 27. 2008")))
                           (mb => Full(mb.user.is))).removeDuplicates)
           Distributor ! Distributor.AddMessageToMailbox(userId, msg, ConversationReason(convId))
+                                             
+          Distributor ! Distributor.NewMessage(msg)     
 
-          Distributor ! Distributor.NewMessage(msg)
+		  reply(msg)  
         }
 
       case AddToMailbox(msg, reason) =>

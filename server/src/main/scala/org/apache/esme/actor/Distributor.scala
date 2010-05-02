@@ -50,8 +50,13 @@ object Distributor extends LiftActor {
                               inReplyTo,
                               pool) =>
         val toact = findOrCreateUser(user)
-        toact ! UserActor.CreateMessage(text, tags,
-                                        when, metaData, source, inReplyTo, pool)
+        // toact ! UserActor.CreateMessage(text, tags,
+        //                                when, metaData, source, inReplyTo, pool)
+		
+		forwardMessageTo(
+			UserActor.CreateMessage(text,tags,when,metaData,source,inReplyTo,pool),
+			toact)
+
         toact ! text
 
       case AddMessageToMailbox(user, message, reason) =>
@@ -72,7 +77,7 @@ object Distributor extends LiftActor {
       case nm @ NewMessage(msg) =>
         val toSend = UserActor.TestForTracking(msg)
         users.values.foreach(_ ! toSend)
-        listeners.foreach(_ ! nm)
+        listeners.foreach(_ ! nm)    
 
       case UpdateTrackingFor(userId, ttype) =>
         for (user <- users.get(userId))
