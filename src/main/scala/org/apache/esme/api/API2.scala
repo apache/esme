@@ -335,16 +335,18 @@ object API2 extends ApiHelper with XmlHelper {
           S.param("metadata").flatMap(md =>
             tryo(XML.loadString(md)))
 
-        Distributor !
-        Distributor.UserCreatedMessage(user, msg,
+        Distributor !! Distributor.UserCreatedMessage(user, msg,
                                        Tag.split(S.param("tags")
                                                  openOr ""),
                                        millis,
                                        xml,
                                        from,
                                        S.param("replyto").map(toLong),
-                                       pool)
-        (200,Map(),Empty)
+                                       pool) match {
+           case Full(m: Message) => (200,Map(),Full(msgToXml(m)))
+           case other => (200,Map(),Empty)
+		}
+//		(200,Map(),Empty)
       }
 
     val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
@@ -790,7 +792,7 @@ object API2 extends ApiHelper with XmlHelper {
           case _ =>
             msg match {
               case _ if msgMatch(msg) =>
-                msgs = (msg, reason) :: msgs                          
+                msgs = (msg, reason) :: msgs    
                 listener.foreach {
                   who =>
                     who.satisfy(msgs)
