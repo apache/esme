@@ -354,8 +354,10 @@ object Api2Specs extends Specification with TestKit {
             "pool" -> "test_pool1")
           timeout <- sleep(1000)
           all_msgs <- session.get("user/messages?timeout=2")
-        } {                    
-          mess_res.code must be equalTo 200
+        } {                                  
+          mess_res.code must be equalTo 200               
+		  (mess_res.xml \ "message") must \\ (<body>test POST message</body>)
+          (mess_res.xml \ "message") must \\ (<tags><tag>Test</tag><tag>Tag</tag></tags>)
           (all_msgs.xml \ "messages") must \\(<body>test POST message</body>)
           (all_msgs.xml \ "messages") must \\(<tags><tag>Test</tag><tag>Tag</tag></tags>)
         }
@@ -555,8 +557,7 @@ object Api2Specs extends Specification with TestKit {
       }
     }
 
-// This is very ... shall we say ... brittle  
-// Also adding in a check to make sure that the message contains the reply-to message ID
+// This is very ... shall we say ... brittle                                             
     "conversations/CONVERSATIONID GET" in {
       "with valid session" in {
         for{
@@ -759,12 +760,14 @@ object Api2Specs extends Specification with TestKit {
         for{
           sess <- post_session 
           pool_res <- sess.post("pools", "poolName" -> "test_pool6")    
-          init <- sess.get("pool/6/messages") 
+          init <- sess.get("pools/6/messages")    
+		  timeout <- sleep(2000)
 		  mess_res <- sess.post("user/messages",
             "message" -> "test message for pool timeout",
-            "pool" -> "test_pool6") 
+            "pool" -> "test_pool6")          
+		  timeout <- sleep(2000)
           res <- sess.get("pools/6/messages?timeout=2")
-        } {                               
+        } {                   
           res.code must be equalTo 200
         }
       }    
