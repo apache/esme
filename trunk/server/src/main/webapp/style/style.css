@@ -426,6 +426,7 @@ ul.main-links  {
 .updates-box {
 	float:left;
 	padding:10px 20px;
+	word-wrap:break-word;
 }
 .avatar {
 	float:left;
@@ -640,6 +641,8 @@ width:100%;
 z-index:10000;
 }
 
-000;
+.pool_select {
+position:absolute;
+top: 70px
 }
 
