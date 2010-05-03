@@ -1,4 +1,4 @@
-<!--
+/*
  Licensed to the Apache Software Foundation (ASF) under one   *
  or more contributor license agreements.  See the NOTICE file *
  distributed with this work for additional information        *
@@ -15,29 +15,11 @@
  KIND, either express or implied.  See the License for the    *
  specific language governing permissions and limitations      *
  under the License.                                           *
--->
+*/
 
-<div id="timeline_messages">
-<head>
-        <script src="/scripts/display_messages.js" type="text/javascript"/> 
-        <script src="/scripts/pretty.js" type="text/javascript"/> 
-</head>
-	<div class="updates-box" id="message">
-		<div class="avatar">
-			<img id="avatar" width="50px"/>
-		</div>
-		<div class="update">
-			<div id="body"></div>
-			<div class="info">
-				<a href="" id="author"></a>
-				<div class="time">
-					<div id="supp_data"></div>
-				</div>
-			</div>
-		</div>
-		<div class="time">  </div>
-		<div class="separator">                    </div>
-	</div>
-</div>		
-				
+  $(document).ready(function(){
+    $("#validateForm").validate();
+  });
 
+
+   
