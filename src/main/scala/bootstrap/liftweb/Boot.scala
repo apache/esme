@@ -29,8 +29,9 @@ import net.liftweb.sitemap.Loc._
 import Helpers._
 import TimeHelpers.intToTimeSpanBuilder
 import TimeHelpers.timeSpanToLong
-import net.liftweb.mapper.{DB, ConnectionManager, Schemifier, DefaultConnectionIdentifier, ConnectionIdentifier}
+//import net.liftweb.mapper.{DB, ConnectionManager, Schemifier, DefaultConnectionIdentifier, ConnectionIdentifier}
 import java.sql.{Connection, DriverManager}
+import _root_.net.liftweb.mapper.{DB, ConnectionManager, Schemifier, DefaultConnectionIdentifier, StandardDBVendor}
 import org.apache.esme._
 import model._
 import org.apache.esme.actor._
@@ -53,12 +54,25 @@ import com.twitter.stats._
  */
 class Boot {
   def boot {
-    // do this before any messages are sent or there's hell to pay
-    // ActorSchedulerFixer.doActorSchedulerFix()
 
+    // Get DB from container if available
+    
     DefaultConnectionIdentifier.jndiName = Props.get("jndi.name") openOr "esme"
 
-    if (!DB.jndiJdbcConnAvailable_?) DB.defineConnectionManager(DefaultConnectionIdentifier, DBVendor)
+    // Deal with Database
+        
+    if (!DB.jndiJdbcConnAvailable_?) {
+      val vendor = 
+	new StandardDBVendor(Props.get("db_driver") openOr "org.apache.derby.jdbc.EmbeddedDriver",
+			     Props.get("jdbc_connect_url") openOr 
+			     "jdbc:derby:esme_db;create=true",
+			     Props.get("db_user"), Props.get("db_pwd"))
+
+      LiftRules.unloadHooks.append(vendor.closeAllConnections_! _)
+
+      DB.defineConnectionManager(DefaultConnectionIdentifier, vendor)
+    }
+    
     // where to search snippet
     LiftRules.addToPackages("org.apache.esme")
 
@@ -77,6 +91,8 @@ class Boot {
       UrlStore, Tracking, Action, 
       AccessPool, Privilege, UserAuth, UserCryptoSig)
 
+
+    // deal with sending token via URL for old API
     LiftRules.statelessDispatchTable.append {
       case r@Req("api" :: "send_msg" :: Nil, "", PostRequest)
         if r.param("token").isDefined =>
@@ -100,8 +116,8 @@ class Boot {
 
     TableSorter.init
 
-    LiftRules.siteMapFailRedirectLocation = List("index", "Home")
-
+     //Dealing with URL-based request parameters
+     
     LiftRules.rewrite.prepend {
       case RewriteRequest(ParsePath("user" :: user :: Nil, "", _, _), _, _) =>
         RewriteResponse(List("info_view", "user"), Map("uid" -> user))
@@ -118,9 +134,13 @@ class Boot {
 
     LiftRules.dispatch.append(UrlStore.redirectizer)
 
-
+    //What to do when user types in something unknown 
+         
     LiftRules.siteMapFailRedirectLocation = List("index")
 
+
+    // Register Auth methods that are used in ESME
+    
     UserAuth.register(UserPwdAuthModule)
     UserAuth.register(OpenIDAuthModule)
 
@@ -160,9 +180,6 @@ class Boot {
     LiftRules.dispatch.prepend(RestAPI.dispatch)
     LiftRules.dispatch.append(API2.dispatch)
 
-    /*LiftRules.httpAuthProtectedResource.prepend {
-      case ParsePath(l, _, _, _) if l startsWith TwitterAPI.ApiPath => Full(AuthRole("user"))
-    }*/
     
     LiftRules.httpAuthProtectedResource.prepend {
       case Req(TwitterAPI.ApiPath :: _,_,_) => Full(AuthRole("user"))
@@ -178,15 +195,17 @@ class Boot {
     //JMX
     if (Props.getBool("jmx.enable", false))
       StatsMBean("org.apache.esme.stats")
+      
+    Stats.makeGauge("users") {Distributor.getUsersCount}
+    Stats.makeGauge("listener") {Distributor.getListenersCount}
 
     Distributor.touch
     SchedulerActor.touch
     MessagePullActor.touch
     // ScalaInterpreter.touch
 
-    Stats.makeGauge("users") {Distributor.getUsersCount}
-    Stats.makeGauge("listener") {Distributor.getListenersCount}
 
+    // Initiating popular links and resent messages
     val resentPeriod = Props.getLong("stats.resent.period", 1 week)
     val resentRefreshInterval: Long = Props.getLong("stats.resent.refresh") match {
       case Full(interval) if interval > (1 minute) => interval
@@ -202,6 +221,7 @@ class Boot {
     if (linksPeriod > 0)
       PopStatsActor ! PopStatsActor.StartStats(LinkClickedStat, linksPeriod, linksRefreshInterval)
 
+    // Initiating actions
     Action.findAll(By(Action.disabled, false), By(Action.removed, false)).foreach {
       _.startActors
     }
@@ -249,57 +269,6 @@ object RequestAnalyzer {
       Log.info("Request " + req.map(_.uri).openOr("No Request") +
           " took " + time + " query " + longQueries.comma)
     }
-  }
-}
-
-object DBVendor extends ConnectionManager {
-  private var pool: List[Connection] = Nil
-  private var poolSize = 0
-  private val maxPoolSize = 4
-
-  private def createOne: Box[Connection] = try {
-  
-    val driverClass = Props.get("db_driver", "org.apache.derby.jdbc.EmbeddedDriver")
-    val db_user = Props.get("db_user", "")
-    val db_pwd = Props.get("db_pwd", "")
-    val jdbc_connect = Props.get("jdbc_connect_url", "jdbc:derby:esme_db;create=true")
-    
-    Class.forName(driverClass)
-    val dm = DriverManager.getConnection(jdbc_connect, db_user, db_pwd)
-    Full(dm)
-      
-    } catch {
-    case e: Exception => e.printStackTrace; Empty
-  }
-
-  def newConnection(name: ConnectionIdentifier): Box[Connection] = synchronized {
-    pool match {
-      case Nil if poolSize < maxPoolSize => val ret = createOne
-      poolSize = poolSize + 1
-      // ret.foreach(c => pool = c :: pool)
-      ret
-
-      case Nil => wait(1000L); newConnection(name)
-      case x :: xs =>
-        pool = xs
-        try {
-          x.setAutoCommit(false)
-          Full(x)
-        } catch {
-          case e => try {
-            poolSize = poolSize - 1
-            x.close
-            newConnection(name)
-          } catch {
-            case e => newConnection(name)
-          }
-        }
-    }
-  }
-
-  def releaseConnection(conn: Connection): Unit = synchronized {
-    pool = conn :: pool
-    notify
   }
 }
 
