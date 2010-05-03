@@ -17,10 +17,6 @@
  under the License.                                           *
 */
 
-  $(document).ready(function(){
-    $("#validateForm").validate();
-  });
-
 
 $(function(){
     $(".tipelement").tipTip({maxWidth: "auto", edgeOffset: 10});

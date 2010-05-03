@@ -36,7 +36,7 @@
 					<input type="image" onclick="javascript:$('#dialog-form').dialog('open')" id="create-pool" src="../images/new1.gif" />
 				</div>
 			</div>
-			<span id="PoolDetailSpan">
+			<div id="PoolDetailSpan">
 				<lift:ignore>
 					<!--                        The poolUsers snippet *MUST* appear on the page before                        the editPool snippet                        -->
 					</lift:ignore>
@@ -82,10 +82,10 @@
 								</tr>
 							</tbody>
 						</table>
-					</fieldset>
+                                     </fieldset>
 				</lift:poolDetail>
-			</span>
-			<span id="PoolSpan">
+			</div>
+			<div id="PoolSpan">
 			     
 				<lift:ignore>
 					<!--  The poolUsers snippet *MUST* appear on the page before the editPool snippet                        -->
@@ -122,9 +122,9 @@
 						</div>
 					</div>
 				</lift:poolUsers>
-			</span>
+			</div>
 			<div class="pool_select">
-				<lift:form>
+				<lift:form >
 					<lift:editPool class="inputBox2" >
 						<lift:loc>ui_pool_edit_label</lift:loc>
 						<edit:pool class="tipelement" title="Select a pool to edit"/>
