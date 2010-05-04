@@ -304,7 +304,7 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
   
   lazy val testFactor: Parser[TestAction] = (notTest |
   testAt | testRegex | testString |
-  testTag | testPool |
+  testTag | testPool | testConv |
   testResent |
   testParen | testPercent |
   testDates | testLogin |
@@ -383,7 +383,12 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
   whiteSpace ~ '(' ~ whiteSpace ~> _testExpr <~ whiteSpace ~ ')' ~ whiteSpace ^^ {
     case x => ParenAction(x)
   }
-
+  
+  lazy val testConv: Parser[TestAction] =
+  whiteSpace ~ acceptCI("conv:") ~> rep1(digit) <~ whiteSpace ^^ {
+    case id => ConvAction(id.mkString.toLong)
+  }
+  
   lazy val testPool: Parser[TestAction] =
   (whiteSpace ~ acceptCI("pool:") ~> rep1(digit) <~ whiteSpace ^^ {case id => PoolAction(id.mkString.toLong)}) |
   (poolName ^^ {
