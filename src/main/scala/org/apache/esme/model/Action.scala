@@ -110,7 +110,10 @@ object Action extends Action with LongKeyedMetaMapper[Action] {
       
     case PoolAction =>
       (m, u, c, r) => m.pool.defined_?
-    
+      
+    case ConvAction(convId) =>
+      (m, u, c, r) => m.conversation.is == convId
+          
     case ResentAction(userId) =>
       (m, u, c, r) => r match {
         case ResendReason(`userId`) => true
@@ -353,6 +356,14 @@ case class AndAction(left: TestAction, right: TestAction) extends TestAction {
 
 case class AtUserAction(userId: Long) extends TestAction {
   def toStr = "@"+userId
+}
+
+case object ConvAction extends TestAction {
+  def toStr = "conv"
+}
+
+case class ConvAction(convId: Long) extends TestAction {
+  def toStr = "conv:" + convId
 }
 
 case object PoolAction extends TestAction {
