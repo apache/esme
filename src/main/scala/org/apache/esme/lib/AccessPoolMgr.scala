@@ -96,7 +96,7 @@ object AccessPoolMgr {
                 Distributor ! Distributor.AllowUserInPool(user.get.id.is, p.id.is)         
                 logger.info("ACCESS: " + S.?("base_pool_msg_new_pool",name)) 
                 SetValById(theInput, "")  &
-                DisplayMessage("messages", <b>{S.?("base_pool_msg_new_pool",name)}</b>,  3 seconds, 2 seconds) 
+                DisplayMessage("messages", <b>{S.?("base_pool_msg_new_pool",name)}</b>,  3 seconds, 2 seconds)
               } else
                 DisplayMessage("messages", <b>{S.?("base_pool_msg_no_permission")}</b>,  3 seconds, 2 seconds)
             case _ => S.error(S.?("base_error_general"))

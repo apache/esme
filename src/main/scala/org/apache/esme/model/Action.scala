@@ -112,6 +112,7 @@ object Action extends Action with LongKeyedMetaMapper[Action] {
       (m, u, c, r) => m.pool.defined_?
       
     case ConvAction(convId) =>
+      println("here2")
       (m, u, c, r) => m.conversation.is == convId
           
     case ResentAction(userId) =>
