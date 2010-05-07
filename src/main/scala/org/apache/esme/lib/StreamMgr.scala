@@ -95,16 +95,30 @@ object StreamMgr {
                   resentQuery :::
                   List[QueryParam[Message]](OrderBy(Message.id, Descending), MaxRows(40)) 
 
+
       val jsId = "timeline_messages"                  
       val msgs = Message.findAll(query: _*)
+     /* Script(
+        After(1 second,Alert ("hi"))
+      )*/
       Script(
         OnLoad(JsCrVar(jsId, JsArray(
             msgs.map(m => JsObj(("message", m.asJs)) ) :_*)) &
         JsFunc("displayMessages", JsVar(jsId), jsId).cmd)
       )
       
+      /*Script(
+        Run(JsCrVar(jsId, JsArray(
+            msgs.map(m => JsObj(("message", m.asJs)) ) :_*)) &
+             JsRaw("alert('hi');"))
+        //JsFunc("displayMessages", JsVar(jsId), jsId).cmd)
+        
+      )*/
+      
     }
     def updateSpan(): JsCmd = SetHtml(spanName, doRender())
+     //def updateSpan(): JsCmd = SetHtml(doRender())
+
 
     updateStream.set(updateSpan)
     doRender()

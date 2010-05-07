@@ -27,10 +27,15 @@ function msgDateCompare(msg1, msg2)
   return parseInt(msg1.message.when) - parseInt(msg2.message.when);
 }
 
+
 function displayMessages(msgArray, elementId)
 {
 	
-	//
+
+	
+  /*jQuery("#StreamSpan").each(function(i) {
+  	alert ("hi")
+  }*/
 
  // Select the first element in table id="timeline_messages"
   //  with id="message" as the message template
@@ -96,19 +101,19 @@ function displayMessages(msgArray, elementId)
      
      
       // Dealing with users with no avatars
-      if (!msgAuthor.imageurl)
-      	msgAuthor.imageurl="/images/avatar.jpg"
+      if (!msgAuthor.imageUrl)
+      	msgAuthor.imageUrl="/images/avatar.jpg"
       	
      if (!msgPool)
       	msgPool="public"
       	
       var avatar = newMsg.find('#avatar')
-      .attr('src', msgAuthor.imageurl)
+      .attr('src', msgAuthor.imageUrl)
       .attr('alt',msgAuthor.firstname + ' ' + msgAuthor.lastname);
 
       newMsg.find('#body').html(msgBody);
       newMsg.find('#supp_data').text(msgPool + " " + msgDateStr  + " " +  msgReason  + " " +   msgSource);
-      //newMsg.find('#source').text(msgSource);
+      newMsg.find('#msgPool').text(msgPool);
       //newMsg.find('#reason').text(msgReason);
       //newMsg.find('#when').text(msgDateStr);
       var id = cometMsg.id;
@@ -122,7 +127,7 @@ function displayMessages(msgArray, elementId)
                                      'clearResend("resend_' + id + '")');
       }
       newMsg.find('#reply').attr('href',
-        "javascript:setReplyTo(" + id + ", '"+ msgBody + "'," + msgPoolId + ")");
+        "javascript:setReplyTo(" + id + ", '"+ msgBody + "'," + msgPoolId + ", '" + msgAuthor.nickname + "')");
       var conversation = newMsg.find('#conversation');
       if (msgConversation != 0) {
         conversation.attr('href',
@@ -147,4 +152,3 @@ function displayMessages(msgArray, elementId)
   }
 }
 // ]]>
-

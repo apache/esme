@@ -17,25 +17,32 @@
  under the License.                                           *
 -->
 
+
+
 <lift:surround with="base" at="left">
+<head>
+        <script src="/scripts/esme_streams.js" type="text/javascript"/> 
+</head>
 	<lift:TableSorterSnip/>
 	<!-- STYLESHEETS  -->
-	<link type="text/css" href="../style/jqueryui-theme/jquery-ui-1.7.2.custom.css" rel="stylesheet" />
-	<script type="text/javascript" src="../scripts/jquery-ui-1.7.2.custom.min.js">    </script>
 	<div id="back-header">
 	<h1><lift:loc>ui_streams_manage</lift:loc></h1>
-	<div class="container-settings">
+	<div class="container-aux">
 		<div id="messages"></div>
 		
-		 <span id="StreamSpan">
+		<span id="StreamSpan">
 					<lift:ignore>
 						<!--                        The displayStreams snippet *MUST* appear on the page before                        the main snippet                        -->
 						</lift:ignore>
-						<lift:displayStream the_id="StreamSpan"/>
+						<div id="update_msg"></div>
+						<lift:displayStream the_id="update_msg"/>
+					
 						 <lift:embed what="templates-hidden/message_core"/>
 		</span>
+		
+		
 		<div id="StreamUI">
-		<lift:streamFilters>
+			<lift:streamFilters>
 					<table class="tablesorter">
 						<thead>
 							<tr>
@@ -51,7 +58,7 @@
 							<td>
 								 <lift:loc>ui_streams_filter_resender</lift:loc> <main:resent/>
 							</td>
-							<td>
+							<td class="tipelement" title="Filter by messages that have been resent by those you follow. ">
 								 <main:filterResent/>
 							</td>
 						</tr>
@@ -66,6 +73,7 @@
 					</table>
 				</lift:streamFilters>
 		</div>
+
 				
 
 	</div>
