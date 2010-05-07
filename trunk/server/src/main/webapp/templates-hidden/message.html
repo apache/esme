@@ -29,7 +29,7 @@
 		<div id="back-header">
 			<!---UPDATE BOX -->
 			<div class="container-update">
-				<h3>
+				<h3 id="message_request">
 					<lift:loc>ui_messages_message_label_message_request</lift:loc>
 				</h3>
 				<div id="form-update">
@@ -42,8 +42,8 @@
 					</div>
 					<div class="row clear" style="display: none" id="reply-to-div">
 						<p>
-							<lift:loc>ui_messages_message_label_message_reply</lift:loc>
-							<span id="reply-to-span">-</span>
+							<b><lift:loc>ui_messages_message_label_message_reply</lift:loc></b>
+							<span id="reply-to-span"><i></i></span>
 							<a href="javascript: clearReplyTo()">
 								<lift:loc>ui_messages_message_label_message_remove_reply</lift:loc>
 							</a>
@@ -69,17 +69,23 @@
                                         // <![CDATA[
                                         var currentConvNumber = 0;
                                         
-                                        function setReplyTo(id, text, msgPool){
+                                        function setReplyTo(id, text, msgPool, author){
                                             currentConvNumber = id;
                                             document.getElementById('reply-to-div').style.display = "block";
-                                            jQuery('#reply-to-span').html(text);
-											jQuery('#vPool').val(msgPool);
+                                            jQuery('#message_request').html("Reply to: " + author);
+                                            var rep_msg = text
+                                            if (text.length > 50)
+                                             rep_msg = text.substr(0, 47) + "..."
+                                            jQuery('#reply-to-span').html(rep_msg);	
+                                            jQuery('#vMsg').focus()
+					    jQuery('#vPool').val(msgPool);
                                         }
                                         
                                         function clearReplyTo(){
                                             currentConvNumber = 0;
                                             document.getElementById('reply-to-div').style.display = "none";
-											jQuery('#vPool').val(0);
+					    jQuery('#vPool').val(0);
+					    jQuery('#message_request').html('What are you working on?');
                                         }
                                         
                                         function clearResend(id){
@@ -111,6 +117,7 @@
 					</div>
 				</div>
 				<div class="time">  </div>
+				<div id="msgPool" style="display: none">  </div>
 				<div class="actions">
 					<a href="#"  id="resend">
 						<lift:loc>ui_messages_message_label_resend</lift:loc>
@@ -129,4 +136,3 @@
 		</div>
 	</div>
 </lift:surround>
-

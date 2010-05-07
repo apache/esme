@@ -7,7 +7,13 @@
  "License"); you may not use this file except in compliance   *
  with the License.  You may obtain a copy of the License at   *
                                                               *
-   http://www.apache.org/licenses/LICENSE-2.0                 *
+   http://www.apache.org/licenses/LICENSE-2.0     
+   
+   $("#prob_test").bind('DOMSubtreeModified', function() 
+    { 
+       alert ('hi'); 
+    } 
+);             *
                                                               *
  Unless required by applicable law or agreed to in writing,   *
  software distributed under the License is distributed on an  *
@@ -18,9 +24,4 @@
 */
 
 
-
-
-$(function(){
-    $(".tipelement").tipTip({maxWidth: "auto", edgeOffset: 10});
-});
-   
+$("#prob_test").change( function() { alert("Hello"); } );
