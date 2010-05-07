@@ -54,7 +54,6 @@ class Tracking extends LongKeyedMapper[Tracking] {
     createdAt={createdAt.toString}></tracking>
 
     object user extends MappedLongForeignKey(this, User)
-    // object regex extends MappedString(this, 256)
     object removed extends MappedBoolean(this) {
       override def defaultValue = false
     }
@@ -64,7 +63,12 @@ class Tracking extends LongKeyedMapper[Tracking] {
     object disabled extends MappedBoolean(this) {
       override def defaultValue = false
     }
-    private[model] object what extends MappedString(this, 512)
+    private[model] object what extends MappedString(this, 512) {
+      override def validations = 
+        valMinLen(10, "Description must be 10 characters") _ :: 
+        valUnique("That action has already been taken") _ :: 
+        super.validations
+    }
 
 object action extends MappedString(this, 2048)
   
@@ -73,6 +77,7 @@ object action extends MappedString(this, 2048)
 object uniqueId extends MappedUniqueId(this, 24) {
   override def dbIndexed_? = true
 }
+
 
     def pattern: String = who.obj match {
       case Full(who) => "@"+who.niceName

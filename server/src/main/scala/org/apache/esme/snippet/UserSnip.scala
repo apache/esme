@@ -234,7 +234,7 @@ class UserSnip extends DispatchSnippet {
                  UrlStore.find(linkId).map { u => bind(
                    "item", lst,
                    "freq" -> freq,
-                   "url" ->  link(u.url.is, () => (),Text(u.url.is))
+                   "url" ->  <a href={u.url.is} target="_blank">{u.url.is}</a>
                    )
                  }.getOrElse(NodeSeq.Empty)
                }
