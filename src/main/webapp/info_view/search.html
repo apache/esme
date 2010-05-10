@@ -17,13 +17,20 @@
  under the License.                                           *
 -->
 <lift:surround with="base" at="left">
-  <script src="/scripts/display_messages.js" type="text/javascript"/>
-  
-  Search for <lift:searchTerm/>
-  <div class="b-list">
+<script src="/scripts/display_messages.js" type="text/javascript"/>
+	<div id="left">
+	<div id="back-header">
+	<h1><lift:loc>ui_messages_search_for</lift:loc> <i><lift:searchTerm/></i> </h1>
+<div class="container-aux">
+		<!--updates-box -->
     <lift:displaySearch/>
     <lift:embed what="templates-hidden/message_core"/>
-  </div>
+	</div>
+	<!--updates-box-->
+	
+	</div><!-- End demo -->
+</div><!-- End demo -->
+
 
 </lift:surround>
 
