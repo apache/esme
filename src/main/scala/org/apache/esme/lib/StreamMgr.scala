@@ -93,32 +93,37 @@ object StreamMgr {
       
       val query = poolsQuery :::
                   resentQuery :::
-                  List[QueryParam[Message]](OrderBy(Message.id, Descending), MaxRows(40)) 
-
-
-      val jsId = "timeline_messages"                  
-      val msgs = Message.findAll(query: _*)
-     /* Script(
-        After(1 second,Alert ("hi"))
-      )*/
-      Script(
-        OnLoad(JsCrVar(jsId, JsArray(
-            msgs.map(m => JsObj(("message", m.asJs)) ) :_*)) &
-        JsFunc("displayMessages", JsVar(jsId), jsId).cmd)
-      )
-      
-      /*Script(
-        Run(JsCrVar(jsId, JsArray(
-            msgs.map(m => JsObj(("message", m.asJs)) ) :_*)) &
-             JsRaw("alert('hi');"))
-        //JsFunc("displayMessages", JsVar(jsId), jsId).cmd)
+                  List[QueryParam[Message]](OrderBy(Message.id, Descending), MaxRows(10)) 
+         
+      def profileImage(u: User): NodeSeq = {
+          var imageUrl = u.imageUrl.toString
+          if (imageUrl.length > 0) 
+            <img width="30px" src={imageUrl}/>
+          else
+             <img width="30px" src="/images/avatar.jpg"/>
+       }
+           
+      //XXX copy from lib.UserMgr
+      def nicknameWithProfileLink(u: User): NodeSeq = {
+    		  <a href={"/user/" + urlEncode(u.nickname.is)}>{u.niceName}</a>
+      	}
+      	
+      val dateFormatter = new SimpleDateFormat("yyyy/MM/dd hh:mm")
+          
         
-      )*/
-      
+      Message.findAll(query: _*) match {
+        case Nil => NodeSeq.Empty
+        case xs => bind("disp", in,
+                        "item" -> 
+                        (lst => xs.flatMap(i => bind("item", lst,
+                                                     "author" -> i.author.obj.map(nicknameWithProfileLink).openOr(Text("")),
+                                                     "imageUrl" -> i.author.obj.map(profileImage).openOr(Text("")),
+                                                     "text" -> i.getText,
+                                                     "date" -> dateFormatter.format(i.getWhen)
+                ))))
+      }
     }
     def updateSpan(): JsCmd = SetHtml(spanName, doRender())
-     //def updateSpan(): JsCmd = SetHtml(doRender())
-
 
     updateStream.set(updateSpan)
     doRender()
