@@ -50,7 +50,7 @@ function displayMessages(msgArray, elementId)
     var msgInsertPt = jQuery('#'+elementId);
 
     // Now we have the template, make the existing instances invisible
-    jQuery('#'+elementId+' *[id=message]').hide();
+    jQuery('#'+elementId+' *[id=message]').remove();
   }
 
   // Sort the messages into date order
