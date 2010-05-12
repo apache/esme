@@ -196,19 +196,19 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
    * to override to redefine some global behavior.
    */
   override def findMapDb[T](dbId : ConnectionIdentifier, by : QueryParam[Message]*)(f : (Message) => Box[T]): List[T] = {
-    // modify behavior of find methods so that results include only authorized pools of current user
+    // modify behavior of find methods so that results include only authorized pools of current user      
     val viewablePools =
       for (user <- User.currentUser) yield {
         Privilege.findViewablePools(user.id.is)
-      }
+      }                                      
     val newQueryParams: Seq[QueryParam[Message]] = viewablePools match {
-      case Full(pools: Set[Long]) if !pools.isEmpty => List(
+      case Full(pools: List[Long]) if !pools.isEmpty => List(
         BySql(" POOL in ( ?" + ( ", ?" * (pools.size - 1)) + " ) OR POOL IS NULL ",
               IHaveValidatedThisSQL("vdichev", "22 June 2009"),
               pools.toSeq:_*)
       )
       case _ => Nil
-    }
+    }                                           
     val modifiedQueryParams = by ++ newQueryParams
     logger.info("Modified query: " + modifiedQueryParams)
     super.findMapDb(dbId, modifiedQueryParams:_*)(f)
