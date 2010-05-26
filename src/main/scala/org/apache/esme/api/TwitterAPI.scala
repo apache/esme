@@ -87,6 +87,8 @@ abstract class TwitterAPI {
     case Req(ApiPath ::> "statuses" ::> "friends_timeline", this.method, GetRequest) => friendsTimeline
     case Req(ApiPath ::> "statuses" ::> "user_timeline", this.method, GetRequest) => userTimeline
     case Req(ApiPath ::> "statuses" ::> "user_timeline" ::> last, this.method, GetRequest) => () => userTimeline(last)
+    case Req(ApiPath ::> "statuses" ::> "home_timeline", this.method, GetRequest) => userTimeline
+    case Req(ApiPath ::> "statuses" ::> "home_timeline" ::> last, this.method, GetRequest) => () => userTimeline(last)
     case Req(ApiPath ::> "statuses" ::> "show" ::> last, this.method, GetRequest) => () => showStatus(last)
     case Req(ApiPath ::> "statuses" ::> "update", this.method, PostRequest) => update
 
