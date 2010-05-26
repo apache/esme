@@ -87,8 +87,8 @@ abstract class TwitterAPI {
     case Req(ApiPath ::> "statuses" ::> "friends_timeline", this.method, GetRequest) => friendsTimeline
     case Req(ApiPath ::> "statuses" ::> "user_timeline", this.method, GetRequest) => userTimeline
     case Req(ApiPath ::> "statuses" ::> "user_timeline" ::> last, this.method, GetRequest) => () => userTimeline(last)
-    case Req(ApiPath ::> "statuses" ::> "home_timeline", this.method, GetRequest) => userTimeline
-    case Req(ApiPath ::> "statuses" ::> "home_timeline" ::> last, this.method, GetRequest) => () => userTimeline(last)
+    case Req(ApiPath ::> "statuses" ::> "home_timeline", this.method, GetRequest) => homeTimeline
+    case Req(ApiPath ::> "statuses" ::> "home_timeline" ::> last, this.method, GetRequest) => () => homeTimeline(last)
     case Req(ApiPath ::> "statuses" ::> "show" ::> last, this.method, GetRequest) => () => showStatus(last)
     case Req(ApiPath ::> "statuses" ::> "update", this.method, PostRequest) => update
 
@@ -213,6 +213,31 @@ abstract class TwitterAPI {
   
   def userTimeline(): Box[TwitterResponse] = {
     calcUser map (userTimeline)
+  }
+  
+  def homeTimeline(user: User): TwitterResponse = {
+   val count: String = S.param("count") openOr "20"
+   val since_id: String = S.param("since_id") openOr "1"
+   
+   /*     val statusList = 
+      Mailbox.mostRecentMessagesFor(user.id, count.toInt);*/
+      
+    val statusList = 
+      Message.findAll(By(Message.author, user),
+                      By(Message.pool, Empty),
+                      MaxRows(count.toInt),
+                      OrderBy(Message.id, Descending)).
+        map(msgData _)
+    Right(Map("statuses" -> ("status", statusList) ))
+  }
+        
+  
+  def homeTimeline(userName: String): Box[TwitterResponse] = {
+    User.findFromWeb(userName).map(homeTimeline) ?~ S.?("base_twitter_api_err_user_not_found")
+  }
+  
+  def homeTimeline(): Box[TwitterResponse] = {
+    calcUser map (homeTimeline)
   }
   
   def replies(user: User): TwitterResponse = {
