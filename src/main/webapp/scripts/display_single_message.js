@@ -25,7 +25,7 @@
 
 function login()
 {
-  if (document.forms[0].openID.value != "") {
+  if (document.forms[0].open_id.value != "") {
      document.forms[0].action='/open_id/login';
  } 
  else
