@@ -36,7 +36,6 @@ import util._
 import common._
 import Helpers._
 import TimeHelpers.intToTimeSpanBuilder
-import TimeHelpers.timeSpanToLong
 import Helpers.TimeSpan
 
 import net.liftweb.util.Helpers.pairToUnprefixed
