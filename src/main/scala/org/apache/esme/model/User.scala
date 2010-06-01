@@ -289,6 +289,12 @@ class User extends KeyedMapper[Long, User] with UserIdAsString {// OpenIDProtoUs
                  By(Action.disabled, false),
                  By(Action.removed, false),
                  OrderBy(Action.id, Ascending))
+                 
+  def performingwithdisabled: List[Action] =
+  Action.findAll(By(Action.user, this),
+                 By(Action.disabled, true),
+                 By(Action.removed, false),
+                 OrderBy(Action.id, Ascending))
 
 
   override def primaryKeyField = id
