@@ -112,9 +112,13 @@ object AuthMgr {
     def addAuthToken(desc: String): JsCmd = {
       desc.trim match {
         case x if x.length < 3 => DisplayMessage("messages", <b>{S.?("base_token_error_name_short")}</b>,  3 seconds, 3 seconds)
-        case x => AuthToken.create.description(x).user(user).saveMe
-         redisplayTokens() & SetValById(theInput, "") &
-          DisplayMessage("messages", <b>{S.?("base_token_msg_new_token", x)}</b>,  3 seconds, 3 seconds)
+        case x => val token = AuthToken.create.description(x).user(user)
+                token.validate match {
+                    case Nil => token.saveMe
+                          redisplayTokens() & SetValById(theInput, "") &
+                          DisplayMessage("messages", <b>{S.?("base_token_msg_new_token", x)}</b>,  3 seconds, 3 seconds)
+                     case xs => DisplayMessage("messages", <b>{S.?("base_token_err_duplicate_token", x)}</b>,  3 seconds, 3 seconds)
+        }
       }
 
      
