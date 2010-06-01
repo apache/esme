@@ -470,7 +470,7 @@ object API2 extends ApiHelper with XmlHelper {
   def allActions(): LiftResponse = {
     val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =       
       for (user <- User.currentUser ?~ S.?("base_rest_api_err_not_logged_in"))
-      yield (200,Map(),Full(<actions>{user.performing.flatMap(_.toXml)}</actions>))
+      yield (200,Map(),Full(<actions>{user.performingwithdisabled.flatMap(_.toXml)}</actions>))
 
 	val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
 	  if(ret.isDefined) ret else Full((403,Map(),Empty))
