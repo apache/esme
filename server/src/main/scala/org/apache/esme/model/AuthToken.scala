@@ -17,13 +17,13 @@ package org.apache.esme.model
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
- 
- 	override def create: AuthToken = {
-		val ap = super.create
-		ap.createdDate(new Date())
-		ap
-    } 
-    
+
+  override def create: AuthToken = {
+    val ap = super.create
+    ap.createdDate(new Date())
+    ap
+    }
+
  */
 
 import net.liftweb._
@@ -43,46 +43,46 @@ import scala.xml.{Text, Node, Elem => XmlElem}
 
 object AuthToken extends AuthToken with LongKeyedMetaMapper[AuthToken] {
 
-	override def create: AuthToken = {	
-	    val ap = super.create
-            ap.createdDate(new Date())
-            ap
-		
-    } 
+  override def create: AuthToken = {
+    val ap = super.create
+        ap.createdDate(new Date())
+        ap
+
+  }
 }
 
 class AuthToken extends LongKeyedMapper[AuthToken] {
-	def getSingleton = AuthToken // what's the "meta" server
-	def primaryKeyField = id
+  def getSingleton = AuthToken // what's the "meta" server
+  def primaryKeyField = id
 
-	object id extends MappedLongIndex(this)
-	object user extends MappedLongForeignKey(this, User)
-	object description extends MappedPoliteString(this, 64) {
+  object id extends MappedLongIndex(this)
+  object user extends MappedLongForeignKey(this, User)
+  object description extends MappedPoliteString(this, 64) {
 
-		private def validateDescription(str: String): List[FieldError] = {
-		                
-				val others = getSingleton.findByDescription(str)
-				others.map{u => 
-				val msg = S.?("base_token_err_duplicate_token", str)
-						S.error(msg)
-						FieldError(this, Text(msg))
-				}
-		}
+    private def validateDescription(str: String): List[FieldError] = {
+
+      val others = getSingleton.findByDescription(str)
+      others.map{u =>
+      val msg = S.?("base_token_err_duplicate_token", str)
+          S.error(msg)
+          FieldError(this, Text(msg))
+      }
+    }
 
 
-		override def validations = validateDescription _ :: super.validations
-	}
-	//define created on field
-	object createdDate extends MappedDateTime(this)
-	object uniqueId extends MappedUniqueId(this, 32) {
-		override def dbIndexed_? = true
+    override def validations = validateDescription _ :: super.validations
+  }
+  //define created on field
+  object createdDate extends MappedDateTime(this)
+  object uniqueId extends MappedUniqueId(this, 32) {
+    override def dbIndexed_? = true
 
-	}
-	
-	/**
-          * Method to find all tokens by a description
-          */
-	def findByDescription(str: String): List[AuthToken] =
-		AuthToken.findAll(By(description, str), By(user,User.currentUser))
+  }
+
+  /**
+   * Method to find all tokens by a description
+   */
+  def findByDescription(str: String): List[AuthToken] =
+    AuthToken.findAll(By(description, str), By(user,User.currentUser))
 }
 
