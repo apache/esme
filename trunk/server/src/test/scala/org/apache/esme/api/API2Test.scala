@@ -31,7 +31,7 @@ import org.apache.esme._
 import model._
 import net.liftweb.http._
 import testing.{ReportFailure, TestKit, HttpResponse, TestFramework, Response}
-                                                 
+
 import _root_.junit.framework.AssertionFailedError
 
 class Api2SpecsAsTest extends JUnit3(Api2Specs)
@@ -40,26 +40,26 @@ object Api2SpecsRunner extends ConsoleRunner(Api2Specs)
 object Api2Specs extends Specification with TestKit {
   JettyTestServer.start
 
-  val baseUrl = JettyTestServer.urlFor("/api2/")  
+  val baseUrl = JettyTestServer.urlFor("/api2/")
 
   // Note "api_test" user is special. It has been set up with the integration-admin
   // role in the test.default.props file.
-                                                                    
-  val theUser = find_or_create_user("api_test")    
+
+  val theUser = find_or_create_user("api_test")
   val token = find_or_create_token(theUser)
 
-  val post_session = post[Response]("session", "token" -> token) 
+  val post_session = post[Response]("session", "token" -> token)
 
   def find_or_create_user(userName: String): User = {
     val users = User.findByNickname(userName)
 
     if(users.length > 0)
       users.head
-    else { 
-      val session = new LiftSession(Helpers.randomString(20), "", Empty)                          
+    else {
+      val session = new LiftSession(Helpers.randomString(20), "", Empty)
       S.initIfUninitted(session) {User.createAndPopulate.nickname(userName).saveMe}
     }
-  }  
+  }
 
   def find_or_create_token(tokenUser: User): String = {
     val token: Box[AuthToken] = AuthToken.find(By(AuthToken.user,tokenUser))
@@ -84,7 +84,7 @@ object Api2Specs extends Specification with TestKit {
           session <- post_session
         } {
           (session.xml \ "session" \ "user" \ "id").text must be equalTo (theUser.id.toString)
-          (session.xml \ "session" \ "user" \ "nickname").text must be equalTo (theUser.niceName) 
+          (session.xml \ "session" \ "user" \ "nickname").text must be equalTo (theUser.niceName)
           session.code must be equalTo 200
         }
       }
@@ -140,7 +140,7 @@ object Api2Specs extends Specification with TestKit {
         for{
           session <- post_session
           users <- session.get[Response]("users")
-        } {                         
+        } {
           users.code must be equalTo 200
         }
       }
@@ -150,35 +150,35 @@ object Api2Specs extends Specification with TestKit {
           session_res.code must be equalTo 403
         }
       }
-    } 
+    }
 
     "/users POST" in {
       "with valid session" in {
         for{
-          session <- post_session        
+          session <- post_session
           added_user <- session.post[Response]("users",
             "nickname" -> "test_user5",
-            "password" -> "test_password")  
-          all_users <- session.get[Response]("users") 
-        } {                                                                                                        
+            "password" -> "test_password")
+          all_users <- session.get[Response]("users")
+        } {
           added_user.code must be equalTo 200
           (all_users.xml \ "users") must \\(<nickname>test_user5</nickname>)
         }
       }
 
       "with a valid session but no role authorization returns 403 (forbidden)" in {
-		val new_user = find_or_create_user("tester2")
-		val new_token = find_or_create_token(new_user)
-		
-        for{     
-		  sess <- post[Response]("session", "token" -> new_token)
-		  added_user <- sess.post[Response]("users",
+        val new_user = find_or_create_user("tester2")
+        val new_token = find_or_create_token(new_user)
+
+        for{
+          sess <- post[Response]("session", "token" -> new_token)
+          added_user <- sess.post[Response]("users",
             "nickname" -> "test_user3",
             "password" -> "test_password")
-        } {                 
+        } {
           added_user.code must be equalTo 403
         }
-      } 
+      }
 
       "with no session returns 403 (forbidden)" in {
         for{
@@ -193,73 +193,73 @@ object Api2Specs extends Specification with TestKit {
 
     "/users/USERID/tokens GET" in {
       val new_user = find_or_create_user("tester3")
-	  val new_token = find_or_create_token(new_user)
+      val new_token = find_or_create_token(new_user)
 
       "with valid session" in {
         for{
-          session <- post_session          
-          tokens <- session.get[Response]("users/"+new_user.id+"/tokens") 
-        } {                                                                                                        
+          session <- post_session
+          tokens <- session.get[Response]("users/"+new_user.id+"/tokens")
+        } {
           tokens.code must be equalTo 200
           tokens.xml must \\(<id>{new_token}</id>)
         }
       }
 
       "with valid session but no role authorization returns 403 (forbidden)" in {
-		val new_user = find_or_create_user("tester4")
-		val new_token = find_or_create_token(new_user)
-		
-        for{     
-		  sess <- post[Response]("session", "token" -> new_token)
-		  tokens <- sess.get[Response]("users/"+theUser.id+"/tokens")
-        } {                 
+        val new_user = find_or_create_user("tester4")
+        val new_token = find_or_create_token(new_user)
+
+        for{
+          sess <- post[Response]("session", "token" -> new_token)
+          tokens <- sess.get[Response]("users/"+theUser.id+"/tokens")
+        } {
           tokens.code must be equalTo 403
         }
-      } 
+      }
 
       "with no session returns 403 (forbidden)" in {
         for{
           tokens <- get[Response]("users/"+theUser.id+"/tokens")
-        } {                     
+        } {
           tokens.code must be equalTo 403
         }
       }
-    }        
+    }
 
     "/users/USERID/tokens POST" in {
       val new_user = find_or_create_user("tester5")
 
       "with valid session" in {
         for{
-          session <- post_session          
+          session <- post_session
           new_token <- session.post[Response]("users/"+new_user.id+"/tokens",
             "description" -> "test token")
           tokens <- session.get[Response]("users/"+new_user.id+"/tokens")
-        } {                                                                                                        
+        } {
           new_token.code must be equalTo 200
-          new_token.xml must \\(<description>test token</description>) 
+          new_token.xml must \\(<description>test token</description>)
           tokens.xml must \\(<description>test token</description>)
         }
       }
 
       "with valid session but no role authorization returns 403 (forbidden)" in {
-		val new_user = find_or_create_user("tester6")
-		val new_token = find_or_create_token(new_user)
-		
-        for{     
-		  sess <- post[Response]("session", "token" -> new_token)
-		  new_token <- sess.post[Response]("users/"+theUser.id+"/tokens",
-		    "description" -> "test token 2")
-        } {                 
+        val new_user = find_or_create_user("tester6")
+        val new_token = find_or_create_token(new_user)
+
+        for{
+          sess <- post[Response]("session", "token" -> new_token)
+          new_token <- sess.post[Response]("users/"+theUser.id+"/tokens",
+            "description" -> "test token 2")
+        } {
           new_token.code must be equalTo 403
         }
-      } 
+      }
 
       "with no session returns 403 (forbidden)" in {
         for{
           new_token <- post[Response]("users/"+theUser.id+"/tokens",
-		    "description" -> "test token 2")
-        } {                     
+            "description" -> "test token 2")
+        } {
           new_token.code must be equalTo 403
         }
       }
@@ -269,13 +269,13 @@ object Api2Specs extends Specification with TestKit {
       "with valid session and new messages" in {
         for{
           session <- post_session
-          mess_res1 <- session.post[Response]("user/messages", "message" -> "test message") 
+          mess_res1 <- session.post[Response]("user/messages", "message" -> "test message")
           timeout <- sleep(2000)
           mess_res <- session.get[Response]("user/messages")
-        } {                  
+        } {
           mess_res.code must be equalTo 200
 
-          // Message structure   
+          // Message structure
           (mess_res.xml \ "messages" \ "message" \ "author" \ "id").text must be equalTo (theUser.id.toString)
         }
       }
@@ -292,9 +292,9 @@ object Api2Specs extends Specification with TestKit {
         for (session <- post_session;
              session_res1 <- session.get[Response]("user/messages");
              session_res <- session.get[Response]("user/messages"))
-        {             
+        {
           session_res.code must be equalTo 204
-        }                                                   
+        }
       }
     }
 
@@ -303,7 +303,7 @@ object Api2Specs extends Specification with TestKit {
         for{
           session <- post_session
           res <- session.get[Response]("user/messages?history=10")
-        } {           
+        } {
           res.code must be equalTo 200
         }
       }
@@ -318,8 +318,8 @@ object Api2Specs extends Specification with TestKit {
     "/user/messages?timeout=2 GET" in {
       "with valid session" in {
         for{
-          sess <- post_session   
-          mess_res1 <- sess.post[Response]("user/messages", "message" -> "test message")  
+          sess <- post_session
+          mess_res1 <- sess.post[Response]("user/messages", "message" -> "test message")
           res <- sess.get[Response]("user/messages?timeout=2")
         } {
           res.code must be equalTo 200
@@ -333,13 +333,13 @@ object Api2Specs extends Specification with TestKit {
       }
 
 // Should be a 304, but this response type isn't implemented in Lift yet...
-	  "when no new messages exist, returns 204 (no content)" in {
+      "when no new messages exist, returns 204 (no content)" in {
         for (session <- post_session;
           session_res1 <- session.get[Response]("user/messages");
           session_res <- session.get[Response]("user/messages?timeout=2"))
-        {             
+        {
           session_res.code must be equalTo 204
-        }                                                   
+        }
       }
     }
 
@@ -354,9 +354,9 @@ object Api2Specs extends Specification with TestKit {
             "pool" -> "test_pool1")
           timeout <- sleep(1000)
           all_msgs <- session.get[Response]("user/messages?timeout=2")
-        } {                                  
-          mess_res.code must be equalTo 200               
-		  (mess_res.xml \ "message") must \\ (<body>test POST message</body>)
+        } {
+          mess_res.code must be equalTo 200
+          (mess_res.xml \ "message") must \\ (<body>test POST message</body>)
           (mess_res.xml \ "message") must \\ (<tags><tag>Test</tag><tag>Tag</tag></tags>)
           (all_msgs.xml \ "messages") must \\(<body>test POST message</body>)
           (all_msgs.xml \ "messages") must \\(<tags><tag>Test</tag><tag>Tag</tag></tags>)
@@ -455,14 +455,14 @@ object Api2Specs extends Specification with TestKit {
       }
     }
 
-// fragile   
+// fragile
     "/user/tracks/TRACKID DELETE" in {
       "with valid session" in {
         for {
           sess <- post_session
           create_track <- sess.post[Response]("user/tracks","track"->"hello")
           res <- sess.delete[Response]("user/tracks/2")
-        } {           
+        } {
           res.code must be equalTo 200
         }
       }
@@ -539,17 +539,17 @@ object Api2Specs extends Specification with TestKit {
     "/user/actions/ACTIONID DELETE" in {
       "with valid session" in {
         for {
-          sess <- post_session 
+          sess <- post_session
           create_action <- sess.post[Response]("user/actions",
                                      "name" -> "Test action",
                                      "test" -> "every 5 mins",
                                      "action" -> "rss:http://blog.com/feed.rss")
           res <- sess.delete[Response]("user/actions/2")
-        } {                     
+        } {
           res.code must be equalTo 200
         }
       }
- 
+
       "with no session returns 403 (forbidden)" in {
         for(res <- delete[Response]("user/actions/1")) {
           res.code must be equalTo 403
@@ -557,20 +557,20 @@ object Api2Specs extends Specification with TestKit {
       }
     }
 
-// This is very ... shall we say ... brittle                                             
+// This is very ... shall we say ... brittle
     "conversations/CONVERSATIONID GET" in {
       "with valid session" in {
         for{
-          sess <- post_session 
+          sess <- post_session
           mess_res <- sess.post[Response]("user/messages", "message"->"test")
-          wait <- sleep(1000)                                
+          wait <- sleep(1000)
           mess_res <- sess.post[Response]("user/messages",
                                 "message" -> "test_convo",
                                 "replyto" -> 9)
-          wait2 <- sleep(1000)                 
+          wait2 <- sleep(1000)
           res <- sess.get[Response]("conversations/9")
         } {
-          res.code must be equalTo 200  
+          res.code must be equalTo 200
           ( res.xml \\ "message" ).last must \\(<conversation>9</conversation>)
           ( res.xml \\ "message" ).last must \\(<replyto>9</replyto>)
           ( res.xml \\ "message" ).first must \\(<conversation>9</conversation>)
@@ -585,13 +585,13 @@ object Api2Specs extends Specification with TestKit {
       }
 
       "with an invalid conversation ID return a 404 (not found)" in {
-      	for{
+        for{
           sess <- post_session
           res <- sess.get[Response]("conversations/10000")
         } {
           res.code must be equalTo 404
         }
-      } 
+      }
     }
 
     "/pools GET" in {
@@ -600,7 +600,7 @@ object Api2Specs extends Specification with TestKit {
           sess <- post_session
           res <- sess.get[Response]("pools")
         } {
-          res.code must be equalTo 200      
+          res.code must be equalTo 200
         }
       }
 
@@ -661,25 +661,25 @@ object Api2Specs extends Specification with TestKit {
     }
 
     "/pools/POOLID/messages GET" in {
-	  "with valid session and new messages" in {
-	    for{
-	      sess <- post_session 
-     	  pool_res <- sess.post[Response]("pools", "poolName" -> "test_pool4") 
+      "with valid session and new messages" in {
+        for{
+          sess <- post_session
+          pool_res <- sess.post[Response]("pools", "poolName" -> "test_pool4")
           init <- sess.get[Response]("pools/4/messages")
           timeout <- sleep(2000)
-		  mess_res1 <- sess.post[Response]("user/messages",
+          mess_res1 <- sess.post[Response]("user/messages",
             "message" -> "test message for pool delta",
-            "pool" -> "test_pool4") 
+            "pool" -> "test_pool4")
           timeout <- sleep(2000)
           mess_res <- sess.get[Response]("pools/4/messages")
-        } {                                   
+        } {
           mess_res.code must be equalTo 200
 
-          // Message structure   
+          // Message structure
           (mess_res.xml \ "messages") must \\(<id>{theUser.id.toString}</id>)
           (mess_res.xml \ "messages") must \\(<body>test message for pool delta</body>)
         }
-      }  
+      }
 
       "with no session returns 403 (forbidden)" in {
         for (session_res <- get[Response]("pools/1/messages")) {
@@ -692,53 +692,53 @@ object Api2Specs extends Specification with TestKit {
         for (session <- post_session;
              session_res1 <- session.get[Response]("pools/1/messages");
              session_res <- session.get[Response]("pools/1/messages"))
-        {             
+        {
           session_res.code must be equalTo 204
-        }                                                   
+        }
       }
-    }    
+    }
 
     "/pools/POOLID/messages?history=10 GET" in {
       "with valid session" in {
         for{
-          sess <- post_session 
-          pool_res <- sess.post[Response]("pools", "poolName" -> "test_pool5") 
-		  mess_res <- sess.post[Response]("user/messages",
+          sess <- post_session
+          pool_res <- sess.post[Response]("pools", "poolName" -> "test_pool5")
+          mess_res <- sess.post[Response]("user/messages",
             "message" -> "test message for pool history",
-            "pool" -> "test_pool5")                
+            "pool" -> "test_pool5")
           timeout <- sleep(2000)
           res <- sess.get[Response]("pools/5/messages?history=10")
-        } {                                
-          res.code must be equalTo 200          
+        } {
+          res.code must be equalTo 200
           (res.xml \ "messages") must \\(<id>{theUser.id.toString}</id>)
           (res.xml \ "messages") must \\(<body>test message for pool history</body>)
         }
-      }     
+      }
 
       "with tag restrictions" in {
         for{
-          sess <- post_session 
-          pool_res <- sess.post[Response]("pools", "poolName" -> "test_pool6") 
-		  mess_res <- sess.post[Response]("user/messages",
-            "message" -> "test message for pool #history",
-            "pool" -> "test_pool6")                      
+          sess <- post_session
+          pool_res <- sess.post[Response]("pools", "poolName" -> "test_pool6")
           mess_res <- sess.post[Response]("user/messages",
-	        "message" -> "test message for pool history with tags test, tag",
-	        "pool" -> "test_pool6",
-	        "tags" -> "test, tag") 
-	      mess_res <- sess.post[Response]("user/messages",
-	        "message" -> "test message for pool history with tag test",
-	        "pool" -> "test_pool6",
-	        "tags" -> "test,crazycrazy")
-	      mess_res <- sess.post[Response]("user/messages",
-	        "message" -> "test message for pool history with tag tag",
-	        "pool" -> "test_pool6",
-	        "tags" -> "tag")     
-	      wait <- sleep(2000)
+            "message" -> "test message for pool #history",
+            "pool" -> "test_pool6")
+          mess_res <- sess.post[Response]("user/messages",
+            "message" -> "test message for pool history with tags test, tag",
+            "pool" -> "test_pool6",
+            "tags" -> "test, tag")
+          mess_res <- sess.post[Response]("user/messages",
+            "message" -> "test message for pool history with tag test",
+            "pool" -> "test_pool6",
+            "tags" -> "test,crazycrazy")
+          mess_res <- sess.post[Response]("user/messages",
+            "message" -> "test message for pool history with tag tag",
+            "pool" -> "test_pool6",
+            "tags" -> "tag")
+          wait <- sleep(2000)
           res1 <- sess.get[Response]("pools/6/messages?history=10&filter_tags=test")
           res2 <- sess.get[Response]("pools/6/messages?history=10&filter_tags=test,tag")
-        } {                    
-          res1.code must be equalTo 200   
+        } {
+          res1.code must be equalTo 200
           res2.code must be equalTo 200
           (res1.xml \ "messages") must \\(<id>{theUser.id.toString}</id>)
           (res1.xml \ "messages") must \\(<body>test message for pool history with tag test</body>)
@@ -746,48 +746,48 @@ object Api2Specs extends Specification with TestKit {
           (res2.xml \ "messages") must \\(<body>test message for pool history with tags test, tag</body>)
           (res2.xml \ "messages").length must be equalTo 1
         }
-      }   
- 
+      }
+
       "with no session returns 403 (forbidden)" in {
         for (session_res <- get[Response]("pools/1/messages?history=10")) {
           session_res.code must be equalTo 403
         }
       }
-    }       
+    }
 
     "/pools/POOLID/messages?timeout=2 GET" in {
       "with valid session" in {
         for{
-          sess <- post_session 
-          pool_res <- sess.post[Response]("pools", "poolName" -> "test_pool6")    
-          init <- sess.get[Response]("pools/6/messages")    
-		  timeout <- sleep(2000)
-		  mess_res <- sess.post[Response]("user/messages",
+          sess <- post_session
+          pool_res <- sess.post[Response]("pools", "poolName" -> "test_pool6")
+          init <- sess.get[Response]("pools/6/messages")
+          timeout <- sleep(2000)
+          mess_res <- sess.post[Response]("user/messages",
             "message" -> "test message for pool timeout",
-            "pool" -> "test_pool6")          
-		  timeout <- sleep(2000)
+            "pool" -> "test_pool6")
+          timeout <- sleep(2000)
           res <- sess.get[Response]("pools/6/messages?timeout=2")
-        } {                   
+        } {
           res.code must be equalTo 200
         }
-      }    
+      }
 
       "with valid session and new messages but no pool authorization returns 403 (forbidden)" in {
-		val new_user = find_or_create_user("tester6")
-		val new_token = find_or_create_token(new_user)
-		
-		for{
-	      sess <- post_session
-	      sessNoAuth <- post[Response]("session", "token" -> new_token)  
-     	  pool_res <- sess.post[Response]("pools", "poolName" -> "test_pool7") 
+        val new_user = find_or_create_user("tester6")
+        val new_token = find_or_create_token(new_user)
+
+        for{
+          sess <- post_session
+          sessNoAuth <- post[Response]("session", "token" -> new_token)
+          pool_res <- sess.post[Response]("pools", "poolName" -> "test_pool7")
           init <- sessNoAuth.get[Response]("pools/7/messages")
           timeout <- sleep(2000)
-		  mess_res1 <- sess.post[Response]("user/messages",
+          mess_res1 <- sess.post[Response]("user/messages",
             "message" -> "test message for pool delta",
-            "pool" -> "test_pool7") 
+            "pool" -> "test_pool7")
           timeout <- sleep(2000)
           mess_res <- sessNoAuth.get[Response]("pools/7/messages")
-        } {                                       
+        } {
           mess_res.code must be equalTo 403
           init.code must be equalTo 403
         }
@@ -799,15 +799,15 @@ object Api2Specs extends Specification with TestKit {
         }
       }
 
-	// Should be a 304, but this response type isn't implemented in Lift yet...
+    // Should be a 304, but this response type isn't implemented in Lift yet...
       "when no new messages exist, returns 204 (no content)" in {
         for (session <- post_session;
           session_res1 <- session.get[Response]("pools/1/messages");
           session_res <- session.get[Response]("pools/1/messages?timeout=2"))
-        {             
+        {
           session_res.code must be equalTo 204
-        }                                                   
+        }
       }
-    }   
+    }
   }
 }
