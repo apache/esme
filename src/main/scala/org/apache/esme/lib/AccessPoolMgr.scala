@@ -80,23 +80,35 @@ object AccessPoolMgr {
   def addPool(in: NodeSeq): NodeSeq = {
   
     val theInput = "new_pool"
-    val user = User.currentUser 
+    val newPoolDescription = "new_pool_description";
+    val user = User.currentUser
+    var newPoolName = "";
     
       
-    def addNewPool(name: String) = {
+    //def addNewPool(name: String) = {
+    def addNewPool(poolDescription: String) = {
+      /*
       name.trim match {
         case x if x.length < 3 => DisplayMessage("messages", <b>{S.?("base_pool_error_name_short")}</b>,  3 seconds, 3 seconds)
         case x => {
-          val pool = AccessPool.create.realm(AccessPool.Native).setName(name)
+      */
+      (newPoolName.trim, poolDescription.trim) match {
+        case (x, y) if x.length < 3 => DisplayMessage("messages", <b>{S.?("base_pool_error_name_short")}</b>,  3 seconds, 3 seconds)
+        case (x, y) => {
+          //val pool = AccessPool.create.realm(AccessPool.Native).setName(name)
+          val pool = AccessPool.create.realm(AccessPool.Native).setUpAccessPool(x, y)
           pool match {
-            case Failure(_,_,_) => DisplayMessage("messages", <b>{S.?("base_pool_msg_duplicate_name_pool",name)}</b>,  3 seconds, 2 seconds)
+            //case Failure(_,_,_) => DisplayMessage("messages", <b>{S.?("base_pool_msg_duplicate_name_pool",name)}</b>,  3 seconds, 2 seconds)
+            case Failure(_,_,_) => DisplayMessage("messages", <b>{S.?("base_pool_msg_duplicate_name_pool",x)}</b>,  3 seconds, 2 seconds)
             case Full(p: AccessPool) => val privilegeSaved =
               Privilege.create.pool(p.saveMe).user(user).permission(Permission.Admin).save
               if(privilegeSaved && user.isDefined) {
                 Distributor ! Distributor.AllowUserInPool(user.get.id.is, p.id.is)         
-                logger.info("ACCESS: " + S.?("base_pool_msg_new_pool",name)) 
+                //logger.info("ACCESS: " + S.?("base_pool_msg_new_pool",name))
+                logger.info("ACCESS: " + S.?("base_pool_msg_new_pool",x))
                 SetValById(theInput, "")  &
-                DisplayMessage("messages", <b>{S.?("base_pool_msg_new_pool",name)}</b>,  3 seconds, 2 seconds)
+                //DisplayMessage("messages", <b>{S.?("base_pool_msg_new_pool",name)}</b>,  3 seconds, 2 seconds)
+                DisplayMessage("messages", <b>{S.?("base_pool_msg_new_pool",x)}</b>,  3 seconds, 2 seconds)
               } else
                 DisplayMessage("messages", <b>{S.?("base_pool_msg_no_permission")}</b>,  3 seconds, 2 seconds)
             case _ => S.error(S.?("base_error_general"))
@@ -107,8 +119,9 @@ object AccessPoolMgr {
     }
 
     bind("add", in,
-         "poolName" -%> text("", addNewPool, "id" -> theInput)
-    )
+         //"poolName" -%> text("", addNewPool, "id" -> theInput),
+         "poolName" -%> text("", newPoolName = _ , "id" -> theInput),
+         "poolDescription" -%> textarea("", addNewPool, "id" -> newPoolDescription, "cols" -> "33", "rows" -> "2"))
     
   }
 
@@ -212,7 +225,7 @@ object AccessPoolMgr {
        AccessPool.find(By(AccessPool.id, poolId.is)) match {
         case Full(ap) => bind(
         "pool", in,
-        "name" -> ap.getName,     
+        "name" -> (if ( ap.getDescription.isEmpty ) ap.getName else ap.getName + " - " + ap.getDescription),
         "creator" -> displayUserName(ap.creator),
         "createdDate" -> getDateHtml(ap.createdDate),
         "modifier" -> displayUserName(ap.modifier),

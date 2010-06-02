@@ -9,6 +9,7 @@
 		$("#dialog").dialog("destroy");
 		
 		var pool_input = $("#new_pool"),
+         new_pool_description = $("#new_pool_description"),
 		  edit_username = $("#edit_username"),
 		   edit_permission = $("#edit_permission"),
 			allFields = $([]).add(pool_input),
@@ -63,8 +64,10 @@
 					bValid = bValid && checkLength(pool_input,"Pool name",3,16);
 
 					bValid = bValid && checkRegexp(pool_input,/^[a-z]([0-9a-z_])+$/i,"Name may consist of a-z, 0-9, underscores, begin with a letter.");
+
+               npdValid = checkLength(new_pool_description, "Description", 0, 64);
 					
-					if (bValid) {
+					if (bValid && npdValid ) {
 						 liftAjax.lift_ajaxHandler(jQuery("#pool_new_dialog").serialize(), null, null, "javascript");  
 
 						$(this).dialog('close');
@@ -89,11 +92,11 @@
 					var bValid = true;
 					allFieldsUser.removeClass('ui-state-error');
 
-					bValid = bValid && checkLength(edit_username,"User name",3,16);
+					bValid = bValid && checkLength(edit_username,"User name",2,16);
 					bValid = bValid && checkRegexp(edit_username,/^[a-z]([0-9a-z_])+$/i,"Name may consist of a-z, 0-9, underscores, begin with a letter.");
 					
 					if (bValid) {
-						 liftAjax.lift_ajaxHandler(jQuery("#pool_new_dialog").serialize(), null, null, "javascript");  
+						 liftAjax.lift_ajaxHandler(jQuery("#pool_new_user_dialog").serialize(), null, null, "javascript");  
 
 						$(this).dialog('close');
 					}

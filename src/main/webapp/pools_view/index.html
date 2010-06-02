@@ -133,7 +133,8 @@
 			</div>
 			<div id="dialog-form" title="Create new  pool" style="display: none">
 				<p class="validateTips">
-					<lift:loc>ui_form_all_fields_required</lift:loc>
+					<!--lift:loc>ui_form_all_fields_required</lift:loc-->
+               <lift:loc>ui_form_pool_name_required</lift:loc>
 				</p>
 				<form id="pool_new_dialog" onsubmit="false">
 					<lift:addPool>
@@ -142,6 +143,10 @@
 								<lift:loc>ui_pool_add</lift:loc>
 							</label>
 							<add:poolName class="text ui-widget-content ui-corner-all tipelement" title="This is name of your new pool" />
+                     <label for="poolDescription">
+								<lift:loc>ui_pool_description</lift:loc>
+							</label>
+                     <add:poolDescription class="textarea ui-widget-content ui-corner-all tipelement" title="This is a short description of the new pool" />
 						</fieldset>
 					</lift:addPool>
 				</form>
