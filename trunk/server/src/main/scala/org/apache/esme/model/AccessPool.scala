@@ -64,6 +64,11 @@ class AccessPool extends LongKeyedMapper[AccessPool] {
       )
     
   }
+
+  def setUpAccessPool(name: String, descriptionStr: String) = {
+    this.description(descriptionStr)
+    setName(name)
+  }
   
   // set modify information when setName
   def setName(in: String) = sameName(in) match {
