@@ -17,13 +17,6 @@
  * under the License.
  */
 
-/*
- * RestAPI.scala
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
 package org.apache.esme.api
 
 import net.liftweb._
@@ -191,7 +184,7 @@ abstract class TwitterAPI {
   def friendsTimeline(): Box[TwitterResponse] = {
     calcUser map { user => 
       val statusList =
-        for ((msg, why, _) <- Mailbox.mostRecentMessagesFor(user.id, 20))
+        for ((msg, why, _) <- Mailbox.mostRecentMessagesFor(user.id, getCount))
           yield { msgData(msg) }
       Right(Map("statuses" -> ("status", statusList) ))
     }
@@ -201,7 +194,7 @@ abstract class TwitterAPI {
     val statusList = 
       Message.findAll(By(Message.author, user),
                       By(Message.pool, Empty),
-                      MaxRows(20),
+                      MaxRows(getCount),
                       OrderBy(Message.id, Descending)).
         map(msgData _)
     Right(Map("statuses" -> ("status", statusList) ))
@@ -216,8 +209,7 @@ abstract class TwitterAPI {
   }
   
   def homeTimeline(user: User): TwitterResponse = {
-   val count: String = S.param("count") openOr "20"
-   val since_id: String = S.param("since_id") openOr "1"
+    val since_id: String = S.param("since_id") openOr "1"
    
    /*     val statusList = 
       Mailbox.mostRecentMessagesFor(user.id, count.toInt);*/
@@ -225,7 +217,7 @@ abstract class TwitterAPI {
     val statusList = 
       Message.findAll(By(Message.author, user),
                       By(Message.pool, Empty),
-                      MaxRows(count.toInt),
+                      MaxRows(getCount),
                       OrderBy(Message.id, Descending)).
         map(msgData _)
     Right(Map("statuses" -> ("status", statusList) ))
@@ -243,7 +235,7 @@ abstract class TwitterAPI {
   def replies(user: User): TwitterResponse = {
     val statusList = 
       Message.findAll(In(Message.replyTo, Message.id, By(Message.author, user)),
-                      MaxRows(20),
+                      MaxRows(getCount),
                       OrderBy(Message.id, Descending)).
         map(msgData _)
     Right(Map("statuses" -> ("status", statusList) ))
@@ -260,7 +252,7 @@ abstract class TwitterAPI {
   def publicTimeline(): Box[TwitterResponse] = {
     val statusList =
       Message.findAll(OrderBy(Message.id, Descending),
-                      MaxRows(20),
+                      MaxRows(getCount),
                       By(Message.pool, Empty)).
         map(msgData _)
     Full(Right(Map("statuses" -> ("status", statusList) )))
@@ -356,13 +348,15 @@ abstract class TwitterAPI {
       val msgIds = 
         Mailbox.findMap(param,
                         By(Mailbox.user, user),
-                        MaxRows(20),
+                        MaxRows(getCount),
                         OrderBy(Mailbox.id, Descending)) (m => Full(m.message.is))
       val msgMap = Message.findMessages(msgIds)
       val statusList = msgIds.flatMap(msgMap.get).
           map(msgData _)
       Right(Map("statuses" -> ("status", statusList) ))
     }
+
+  private def getCount() = S.param("count").map(_.toInt) openOr 20
   
   private def calcUser(): Box[User] = {
     val userBox =
