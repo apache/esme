@@ -191,12 +191,12 @@ abstract class TwitterAPI {
   }
   
   def userTimeline(user: User): TwitterResponse = {
-    val statusList = 
-      Message.findAll(By(Message.author, user),
-                      By(Message.pool, Empty),
-                      MaxRows(getCount),
-                      OrderBy(Message.id, Descending)).
-        map(msgData _)
+    val queryParams = List[QueryParam[Message]](
+      By(Message.author, user),
+      By(Message.pool, Empty),
+      MaxRows(getCount),
+      OrderBy(Message.id, Descending)) ++ getStart[Message]
+    val statusList = Message.findAll(queryParams: _*).map(msgData _)
     Right(Map("statuses" -> ("status", statusList) ))
   }
   
@@ -213,13 +213,12 @@ abstract class TwitterAPI {
    
    /*     val statusList = 
       Mailbox.mostRecentMessagesFor(user.id, count.toInt);*/
-      
-    val statusList = 
-      Message.findAll(By(Message.author, user),
-                      By(Message.pool, Empty),
-                      MaxRows(getCount),
-                      OrderBy(Message.id, Descending)).
-        map(msgData _)
+    val queryParams = List[QueryParam[Message]](
+      By(Message.author, user),
+      By(Message.pool, Empty),
+      MaxRows(getCount),
+      OrderBy(Message.id, Descending)) ++ getStart[Message]
+    val statusList = Message.findAll(queryParams: _*).map(msgData _)
     Right(Map("statuses" -> ("status", statusList) ))
   }
         
@@ -233,11 +232,11 @@ abstract class TwitterAPI {
   }
   
   def replies(user: User): TwitterResponse = {
-    val statusList = 
-      Message.findAll(In(Message.replyTo, Message.id, By(Message.author, user)),
-                      MaxRows(getCount),
-                      OrderBy(Message.id, Descending)).
-        map(msgData _)
+    val queryParams = List[QueryParam[Message]](
+      In(Message.replyTo, Message.id, By(Message.author, user)),
+      MaxRows(getCount),
+      OrderBy(Message.id, Descending)) ++ getStart[Message]
+    val statusList = Message.findAll(queryParams: _*).map(msgData _)
     Right(Map("statuses" -> ("status", statusList) ))
   }
   
@@ -250,10 +249,12 @@ abstract class TwitterAPI {
   }
 
   def publicTimeline(): Box[TwitterResponse] = {
+    val queryParams = List[QueryParam[Message]](
+      OrderBy(Message.id, Descending),
+      MaxRows(getCount),
+      By(Message.pool, Empty)) ++ getStart[Message]
     val statusList =
-      Message.findAll(OrderBy(Message.id, Descending),
-                      MaxRows(getCount),
-                      By(Message.pool, Empty)).
+      Message.findAll(queryParams: _*).
         map(msgData _)
     Full(Right(Map("statuses" -> ("status", statusList) )))
   }
@@ -345,11 +346,14 @@ abstract class TwitterAPI {
   
   def retweeted(param: QueryParam[Mailbox]): Box[TwitterResponse] =
     calcUser.map { user =>
+      val queryParams = List[QueryParam[Mailbox]](
+        param,
+        By(Mailbox.user, user),
+        MaxRows(getCount),
+        OrderBy(Mailbox.id, Descending)) ++ getStart[Mailbox]
+        
       val msgIds = 
-        Mailbox.findMap(param,
-                        By(Mailbox.user, user),
-                        MaxRows(getCount),
-                        OrderBy(Mailbox.id, Descending)) (m => Full(m.message.is))
+        Mailbox.findMap(queryParams: _*) (m => Full(m.message.is))
       val msgMap = Message.findMessages(msgIds)
       val statusList = msgIds.flatMap(msgMap.get).
           map(msgData _)
@@ -357,6 +361,11 @@ abstract class TwitterAPI {
     }
 
   private def getCount() = S.param("count").map(_.toInt) openOr 20
+  
+  private def getStart[T <: Mapper[T]]() =
+    S.param("page").map { page =>
+      StartAt[T]((page.toInt - 1) * getCount)
+    }
   
   private def calcUser(): Box[User] = {
     val userBox =
