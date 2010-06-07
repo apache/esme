@@ -45,7 +45,9 @@ import org.compass.core._
 import org.compass.core.config.CompassConfiguration
 
 import net.liftweb.widgets.tablesorter._
-import com.twitter.stats._
+//import com.twitter.stats._
+import com.twitter.ostrich.{ServiceTracker, Stats, StatsMBean}
+import net.lag.configgy.{RuntimeEnvironment, Config}
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -197,6 +199,12 @@ class Boot {
       
     Stats.makeGauge("users") {Distributor.getUsersCount}
     Stats.makeGauge("listener") {Distributor.getListenersCount}
+
+    val runtime = new RuntimeEnvironment(getClass)
+    val config = new Config
+    config("admin_text_port") = Props.getInt("admin_text_port") openOr 9989
+    config("admin_http_port") = Props.getInt("admin_http_port") openOr 9990
+    ServiceTracker.startAdmin(config, runtime)
 
     // start Scala Actors used in ESME
     Distributor.touch

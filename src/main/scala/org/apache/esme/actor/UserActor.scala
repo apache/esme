@@ -32,7 +32,8 @@ import lib._
 
 import java.util.{TimeZone, Calendar}
 import scala.xml.{Elem}
-import com.twitter.stats.Stats
+//import com.twitter.stats.Stats
+import com.twitter.ostrich.Stats
 
 object UserActor {
   private[actor] case class StartMeUp(user: Long)
