@@ -23,7 +23,8 @@ import net.liftweb._
 import common._
 import actor._
 import org.apache.esme.actor.Distributor.{UserCreatedMessage=>Msg}
-import com.twitter.stats.Stats
+//import com.twitter.stats.Stats
+import com.twitter.ostrich.Stats
 
 object MessagePullActor extends LiftActor {
   

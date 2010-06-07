@@ -42,7 +42,8 @@ import org.apache.esme._
 import org.apache.esme.actor._
 import java.net.URL
 import java.util.logging._
-import com.twitter.stats.Stats
+//import com.twitter.stats.Stats
+import com.twitter.ostrich.Stats
 
 object User extends User with KeyedMetaMapper[Long, User] {
   override def afterSave = profileChanged _ :: notifyActors _ :: super.afterSave
@@ -168,7 +169,8 @@ object User extends User with KeyedMetaMapper[Long, User] {
     curUserId.remove()
     curUser.remove()
     S.request.foreach(_.request.session.terminate)
-    Stats getCounter "usersLoggedIn" incr -1
+    //Stats getCounter "usersLoggedIn" incr -1
+    Stats incr ("usersLoggedIn", -1)
   }
 
   private object curUserId extends SessionVar[Box[String]](Empty)
