@@ -58,6 +58,8 @@
 					allFields.removeClass('ui-state-error');
 
 					bValid = bValid && checkLength(name_input,"Name",3,64);
+					bValid = bValid && checkLength(test_input,"Test",3,500);
+					bValid = bValid && checkLength(action_input,"Action",3,500);
 					bValid = bValid && checkRegexp(name_input,/^[a-z]([\w\s_])+$/i,"Name may consist of letters, digits, underscores, and spaces, begin with a letter.");
 					
 					if (bValid) {
