@@ -179,7 +179,7 @@ class Boot {
     LiftRules.dispatch.prepend(RestAPI.dispatch)
     LiftRules.dispatch.append(API2.dispatch)
 
-    
+      // Functionality assocaited with ESME support of twitter api 
     LiftRules.httpAuthProtectedResource.prepend {
       case Req(TwitterAPI.ApiPath :: _,_,_) => Full(AuthRole("user"))
     } 
@@ -198,6 +198,7 @@ class Boot {
     Stats.makeGauge("users") {Distributor.getUsersCount}
     Stats.makeGauge("listener") {Distributor.getListenersCount}
 
+    // start Scala Actors used in ESME
     Distributor.touch
     SchedulerActor.touch
     MessagePullActor.touch
@@ -248,8 +249,11 @@ class Boot {
   private def makeUtf8(req: HTTPRequest) = {req.setCharacterEncoding("UTF-8")}
 }
 
+/*
+* Set up compass search environment
+*/
+
 object Compass {
-  // Set up Compass for search
   val conf = tryo(new CompassConfiguration()
       .configure(Props.get("compass_config_file") openOr "/props/compass.cfg.xml")
       .addClass((new Message).clazz))
@@ -260,6 +264,9 @@ object Compass {
     tryo(c.getSearchEngineIndexManager().createIndex())
 }
 
+/*
+* Logger to track request times
+*/
 
 object RequestAnalyzer {
   def analyze(req: Box[Req], time: Long, queries: List[(String, Long)]): Unit = {
@@ -271,6 +278,9 @@ object RequestAnalyzer {
   }
 }
 
+/*
+* Logger to dump session info
+*/
 object SessionInfoDumper extends LiftActor {
   private var lastTime = millis
 
