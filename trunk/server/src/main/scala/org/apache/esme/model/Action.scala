@@ -334,8 +334,25 @@ class PerformMatcher(val func: Action.TestFunc, val performId: Long,
  * The condition causing an action to be performed
  * Note: toStr must return a String which would be parsed to an identical object!
  */
+
+object TestAction {
+  import MsgParser._
+  def testTextToDisplayStr(in: String) = {
+    try {
+      testExpr(in) match {
+        case Success(v, _) => v.toDisplayStr
+        case Failure(m, _) => "ERROR"
+        case Error(m, _) => "ERROR"
+      }
+    } catch {
+      case e: Exception => "ERROR"
+    }
+  }
+}
+
 sealed trait TestAction {
   def toStr: String
+  def toDisplayStr: String = toStr
 }
 case object AnyAction extends TestAction {
   def toStr = "any"
@@ -356,6 +373,7 @@ case class AndAction(left: TestAction, right: TestAction) extends TestAction {
 
 case class AtUserAction(userId: Long) extends TestAction {
   def toStr = "@"+userId
+  override def toDisplayStr = "@" + User.getNickname(userId)
 }
 
 case class ConvAction(convId: Long) extends TestAction {
@@ -376,6 +394,7 @@ case object ResentAction extends TestAction {
 
 case class ResentAction(userId: Long) extends TestAction {
   def toStr = "resent:" + userId
+  override def toDisplayStr = "resent:" + User.getNickname(userId)
 }
 
 case class RegexAction(re: String) extends TestAction {
@@ -430,6 +449,11 @@ case class AtSendAction(users: List[Long], opr: EqOprType) extends TestAction {
   def toStr = "to "+opr.toStr+" "+(users match {
       case x :: Nil => "@"+x
       case xs => xs.map(v => "@"+v).mkString("(", ", ", ")")
+    })
+
+  override def toDisplayStr = "to "+opr.toStr+" "+(users match {
+      case x :: Nil => "@"+ User.getNickname(x)
+      case xs => xs.map(v => "@"+ User.getNickname(v)).mkString("(", ", ", ")")
     })
 }
 

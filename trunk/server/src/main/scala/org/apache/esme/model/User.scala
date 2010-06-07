@@ -185,6 +185,13 @@ object User extends User with KeyedMetaMapper[Long, User] {
   }
 
   def currentUser: Box[User] = curUser.is
+
+  def getNickname(userId: long) = {
+    User.find(userId) match {
+      case Full(u) => u.nickname.is
+      case _ => "ERROR"
+    }
+  }
 }
 
 /**
