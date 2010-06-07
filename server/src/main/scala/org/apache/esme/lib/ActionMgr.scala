@@ -38,6 +38,7 @@ import util._
 import common._
 import Helpers._
 
+import org.apache.esme._
 import model._
 import JqJsCmds._
 import JsCmds._ 
@@ -91,7 +92,8 @@ object ActionMgr {
                                                    "name" -> i.name.is,
                                                    "enabled" -> ajaxCheckbox(!i.disabled,
                                                                              e => {i.disabled(!e).save; DisplayMessage("messages", <b>{S.?("base_action_msg_active",i.name)}</b>,  3 seconds, 3 seconds) & Noop} ),
-                                                   "test" -> i.testText,
+                                                   //"test" -> i.testText,
+                                                   "test" -> TestAction.testTextToDisplayStr(i.testText),
                                                    "action" -> i.actionText,
                                                    "createdDate" -> getDateHtml(i.createdDate),
                                                    "remove" -%> a(() => {i.removed(true).save ; updateSpan() & DisplayMessage("messages", <b>{S.?("base_action_msg_removed", i.name)}</b>,  3 seconds, 3 seconds)}, Text("delete"))
