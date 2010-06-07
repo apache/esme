@@ -15,4 +15,12 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
- */
+*/
+
+;Enable JMX
+jmx.enable=true
+; These ports can't be the same as the default ports for ESME (which is if starting by jetty (like in jetty:run) - 8080)
+;Enable and set port for socket access (text output) (Ostrich)
+admin_text_port=9989
+;Enable and set port for web access (JSON output) (Ostrich)
+admin_http_port=8087
