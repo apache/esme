@@ -105,11 +105,11 @@
             <name>Compass</name>
             <url>http://repo.compass-project.org</url>
         </repository>
-         <repository>
+         <!--repository>
             <id>scala-stats</id>
             <name>Twitter Repo</name>
             <url>http://www.lag.net/nest</url>
-        </repository>
+        </repository-->
          <repository>
                <id>Configgy</id>
               <name>http://www.lag.net/repo</name>
@@ -242,10 +242,15 @@
             <artifactId>lucene-snowball</artifactId>
             <version>${lucene.version}</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>com.twitter</groupId>
             <artifactId>stats</artifactId>
             <version>${scala.stats.version}</version>
+        </dependency-->
+        <dependency>
+            <groupId>com.twitter</groupId>
+            <artifactId>ostrich</artifactId>
+            <version>1.1.16</version>
         </dependency>
         <dependency>
             <groupId>org.scala-tools.testing</groupId>
