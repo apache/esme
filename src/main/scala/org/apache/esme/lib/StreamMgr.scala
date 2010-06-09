@@ -108,7 +108,7 @@ object StreamMgr {
     		  <a href={"/user/" + urlEncode(u.nickname.is)}>{u.niceName}</a>
       	}
       	
-      val dateFormatter = new SimpleDateFormat("yyyy/MM/dd hh:mm")
+      val dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm")
           
         
       Message.findAll(query: _*) match {
