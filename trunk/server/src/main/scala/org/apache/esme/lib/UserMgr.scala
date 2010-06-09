@@ -74,7 +74,7 @@ object UserMgr {
     <a href={"/user/" + urlEncode(u.nickname.is)}>{u.niceName}</a>
   }
   
-  private val dateFormatter = new SimpleDateFormat("yyyy/MM/dd hh:mm")
+  private val dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm")
   
   private def lastMessage(user: User): Tuple2[String,String] = {
     Message.findAll(By(Message.author, user), OrderBy(Message.id, Descending), MaxRows(1)) match {
