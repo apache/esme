@@ -301,7 +301,6 @@ class User extends KeyedMapper[Long, User] with UserIdAsString {// OpenIDProtoUs
                  
   def performingwithdisabled: List[Action] =
   Action.findAll(By(Action.user, this),
-                 By(Action.disabled, true),
                  By(Action.removed, false),
                  OrderBy(Action.id, Ascending))
 
