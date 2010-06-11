@@ -280,7 +280,7 @@ object RequestAnalyzer {
   def analyze(req: Box[Req], time: Long, queries: List[(String, Long)]): Unit = {
     val longQueries = (queries.filter(_._2 > 30))
     if (time > 50 || longQueries.?) {
-      Log.info("Request " + req.map(_.uri).openOr("No Request") +
+      Log.debug("Request " + req.map(_.uri).openOr("No Request") +
           " took " + time + " query " + longQueries.comma)
     }
   }
@@ -303,9 +303,9 @@ object SessionInfoDumper extends LiftActor {
         rt.gc
 
         val dateStr: String = timeNow.toString
-        Log.info("[MEMDEBUG] At " + dateStr + " Number of open sessions: " + sessions.size)
-        Log.info("[MEMDEBUG] Free Memory: " + pretty(rt.freeMemory))
-        Log.info("[MEMDEBUG] Total Memory: " + pretty(rt.totalMemory))
+        Log.debug("[MEMDEBUG] At " + dateStr + " Number of open sessions: " + sessions.size)
+        Log.debug("[MEMDEBUG] Free Memory: " + pretty(rt.freeMemory))
+        Log.debug("[MEMDEBUG] Total Memory: " + pretty(rt.totalMemory))
       }
 
   }
