@@ -213,13 +213,10 @@ abstract class TwitterAPI {
    
    /*     val statusList = 
       Mailbox.mostRecentMessagesFor(user.id, count.toInt);*/
-    val queryParams = List[QueryParam[Message]](
-      By(Message.author, user),
-      By(Message.pool, Empty),
-      MaxRows(getCount),
-      OrderBy(Message.id, Descending)) ++ getStart[Message]
-    val statusList = Message.findAll(queryParams: _*).map(msgData _)
-    Right(Map("statuses" -> ("status", statusList) ))
+    val statusList =
+        for ((msg, why, _) <- Mailbox.mostRecentMessagesFor(user.id, getCount))
+          yield { msgData(msg) }
+      Right(Map("statuses" -> ("status", statusList) ))
   }
         
   
