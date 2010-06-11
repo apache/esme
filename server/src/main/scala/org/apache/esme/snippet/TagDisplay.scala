@@ -59,14 +59,17 @@ object TagDisplay {
     }
 
 
-    bind("user", in,
+     bind("user", in,
          "nicename" -> user.niceName,
-         "nicename" -> user.niceName,
+         "lastName" -> user.lastName,
+         "firstName" -> user.firstName,
+          "image" -> user.image_url,
          "followButton" -> followOrNot,
          "timeline" -> bindTag(Mailbox.mostRecentMessagesFor(user.id, 50).map(_._1)) _,
          "messages" -> bindTag(Message.findAll(By(Message.author, user), OrderBy(Message.id, Descending), MaxRows(50))) _,
          AttrBindParam("userId", Text(user.id.toString),"userId")
     )
+
   
   }
 
