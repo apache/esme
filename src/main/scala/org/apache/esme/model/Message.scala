@@ -146,7 +146,7 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
   def search(searchTerm: String, following: List[User], numHits: Int): List[Message] = {
     val users:List[String] = following.map(user => user.nickname)
 
-    logger.info("Inside Message.search() with user list "+(users.mkString(", ")))
+    logger.debug("Inside Message.search() with user list "+(users.mkString(", ")))
 
     (for(session <- compass.map(_.openSession()); user <- User.currentUser) yield {
         var tx:CompassTransaction = null
@@ -164,13 +164,13 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
           .addMust( followingQuery.toQuery )
           .toQuery()
 
-          logger.info("query is "+query.toString)
+          logger.debug("query is "+query.toString)
 
           val hitlist = query
           .addSort("when", CompassQuery.SortPropertyType.STRING, CompassQuery.SortDirection.REVERSE)
           .hits().detach(0, numHits)
 
-          logger.info("Detached hits: "+hitlist.totalLength)
+          logger.debug("Detached hits: "+hitlist.totalLength)
 
           val resourceList = hitlist.getResources.toList.asInstanceOf[List[Resource]]
 
@@ -210,7 +210,7 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
       case _ => Nil
     }                                           
     val modifiedQueryParams = by ++ newQueryParams
-    logger.info("Modified query: " + modifiedQueryParams)
+    logger.debug("Modified query: " + modifiedQueryParams)
     super.findMapDb(dbId, modifiedQueryParams:_*)(f)
   }
 
@@ -535,7 +535,7 @@ class Message extends LongKeyedMapper[Message] {
             tx = session.beginTransaction()
 
             val msgResource = session.getResource(clazz, id) match {
-              case null =>  Message.logger.info("Saving entity to lucene in wordFrequencies")
+              case null =>  Message.logger.debug("Saving entity to lucene in wordFrequencies")
                 session.save(this)
                 session.loadResource(clazz, id)  // throws exception if not found
 
@@ -543,7 +543,7 @@ class Message extends LongKeyedMapper[Message] {
             }
 
             val textTermFreqs:TermFreqVector = LuceneHelper.getTermFreqVector(session, msgResource, "textWords")
-            Message.logger.info("textTermFreqs: "+textTermFreqs)
+            Message.logger.debug("textTermFreqs: "+textTermFreqs)
 
             def termsAndFreq(in: TermFreqVector) = in match {
               case null => Nil
