@@ -31,6 +31,9 @@
 <div id="back-header">
        <lift:user_info>
 	<h1><lift:loc>ui_user_single_title</lift:loc> <i>'<user:nicename/>'</i></h1>
+	<img lift:snippet="user:imageUrl" alt="" width="50px"/>
+	<h4><lift:loc>ui_sign_up_firstname</lift:loc>: <user:firstName/></h4>
+	<h4><lift:loc>ui_sign_up_lastname</lift:loc>: <user:lastName/></h4>
 	<div class="container-aux">
         <span id="following"><user:followButton/></span>
             <div class="ui-tabs ui-widget ui-widget-content ui-corner-all" id="tabs">
