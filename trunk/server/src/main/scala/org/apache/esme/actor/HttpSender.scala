@@ -117,8 +117,8 @@ object HttpSender extends LiftActor with GetPoster {
 
     try {
       httpClient.executeMethod(poster)
-      Log.info(poster.getStatusText)
-      Log.info(poster.getResponseBodyAsString)
+      Log.debug(poster.getStatusText)
+      Log.debug(poster.getResponseBodyAsString)
     } finally {
       poster.releaseConnection
     }

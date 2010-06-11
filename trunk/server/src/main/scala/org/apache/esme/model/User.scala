@@ -85,14 +85,13 @@ object User extends User with KeyedMetaMapper[Long, User] {
 
 
     def processEntryAdd() {
-        Log.info("processEntryAdd: " + firstName + ", " + lastName)
+        Log.debug("processEntryAdd: " + firstName + ", " + lastName)
     }
 
 
 
     def doSubmit() {
       S.mapSnippet(snippetName, genForm)
-      Log.info("doSubmit: ")
       user.validate ::: auth.validate match {
         case Nil =>
           user.save
