@@ -90,8 +90,8 @@ abstract class TwitterAPI {
     case Req(ApiPath ::> "statuses" ::> "followers" ::> last, this.method, GetRequest) => () => followers(last)
     case Req(ApiPath ::> "users" ::> "show" ::> last, this.method, GetRequest) => () => showUser(last)
 
-    case Req(ApiPath ::> "statuses" ::> "retweeted_by_me", this.method, GetRequest) => () => retweeted(ByMe)
-    case Req(ApiPath ::> "statuses" ::> "retweeted_to_me", this.method, GetRequest) => () => retweeted(ToMe)
+    case Req(ApiPath ::> "statuses" ::> "retweeted_by_me", this.method, GetRequest) => () => timeline(ByMe)
+    case Req(ApiPath ::> "statuses" ::> "retweeted_to_me", this.method, GetRequest) => () => timeline(ToMe)
 
     case Req(ApiPath ::> "friendships" ::> "create" ::> last, this.method, PostRequest) => () => createFriendship(last)
     case Req(ApiPath ::> "friendships" ::> "destroy" ::> last, this.method, PostRequest) => () => destroyFriendship(last)
@@ -181,12 +181,7 @@ abstract class TwitterAPI {
   }
 
   def friendsTimeline(): Box[TwitterResponse] = {
-    calcUser map { user => 
-      val statusList =
-        for ((msg, why, _) <- Mailbox.mostRecentMessagesFor(user.id, getCount))
-          yield { msgData(msg) }
-      Right(Map("statuses" -> ("status", statusList) ))
-    }
+    timeline(Ignore[Mailbox])
   }
   
   def userTimeline(user: User): TwitterResponse = {
@@ -318,10 +313,10 @@ abstract class TwitterAPI {
     }
   }
   
-  def retweeted(param: QueryParam[Mailbox]): Box[TwitterResponse] =
+  def timeline(retweeted: QueryParam[Mailbox]): Box[TwitterResponse] =
     calcUser.map { user =>
       val queryParams = List[QueryParam[Mailbox]](
-        param,
+        retweeted,
         By(Mailbox.user, user)) ++
         getCommonParams(Mailbox.message)
         
