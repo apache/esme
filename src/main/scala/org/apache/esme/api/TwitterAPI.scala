@@ -190,14 +190,10 @@ abstract class TwitterAPI {
   }
   
   def userTimeline(user: User): TwitterResponse = {
-    val queryParams = List[QueryParam[Message]](
+    val queryParams = List(
       By(Message.author, user),
-      By(Message.pool, Empty),
-      MaxRows(getCount),
-      OrderBy(Message.id, Descending)) ++
-      getStart[Message] ++
-      getSinceId(Message.id) ++
-      getMaxId(Message.id)
+      By(Message.pool, Empty)) ++
+      getCommonParams(Message.id)
     val statusList = Message.findAll(queryParams: _*).map(msgData _)
     Right(Map("statuses" -> ("status", statusList) ))
   }
@@ -211,13 +207,9 @@ abstract class TwitterAPI {
   }
   
   def replies(user: User): TwitterResponse = {
-    val queryParams = List[QueryParam[Message]](
-      In(Message.replyTo, Message.id, By(Message.author, user)),
-      MaxRows(getCount),
-      OrderBy(Message.id, Descending)) ++
-      getStart[Message] ++
-      getSinceId(Message.id) ++
-      getMaxId(Message.id)
+    val queryParams = List(
+      In(Message.replyTo, Message.id, By(Message.author, user))) ++
+      getCommonParams(Message.id)
     val statusList = Message.findAll(queryParams: _*).map(msgData _)
     Right(Map("statuses" -> ("status", statusList) ))
   }
@@ -330,12 +322,8 @@ abstract class TwitterAPI {
     calcUser.map { user =>
       val queryParams = List[QueryParam[Mailbox]](
         param,
-        By(Mailbox.user, user),
-        MaxRows(getCount),
-        OrderBy(Mailbox.id, Descending)) ++
-        getStart[Mailbox] ++
-        getSinceId(Mailbox.message) ++
-        getMaxId(Mailbox.message)
+        By(Mailbox.user, user)) ++
+        getCommonParams(Mailbox.message)
         
       val msgIds = 
         Mailbox.findMap(queryParams: _*) (m => Full(m.message.is))
@@ -362,6 +350,14 @@ abstract class TwitterAPI {
       StartAt[T]((page.toInt - 1) * getCount)
     }
   
+  private def getCommonParams[T <: Mapper[T]](field: MappedLong[T]): List[QueryParam[T]] = {
+    List(MaxRows[T](getCount),
+    OrderBy(field, Descending)) ++
+    getStart[T] ++
+    getSinceId(field) ++
+    getMaxId(field)
+  }
+    
   private def calcUser(): Box[User] = {
     val userBox =
       LiftRules.authentication match {
