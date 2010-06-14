@@ -79,7 +79,7 @@ object UserMgr {
   private def lastMessage(user: User): Tuple2[String,String] = {
     Message.findAll(By(Message.author, user), OrderBy(Message.id, Descending), MaxRows(1)) match {
       case Nil => ("", "")
-      case msg :: _ => (msg.getText, dateFormatter.format(msg.getWhen))
+      case msg :: _ => (msg.getBody, dateFormatter.format(msg.getWhen))
     }
   }
 
