@@ -118,7 +118,7 @@ object StreamMgr {
                         (lst => xs.flatMap(i => bind("item", lst,
                                                      "author" -> i.author.obj.map(nicknameWithProfileLink).openOr(Text("")),
                                                      "imageUrl" -> i.author.obj.map(profileImage).openOr(Text("")),
-                                                     "text" -> i.getText,
+                                                     "text" -> i.getBody,
                                                      "date" -> dateFormatter.format(i.getWhen)
                 ))))
       }
