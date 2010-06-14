@@ -49,6 +49,10 @@ import net.liftweb.widgets.tablesorter._
 import com.twitter.ostrich.{ServiceTracker, Stats, StatsMBean}
 import net.lag.configgy.{RuntimeEnvironment, Config}
 
+import _root_.net.liftweb.widgets.logchanger._
+
+
+
 /**
  * A class that's instantiated early and run.  It allows the application
  * to modify lift's environment
@@ -107,6 +111,17 @@ class Boot {
         RedirectResponse("/")
       }
     } 
+    
+    
+  
+
+    
+    //Add logchanger
+    import _root_.net.liftweb.widgets.logchanger._
+    LogLevelChanger.init
+
+    object logLevel extends LogLevelChanger with Log4jLoggingBackend
+
 
     LiftRules.dispatch.append(ESMEOpenIDVendor.dispatchPF)
 
@@ -150,6 +165,7 @@ class Boot {
         Menu(Loc("user", List("info_view", "user"), "User Info", Hidden,
           Loc.Snippet("user_info", TagDisplay.userInfo))) ::
         Menu(Loc("about", List("static", "about"), S.?("base_menu_about"), Hidden)) ::
+        logLevel.menu  ::
         Menu(Loc("tag", List("info_view", "tag"), "Tag", Hidden, Loc.Snippet("tag_display", TagDisplay.display))) ::
         Menu(Loc("public", List("info_view", "public"), S.?("base_profile_public"))) ::
         Menu(Loc("contacts", List("info_view", "contacts"), S.?("base_profile_contacts"))) ::
