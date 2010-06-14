@@ -468,6 +468,9 @@ class Message extends LongKeyedMapper[Message] {
   // termVector=YES means that we get the word frequencies for tag clouds
   @SearchableProperty{val termVector=TermVector.YES, val analyzer="stemming"}
   def getText:String = originalXml.text
+  
+  // Body without extra tags
+  def getBody:String = body
 
   @SearchableProperty{val termVector=TermVector.YES, val analyzer="default"}
   def getTextWords:String = originalXml.text
