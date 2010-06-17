@@ -39,11 +39,14 @@ abstract class Feed(val user: User, val url: String, val source: String, val tru
   import scala.xml._
 
   protected def dateFormats: List[SimpleDateFormat]
-  var dateFormat: SimpleDateFormat = _
+  // var dateFormat: SimpleDateFormat = _
 
   override def apply() = {
     
-    ( for (node <- (getEntries(XML.loadString(responseString))))
+    ( for {
+           xml <- PCDataXmlParser(responseString).toList
+           node <- xml.flatMap{ case e: Elem => List(e) case _ => Nil}
+         }
         yield UserCreatedMessage(
           if (user != null) {user.id} else 0,
           getText(node) + " " + getLink(node),
@@ -81,16 +84,9 @@ abstract class Feed(val user: User, val url: String, val source: String, val tru
   
   protected def parseInternetDate(dateString: String): Date = {
     val fixedDateString = fixDateString(dateString)
-    if (dateFormat == null) dateFormats.find { df =>
-      try {
-        dateFormat = df
-        return df.parse(fixedDateString)
-        // true
-      } catch {
-        case pe: ParseException => false
-      }
-    }
-    dateFormat.parse(fixedDateString)
+    dateFormats.projection.flatMap(df => Helpers.tryo {
+      df.parse(fixedDateString)
+    }).head
   }
   
   protected def fixDateString(dateString: String) = {
