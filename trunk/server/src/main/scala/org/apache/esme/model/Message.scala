@@ -405,7 +405,7 @@ class Message extends LongKeyedMapper[Message] {
       })
   }
 
-  private lazy val originalXml = XML.loadString(text.is)
+  private lazy val originalXml = PCDataXmlParser(text.is).openOr(<message/>)
   
   lazy val toXHTML = transformBody(digestedXHTML)
     
