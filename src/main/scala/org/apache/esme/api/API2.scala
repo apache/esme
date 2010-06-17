@@ -812,6 +812,8 @@ object API2 extends ApiHelper with XmlHelper {
                 listener = Empty
                 msgs = Nil
             }
+          
+          case _ => // avoid the match error
         }
 
       case ReleaseListener =>
