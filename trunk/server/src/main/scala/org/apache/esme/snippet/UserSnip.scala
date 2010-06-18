@@ -46,7 +46,6 @@ import scala.xml.{NodeSeq, Text, Node}
 object JsonPoster extends JsonHandler{
   def apply(in: Any): JsCmd = in match {
     case JsonCmd("post", _, map: Map[String, Any], _) =>
-      println("Posting "+map)
       DisplayMessage("messages", <b>Status updated</b>, 200, 200)
       for (msgObj <- map.get("msg");
            msg <- Box.asA[String](msgObj).map(_.trim) if msg.length > 0;
