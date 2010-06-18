@@ -164,7 +164,6 @@ class Boot {
     val entries = Menu(Loc("Home", List("index"), "Home")) ::
         Menu(Loc("user", List("info_view", "user"), "User Info", Hidden,
           Loc.Snippet("user_info", TagDisplay.userInfo))) ::
-        Menu(Loc("about", List("static", "about"), S.?("base_menu_about"), Hidden)) ::
         logLevel.menu  ::
         Menu(Loc("tag", List("info_view", "tag"), "Tag", Hidden, Loc.Snippet("tag_display", TagDisplay.display))) ::
         Menu(Loc("public", List("info_view", "public"), S.?("base_profile_public"))) ::
