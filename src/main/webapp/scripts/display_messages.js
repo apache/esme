@@ -33,10 +33,6 @@ function displayMessages(msgArray, elementId)
 	
 
 	
-  /*jQuery("#StreamSpan").each(function(i) {
-  	alert ("hi")
-  }*/
-
  // Select the first element in table id="timeline_messages"
   //  with id="message" as the message template
   if (msgTemplate == null) {
@@ -127,10 +123,10 @@ function displayMessages(msgArray, elementId)
                                      'clearResend("resend_' + id + '")');
       }
       newMsg.find('#reply').attr('href',
-        "javascript:setReplyTo(" + id + ", '"+ msgBody + "'," + msgPoolId + ", '" + msgAuthor.nickname + "')");
+        "javascript:setReplyTo(" + id + ", '"+ encodeURI(msgBody) + "'," + msgPoolId + ", '" + msgAuthor.nickname + "')");
       var conversation = newMsg.find('#conversation');
       if (msgConversation != 0) {
-        conversation.attr('href',
+        conversation.attr('href', 
           '/conversation/' + msgConversation);
       } else {
         conversation.css("display", "none");
