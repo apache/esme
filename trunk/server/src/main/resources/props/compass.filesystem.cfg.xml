@@ -28,7 +28,7 @@
       <file path="compass-index"/>
     </connection>
     <searchEngine >
-      <analyzer name="default" type="Stop" />   
+      <analyzer name="default" type="Whitespace" />   
       <analyzer name="pool" type="Standard" />
       <analyzer name="stemming" type="Snowball" snowballType="English">
             <stopWords>
