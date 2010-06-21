@@ -160,7 +160,7 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
           for (user <- following) followingQuery.addShould(queryBuilder.term("author", user.id))
 
           val query: CompassQuery = queryBuilder.bool()
-          .addMust( queryBuilder.term("text", stemWord(searchTerm)) )
+          .addMust( queryBuilder.term("text", stemWord(searchTerm.toLowerCase() )) )
           .addMust( followingQuery.toQuery )
           .toQuery()
 
