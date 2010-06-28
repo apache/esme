@@ -11,8 +11,8 @@
                                                               *
  Unless required by applicable law or agreed to in writing,   *
  software distributed under the License is distributed on an  *
- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY       *
- KIND, either express or implied.  See the License for the    *
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY       * 
+ KIND, either express or implied.  See the License for the    * 
  specific language governing permissions and limitations      *
  under the License.                                           *
 */
@@ -25,11 +25,13 @@
 
 function login()
 {
-  if (document.forms[0].open_id.value != "") {
-     document.forms[0].action='/open_id/login';
- } 
+  var myAction;
+  	
+  if (document.forms[0].open_id.value != "")
+     document.forms[0].action = 'open_id/login';
  else
-     document.forms[0].action='/authentication/login';
+     document.forms[0].action = 'authentication/login';
+    
      
   document.forms[0].submit();	
 }
