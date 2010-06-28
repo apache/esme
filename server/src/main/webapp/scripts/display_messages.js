@@ -68,6 +68,8 @@ function displayMessages(msgArray, elementId)
       
       var msgDateStr = prettyDate(msgDateObj);
       
+
+      
       var msgPool = '';
       if (cometMsg.pool) msgPool = 'in pool ' + cometMsg.pool.name; 
       var msgPoolId = 0;
@@ -106,7 +108,7 @@ function displayMessages(msgArray, elementId)
       var avatar = newMsg.find('#avatar')
       .attr('src', msgAuthor.imageUrl)
       .attr('alt',msgAuthor.firstname + ' ' + msgAuthor.lastname);
-
+      
       newMsg.find('#body').html(msgBody);
       newMsg.find('#supp_data').text(msgPool + " " + msgDateStr  + " " +  msgReason  + " " +   msgSource);
       newMsg.find('#msgPool').text(msgPool);
@@ -122,8 +124,10 @@ function displayMessages(msgArray, elementId)
           attr('onclick', 'javascript:resend_msg(' + id + ');' +
                                      'clearResend("resend_' + id + '")');
       }
+      
+      
       newMsg.find('#reply').attr('href',
-        "javascript:setReplyTo(" + id + ", '"+ encodeURI(msgBody) + "'," + msgPoolId + ", '" + msgAuthor.nickname + "')");
+        "javascript:setReplyTo(" + id + ", '"+ escape(msgBody) + "'," + msgPoolId + ", '" + msgAuthor.nickname + "')");
       var conversation = newMsg.find('#conversation');
       if (msgConversation != 0) {
         conversation.attr('href', 
