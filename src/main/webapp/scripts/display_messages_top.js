@@ -100,10 +100,7 @@ function displayMessages(msgArray, elementId)
      
       // Dealing with users with no avatars
       if (!msgAuthor.imageUrl) {
-      	if (top.location.pathName == "/") 
       	 msgAuthor.imageUrl= "images/avatar.jpg"
-      	else
-      	msgAuthor.imageUrl= "../images/avatar.jpg" 
      }
      
      	
