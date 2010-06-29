@@ -104,7 +104,7 @@ function displayMessages(msgArray, elementId)
      
       // Dealing with users with no avatars
       if (!msgAuthor.imageurl)
-      	msgAuthor.imageurl="/images/avatar.jpg"
+      	msgAuthor.imageurl="images/avatar.jpg"
       	
      if (!msgPool)
       	msgPool="public"
