@@ -612,8 +612,8 @@ object API2 extends ApiHelper with XmlHelper {
             val tagQuery = queryBuilder.bool()
 
             for(tags <- S.param("filter_tags");
-                tag <- tags.split(",")) {
-              tagQuery.addMust(queryBuilder.term("tags", tag.split(" ").mkString("_")))
+                tag <- tags.split(",")) {  
+              tagQuery.addMust(queryBuilder.term("tags", tag.split(" ").mkString("_").toLowerCase()))
             }
 
             val non_tag_query = queryBuilder.bool()
@@ -621,7 +621,7 @@ object API2 extends ApiHelper with XmlHelper {
 
 
             val query = if(S.param("filter_tags").isDefined)
-              non_tag_query.addMust(tagQuery.toQuery).toQuery()
+              non_tag_query.addMust(tagQuery.toQuery()).toQuery()
             else
               non_tag_query.toQuery()
 
