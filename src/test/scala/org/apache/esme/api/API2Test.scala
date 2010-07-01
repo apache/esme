@@ -572,7 +572,7 @@ object Api2Specs extends Specification with TestKit {
                                 "replyto" -> 9)
           wait2 <- sleep(1000)
           res <- sess.get("conversations/9")
-        } {
+        } {                     
           res.code must be equalTo 200
           ( res.xml.open_! \\ "message" ).last must \\(<conversation>9</conversation>)
           ( res.xml.open_! \\ "message" ).last must \\(<replyto>9</replyto>)
@@ -675,7 +675,7 @@ object Api2Specs extends Specification with TestKit {
             "pool" -> "test_pool4")
           timeout <- sleep(2000)
           mess_res <- sess.get("pools/4/messages")
-        } {
+        } {                     
           mess_res.code must be equalTo 200
 
           // Message structure
@@ -738,14 +738,14 @@ object Api2Specs extends Specification with TestKit {
             "pool" -> "test_pool6",
             "tags" -> "tag")
           wait <- sleep(2000)
-          res1 <- sess.get("pools/6/messages?history=10&filter_tags=test")
+          res1 <- sess.get("pools/6/messages?history=10&filter_tags=test")      
           res2 <- sess.get("pools/6/messages?history=10&filter_tags=test,tag")
-        } {
-          res1.code must be equalTo 200
-          res2.code must be equalTo 200
+        } {                               
+          res1.code must be equalTo 200   
+          res2.code must be equalTo 200       
           (res1.xml.open_! \ "messages") must \\(<id>{theUser.id.toString}</id>)
           (res1.xml.open_! \ "messages") must \\(<body>test message for pool history with tag test</body>)
-          (res1.xml.open_! \ "messages") must \\(<body>test message for pool history with tags test, tag</body>)
+          (res1.xml.open_! \ "messages") must \\(<body>test message for pool history with tags test, tag</body>) 
           (res2.xml.open_! \ "messages") must \\(<body>test message for pool history with tags test, tag</body>)
           (res2.xml.open_! \ "messages").length must be equalTo 1
         }
