@@ -27,6 +27,29 @@ function msgDateCompare(msg1, msg2)
   return parseInt(msg1.message.when) - parseInt(msg2.message.when);
 }
 
+// Replaces all instances of the given substring.
+String.prototype.replaceAll = function( 
+	strTarget, // The substring you want to replace
+	strSubString // The string you want to replace in.
+	){
+	var strText = this;
+	var intIndexOfMatch = strText.indexOf( strTarget );
+	 
+	// Keep looping while an instance of the target string
+	// still exists in the string.
+	while (intIndexOfMatch != -1){
+		// Relace out the current instance.
+		strText = strText.replace( strTarget, strSubString )
+		 
+		// Get the index of any next matching substring.
+		intIndexOfMatch = strText.indexOf( strTarget );
+	}
+	 
+	// Return the updated string with ALL the target strings
+	// replaced out with the new substring.
+	return( strText );
+}
+
 
 function displayMessages(msgArray, elementId)
 {
@@ -126,10 +149,13 @@ function displayMessages(msgArray, elementId)
           attr('onclick', 'javascript:resend_msg(' + id + ');' +
                                      'clearResend("resend_' + id + '")');
       }
+
+      var tempStr = msgBody.replaceAll ("'", ".");
       
-      
+      var myReplyMsg = tempStr.replaceAll (".", "\'")
+          
       newMsg.find('#reply').attr('href',
-        "javascript:setReplyTo(" + id + ", '"+ escape(msgBody) + "'," + msgPoolId + ", '" + msgAuthor.nickname + "')");
+        "javascript:setReplyTo(" + id + ", '"+ myReplyMsg + "'," + msgPoolId + ", '" + msgAuthor.nickname + "')");
       var conversation = newMsg.find('#conversation');
       if (msgConversation != 0) {
         conversation.attr('href', 
@@ -146,6 +172,14 @@ function displayMessages(msgArray, elementId)
       }
 
       // Remove any old tags from the template
+      newMsg.find('*[id=tag]').remove();
+
+      // Insert the updated copy of the message into the page
+      newMsg.prependTo(msgInsertPt).show();
+    }
+  }
+}
+// ]]>mplate
       newMsg.find('*[id=tag]').remove();
 
       // Insert the updated copy of the message into the page
