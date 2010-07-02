@@ -152,7 +152,7 @@ function displayMessages(msgArray, elementId)
 
       var tempStr = msgBody.replaceAll ("'", ".");
       
-      var myReplyMsg = tempStr.replaceAll (".", "\'")
+      var myReplyMsg = tempStr.replaceAll (".", "\'");
           
       newMsg.find('#reply').attr('href',
         "javascript:setReplyTo(" + id + ", '"+ myReplyMsg + "'," + msgPoolId + ", '" + msgAuthor.nickname + "')");
@@ -179,12 +179,4 @@ function displayMessages(msgArray, elementId)
     }
   }
 }
-// ]]>mplate
-      newMsg.find('*[id=tag]').remove();
-
-      // Insert the updated copy of the message into the page
-      newMsg.prependTo(msgInsertPt).show();
-    }
-  }
-}
-// ]]>
+// ]]
