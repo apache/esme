@@ -27,7 +27,7 @@
 			maxWidth: "200px",
 			edgeOffset: 3,
 			defaultPosition: "bottom",
-			delay: 400,
+			delay: 3000,
 			fadeIn: 200,
 			fadeOut: 200,
 			attribute: "title",
