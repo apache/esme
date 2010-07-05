@@ -161,7 +161,7 @@ class UserSnip extends DispatchSnippet {
     
     Text(User.currentUser.map(_.image_url) openOr "")
   }
-
+  /*
   def accessPools(in: NodeSeq): NodeSeq = {
     for(user <- User.currentUser.toSeq;
         p    <- Privilege.findWritablePools(user.id))
@@ -169,6 +169,18 @@ class UserSnip extends DispatchSnippet {
       yield <option value={p}>
               {AccessPool.find(p).get.getName}
             </option>
+  }
+  */
+
+  def accessPools(in: NodeSeq): NodeSeq = {
+    (for(user <- User.currentUser.toSeq;
+        p    <- Privilege.findWritablePools(user.id))
+        // slow?
+      yield p)
+        .map( p => {val pool = AccessPool.find(p); (pool.toString, pool.get.getName)} )
+        .toList
+        .sort(_._2 < _._2)
+        .map(p => <option value={p._1}>{p._2}</option>)
   }
   
   def postScript(in: NodeSeq): NodeSeq =
