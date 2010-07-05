@@ -150,12 +150,12 @@ function displayMessages(msgArray, elementId)
                                      'clearResend("resend_' + id + '")');
       }
 
-      var tempStr = msgBody.replaceAll ("'", ".");
+      var tempStr = msgBody.replaceAll ("'", "ZZZ$%$");
       
-      var myReplyMsg = tempStr.replaceAll (".", "\'");
+      var myReplyMsg = tempStr.replaceAll ("ZZZ$%$", "\\'");
           
       newMsg.find('#reply').attr('href',
-        "javascript:setReplyTo(" + id + ", '"+ myReplyMsg + "'," + msgPoolId + ", '" + msgAuthor.nickname + "')");
+        "javascript:setReplyTo(" + id + ", '"+ escape(myReplyMsg) + "'," + msgPoolId + ", '" + msgAuthor.nickname + "')");
       var conversation = newMsg.find('#conversation');
       if (msgConversation != 0) {
         conversation.attr('href', 
