@@ -87,6 +87,7 @@ object AccessPoolMgr {
       
     //def addNewPool(name: String) = {
     def addNewPool(poolDescription: String) = {
+
       /*
       name.trim match {
         case x if x.length < 3 => DisplayMessage("messages", <b>{S.?("base_pool_error_name_short")}</b>,  3 seconds, 3 seconds)
@@ -95,6 +96,7 @@ object AccessPoolMgr {
       (newPoolName.trim, poolDescription.trim) match {
         case (x, y) if x.length < 3 => DisplayMessage("messages", <b>{S.?("base_pool_error_name_short")}</b>,  3 seconds, 3 seconds)
         case (x, y) => {
+          import org.apache.esme.model.AccessPool
           //val pool = AccessPool.create.realm(AccessPool.Native).setName(name)
           val pool = AccessPool.create.realm(AccessPool.Native).setUpAccessPool(x, y)
           pool match {
@@ -103,10 +105,19 @@ object AccessPoolMgr {
             case Full(p: AccessPool) => val privilegeSaved =
               Privilege.create.pool(p.saveMe).user(user).permission(Permission.Admin).save
               if(privilegeSaved && user.isDefined) {
-                Distributor ! Distributor.AllowUserInPool(user.get.id.is, p.id.is)         
+                import org.apache.esme.model.{Privilege, User}
+                Distributor ! Distributor.AllowUserInPool(user.get.id.is, p.id.is)
                 //logger.info("ACCESS: " + S.?("base_pool_msg_new_pool",name))
                 logger.info("ACCESS: " + S.?("base_pool_msg_new_pool",x))
+                val selectPools = ("0", S.?("base_pool_msg_choose_pool")) ::
+                (User.currentUser match {
+                  case Full(u)=> Privilege.findViewablePools(u.id).map(
+                    p => (p.toString, AccessPool.find(p).get.getName)).toList
+                  case _ => Nil
+                }).sort(_._2 < _._2)
                 SetValById(theInput, "")  &
+                ReplaceOptions("edit_pool", selectPools, Full(p.id.is.toString))  &
+                FireOnchangeById("edit_pool") &
                 //DisplayMessage("messages", <b>{S.?("base_pool_msg_new_pool",name)}</b>,  3 seconds, 2 seconds)
                 DisplayMessage("messages", <b>{S.?("base_pool_msg_new_pool",x)}</b>,  3 seconds, 2 seconds)
               } else
@@ -118,27 +129,34 @@ object AccessPoolMgr {
 
     }
 
+    case class FireOnchangeById(domElemId: String) extends JsCmd {
+      def toJsCmd =
+        """document.getElementById(""" + domElemId.encJs + """).onchange();"""
+    }
+
     bind("add", in,
          //"poolName" -%> text("", addNewPool, "id" -> theInput),
          "poolName" -%> text("", newPoolName = _ , "id" -> theInput),
          "poolDescription" -%> textarea("", addNewPool, "id" -> newPoolDescription, "cols" -> "33", "rows" -> "2"))
-    
+
   }
+
+  var lastSelPool = "";
 
   /*
   * Function for editing pools
   *
   */
   def editPool(in: NodeSeq): NodeSeq = {
-
+    import org.apache.esme.model.{AccessPool, User}
     val redisplayPool = updatePool.is
-    
+
     // redisplay pool detail
     val redisplayPoolDetail = updatePoolDetail.is
-    
+
     // redisplay pool users and pool detail
     def redisplay(): JsCmd = {
-      redisplayPoolDetail() & redisplayPool() 
+      redisplayPoolDetail() & redisplayPool()
     }
     var pool = ""
     var username = ""
@@ -146,28 +164,30 @@ object AccessPoolMgr {
     val editUsername = "edit_username"
     val editPermission = "edit_permission"
     val adminUser = User.currentUser
-    
+
     val adminPools = ("0", S.?("base_pool_msg_choose_pool")) ::
     (adminUser match {
       case Full(u)=> Privilege.findViewablePools(u.id).map(
         p => (p.toString, AccessPool.find(p).get.getName)).toList
       case _ => Nil
     })
-      
+
     val permissions = Permission.map(perm => (perm.id.toString, perm.toString)).collect
-    
-    
+
+
       /*
        * Function for adding a user to a pool
        *
        */
     def addPoolUser(permission: String): JsCmd = {
-      val r: Box[Boolean] = 
+      pool = lastSelPool;
+      val r: Box[Boolean] =
       for (admin <- adminUser;
            p <- AccessPool.find(pool) ?~ DisplayMessage("messages", <b>{S.?("base_pool_err_pool_not_found")}</b>,  3 seconds, 2 seconds);
            user <- User.findFromWeb(username) ?~ DisplayMessage("messages", <b>{S.?("base_pool_err_pool_not_found")}</b>,  3 seconds, 2 seconds)
       ) yield if(Privilege.hasPermission(admin.id.is, p.id.is, Permission.Admin)) {
         val result = try {
+          import org.apache.esme.model.Permission
           Privilege.create.user(user).pool(p).permission(Permission(permission.toInt)).save
         } catch {
           case _: Exception => false
@@ -183,13 +203,14 @@ object AccessPoolMgr {
         case Full(true) => S.notice(S.?("base_pool_msg_permission_set"))
         case _ => S.error(S.?("base_error_general"))
       }
-      
+
       poolId.set(pool.toLong)
-      
+
       //we needn't redisplay pool detail when add a new user
       redisplayPool() & SetValById(editUsername, "")
     }
 
+    /*
     bind("edit", in,
          "pool" -%> ajaxSelect(adminPools, Empty, p => {pool = p;
                                                        poolId.set(p.toLong);
@@ -199,29 +220,54 @@ object AccessPoolMgr {
          "username" -%> text(username, username = _, "id" -> editUsername),
          "permission" -%> select(permissions, Empty, addPoolUser, "id" -> editPermission)
     )
-    
+    */
+
+    /*
+    bind("edit", in,
+         "pool" -%> org.apache.esme.liftwebext.SHtml.ajaxUntrustedSelect(adminPools, Empty, (p:String) => {lastSelPool = p;  pool = p;
+                                                       poolId.set(p.toLong);
+                                                       redisplay() //redisplay pooluser and pool detail
+                                                       },
+                                                 "id" -> editPoolName),
+         "username" -%> text(username, username = _, "id" -> editUsername),
+         "permission" -%> select(permissions, Empty, addPoolUser, "id" -> editPermission)
+    )
+    */
+
+    bind("edit", in,
+         "pool" -%> org.apache.esme.liftwebext.SHtml.ajaxUntrustedSortedSelect(adminPools,
+                                                       true,
+                                                       Empty, (p:String) => {lastSelPool = p;  pool = p;
+                                                       poolId.set(p.toLong);
+                                                       redisplay() //redisplay pooluser and pool detail
+                                                       },
+                                                 "id" -> editPoolName),
+         "username" -%> text(username, username = _, "id" -> editUsername),
+         "permission" -%> select(permissions, Empty, addPoolUser, "id" -> editPermission)
+    )
   }
-  
-  
+
+
   def displayPoolDetail(in: NodeSeq): NodeSeq = {
+    import org.apache.esme.model.AccessPool
     // get the span name to update
     val spanName = S.attr("the_pool_id") openOr "PoolDetailSpan"
-    
+
     //XXX display date, should we have a common dateFormat?
     val dateFormat = new SimpleDateFormat("yyyy/MM/dd")
     def getDateHtml(date: Date) : Text = date match {
      case null => Text(S.?("base_pool_ui_empty_date"))
      case d => Text(dateFormat.format(d))
    }
-    
+
     def displayUserName(uid: Long): NodeSeq = {
       User.find(uid) match {
         case Full(user) => <span>{user.nickname}</span>
         case _ => NodeSeq.Empty
       }
     }
-    
-    def doRender(): NodeSeq = 
+
+    def doRender(): NodeSeq =
        AccessPool.find(By(AccessPool.id, poolId.is)) match {
         case Full(ap) => bind(
         "pool", in,
