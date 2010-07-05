@@ -130,6 +130,8 @@ object StreamMgr {
   }
 
   def streamFilters(in: NodeSeq): NodeSeq = {
+    import org.apache.esme.model.AccessPool
+    import net.liftweb.common.Empty
     val redisplayStream = updateStream.is
     val resenderInput = "resender_input"
     val poolInput = "pool_input"
@@ -163,6 +165,7 @@ object StreamMgr {
       redisplayStream()
     }
 
+    /*
     bind("main", in,
          "resent" -> ajaxSelect(following,
                                 Empty,
@@ -183,7 +186,31 @@ object StreamMgr {
                                        redisplay()},
                                        "id" -> filterPoolsInput)
     )
-    
+    */
+
+    import org.apache.esme.liftwebext.SHtml._ 
+    bind("main", in,
+         "resent" -> ajaxSortedSelect(following,
+                                true,
+                                Empty,
+                                u => {resender = u.toLong
+                                      redisplay()},
+                                "id" -> resenderInput),
+         "pools" -> ajaxSortedSelect(pools,
+                               true,
+                               Empty,
+                               p => {pool = p.toLong
+                                     redisplay()},
+                               "id" -> poolInput),
+         "filterResent" -> ajaxCheckbox(false,
+                                        r_? => {filterResent = r_?
+                                                 redisplay()},
+                                        "id" -> filterResentInput),
+         "filterPools" -> ajaxCheckbox(false,
+                                       p_? => {filterPools = p_?
+                                       redisplay()},
+                                       "id" -> filterPoolsInput)
+    )
   }
 
 }
