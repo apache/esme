@@ -35,7 +35,7 @@ object RssFeed {
 class RssFeed(user: User, rssURL: String, source: String, truncateChars: Int, tags: List[String])
   extends Feed(user, rssURL, source, truncateChars, tags) {
   import scala.xml._
-  
+
   override def dateFormats = RssFeed.dateFormats
   
   override def getEntries(xml: Elem) = xml \\ "item"
@@ -68,16 +68,36 @@ class RssFeed(user: User, rssURL: String, source: String, truncateChars: Int, ta
   }
   
   // need to compare by text since a pubDate is not mandatory and indeed, often is missing
+  /*
   override def getLastSortedMessages(msgs: List[Msg], lastMessage: Option[Msg]): List[Msg] = {
     lastMessage match {
       case Some(message: Msg) =>
         // a hack to format text identically- difference in urls & trailing whitespace
-        val lastMessageText = 
+        val lastMessageText =
           Message.create.setTextAndTags(message.text, Nil, Empty).
             get.body.trim
         msgs.takeWhile{ msg =>
           Message.create.setTextAndTags(msg.text, Nil, Empty).
             get.body.trim != lastMessageText
+        }
+      case None => msgs
+    }
+  }.reverse
+  */
+
+  override def getLastSortedMessages(msgs: List[Msg], lastMessage: Option[Msg]): List[Msg] = {
+    import net.liftweb.common.Box
+    lastMessage match {
+      case Some(message: Msg) =>
+        // a hack to format text identically- difference in urls & trailing whitespace
+        val lastMessageText =
+          Message.create.setTextAndTags(message.text, Nil, Empty).
+            choice((m: Message) => Box(m.body.trim))(Box("")).get
+            //get.body.trim
+        msgs.takeWhile{ msg =>
+          Message.create.setTextAndTags(msg.text, Nil, Empty).
+            choice((m: Message) => Box(m.body.trim))(Box("")).get != lastMessageText
+            //get.body.trim != lastMessageText
         }
       case None => msgs
     }
