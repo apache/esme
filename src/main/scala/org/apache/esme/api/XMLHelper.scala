@@ -59,7 +59,8 @@ trait XmlHelper {
   <id>{msg.id.toString}</id>
   <date>{toInternetDate(msg.when.is)}</date>
   <source>{msg.source.sourceAttr.getOrElse(Text(""))}</source>
-  <body>{msg.body}</body>  
+  <body>{msg.body}</body>
+  <metadata>{msg.metadata}</metadata>  
   {
     msg.author.obj.map(u =>
       <author><nickname>{u.niceName}</nickname><id>{u.id.toString}</id></author>

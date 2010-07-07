@@ -276,6 +276,7 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
   }
 }
 
+
 @Searchable
 class Message extends LongKeyedMapper[Message] {
   import Message._
@@ -309,6 +310,8 @@ class Message extends LongKeyedMapper[Message] {
    }
  
   lazy val body: String = originalXml \ "body" text
+  
+  lazy val metadata: String = originalXml \ "metadata" text
 
   lazy val metaData: String = {
     val org = originalXml
@@ -514,7 +517,7 @@ class Message extends LongKeyedMapper[Message] {
              ::: tags).removeDuplicates.map(_.toXml)
           }</tags>{
           metaData match {
-            case Full(xs) => <metadata>xs</metadata>
+            case Full(xs) => <metadata>{xs}</metadata>
             case _ => NodeSeq.Empty
           }
 
