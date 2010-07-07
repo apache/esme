@@ -91,9 +91,9 @@ object SHtml {
   private def getSortedOpts(opts: Seq[(String, String)], excludeFirstOpt: Boolean): Seq[(String, String)] =
     if ( excludeFirstOpt )
       opts match {
-        case first :: rest => first :: rest.toList.sort(_._2 < _._2)
+        case first :: rest => first :: rest.toList.sort( (first: (String, String), second: (String, String)) => first._2.toUpperCase < second._2.toUpperCase)
         case _ => opts
       }
     else
-      opts.toList.sort(_._2 < _._2)
+      opts.toList.sort( (first: (String, String), second: (String, String)) => first._2.toUpperCase < second._2.toUpperCase)
 }
