@@ -48,8 +48,15 @@ String.prototype.replaceAll = function(
 	// Return the updated string with ALL the target strings
 	// replaced out with the new substring.
 	return( strText );
-}
+} 
 
+
+function strip(html)
+{
+   var tmp = document.createElement("DIV");
+   tmp.innerHTML = html;
+   return tmp.textContent||tmp.innerText;
+}
 
 function displayMessages(msgArray, elementId)
 {
@@ -150,12 +157,14 @@ function displayMessages(msgArray, elementId)
                                      'clearResend("resend_' + id + '")');
       }
 
-      var tempStr = msgBody.replaceAll ("'", "ZZZ$%$");
+
+      var tempStr = strip(msgBody).replaceAll ("'", "ZZZ$%$");
       
-      var myReplyMsg = tempStr.replaceAll ("ZZZ$%$", "\\'");
+      var myReplyMsg = tempStr.replaceAll ("ZZZ$%$", "\\'");   
+      
           
       newMsg.find('#reply').attr('href',
-        "javascript:setReplyTo(" + id + ", '"+ escape(myReplyMsg) + "'," + msgPoolId + ", '" + msgAuthor.nickname + "')");
+        "javascript:setReplyTo(" + id + ", '"+ myReplyMsg + "'," + msgPoolId + ", '" + msgAuthor.nickname + "')");
       var conversation = newMsg.find('#conversation');
       if (msgConversation != 0) {
         conversation.attr('href', 
