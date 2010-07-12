@@ -177,7 +177,7 @@ class UserSnip extends DispatchSnippet {
         p    <- Privilege.findWritablePools(user.id))
         // slow?
       yield p)
-        .map( p => {val pool = AccessPool.find(p); (pool.toString, pool.get.getName)} )
+        .map( p => {val pool = AccessPool.find(p); (pool.get.id.is.toString, pool.get.getName)} )
         .toList
         .sort( ( first: (String, String), second: (String, String)) => first._2.toUpperCase < second._2.toUpperCase)
         .map(p => <option value={p._1}>{p._2}</option>)
