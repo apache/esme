@@ -58,6 +58,12 @@ function strip(html)
    return tmp.textContent||tmp.innerText;
 }
 
+function searchMe()
+{
+   if(document.forms["validateForm"].term.value.trim.length > 0)
+   	document.forms["validateForm"].submit();
+}
+
 function displayMessages(msgArray, elementId)
 {
 	
