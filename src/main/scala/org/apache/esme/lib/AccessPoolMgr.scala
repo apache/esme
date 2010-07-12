@@ -183,8 +183,8 @@ object AccessPoolMgr {
       pool = lastSelPool;
       val r: Box[Boolean] =
       for (admin <- adminUser;
-           p <- AccessPool.find(pool) ?~ DisplayMessage("messages", <b>{S.?("base_pool_err_pool_not_found")}</b>,  3 seconds, 2 seconds);
-           user <- User.findFromWeb(username) ?~ DisplayMessage("messages", <b>{S.?("base_pool_err_pool_not_found")}</b>,  3 seconds, 2 seconds)
+           p <- AccessPool.find(pool) ?~ S.?("base_pool_err_pool_not_found"); //DisplayMessage("messages", <b>{S.?("base_pool_err_pool_not_found")}</b>,  3 seconds, 2 seconds);
+           user <- User.findFromWeb(username) ?~ S.?("base_pool_err_user_not_found") //DisplayMessage("messages", <b>{S.?("base_pool_err_user_not_found")}</b>,  3 seconds, 2 seconds)
       ) yield if(Privilege.hasPermission(admin.id.is, p.id.is, Permission.Admin)) {
         val result = try {
           import org.apache.esme.model.Permission
@@ -198,16 +198,23 @@ object AccessPoolMgr {
        }
         result
       } else false // "User has no permission to administer pool"
+       /*
       r match {
         case Failure(m,_,_) => S.error(m)
         case Full(true) => S.notice(S.?("base_pool_msg_permission_set"))
         case _ => S.error(S.?("base_error_general"))
       }
+      */
 
       poolId.set(pool.toLong)
 
+      ( r match {
+        case Failure(m,_,_) => DisplayMessage("messages", <b>{m}</b>,  3 seconds, 2 seconds)//S.error(m)
+        case Full(true) => DisplayMessage("messages", <b>{S.?("base_pool_msg_permission_set")}</b>,  3 seconds, 2 seconds)//S.notice(S.?("base_pool_msg_permission_set"))
+        case _ => DisplayMessage("messages", <b>{S.?("base_error_general")}</b>,  3 seconds, 2 seconds)//S.error(S.?("base_error_general"))
+      } ) & 
       //we needn't redisplay pool detail when add a new user
-      redisplayPool() & SetValById(editUsername, "")
+      redisplayPool() & SetValById(editUsername, "") 
     }
 
     /*
