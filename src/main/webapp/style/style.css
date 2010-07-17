@@ -554,8 +554,7 @@ ul#toc li.current a {
 
 .container-streams {
 	float:left; 
-	width: 563px; 
-	height:500px; 
+	width: 563px;         
 	padding:20px 30px; 
 	background: url(../images/bg-tabs.png) no-repeat; 
 	margin-bottom:20px; 
@@ -658,13 +657,11 @@ position:absolute;
 top: 70px
 }
 
-.StreamUI {
-position:absolute;
+.StreamUI {         
 top: 60px
 }
 
-.stream_body {
-position:absolute;
+.stream_body {    
 top: 100px
 }
 
