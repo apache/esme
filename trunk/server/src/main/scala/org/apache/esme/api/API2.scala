@@ -255,7 +255,7 @@ object API2 extends ApiHelper with XmlHelper {
         val num = S.param("history").map(_.toInt) openOr 40;
         val lst = Mailbox.mostRecentMessagesFor(user.id, num))
       yield (200,Map(),Full(<messages>{lst.flatMap{ case (msg, reason, _) => msgToXml(msg) }}</messages>))
-
+                
     val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
       if(ret.isDefined) ret else Full((403,Map(),Empty))
 
@@ -345,8 +345,7 @@ object API2 extends ApiHelper with XmlHelper {
                                        pool) match {
            case Full(m: Message) => (200,Map(),Full(msgToXml(m)))
            case other => (200,Map(),Empty)
-        }
-//		(200,Map(),Empty)
+        }                            
       }
 
     val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
@@ -843,21 +842,4 @@ object API2 extends ApiHelper with XmlHelper {
   private case class ListenFor(who: LAFuture[List[(Message, MailboxReason)]],
                    howLong: TimeSpan)
   private case object ReleaseListener
-}
-
-// TODO:
-// 1. Make addMsg() return the created message when successful.
-// 2. Add a method to get detail for a specific user
-// 3. Change changeAction so that if the "enabled" parameter doesn't show up it will simply use
-//    the current value for the action, not throw an error.
-// 4. Match based on the return content type header to determine what to return (default to XML)
-// 5. Add a method to get detail for a specific track (or messages for the track?)
-// 6. Add a method to get detail of a specific action
-// 7. Add a method to delete pool
-// 8. Add a method to get the detail for a pool
-// 9. Add a method to get the list of users in a pool
-// 10. Add a method to delete a user from a pool
-// 11. Add a method to get the messages from a pool
-// 12. Add a method to post a new message to a pool
-// 13. Add a method to get list of conversations
-// 14. Add a method to post a message to a conversation??
+}                                                        
