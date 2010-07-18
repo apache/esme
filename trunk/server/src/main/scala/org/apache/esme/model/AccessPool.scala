@@ -80,8 +80,7 @@ class AccessPool extends LongKeyedMapper[AccessPool] {
     case List(_,_*) => Failure(S.?("base_pool_err_dup_name"))
   }
   
-  def getName() = name.is
-  def getDescription() = description.is
+  def getName() = name.is                  
 
   private def sameName(name: String) = 
     AccessPool.findAll(By(AccessPool.name, name)).
