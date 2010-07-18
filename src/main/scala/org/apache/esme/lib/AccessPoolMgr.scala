@@ -274,15 +274,16 @@ object AccessPoolMgr {
       }
     }
 
-    def doRender(): NodeSeq =
+    def doRender(): NodeSeq = 
        AccessPool.find(By(AccessPool.id, poolId.is)) match {
-        case Full(ap) => bind(
-        "pool", in,
-        "name" -> (if ( ap.getDescription.isEmpty ) ap.getName else ap.getName + " - " + ap.getDescription),
-        "creator" -> displayUserName(ap.creator),
-        "createdDate" -> getDateHtml(ap.createdDate),
-        "modifier" -> displayUserName(ap.modifier),
-        "lastModifyDate" -> getDateHtml(ap.lastModifyDate))
+        case Full(ap) => {         
+          bind(
+            "pool", in,
+            "name" -> (if ( ap.description == "" ) ap.getName else ap.getName + " - " + ap.description),
+            "creator" -> displayUserName( ap.creator ),
+            "createdDate" -> getDateHtml(ap.createdDate),
+            "modifier" -> displayUserName(ap.modifier),
+            "lastModifyDate" -> getDateHtml(ap.lastModifyDate)) }
       case _ => NodeSeq.Empty
       }
     
