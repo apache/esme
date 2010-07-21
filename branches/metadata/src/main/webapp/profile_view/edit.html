@@ -1,0 +1,93 @@
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one   *
+ or more contributor license agreements.  See the NOTICE file *
+ distributed with this work for additional information        *
+ regarding copyright ownership.  The ASF licenses this file   *
+ to you under the Apache License, Version 2.0 (the            *
+ "License"); you may not use this file except in compliance   *
+ with the License.  You may obtain a copy of the License at   *
+                                                              *
+   http://www.apache.org/licenses/LICENSE-2.0                 *
+                                                              *
+ Unless required by applicable law or agreed to in writing,   *
+ software distributed under the License is distributed on an  *
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY       *
+ KIND, either express or implied.  See the License for the    *
+ specific language governing permissions and limitations      *
+ under the License.                                           *
+-->
+<lift:surround with="base" at="left">
+
+<div id="back-header">
+	<h1><lift:loc>ui_profile_title</lift:loc></h1>
+		
+
+	<!---CONTENT BOX-->
+	<div class="container-settings">
+		  <lift:editProfile form="post" id = "validateForm">
+					<div id="form-signup">
+							<div class="post-form-row">
+								<label class="main"><lift:loc>ui_sign_up_nickname</lift:loc></label>
+								<user:nickname class="inputBox2  tipelement required alphanumeric" minlength="3" title="This is nickname that other users will use communicate with you."/>
+							</div>	
+							
+							<div class="post-form-row">
+								<label class="main"><lift:loc>ui_sign_up_firstname</lift:loc></label>
+								<user:firstName class="inputBox2 tipelement required" minlength="3" title="This is your first name."/>
+							</div>	
+							
+							<div class="post-form-row">
+								<label class="main"><lift:loc>ui_sign_up_lastname</lift:loc></label>
+								<user:lastName class="inputBox2 tipelement required" minlength="3"  title="This is your last name."/>
+							</div>	
+							
+							<div class="post-form-row">
+								<label class="main"><lift:loc>ui_sign_up_image_url</lift:loc></label>
+								<user:imageURL class="inputBox2 tipelement  url"  title="This is the URL that points to your avatar picture. You can use Gravatar.com to store your avatar images."/>
+							</div>	
+							
+							<div class="post-form-row">
+								<label class="main"><lift:loc>ui_sign_up_timezone</lift:loc></label>
+								<user:timezone class="inputBox2 tipelement" title="This is the timezone in which you are located."/>
+							</div>	
+							
+							<div class="post-form-row">
+								<label class="main"><lift:loc>ui_sign_up_locale</lift:loc></label>
+								<user:locale class="inputBox2 tipelement" title="This is your language setting that influences which language is used in the UI. "/>
+							</div>
+							
+							<div class="post-form-row">
+								<label class="main"><lift:loc>ui_login_email</lift:loc></label>
+								<user:email class="inputBox2 tipelement  email" minlength="3" title="This is your email. "/>
+							</div>	
+							
+							<div class="post-form-row">
+								<label class="main"><lift:loc>ui_login_password</lift:loc></label>
+								<user:password class="inputBox2 tipelement" title="This is your password"/>
+							</div>	
+							
+							<div class="post-form-row">
+								<label class="main"><lift:loc>ui_login_password_repeat</lift:loc></label>
+								<user:confirm class="inputBox2 tipelement" title="Please enter your password again to make sure that it is correct"/>
+							</div>	
+							
+							<div class="post-form-row">
+								<label class="main"><lift:loc>ui_sign_up_openid</lift:loc></label>
+								<user:openid class="inputBox2 tipelement" title="This is your OpenID URL."/>
+							</div>	
+							
+							<div class="post-form-row">
+								<div class="submit-btn">
+									<user:save type="image" src="/images/btn-save.gif" class="tipelement" title="Save your changes!"/>
+								</div>
+							</div>	
+							
+					</div><!--form-signup-->
+			 </lift:editProfile>
+	</div><!--container-settings-->
+	
+	<!--END CONTENT BOX-->	
+	</div>
+	
+	
+</lift:surround>
