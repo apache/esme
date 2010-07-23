@@ -379,9 +379,9 @@ object Api2Specs extends Specification with TestKit {
             "message" -> "test POST message",
             "metadata" -> "<outer><meta><metameta>Hello</metameta></meta><onlymeta>Meta</onlymeta></outer>")              
         } {
-          mess_res.code must be equalTo 200       
+          mess_res.code must be equalTo 200            
           (mess_res.xml.open_! \ "message") must \\ (<body>test POST message</body>)    
-          (mess_res.xml.open_! \ "metadata") must \\ (<outer><meta><metameta>Hello</metameta></meta><onlymeta>Meta</onlymeta></outer>)         
+          (mess_res.xml.open_! \\ "metadata") must be equalTo <metadata><outer><meta><metameta>Hello</metameta></meta><onlymeta>Meta</onlymeta></outer></metadata>         
         }
       }  
       
@@ -390,12 +390,11 @@ object Api2Specs extends Specification with TestKit {
           session <- post_session       
           mess_res <- session.post("user/messages",
             "message" -> "test POST message",
-            "metadata" -> """<anytag>"meta":[{"place":{"place_type":"city","region":"CA+"}},{"song":{"artist":"Prince","songtitle":"Never+Let+Me+Down"}}]</anytag>""")              
+            "metadata" -> """"meta":[{"place":{"place_type":"city","region":"CA+"}},{"song":{"artist":"Prince","songtitle":"Never+Let+Me+Down"}}]""")              
         } {
-          mess_res.code must be equalTo 200          
+          mess_res.code must be equalTo 200                  
           (mess_res.xml.open_! \ "message") must \\ (<body>test POST message</body>)    
-          (mess_res.xml.open_! \ "metadata").text must be equalTo """[{place:{place_type:city,region:CA }},{song:{artist:Prince,song 
-          title:Never Let Me Down}}]"""         
+          (mess_res.xml.open_! \\ "metadata") must be equalTo <metadata>{""""meta":[{"place":{"place_type":"city","region":"CA+"}},{"song":{"artist":"Prince","songtitle":"Never+Let+Me+Down"}}]"""}</metadata>         
         }
       }
     }
