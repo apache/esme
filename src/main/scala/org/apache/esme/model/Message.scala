@@ -311,7 +311,8 @@ class Message extends LongKeyedMapper[Message] {
  
   lazy val body: String = originalXml \ "body" text
   
-  lazy val metadata: String = originalXml \ "metadata" text
+  //lazy val metadata: String = originalXml \ "metadata" text
+  lazy val metadata: String = (originalXml \ "metadata").toString
 
   lazy val metaData: String = {
     val org = originalXml
