@@ -83,7 +83,7 @@ class Boot {
 
     if (Props.mode == Props.RunModes.Test) {
       Schemifier.destroyTables_!!(Log.infoF _, User, ExtSession,
-        Message, Mailbox, Tag,
+        Message, Mailbox, Tag, UserTagFollow,
         Relationship, MessageTag,
         AuthToken, UrlStore, Tracking,
         Action, AccessPool,
@@ -91,7 +91,7 @@ class Boot {
     }
 
     Schemifier.schemify(true, Log.infoF _, User, ExtSession, Message,
-      Mailbox, Tag,
+      Mailbox, Tag, UserTagFollow,
       Relationship, MessageTag, AuthToken,
       UrlStore, Tracking, Action, 
       AccessPool, Privilege, UserAuth, UserCryptoSig)

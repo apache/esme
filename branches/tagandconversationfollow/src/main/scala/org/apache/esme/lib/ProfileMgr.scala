@@ -140,7 +140,7 @@ object ProfileMgr {
                        "password" -%> password(pwd, p => pwd = p.trim),
                        "confirm" -%> password(pwd, p => checkEmailPassword(p.trim)),
                        "openid" -%> text(openIdUrl, registerOpenID(_)),
-                       "save" -%> submit("Save", user.save))
+                       "save" -%> submit("Save", user.save _))
     }).getOrElse(NodeSeq.Empty)
 
   }
