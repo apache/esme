@@ -94,7 +94,11 @@ abstract class TwitterAPI {
     case Req(ApiPath ::> "statuses" ::> "retweeted_to_me", this.method, GetRequest) => () => timeline(ToMe)
 
     case Req(ApiPath ::> "friendships" ::> "create" ::> last, this.method, PostRequest) => () => createFriendship(last)
+    case Req(ApiPath ::> "friendships" ::> "create", this.method, PostRequest)
+      if S.param("user_id").isDefined => createFriendship
     case Req(ApiPath ::> "friendships" ::> "destroy" ::> last, this.method, PostRequest) => () => destroyFriendship(last)
+    case Req(ApiPath ::> "friendships" ::> "destroy", this.method, PostRequest)
+      if S.param("user_id").isDefined => destroyFriendship
     case Req(ApiPath ::> "friendships" ::> "exists", this.method, GetRequest) => existsFriendship
 
     case Req(ApiPath ::> "account" ::> "verify_credentials", this.method, GetRequest) => verifyCredentials
@@ -286,6 +290,12 @@ abstract class TwitterAPI {
     }
   }
   
+  def createFriendship(): Box[TwitterResponse] = {
+    for (user_id <- S.param("user_id");
+         response <- createFriendship(user_id))
+    yield response
+  }
+  
   def destroyFriendship(other: String): Box[TwitterResponse] = {
     for (user <- calcUser;
          other <- User.findFromWeb(other) ?~ S.?("base_twitter_api_err_user_not_found"))
@@ -295,6 +305,12 @@ abstract class TwitterAPI {
       else
         Right(Map("hash" -> Map("error" -> S.?("base_twitter_api_err_user_not_unfollow"))))
     }
+  }
+
+  def destroyFriendship(): Box[TwitterResponse] = {
+    for (user_id <- S.param("user_id");
+         response <- destroyFriendship(user_id))
+    yield response
   }
   
   def existsFriendship(): Box[TwitterResponse] = {
