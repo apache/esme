@@ -202,7 +202,8 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
         Privilege.findViewablePools(user.id.is)
       }                                      
     val newQueryParams: Seq[QueryParam[Message]] = viewablePools match {
-      case Full(pools: List[Long]) if !pools.isEmpty => List(
+      case Full(Nil) => List(By(pool, Empty))
+      case Full(pools: List[Long]) => List(
         BySql(" POOL in ( ?" + ( ", ?" * (pools.size - 1)) + " ) OR POOL IS NULL ",
               IHaveValidatedThisSQL("vdichev", "22 June 2009"),
               pools.toSeq:_*)
