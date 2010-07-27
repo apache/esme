@@ -56,7 +56,7 @@ import org.apache.esme._
 import model._
 import org.apache.esme.actor._
 
-import scala.xml.{NodeSeq, Text, Elem, XML, Node}
+import scala.xml._
 
 import scala.collection.mutable.ListBuffer
 
@@ -339,7 +339,10 @@ object API2 extends ApiHelper with XmlHelper {
                                        Tag.split(S.param("tags")
                                                  openOr ""),
                                        millis,
-                                       xml,
+                                       xml match {
+                                         case Full(x) => xml
+                                         case _ => Box({new Atom(S.param("metadata") openOr "")})
+                                       },
                                        from,
                                        S.param("replyto").map(toLong),
                                        pool) match {

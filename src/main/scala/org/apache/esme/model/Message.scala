@@ -312,7 +312,8 @@ class Message extends LongKeyedMapper[Message] {
  
   lazy val body: String = originalXml \ "body" text
   
-  lazy val metadata: String = originalXml \ "metadata" text
+  //lazy val metadata: String = originalXml \ "metadata" text
+  lazy val metadata: String = (originalXml \ "metadata").toString
 
   lazy val metaData: String = {
     val org = originalXml
@@ -497,8 +498,9 @@ class Message extends LongKeyedMapper[Message] {
    * Note that the text representation of the XML must be readable
    * for clients that don't support markup formatting
    * and is recommended to result in the same XML when parsed
-   */
-  def setTextAndTags(in: String, tags: List[Tag], metaData: Box[Elem]): Box[Message] = {
+   */                                                                                        
+   
+  def setTextAndTags(in: String, tags: List[Tag], metaData: Box[Node]): Box[Message] = {
     MsgParser.parseMessage(in).map{
       lst =>
       val xml = <message><body>{
