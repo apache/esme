@@ -31,15 +31,15 @@ import model._
 import lib._
 
 import java.util.{TimeZone, Calendar}
-import scala.xml.{Elem}
+import scala.xml.{Node, Elem}
 //import com.twitter.stats.Stats
 import com.twitter.ostrich.Stats
 
 object UserActor {
   private[actor] case class StartMeUp(user: Long)
   private[actor] case class RefreshMe(user: Long)
-  private[actor] case class CreateMessage(text: String, tags: List[String],
-                                          when: Long, metaData: Box[Elem],
+  private[actor] case class CreateMessage(text: String, tags: List[String],     
+                                          when: Long, metaData: Box[Node],
                                           source: String,
                                           replyTo: Box[Long],
                                           pool: Box[Long])
