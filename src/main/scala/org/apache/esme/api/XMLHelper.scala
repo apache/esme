@@ -35,7 +35,7 @@ import Helpers._
 import org.apache.esme._
 import model._
 
-import scala.xml.{NodeSeq, Text, Elem, UnprefixedAttribute, Null, Node}  
+import scala.xml.{NodeSeq, Text, Elem, UnprefixedAttribute, Null, Node, XML}  
   
 trait XmlHelper { 
   protected def userToXml(user: User): Elem =
@@ -60,7 +60,9 @@ trait XmlHelper {
   <date>{toInternetDate(msg.when.is)}</date>
   <source>{msg.source.sourceAttr.getOrElse(Text(""))}</source>
   <body>{msg.body}</body>
-  <metadata>{msg.metadata}</metadata>  
+  { if ( msg.metadata != null && msg.metadata.length != 0 )
+      XML.loadString(msg.metadata)
+    else <metadata/> }  
   {
     msg.author.obj.map(u =>
       <author><nickname>{u.niceName}</nickname><id>{u.id.toString}</id></author>
