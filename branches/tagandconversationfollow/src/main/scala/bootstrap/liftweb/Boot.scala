@@ -224,7 +224,8 @@ class Boot {
     // start Scala Actors used in ESME
     Distributor.touch
     SchedulerActor.touch
-    MessagePullActor.touch
+    MessagePullActor.touch   
+    TagDistributor.touch
     // ScalaInterpreter.touch
 
 
