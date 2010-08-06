@@ -163,10 +163,11 @@ object TwitterAPISpecs extends Specification with TestKit {
     }
     
     "let follower see user's message in home timeline" in {
-      // TODO: currently fails
-      // post("/statuses/update.xml", "status" -> "user_msg") \\(<text>user_msg</text>)
+      post("/statuses/update.xml", "status" -> "user_msg") \\(<text>user_msg</text>)
+      // wait till the message appears in the timeline
+      Thread.sleep(2000L)
       
-      // get("/statuses/home_timeline.xml", followerClient, Nil) \\(<text>user_msg</text>)
+      get("/statuses/home_timeline.xml", followerClient, Nil) \\(<text>user_msg</text>)
     }
     
     "not let user see follower's message in home timeline" in {
