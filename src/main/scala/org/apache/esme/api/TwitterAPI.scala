@@ -240,7 +240,12 @@ abstract class TwitterAPI {
                                source(req.param("source") openOr "twitterapi").
                                setTextAndTags(text, Nil, None))
     yield {
-      Distributor ! Distributor.AddMessageToMailbox(user.id.is, msg.saveMe, NoReason)
+      Distributor ! Distributor.UserCreatedMessage(user.id.is, text, Nil,
+                                                   millis,
+                                                   None,
+                                                   msg.source,
+                                                   None,
+                                                   None)
       Right(Map("status" -> msgData(msg)))
     }
   }
