@@ -20,10 +20,13 @@
 package org.apache.esme.api
 
 import scala.xml._
+import scala.actors.Actor
+import scala.actors.TIMEOUT
 
 import org.specs._
 import org.specs.runner.JUnit3
 import org.specs.runner.ConsoleRunner
+import net.liftweb.actor.LiftActor
 import net.liftweb.util._
 import net.liftweb.common._
 import net.liftweb.mapper.{By}
@@ -31,6 +34,9 @@ import org.specs.matcher._
 import Helpers._
 import org.apache.esme._
 import model._
+import org.apache.esme.actor.Distributor
+import org.apache.esme.actor.Distributor.NewMessage
+import org.apache.esme.actor.Distributor.PublicTimelineListeners
 import net.liftweb.http._
 import testing.{ReportFailure, TestKit, HttpResponse, TestFramework, TestResponse, Response}
 
@@ -90,6 +96,26 @@ object TwitterAPISpecs extends Specification with TestKit {
     val theClient = buildBasicAuthClient(followerName, followerToken)
     theClient.getParams.setAuthenticationPreemptive(true)
     theClient
+  }
+  
+  class BridgeActor(receiver: Actor) extends LiftActor {
+    protected def messageHandler = {
+      case nm @ NewMessage(_) => receiver ! nm
+    }
+  }
+  
+  case object Wait
+  
+  class ConductorActor extends Actor {
+    def act {
+      react {
+        case Wait => reply {
+          receive {
+            case NewMessage(msg) => msg
+          }
+        }
+      }
+    }
   }
   
   trait XmlResponse {
@@ -163,9 +189,18 @@ object TwitterAPISpecs extends Specification with TestKit {
     }
     
     "let follower see user's message in home timeline" in {
+      // register an actor to be notified when a new message is received
+      val conductor = new ConductorActor
+      conductor.start
+      val liftActor = new BridgeActor(conductor)
+      Distributor ! PublicTimelineListeners(liftActor)
+      
       post("/statuses/update.xml", "status" -> "user_msg") \\(<text>user_msg</text>)
+      
       // wait till the message appears in the timeline
-      Thread.sleep(2000L)
+      // or fail after 5 seconds
+      val msgReceived = conductor !? (5000L, Wait)
+      if (msgReceived.isEmpty) fail("no message received")
       
       get("/statuses/home_timeline.xml", followerClient, Nil) \\(<text>user_msg</text>)
     }
