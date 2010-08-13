@@ -25,11 +25,13 @@
   <compass name="default">
 
     <connection>
-      <jdbc>
+      <jdbc dialect= "org.apache.lucene.store.jdbc.dialect.DerbyDialect">
+      <!-- For 'dialect' see http://www.compass-project.org/schema/compass-core-config-2.1.xsd -->
           <dataSourceProvider>
-              <driverManager  url="jdbc:example"
-                              username="user" password="password"
-                              driverClass="com.example.jdbc.Driver" />
+            <!-- Username must be present and password can be empty -->
+            <driverManager  url="jdbc:derby:esme_compass_index_db;create=true"
+                            username="esmeuser" password=""                              
+                            driverClass="org.apache.derby.jdbc.EmbeddedDriver" />
           </dataSourceProvider>
       </jdbc>
 
