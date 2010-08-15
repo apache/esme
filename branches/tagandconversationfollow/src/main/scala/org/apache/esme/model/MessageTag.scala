@@ -36,7 +36,7 @@ class MessageTag extends LongKeyedMapper[MessageTag] {
   object id extends MappedLongIndex(this)
   
   object message extends MappedLongForeignKey(this, Message)
-  object tag extends MappedLongForeignKey(this, Tag) // MappedText(this)
+  object tag extends MappedLongForeignKey(this, Tag)
   object sentTo extends MappedLongForeignKey(this, User)
   object url extends MappedLongForeignKey(this, UrlStore)
 }

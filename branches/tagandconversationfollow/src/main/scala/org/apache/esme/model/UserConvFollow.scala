@@ -20,13 +20,13 @@ package org.apache.esme.model
  */              
  
 import net.liftweb._    
-import mapper._     
+import mapper._       
 
-object UserTagFollow extends UserTagFollow with LongKeyedMetaMapper[UserTagFollow]
+object UserConvFollow extends UserConvFollow with LongKeyedMetaMapper[UserConvFollow]
 
-class UserTagFollow extends LongKeyedMapper[UserTagFollow] with IdPK {  
-  def getSingleton = UserTagFollow
+class UserConvFollow extends LongKeyedMapper[UserConvFollow] with IdPK {  
+  def getSingleton = UserConvFollow
 
   object user extends LongMappedMapper(this, User)
-  object tag extends LongMappedMapper(this, Tag)
+  object conversation extends LongMappedMapper(this, Message)
 }

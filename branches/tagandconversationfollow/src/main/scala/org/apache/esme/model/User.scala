@@ -403,4 +403,6 @@ class User extends KeyedMapper[Long, User] with UserIdAsString with ManyToMany {
   def localeDisplayName = S.?("base_user_ui_locale")  
   
   object tagsfollowing extends MappedManyToMany(UserTagFollow, UserTagFollow.user, UserTagFollow.tag, Tag)
+  
+  object convsfollowing extends MappedManyToMany(UserConvFollow, UserConvFollow.user, UserConvFollow.conversation, Message) 
 }

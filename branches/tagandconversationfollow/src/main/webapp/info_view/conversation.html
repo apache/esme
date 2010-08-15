@@ -26,7 +26,8 @@
 
 <div id="back-header">
 	<h1><lift:loc>ui_default_conversation</lift:loc></h1>
-	<div class="container-aux">
+	<div class="container-aux">        
+	  <span id="following"><conv:followButton/></span>
         <div>
             <lift:displayConversation/>
 	    <lift:embed what="templates-hidden/message_core"/>

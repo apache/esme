@@ -1,5 +1,3 @@
-package org.apache.esme.model
-
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -17,16 +15,30 @@ package org.apache.esme.model
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
- */              
- 
-import net.liftweb._    
-import mapper._     
+ */
 
-object UserTagFollow extends UserTagFollow with LongKeyedMetaMapper[UserTagFollow]
+package org.apache.esme.actor  
 
-class UserTagFollow extends LongKeyedMapper[UserTagFollow] with IdPK {  
-  def getSingleton = UserTagFollow
+import net.liftweb._  
+import actor._        
 
-  object user extends LongMappedMapper(this, User)
-  object tag extends LongMappedMapper(this, Tag)
+import org.apache.esme._
+import model.{Message, User, ConvFollowReason}
+
+object ConvDistributor extends LiftActor {
+                             
+  protected def messageHandler = {
+    case Distributor.NewMessage(msg) => {  
+      Message.findMessages(List(msg.conversation)).values.map( m => {
+        m.followers.refresh.map( u => {  
+          Distributor ! Distributor.AddMessageToMailbox(u.id, msg, ConvFollowReason(m.id));  
+        })
+      })
+    }
+  } 
+  
+  def touch {
+  
+  }                   
+
 }

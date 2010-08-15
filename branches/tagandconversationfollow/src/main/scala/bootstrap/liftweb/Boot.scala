@@ -83,7 +83,7 @@ class Boot {
 
     if (Props.mode == Props.RunModes.Test) {
       Schemifier.destroyTables_!!(Log.infoF _, User, ExtSession,
-        Message, Mailbox, Tag, UserTagFollow,
+        Message, Mailbox, Tag, UserTagFollow, UserConvFollow,
         Relationship, MessageTag,
         AuthToken, UrlStore, Tracking,
         Action, AccessPool,
@@ -91,7 +91,7 @@ class Boot {
     }
 
     Schemifier.schemify(true, Log.infoF _, User, ExtSession, Message,
-      Mailbox, Tag, UserTagFollow,
+      Mailbox, Tag, UserTagFollow, UserConvFollow,
       Relationship, MessageTag, AuthToken,
       UrlStore, Tracking, Action, 
       AccessPool, Privilege, UserAuth, UserCryptoSig)
@@ -225,7 +225,8 @@ class Boot {
     Distributor.touch
     SchedulerActor.touch
     MessagePullActor.touch   
-    TagDistributor.touch
+    TagDistributor.touch  
+    ConvDistributor.touch
     // ScalaInterpreter.touch
 
 
