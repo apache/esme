@@ -92,8 +92,7 @@
                                      </fieldset>
 				</lift:poolDetail>
 			</div>
-			<div id="PoolSpan">
-			     
+			<div id="PoolSpan">  
 				<lift:ignore>
 					<!--  The poolUsers snippet *MUST* appear on the page before the editPool snippet                        -->
 				</lift:ignore>
@@ -137,7 +136,39 @@
 						<edit:pool class="tipelement" title="Select a pool to edit"/>
 					</lift:editPool>
 				</lift:form>
-			</div>
+			</div>      
+			<div id="pool_membership_and_roles" title="My Pool Roles" >
+        <lift:myPools the_id="pool_membership_and_roles">
+          <br/>
+          <br/>
+          <br/>
+          <b><lift:loc>ui_pool_list_mine_title</lift:loc></b>
+          <table id="esme-table" class="tablesorter">
+            <thead>
+              <tr>
+                <th>
+                  <lift:loc>ui_pool_list_mine_pool_name</lift:loc>
+                </th>
+                <th>
+                  <lift:loc>ui_pool_list_mine_role</lift:loc>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <myPool:pool>
+                <tr>
+                  <td>
+                    <pool:poolName/>
+                      </td>
+                      <td>
+                    <pool:role/>
+                  </td>
+                </tr>
+              </myPool:pool>
+            </tbody>
+          </table>
+        </lift:myPools>
+      </div>
 			<div id="dialog-form" title="Create new  pool" style="display: none">
 				<p class="validateTips">
 					<!--lift:loc>ui_form_all_fields_required</lift:loc-->

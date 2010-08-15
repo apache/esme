@@ -56,11 +56,12 @@ object AccessPoolMgr {
   val ifIsLoggedIn = If(loggedIn_? _, strFuncToFailMsg(() => S.?("base_error_not_logged_in")))
 
   val menuItems =
-  Menu(Loc("accessPools", List("pools_view", "index"), S.?("base_pool_menu"), ifIsLoggedIn,
+  Menu(Loc("accessPools", new Link("pools_view" :: Nil, true)/*List("pools_view", "index")*/, S.?("base_pool_menu"), ifIsLoggedIn,
            Loc.Snippet("addPool", addPool),
            Loc.Snippet("editPool", editPool),
            Loc.Snippet("poolUsers", displayPoolUsers),
   		   Loc.Snippet("poolDetail", displayPoolDetail)//regist snippet for pool detail display
+          ,Loc.Snippet("myPools", myPoolsWithRoles)          
   		)) ::
   Nil
 
@@ -68,8 +69,9 @@ object AccessPoolMgr {
   
   //update pool detail response 
   object updatePoolDetail extends RequestVar[() => JsCmd](() => Noop)
-  
-  
+
+  object poolsWithRoles extends RequestVar[() => JsCmd](() => Noop)
+
   object poolId extends RequestVar[Long](0)
 
 
@@ -78,12 +80,15 @@ object AccessPoolMgr {
   *
   */
   def addPool(in: NodeSeq): NodeSeq = {
+
+    // redisplay my pools and roles
+    val redisplayPoolsAndRoles = poolsWithRoles.is
   
     val theInput = "new_pool"
     val newPoolDescription = "new_pool_description";
     val user = User.currentUser
     var newPoolName = "";
-    
+
       
     //def addNewPool(name: String) = {
     def addNewPool(poolDescription: String) = {
@@ -118,6 +123,7 @@ object AccessPoolMgr {
                 SetValById(theInput, "")  &
                 ReplaceOptions("edit_pool", selectPools, Full(p.id.is.toString))  &
                 FireOnchangeById("edit_pool") &
+                redisplayPoolsAndRoles() &
                 //DisplayMessage("messages", <b>{S.?("base_pool_msg_new_pool",name)}</b>,  3 seconds, 2 seconds)
                 DisplayMessage("messages", <b>{S.?("base_pool_msg_new_pool",x)}</b>,  3 seconds, 2 seconds)
               } else
@@ -154,10 +160,13 @@ object AccessPoolMgr {
     // redisplay pool detail
     val redisplayPoolDetail = updatePoolDetail.is
 
+    val redisplayPoolsAndRoles = poolsWithRoles.is
+
     // redisplay pool users and pool detail
     def redisplay(): JsCmd = {
-      redisplayPoolDetail() & redisplayPool()
+      redisplayPoolDetail() & redisplayPool() & redisplayPoolsAndRoles()
     }
+
     var pool = ""
     var username = ""
     val editPoolName = "edit_pool"
@@ -214,7 +223,8 @@ object AccessPoolMgr {
         case _ => DisplayMessage("messages", <b>{S.?("base_error_general")}</b>,  3 seconds, 2 seconds)//S.error(S.?("base_error_general"))
       } ) & 
       //we needn't redisplay pool detail when add a new user
-      redisplayPool() & SetValById(editUsername, "") 
+      redisplayPool() & SetValById(editUsername, "") &
+      redisplayPoolsAndRoles()
     }
 
     /*
@@ -254,6 +264,39 @@ object AccessPoolMgr {
     )
   }
 
+  def myPoolsWithRoles(in: NodeSeq): NodeSeq = {
+
+    // get the span name to update
+    val spanName = S.attr("the_id") openOr "pool_membership_and_roles"
+
+    def doRender(): NodeSeq = {
+
+      val user = User.currentUser
+
+      val userPools =
+        (user match {
+          case Full(u)=> Privilege.findViewablePools(u.id).map(
+            p => (p, AccessPool.find(p).get.getName))
+          case _ => Nil
+        })
+
+      val userPerms = userPools.map((x: (Long, String)) => Privilege.getPermissionString(user.open_!.id, x._1));
+      val poolsAndRoles = userPools.map(_._2).zip(userPerms)
+
+      bind("myPool", in,
+          "pool" ->
+             (in1 =>
+                poolsAndRoles.flatMap((x: (String, String)) =>
+                                            bind("pool", in1,
+                                              "poolName" -> x._1,
+                                              "role" -> x._2
+               ))))
+    }
+
+    def updateSpan(): JsCmd = SetHtml(spanName, doRender())
+    poolsWithRoles.set(updateSpan)
+    doRender
+  }
 
   def displayPoolDetail(in: NodeSeq): NodeSeq = {
     import org.apache.esme.model.AccessPool

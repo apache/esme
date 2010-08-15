@@ -71,6 +71,11 @@ object Privilege extends Privilege with LongKeyedMetaMapper[Privilege] {
     By(Privilege.user, userId),
     By(Privilege.permission, Permission.Admin)
   )(p => Full(p.pool.is)) :_*)
+
+  def getPermissionString(userId: Long, poolId: Long) : String = Privilege.find(
+    By(user, userId),
+    By(pool, poolId)
+  ).map(_.permission.is).open_!.toString 
 }
 
 /**
@@ -98,6 +103,7 @@ class Privilege extends LongKeyedMapper[Privilege] {
     By(user, userId),
     By(pool, poolId)
   ).map(_.permission.is >= permission).getOrElse(false)
+
 }
 
 /**
