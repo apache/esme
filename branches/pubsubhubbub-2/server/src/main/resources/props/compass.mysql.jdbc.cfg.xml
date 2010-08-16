@@ -1,0 +1,58 @@
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one   *
+ or more contributor license agreements.  See the NOTICE file *
+ distributed with this work for additional information        *
+ regarding copyright ownership.  The ASF licenses this file   *
+ to you under the Apache License, Version 2.0 (the            *
+ "License"); you may not use this file except in compliance   *
+ with the License.  You may obtain a copy of the License at   *
+                                                              *
+   http://www.apache.org/licenses/LICENSE-2.0                 *
+                                                              *
+ Unless required by applicable law or agreed to in writing,   *
+ software distributed under the License is distributed on an  *
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY       *
+ KIND, either express or implied.  See the License for the    *
+ specific language governing permissions and limitations      *
+ under the License.                                           *
+-->
+ 
+<compass-core-config xmlns="http://www.compass-project.org/schema/core-config"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.compass-project.org/schema/core-config
+  http://www.compass-project.org/schema/compass-core-config-2.1.xsd">
+
+  <compass name="default">
+
+    <connection>
+      <jdbc dialect= "org.apache.lucene.store.jdbc.dialect.MySQLDialect">
+	  <!-- For 'dialect' see http://www.compass-project.org/schema/compass-core-config-2.1.xsd -->	  	
+	  <!-- Or, Compass Reference: Appendix B. Lucene Jdbc Directory : Table B.4. Jdbc Directory SQL Dialects -->
+          <dataSourceProvider>
+	      <!-- Apparently, username must be present and password can be empty -->
+              <!-- Supply following driverManager element (commented below) -->
+	      <!-- See http://dev.mysql.com/doc/refman/5.0/en/connector-j-reference.html -->
+	      <!--driverManager  url="jdbc:mysql://[host][,failoverhost...][:port]/[<compass-index-database-name>][?propertyName1][=propertyValue1][&propertyName2][=propertyValue2]"
+			      username="esmeuser" password=""                              
+                              driverClass="com.mysql.jdbc.Driver" /-->
+          </dataSourceProvider>
+      </jdbc>
+
+    </connection>
+    <searchEngine >
+      <analyzer name="default" type="Stop" />   
+      <analyzer name="pool" type="Standard" />
+      <analyzer name="stemming" type="Snowball" snowballType="English">
+           <stopWords>
+               <stopWord value="no" />
+               <stopWord value="the" />
+               <stopWord value="and" />
+               <stopWord value="a" />
+               <stopWord value="this" />
+               <stopWord value="i" />
+               <stopWord value="is" />                                  
+            </stopWords>
+      </analyzer>
+    </searchEngine>
+  </compass>
+</compass-core-config>
