@@ -124,5 +124,5 @@ object TagDisplay {
          "each" -> bindTag(tagList) _,
          "followButton" -> followOrUnfollow )
 
-  }
+  }  
 }

@@ -25,13 +25,15 @@ import actor._
 import org.apache.esme._
 import model.{Message, User, ConvFollowReason}
 
-object ConvDistributor extends LiftActor {
+object ConvDistributor extends LiftActor {   
+
+  println("ConvDistributor started")
                              
   protected def messageHandler = {
-    case Distributor.NewMessage(msg) => {  
-      Message.findMessages(List(msg.conversation)).values.map( m => {
-        m.followers.refresh.map( u => {  
-          Distributor ! Distributor.AddMessageToMailbox(u.id, msg, ConvFollowReason(m.id));  
+    case Distributor.NewMessage(msg) => {                                                            
+      Message.findMessages(List(msg.conversation)).values.toList.map( m => {  
+        m.followers.refresh.map( u => {                             
+          Distributor ! Distributor.AddMessageToMailbox(u.id, msg, ConvFollowReason(m.id)); 
         })
       })
     }
