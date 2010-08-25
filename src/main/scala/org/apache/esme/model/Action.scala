@@ -362,13 +362,16 @@ case object SentToMeAction extends TestAction {
 }
 case class NotAction(action: TestAction) extends TestAction {
   def toStr = "not( "+action.toStr+" )"
+  override def toDisplayStr = "not( "+action.toDisplayStr+" )"
 }
 case class OrAction(left: TestAction, right: TestAction) extends TestAction {
   def toStr = left.toStr + " | " + right.toStr
+  override def toDisplayStr = left.toDisplayStr + " | " + right.toDisplayStr
 }
 
 case class AndAction(left: TestAction, right: TestAction) extends TestAction {
   def toStr = left.toStr + " &  " + right.toStr
+  override def toDisplayStr = left.toDisplayStr + " &  " + right.toDisplayStr
 }
 
 case class AtUserAction(userId: Long) extends TestAction {
@@ -386,6 +389,7 @@ case object PoolAction extends TestAction {
 
 case class PoolAction(poolId: Long) extends TestAction {
   def toStr = "pool:" + poolId
+  override def toDisplayStr = "pool:" + AccessPool.getPoolName(poolId)
 }
 
 case object ResentAction extends TestAction {
@@ -439,6 +443,7 @@ case class HashAction(hashId: Long, str: String) extends TestAction {
 
 case class ParenAction(action: TestAction) extends TestAction {
   def toStr = "( "+action.toStr+" )"
+  override def toDisplayStr = "( "+action.toDisplayStr+" )"
 }
 
 case class PercentAction(percent: Int) extends TestAction {
