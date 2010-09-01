@@ -5,12 +5,14 @@ Release 1.1-incubating - 09/10/2010
 ESME-14	        Redesign, rework, write unit tests for, and fully document API
 ESME-100	Finish web UI
 ESME-103	"Tabs on Message Page"
+ESME-108        View my pools" functionality
 ESME-117	Current Filter Info on Streams page
 ESME-126	Remove delete icons from tables
 ESME-127	Remove sorting from tables where it doesn't make sense
 ESME-147	Images in the user view are not scaled
 ESME-155	DB Problems during Tomcat shutdown
 ESME-160	Move to Lift 2.0
+ESME-161	Move the existing JMX interface to Ostrich
 ESME-163	Search in the web interface is case sensitive (and not in a good way)
 ESME-165	Remove blanks from property files
 ESME-169	"Exception on Strems Page based on message model - ""asJS"""
