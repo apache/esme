@@ -76,7 +76,8 @@
                                             var rep_msg = text
                                             if (text.length > 50)
                                              rep_msg = text.substr(0, 47) + "..."
-                                            jQuery('#reply-to-span').html(rep_msg);	
+                                            jQuery('#reply-to-span').html(rep_msg);
+                                            jQuery('#vMsg').val("@" + author + " ")	
                                             jQuery('#vMsg').focus()
 					    jQuery('#vPool').val(msgPool);
                                         }
