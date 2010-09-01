@@ -64,75 +64,80 @@ object StreamMgr {
   object resenderId extends RequestVar[Long](AnyResender)
   object filterResent_? extends RequestVar[Boolean](false)
   object poolId extends RequestVar[Long](PublicPool)
-  object filterPools_? extends RequestVar[Boolean](false)
-
-  def displayStream(in: NodeSeq): NodeSeq = {
-    // get the span name to update
-    val spanName = S.attr("the_id") openOr "StreamSpan"
+  object filterPools_? extends RequestVar[Boolean](false)  
+  object spanName extends RequestVar[String]("StreamSpan")     
+  object displayStreamNodes extends RequestVar[NodeSeq](Text(""))  
+  
+  def updateSpan(): JsCmd = SetHtml(spanName, doRender(displayStreamNodes))    
+  
+  // bind the dynamic content to the incoming nodeseq
+  def doRender(in: NodeSeq): NodeSeq = {   
     // get the current user
     val user = User.currentUser
-
-    // bind the dynamic content to the incoming nodeseq
-    def doRender(): NodeSeq = {
-      val resentQuery = 
-      if (filterResent_?.is == false) Nil
-      else {
-        val queryParam = resenderId.is match {
-          case AnyResender => NotBy(Mailbox.resentBy, Empty)
-          case id => By(Mailbox.resentBy, id)
-        }
-        List(In(Message.id,Mailbox.message,By(Mailbox.user, user), queryParam))
+  
+    val resentQuery = 
+    if (filterResent_?.is == false) Nil
+    else {
+      val queryParam = resenderId.is match {
+        case AnyResender => NotBy(Mailbox.resentBy, Empty)
+        case id => By(Mailbox.resentBy, id)
       }
-      
-      val poolsQuery = 
-      if (filterPools_?.is == false) Nil
-      else List(poolId.is match {
-        case PublicPool => By(Message.pool, Empty)
-        case id => By(Message.pool, id)
-      })
-      
-      val query = poolsQuery :::
-                  resentQuery :::
-                  List[QueryParam[Message]](OrderBy(Message.id, Descending), MaxRows(10)) 
-         
-      def profileImage(u: User): NodeSeq = {
-          var imageUrl = u.imageUrl.toString
-          if (imageUrl.length > 0) 
-            <img width="30px" src={imageUrl}/>
-          else
-             <img width="30px" src="/images/avatar.jpg"/>
-       }
-           
-      //XXX copy from lib.UserMgr
-      def nicknameWithProfileLink(u: User): NodeSeq = {
-    		  <a href={"/user/" + urlEncode(u.nickname.is)}>{u.niceName}</a>
-      	}
-      	
-      val dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm")
-          
-        
-      Message.findAll(query: _*) match {
-        case Nil => NodeSeq.Empty
-        case xs => bind("disp", in,
-                        "item" -> 
-                        (lst => xs.flatMap(i => bind("item", lst,
-                                                     "author" -> i.author.obj.map(nicknameWithProfileLink).openOr(Text("")),
-                                                     "imageUrl" -> i.author.obj.map(profileImage).openOr(Text("")),
-                                                     "text" -> i.getBody,
-                                                     "date" -> dateFormatter.format(i.getWhen)
-                ))))
-      }
+      List(In(Message.id,Mailbox.message,By(Mailbox.user, user), queryParam))
     }
-    def updateSpan(): JsCmd = SetHtml(spanName, doRender())
+    
+    val poolsQuery = 
+    if (filterPools_?.is == false) Nil
+    else List(poolId.is match {
+      case PublicPool => By(Message.pool, Empty)
+      case id => By(Message.pool, id)
+    })
+    
+    val query = poolsQuery :::
+                resentQuery :::
+                List[QueryParam[Message]](OrderBy(Message.id, Descending), MaxRows(10)) 
+       
+    def profileImage(u: User): NodeSeq = {
+        var imageUrl = u.imageUrl.toString
+        if (imageUrl.length > 0) 
+          <img width="30px" src={imageUrl}/>
+        else
+           <img width="30px" src="/images/avatar.jpg"/>
+     }
+         
+    //XXX copy from lib.UserMgr
+    def nicknameWithProfileLink(u: User): NodeSeq = {
+  		  <a href={"/user/" + urlEncode(u.nickname.is)}>{u.niceName}</a>
+    	}
+    	
+    val dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm")
+        
+      
+    Message.findAll(query: _*) match {
+      case Nil => NodeSeq.Empty
+      case xs => bind("disp", in,
+                      "item" -> 
+                      (lst => xs.flatMap(i => bind("item", lst,
+                                                   "author" -> i.author.obj.map(nicknameWithProfileLink).openOr(Text("")),
+                                                   "imageUrl" -> i.author.obj.map(profileImage).openOr(Text("")),
+                                                   "text" -> i.getBody,
+                                                   "date" -> dateFormatter.format(i.getWhen)
+              ))))
+    }
+  }  
+  
 
-    updateStream.set(updateSpan)
-    doRender()
+  def displayStream(in: NodeSeq): NodeSeq = {    
+      
+    updateStream.set(updateSpan)    
+    displayStreamNodes.set(in)                               
+  
+    doRender(in)
   }
 
-  def streamFilters(in: NodeSeq): NodeSeq = {
+  def streamFilters(in: NodeSeq): NodeSeq = {   
+  
     import org.apache.esme.model.AccessPool
-    import net.liftweb.common.Empty
-    val redisplayStream = updateStream.is
+    import net.liftweb.common.Empty              
     val resenderInput = "resender_input"
     val poolInput = "pool_input"
     val filterResentInput = "filter_resent_input"
@@ -162,7 +167,7 @@ object StreamMgr {
       poolId.set(pool)
       filterResent_?.set(filterResent)
       filterPools_?.set(filterPools)
-      redisplayStream()
+      updateStream()
     }
 
     /*
@@ -212,5 +217,4 @@ object StreamMgr {
                                        "id" -> filterPoolsInput)
     )
   }
-
 }

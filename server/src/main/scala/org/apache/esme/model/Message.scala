@@ -393,7 +393,7 @@ class Message extends LongKeyedMapper[Message] {
         case e: Elem if e.label == "url" =>
           e.attribute("url").flatMap(url =>
             e.attribute("uniqueId").map(id =>
-              <xml:group> <a href={"/u/"+id} target="_blank">{url}</a> </xml:group>)).
+              <xml:group> <a class="tiplelement" href={"/u/"+id} target="_blank" title={url}>{url.toString.substring(0,20)}...</a> </xml:group>)).
           getOrElse(Text("") )
 
         case e: Elem if e.label == "em" =>

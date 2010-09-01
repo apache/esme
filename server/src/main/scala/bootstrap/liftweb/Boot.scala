@@ -158,16 +158,19 @@ class Boot {
     // Register Auth methods that are used in ESME
     
     UserAuth.register(UserPwdAuthModule)
-    UserAuth.register(OpenIDAuthModule)
+    UserAuth.register(OpenIDAuthModule)  
+                      
+    def ifIsLoggedIn = If(User.loggedIn_? _, strFuncToFailMsg(() => S.?("base_error_not_logged_in")))
 
     // Build SiteMap
     val entries = Menu(Loc("Home", List("index"), "Home")) ::
-        Menu(Loc("user", List("info_view", "user"), "User Info", Hidden,
+        Menu(Loc("user", List("info_view", "user"), "User Info", ifIsLoggedIn,
           Loc.Snippet("user_info", TagDisplay.userInfo))) ::
         logLevel.menu  ::
-        Menu(Loc("tag", List("info_view", "tag"), "Tag", Hidden, Loc.Snippet("tag_display", TagDisplay.display))) ::
-        Menu(Loc("public", List("info_view", "public"), S.?("base_profile_public"))) ::
-        Menu(Loc("contacts", List("info_view", "contacts"), S.?("base_profile_contacts"))) ::
+        Menu(Loc("tag", List("info_view", "tag"), "Tag", ifIsLoggedIn,
+          Loc.Snippet("tag_display", TagDisplay.display))) ::
+        Menu(Loc("public", List("info_view", "public"), S.?("base_profile_public"), ifIsLoggedIn)) ::
+        Menu(Loc("contacts", List("info_view", "contacts"), S.?("base_profile_contacts"), ifIsLoggedIn)) ::
         Menu(Loc("sign_up", List("signup"), S.?("base_menu_signup"),
           Snippet("signup", User.signupForm),
           Unless(User.loggedIn_? _, S.?("base_menu_sign_up_error")))) ::

@@ -124,9 +124,15 @@ function displayMessages(msgArray, elementId)
       if (cometResent) {
         resendButton.css("display", "none");
       } else {
-        resendButton.attr('id', 'resend_' + id).
+        resendButton
+            .attr('id', 'resend_' + id)
+            .click(function() { resend_msg(id);
+                                clearResend("resend_" + id );
+                                return false;})
+          /*
           attr('onclick', 'javascript:resend_msg(' + id + ');' +
                                      'clearResend("resend_' + id + '")');
+          */
       }
       newMsg.find('#reply').attr('href',
         "javascript:setReplyTo(" + id + ", '"+ msgBody + "', " + msgPoolId + ")");
