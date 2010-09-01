@@ -265,6 +265,7 @@ class Action extends LongKeyedMapper[Action] {
     def testFunc = (testExpr(is): @unchecked) match {
       case Success(v, _) => Action.toFunc(v)
     }
+   
   }
   
   object uniqueId extends MappedUniqueId(this, 32) {
@@ -280,7 +281,14 @@ class Action extends LongKeyedMapper[Action] {
 
   def setTest(in: String): Box[Action] = try {
     testExpr(in) match {
-      case Success(v, _) => Full(this.theTest(v.toStr))
+      case Success(testAction: TestAction, _) =>
+         testAction.error match {
+            case Some(msg) =>
+              net.liftweb.common.Failure(msg  + " - " + testAction.toStr, Empty, Empty)
+            case None =>
+              Full(this.theTest(testAction.toStr))
+         }
+      //case Success(v, _) => Full(this.theTest(v.toStr))
       case Failure(m, _) => net.liftweb.common.Failure(m, Empty, Empty)
       case Error(m, _) => net.liftweb.common.Failure(m, Empty, Empty)
     }
@@ -318,7 +326,7 @@ class Action extends LongKeyedMapper[Action] {
     test={theTest.is}
     action={theAction.is}
     enabled={enabled.toString}></action>
-
+  
 }
 
 class PerformMatcher(val func: Action.TestFunc, val performId: Long,
@@ -351,6 +359,7 @@ object TestAction {
 }
 
 sealed trait TestAction {
+  var error: Option[String] = None
   def toStr: String
   def toDisplayStr: String = toStr
 }
@@ -362,13 +371,16 @@ case object SentToMeAction extends TestAction {
 }
 case class NotAction(action: TestAction) extends TestAction {
   def toStr = "not( "+action.toStr+" )"
+  override def toDisplayStr = "not( "+action.toDisplayStr+" )"
 }
 case class OrAction(left: TestAction, right: TestAction) extends TestAction {
   def toStr = left.toStr + " | " + right.toStr
+  override def toDisplayStr = left.toDisplayStr + " | " + right.toDisplayStr
 }
 
 case class AndAction(left: TestAction, right: TestAction) extends TestAction {
   def toStr = left.toStr + " &  " + right.toStr
+  override def toDisplayStr = left.toDisplayStr + " &  " + right.toDisplayStr
 }
 
 case class AtUserAction(userId: Long) extends TestAction {
@@ -386,6 +398,7 @@ case object PoolAction extends TestAction {
 
 case class PoolAction(poolId: Long) extends TestAction {
   def toStr = "pool:" + poolId
+  override def toDisplayStr = "pool:" + AccessPool.getPoolName(poolId)
 }
 
 case object ResentAction extends TestAction {
@@ -439,6 +452,7 @@ case class HashAction(hashId: Long, str: String) extends TestAction {
 
 case class ParenAction(action: TestAction) extends TestAction {
   def toStr = "( "+action.toStr+" )"
+  override def toDisplayStr = "( "+action.toDisplayStr+" )"
 }
 
 case class PercentAction(percent: Int) extends TestAction {
@@ -484,6 +498,15 @@ case class DateTestAction(dateType: DateType, opt: OprType, what: List[Int]) ext
       case xs => xs.mkString("(", ", ", ")")
     }
   )
+
+  error =
+    dateType match {
+      case DayDateType   => if (what.exists((x) => x < 1 || x > 7)) Some("Invalid day value") else None
+      case DateDateType  => if (what.exists((x) => x < 1 || x > 31)) Some("Invalid date value") else None
+      case MonthDateType => if (what.exists((x) => x < 1 || x > 11)) Some("Invalid month value") else None
+      case HourDateType  => if (what.exists((x) => x < 0 || x > 23)) Some("Invalid hour value") else None
+      case MinuteDateType  => if (what.exists((x) => x < 0 || x > 59)) Some("Invalid minute value") else None
+    }
 }
 
 sealed trait OprType {

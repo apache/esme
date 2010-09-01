@@ -10,9 +10,14 @@ function prettyDate(myDate){
 	var date = myDate,
 		diff = (((new Date()).getTime() - date.getTime()) / 1000),
 		day_diff = Math.floor(diff / 86400);
+		
+	
 			
-	if ( isNaN(day_diff) || day_diff < 0 || day_diff >= 31 )
+	if ( isNaN(day_diff) || day_diff < 0 )
 		return;
+		
+	if ( day_diff >= 31 )
+		return "more than 1 month ago";
 			
 	return day_diff == 0 && (
 			diff < 60 && "just now" ||

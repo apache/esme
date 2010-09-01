@@ -158,9 +158,16 @@ function displayMessages(msgArray, elementId)
       if (cometResent) {
         resendButton.css("display", "none");
       } else {
+        resendButton
+            .attr('id', 'resend_' + id)
+            .click(function() { resend_msg(id);
+                                clearResend("resend_" + id );
+                                return false;})        
+        /*
         resendButton.attr('id', 'resend_' + id).
           attr('onclick', 'javascript:resend_msg(' + id + ');' +
                                      'clearResend("resend_' + id + '")');
+        */
       }
 
 
