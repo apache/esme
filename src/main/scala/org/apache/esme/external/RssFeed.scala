@@ -38,7 +38,7 @@ class RssFeed(user: User, rssURL: String, source: String, truncateChars: Int, ta
 
   override def dateFormats = RssFeed.dateFormats
   
-  override def getEntries(xml: Elem) = xml \\ "item"
+  override def getEntries(xml: NodeSeq) = xml \\ "item"
   
   override def getText(node: Node) = {
     // if there's no title, get description
