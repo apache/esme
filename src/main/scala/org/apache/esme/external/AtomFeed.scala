@@ -37,7 +37,7 @@ class AtomFeed(user: User, atomURL: String, source: String, truncateChars: Int, 
   
   override def dateFormats = AtomFeed.dateFormats
   
-  override def getEntries(xml: Elem) = xml \ "entry"
+  override def getEntries(xml: NodeSeq) = xml \ "entry"
   
   override def getText(node: Node) = {
     // a title element is mandatory
