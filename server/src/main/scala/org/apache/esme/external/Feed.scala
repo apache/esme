@@ -43,24 +43,22 @@ abstract class Feed(val user: User, val url: String, val source: String, val tru
 
   override def apply() = {
     
-    ( for {
-           xml <- PCDataXmlParser(responseString).toList
-           node <- xml.flatMap{ case e: Elem => List(e) case _ => Nil}
-         }
-        yield UserCreatedMessage(
-          if (user != null) {user.id} else 0,
-          getText(node) + " " + getLink(node),
-          tags,
-          getDate(node),
-          Empty,
-          source,
-          Empty,
-          None
-        )
-    ).toList
+    for {
+         xml <- PCDataXmlParser(responseString).toList
+         node <- getEntries(xml)
+    } yield UserCreatedMessage(
+      if (user != null) {user.id} else 0,
+      getText(node) + " " + getLink(node),
+      tags,
+      getDate(node),
+      Empty,
+      source,
+      Empty,
+      None
+    )
   }
   
-  protected def getEntries(xml: Elem): NodeSeq
+  protected def getEntries(xml: NodeSeq): NodeSeq
   
   protected def getText(xml: Node): String
   
