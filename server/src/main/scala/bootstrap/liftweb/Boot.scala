@@ -27,7 +27,7 @@ import net.liftweb.http.auth._
 import net.liftweb.sitemap._
 import net.liftweb.sitemap.Loc._
 import Helpers._
-import TimeHelpers.intToTimeSpanBuilder
+//import TimeHelpers.intToTimeSpanBuilder
 //import net.liftweb.mapper.{DB, ConnectionManager, Schemifier, DefaultConnectionIdentifier, ConnectionIdentifier}
 import java.sql.{Connection, DriverManager}
 import _root_.net.liftweb.mapper.{DB, ConnectionManager, Schemifier, DefaultConnectionIdentifier, StandardDBVendor}
@@ -122,6 +122,12 @@ class Boot {
 
     object logLevel extends LogLevelChanger with Log4jLoggingBackend
 
+
+      LiftRules
+           .noticesAutoFadeOut
+           .default
+           .set(Vendor((noticeType:NoticeType.Value) => Full((3 seconds, 3
+   seconds)))) 
 
     LiftRules.dispatch.append(ESMEOpenIDVendor.dispatchPF)
 
