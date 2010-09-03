@@ -189,7 +189,7 @@
 					</lift:addPool>
 				</form>
 			</div>
-			<div id="dialog-form-user" title="Add a user to a pool" style="display: none">
+			<div id="dialog-form-user" title="Add a user/Change a user's role" style="display: none">
 				<p class="validateTips">
 					<lift:loc>ui_form_all_fields_required</lift:loc>
 				</p>
@@ -199,11 +199,13 @@
 							<label for="poolName">
 								<lift:loc>ui_pool_add</lift:loc>
 							</label>
-							<edit:username class="text ui-widget-content ui-corner-all tipelement" title="This is the user that will be added to a pool." />
+							<!--edit:username class="text ui-widget-content ui-corner-all tipelement" title="This is the user that will be added to a pool." /-->
+                            <edit:username class="text ui-widget-content ui-corner-all tipelement" title="This will be the new user or the user whose role is being changed" />
 							<label for="permission">
 								<lift:loc>ui_pool_list_user_role</lift:loc>
 							</label>
-							<edit:permission class="text ui-widget-content ui-corner-all tipelement" title="This is the type of permission that the new user will have." />
+							<!--edit:permission class="text ui-widget-content ui-corner-all tipelement" title="This is the type of permission that the new user will have." /-->
+                            <edit:permission class="text ui-widget-content ui-corner-all tipelement" title="This is the type of permission that the user will have." />
 						</fieldset>
 					</lift:editPool>
 				</form>
