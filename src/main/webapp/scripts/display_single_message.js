@@ -114,11 +114,12 @@ function displayMessages(msgArray, elementId)
       .attr('alt',msgAuthor.firstname + ' ' + msgAuthor.lastname);
 
 
-      newMsg.find('#body').html(msgBody);
-      newMsg.find('#supp_data').text(msgPool + " " + msgDateStr  + " " +  msgReason  + " " +   msgSource);
-      //newMsg.find('#source').text(msgSource);
-      //newMsg.find('#reason').text(msgReason);
-      //newMsg.find('#when').text(msgDateStr);
+      newMsg.find('#msgbody').html(msgBody);
+      if (msgReason)
+         newMsg.find('#supp_data').text(msgPool + " " + msgDateStr  + " " +  msgReason );
+      else {
+      	 newMsg.find('#supp_data').text(msgPool + " " + msgDateStr  + " via "  +   msgSource);
+      }
       var id = cometMsg.id;
       var resendButton = newMsg.find('#resend');
       if (cometResent) {
