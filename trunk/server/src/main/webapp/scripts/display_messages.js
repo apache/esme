@@ -142,7 +142,7 @@ function displayMessages(msgArray, elementId)
       var conversation = newMsg.find('#conversation');
       if (msgConversation != 0) {
         conversation.attr('href', 
-          '/conversation/' + msgConversation);
+          '../conversation/' + msgConversation);
       } else {
         conversation.css("display", "none");
       }
