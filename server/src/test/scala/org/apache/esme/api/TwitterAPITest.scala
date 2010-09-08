@@ -118,6 +118,12 @@ object TwitterAPISpecs extends Specification with TestKit {
     }
   }
   
+  // register an actor to be notified when a new message is received
+  val conductor = new ConductorActor
+  conductor.start
+  val liftActor = new BridgeActor(conductor)
+  Distributor ! PublicTimelineListeners(liftActor)
+  
   trait XmlResponse {
     self: TestResponse =>
     def xmlMatch(f: Elem => Unit)(implicit errorFunc: ReportFailure): TestResponse = {
@@ -147,6 +153,10 @@ object TwitterAPISpecs extends Specification with TestKit {
   
     "post a message" in {
       post("/statuses/update.xml", "status" -> "test_msg1") \\(<text>test_msg1</text>)
+      // wait till the message appears in the timeline
+      // or fail after 5 seconds
+      val msgReceived = conductor !? (5000L, Wait)
+      if (msgReceived.isEmpty) fail("no message received")
     }
     
     "fail to post a message with no status parameter" in {
@@ -189,18 +199,13 @@ object TwitterAPISpecs extends Specification with TestKit {
     }
     
     "let follower see user's message in home timeline" in {
-      // register an actor to be notified when a new message is received
-      val conductor = new ConductorActor
-      conductor.start
-      val liftActor = new BridgeActor(conductor)
-      Distributor ! PublicTimelineListeners(liftActor)
-      
       post("/statuses/update.xml", "status" -> "user_msg") \\(<text>user_msg</text>)
       
       // wait till the message appears in the timeline
       // or fail after 5 seconds
       val msgReceived = conductor !? (5000L, Wait)
       if (msgReceived.isEmpty) fail("no message received")
+      Thread.sleep(1000L)
       
       get("/statuses/home_timeline.xml", followerClient, Nil) \\(<text>user_msg</text>)
     }
