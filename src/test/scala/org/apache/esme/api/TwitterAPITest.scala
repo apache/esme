@@ -35,8 +35,8 @@ import Helpers._
 import org.apache.esme._
 import model._
 import org.apache.esme.actor.Distributor
-import org.apache.esme.actor.Distributor.NewMessage
-import org.apache.esme.actor.Distributor.PublicTimelineListeners
+import org.apache.esme.actor.UserActor.MessageReceived
+import org.apache.esme.actor.Distributor.Listen
 import net.liftweb.http._
 import testing.{ReportFailure, TestKit, HttpResponse, TestFramework, TestResponse, Response}
 
@@ -100,7 +100,7 @@ object TwitterAPISpecs extends Specification with TestKit {
   
   class BridgeActor(receiver: Actor) extends LiftActor {
     protected def messageHandler = {
-      case nm @ NewMessage(_) => receiver ! nm
+      case nm @ MessageReceived(_, _) => receiver ! nm
     }
   }
   
@@ -111,7 +111,7 @@ object TwitterAPISpecs extends Specification with TestKit {
       react {
         case Wait => reply {
           receive {
-            case NewMessage(msg) => msg
+            case MessageReceived(msg, reason) => msg
           }
         }
       }
@@ -122,7 +122,8 @@ object TwitterAPISpecs extends Specification with TestKit {
   val conductor = new ConductorActor
   conductor.start
   val liftActor = new BridgeActor(conductor)
-  Distributor ! PublicTimelineListeners(liftActor)
+  Distributor ! Listen(theUser.id.is, liftActor)
+  Distributor ! Listen(followerUser.id.is, liftActor)
   
   trait XmlResponse {
     self: TestResponse =>
@@ -205,7 +206,6 @@ object TwitterAPISpecs extends Specification with TestKit {
       // or fail after 5 seconds
       val msgReceived = conductor !? (5000L, Wait)
       if (msgReceived.isEmpty) fail("no message received")
-      Thread.sleep(1000L)
       
       get("/statuses/home_timeline.xml", followerClient, Nil) \\(<text>user_msg</text>)
     }
