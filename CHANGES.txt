@@ -1,6 +1,6 @@
 ESME Change Log
 
-Release 1.1-incubating - 09/10/2010
+Release 1.1-incubating - 09/10/2010 
 
 ESME-14	        Redesign, rework, write unit tests for, and fully document API
 ESME-100	Finish web UI
