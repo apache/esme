@@ -1,0 +1,99 @@
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one   *
+ or more contributor license agreements.  See the NOTICE file *
+ distributed with this work for additional information        *
+ regarding copyright ownership.  The ASF licenses this file   *
+ to you under the Apache License, Version 2.0 (the            *
+ "License"); you may not use this file except in compliance   *
+ with the License.  You may obtain a copy of the License at   *
+                                                              *
+   http://www.apache.org/licenses/LICENSE-2.0                 *
+                                                              *
+ Unless required by applicable law or agreed to in writing,   *
+ software distributed under the License is distributed on an  *
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY       *
+ KIND, either express or implied.  See the License for the    *
+ specific language governing permissions and limitations      *
+ under the License.                                           *
+-->
+<lift:surround with="base" at="left">
+	<head>
+		<!-- STYLESHEETS  -->
+		 <link type="text/css" href="../style/jqueryui-theme/jquery-ui-1.8.2.custom.css" rel="stylesheet" />  
+		<link type="text/css" href="../style/dialog.css" rel="stylesheet" />
+		<script type="text/javascript" src="../scripts/jquery-ui-1.8.2.custom.min.js">    </script>
+		<script type="text/javascript" src="../scripts/dialog_token.js">    </script>
+		<lift:TableSorterSnip/>
+		<script type="text/javascript" src="../scripts/esme.js">    </script>
+		<script type="text/javascript" src="../scripts/esme_table_sorter_token.js"></script>
+	</head>
+	<div id="back-header">
+		<h1>
+			<lift:loc>ui_token_title</lift:loc>
+		</h1>
+		<div class="container-settings">
+			<span id="TokenSpan">
+				<lift:ignore>
+					<!--                        The displayTokens snippet *MUST* appear on the page before                        the main snippet                        -->
+					</lift:ignore>
+				<lift:displayTokens the_id="TokenSpan">
+					<table id="esme-table" class="tablesorter">
+						<thead>
+							<tr>
+								<th class="tipelement" title="Each token has a distinct description so that you can identify it quickly.">
+									<lift:loc>ui_token_create_description</lift:loc>
+								</th>
+								<th class="tipelement" title="Use this token in external applications that use ESME APIs.">
+									<lift:loc>ui_token_list_token</lift:loc>
+								</th>
+								<th class="tipelement" title="This is the timestamp when the token was created. ">
+									<lift:loc>ui_token_list_create</lift:loc>
+								</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							<disp:item>
+								<tr>
+									<td>
+										<item:description/>
+									</td>
+									<td>
+										<item:uniqueId/>
+									</td>
+									<td>
+										<item:createdDate/>
+									</td>
+									<td align="center" class="tipelement" title="This will revoke this token. All external applications using this token will require a new token. ">
+										<item:revoke/>
+									</td>
+								</tr>
+							</disp:item>
+						</tbody>
+					</table>
+				</lift:displayTokens>
+			</span>
+			<div id="dialog-form" style="display: none" title="Create new token">
+				<p class="validateTips">
+					<lift:loc>ui_form_all_fields_required</lift:loc>
+				</p>
+				<form id="token_new_dialog" onsubmit="false">
+					<lift:main>
+						<fieldset>
+							<label for="name">
+								<lift:loc>ui_token_create_description</lift:loc>
+							</label>
+							<main:token class="text ui-widget-content ui-corner-all tipelement" title="This is the name of your token. Use something unique. " />
+						</fieldset>
+					</lift:main>
+				</form>
+			</div>
+			<div class="post-form-row">
+				<div class="submit-btn tipelement" title="Create a new token." >
+					<input type="image" onclick="javascript:$('#dialog-form').dialog('open')" id="create-user" src="../images/new1.gif" />
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- End demo -->
+</lift:surround>
