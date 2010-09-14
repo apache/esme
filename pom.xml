@@ -226,9 +226,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.mortbay.jetty</groupId>
+          <groupId>org.mortbay.jetty</groupId>
             <artifactId>jetty</artifactId>
             <version>[6.1.6,)</version>
+            <scope>test</scope>
         </dependency>
         <!-- for LiftConsole -->
         <dependency>
