@@ -1,0 +1,91 @@
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one   *
+ or more contributor license agreements.  See the NOTICE file *
+ distributed with this work for additional information        *
+ regarding copyright ownership.  The ASF licenses this file   *
+ to you under the Apache License, Version 2.0 (the            *
+ "License"); you may not use this file except in compliance   *
+ with the License.  You may obtain a copy of the License at   *
+                                                              *
+   http://www.apache.org/licenses/LICENSE-2.0                 *
+                                                              *
+ Unless required by applicable law or agreed to in writing,   *
+ software distributed under the License is distributed on an  *
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY       *
+ KIND, either express or implied.  See the License for the    *
+ specific language governing permissions and limitations      *
+ under the License.                                           *
+-->
+
+<lift:surround with="default_signup" at="login">
+
+
+    <head>
+        <script src="scripts/jquery.validate.js" type="text/javascript"/> 
+        <script src="scripts/esme_validate.js" type="text/javascript"/>       
+    </head>
+
+<div id="content">
+	<div class="gray-box signup">
+	 <div id="messages"></div>
+		<h1><lift:loc>ui_sign_up_intro</lift:loc></h1>
+		<lift:Msgs>
+			<lift:error_class>error_major</lift:error_class>
+			<lift:notice_msg>
+				<lift:loc>ui_base_note</lift:loc>
+			</lift:notice_msg>
+			<lift:notice_class>note_major</lift:notice_class>
+		</lift:Msgs>
+		
+			<lift:signup form="post" id = "validateForm">
+					<div id="form-signup">
+							<signup:credentials/>	
+							
+							<div class="post-form-row">
+								<label class="main"><lift:loc>ui_sign_up_nickname</lift:loc></label>
+								<signup:nickname class="inputBox2"/>
+							</div>	
+							
+							<div class="post-form-row">
+								<label class="main"><lift:loc>ui_sign_up_firstname</lift:loc></label>
+								 <signup:firstname class="inputBox2"/>
+							</div>	
+							
+							<div class="post-form-row">
+								<label class="main"> <lift:loc>ui_sign_up_lastname</lift:loc></label>
+								<signup:lastname class="inputBox2"/>
+							</div>	
+							
+							<div class="post-form-row">
+								<label class="main"> <lift:loc>ui_sign_up_image_url</lift:loc></label>
+								<signup:image_url class="inputBox2"/>
+							</div>	
+						
+							
+							<div class="post-form-row">
+								<label class="main"> <lift:loc>ui_sign_up_timezone</lift:loc></label>
+								<signup:timezone class="inputBox2"/>
+							</div>	
+							
+							<div class="post-form-row">
+								<label class="main"><lift:loc>ui_sign_up_locale</lift:loc></label>
+								<signup:locale class="inputBox2"/>
+							</div>
+								
+							<div class="post-form-row">
+								<div class="submit-btn">
+									<signup:submit type="image" src="images/btn-signup-big.gif" />
+								</div>
+							</div>	
+							
+					</div><!--form-signup-->
+			</lift:signup>
+				
+	</div><!--gray-box-->
+	
+	
+	
+	
+</div><!--content-->
+
+</lift:surround>
