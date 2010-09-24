@@ -62,6 +62,13 @@ function searchMe()
 {
    if(document.forms["validateForm"].term.value.trim.length > 0)
    	document.forms["validateForm"].submit();
+}    
+
+var resendFunction = function(id){
+  alert(id);
+  resend_msg(id);
+  clearResend("resend_" + id );
+  return false;
 }
 
 function displayMessages(msgArray, elementId)
@@ -159,17 +166,15 @@ function displayMessages(msgArray, elementId)
       }
       var id = cometMsg.id;
 
-      var resendButton = newMsg.find('#resend');
+      var resendButton = newMsg.find('#resend');    
+      
       if (cometResent) {
         resendButton.css("display", "none");
       } else {
         resendButton
-            .attr('id', 'resend_' + id)
-            .click(function() { resend_msg(id);
-                                clearResend("resend_" + id );
-                                return false;})        
+            .attr('id', 'resend_' + id)     
+            .attr('href', "javascript:resendFunction(" + id + ")")       
       }
-
 
       var tempStr = strip(msgBody).replaceAll ("'", "ZZZ$%$");
       
