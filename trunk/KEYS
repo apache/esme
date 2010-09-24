@@ -1,8 +1,8 @@
-pub   4096R/6FACF917 2010-02-10
+pub   4096R/FA51B6C5 2010-09-21
 uid                  Richard Hirsch (CODE SIGNING KEY) <rhirsch@apache.org>
-sig 3        6FACF917 2010-02-10  Richard Hirsch (CODE SIGNING KEY) <rhirsch@apache.org>
-sub   4096R/A0E9E72B 2010-02-10
-sig          6FACF917 2010-02-10  Richard Hirsch (CODE SIGNING KEY) <rhirsch@apache.org>
+sig 3        FA51B6C5 2010-09-21  Richard Hirsch (CODE SIGNING KEY) <rhirsch@apache.org>
+sub   4096R/EAED5E0F 2010-09-21
+sig          FA51B6C5 2010-09-21  Richard Hirsch (CODE SIGNING KEY) <rhirsch@apache.org>
 
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 Version: GnuPG v1.4.10 (MingW32)
