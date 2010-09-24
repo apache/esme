@@ -65,10 +65,8 @@ function searchMe()
 }    
 
 var resendFunction = function(id){
-  alert(id);
   resend_msg(id);
   clearResend("resend_" + id );
-  return false;
 }
 
 function displayMessages(msgArray, elementId)
@@ -173,7 +171,7 @@ function displayMessages(msgArray, elementId)
       } else {
         resendButton
             .attr('id', 'resend_' + id)     
-            .attr('href', "javascript:resendFunction(" + id + ")")       
+            .attr('href', "javascript:resendFunction(" + id + ");")       
       }
 
       var tempStr = strip(msgBody).replaceAll ("'", "ZZZ$%$");
