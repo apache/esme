@@ -1,13 +1,20 @@
-The purpose of this file is to describe the licenses for project dependencies which were identified as having unknown licenses via "mvn site".
+The purpose of this file is to describe the licenses for project dependencies which 
+were identified as having unknown licenses via "mvn site".
 
 In this release, the following dependencies have unknown licenses:
 
-Unknown: Unnamed - com.twitter:xrayspecs:pom:1.0.7, Unnamed -
-org.jboss.netty:netty:pom:3.1.5.GA, Unnamed -
-org.scala-tools:vscaladoc:pom:1.1-md-3, asm, cglib
+Unknown: 
+Unnamed - com.twitter:xrayspecs:pom:1.0.7, 
+Unnamed - org.jboss.netty:netty:pom:3.1.5.GA, 
+Unnamed - org.scala-tools:vscaladoc:pom:1.1-md-3, 
+asm, 
+cglib
 
 We've tracked down the licenses for these dependents accordingly: 
  
+xrayspecs is also Apache 2.0 but you have to look in the source to see the license, at
+http://github.com/twitter/xrayspecs/blob/master/src/main/scala/com/twitter/xrayspecs/Time.scala
+
 netty is Apache 2.0 - http://www.jboss.org/netty/downloads.html
+
 vscaladoc is Apache License 2.0 - see http://code.google.com/p/vscaladoc/
-xrayspecs is also Apache 2.0 but you have to look in the source to see the license - http://github.com/twitter/xrayspecs/blob/master/src/main/scala/com/twitter/xrayspecs/Time.scala
