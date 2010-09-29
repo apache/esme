@@ -18,3 +18,7 @@ http://github.com/twitter/xrayspecs/blob/master/src/main/scala/com/twitter/xrays
 netty is Apache 2.0 - http://www.jboss.org/netty/downloads.html
 
 vscaladoc is Apache License 2.0 - see http://code.google.com/p/vscaladoc/
+
+cglib is Apache 2.0 License - http://mvnrepository.com/artifact/cglib/cglib/2.2
+
+asm is a BSD license -  http://forge.ow2.org/projects/asm 
