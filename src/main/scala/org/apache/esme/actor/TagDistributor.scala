@@ -1,5 +1,3 @@
-package org.apache.esme.model
-
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -19,24 +17,30 @@ package org.apache.esme.model
  * under the License.
  */
 
-import net.liftweb._
-import mapper._
-import util._
-import common._
-import Helpers._
+package org.apache.esme.actor  
 
-object MessageTag extends MessageTag with LongKeyedMetaMapper[MessageTag] {
+import net.liftweb._  
+import actor._        
 
-}
+import org.apache.esme._
+import model.{Tag, User, TagFollowReason}
 
-class MessageTag extends LongKeyedMapper[MessageTag] {
-  def getSingleton = MessageTag // what's the "meta" server
-  def primaryKeyField = id
-
-  object id extends MappedLongIndex(this)
+object TagDistributor extends LiftActor {
+                             
+  protected def messageHandler = {
+    case Distributor.NewMessage(msg) => {  
+      msg.tagIds.map( i => {    
+        Tag.find(i).map( t => {        
+          t.followers.refresh.map( u => {  
+            Distributor ! Distributor.AddMessageToMailbox(u.id, msg, TagFollowReason(t.name));  
+          })
+        })
+      })                                                            
+    }
+  } 
   
-  object message extends MappedLongForeignKey(this, Message)
-  object tag extends MappedLongForeignKey(this, Tag)
-  object sentTo extends MappedLongForeignKey(this, User)
-  object url extends MappedLongForeignKey(this, UrlStore)
+  def touch {
+  
+  }                   
+
 }

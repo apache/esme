@@ -82,17 +82,47 @@ object TagDisplay {
            "date" -> Text(new Date(m.when.is).toString))
     }
 
-  def display(in: NodeSeq): NodeSeq = {
-    val name = (S.param("tag") openOr "N/A").trim
+  def display(in: NodeSeq): NodeSeq = {  
+  
+    val name = (S.param("tag") openOr "N/A").trim 
+    
+    val tag = Tag.findAll(By(Tag.name, name))
+    val user = User.currentUser
 
     val tagList: List[Message] =
     for {
-      tag <- Tag.findAll(By(Tag.name, name))
-      item <- tag.findMessages()
-    } yield item
+      t <- tag
+      item <- t.findMessages()
+    } yield item   
+    
+    def followOrUnfollow: NodeSeq = {          
+      val ret: Box[NodeSeq] = for { 
+        u <- user
+        t = tag.first
+      } yield {                 
+        if (!t.followers.contains(u)) {
+          ajaxButton("Follow tag", () => {  
+            t.followers += u
+            t.save       
+            updateFollow
+          })
+        } else {
+          ajaxButton("Unfollow tag", () => {    
+            t.followers -= u
+            t.save
+            updateFollow
+          })
+        }  
+      }
+                             
+      ret.open_!                                      
+    }  
+    
+    def updateFollow: JsCmd = SetHtml("following", followOrUnfollow)
 
     bind("tag", in, "name" -> name,
-         "each" -> bindTag(tagList) _)
+         "each" -> bindTag(tagList) _,
+         "followButton" -> followOrUnfollow )
 
-  }
+  }  
 }

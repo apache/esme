@@ -49,24 +49,59 @@ object ConversationMgr {
 
   val menuItems =
   Menu(Loc("conversation", List("info_view", "conversation"), S.?("base_conv_menu"), ifIsLoggedIn,
-           Loc.Snippet("displayConversation", displayConversation))) ::
-  Nil
-
-  def displayConversation(in: NodeSeq): NodeSeq = {
-
-    val jsId = "timeline_messages"                  
+           Loc.Snippet("conv_info", convInfo))) ::
+  Nil         
+  
+  def convInfo(in: NodeSeq): NodeSeq = {  
 
     val cid = S.param("cid").map(toLong).openOr(-1L)
+    val messages = Message.findMessages(List(cid))   
+    val user = User.currentUser  
 
-    val msgs = Message.findAndPrime(By(Message.conversation, cid),
-                                    OrderBy(Message.id, Descending))
+    def followOrUnfollow: NodeSeq = {          
+      val ret: Box[NodeSeq] = for { 
+        u <- user
+        m = messages.values.toList.first
+      } yield {                 
+        if (!m.followers.contains(u)) {
+          ajaxButton("Follow conversation", () => {  
+            m.followers += u
+            m.save       
+            updateFollow
+          })
+        } else {
+          ajaxButton("Unfollow conversation", () => {    
+            m.followers -= u
+            m.save
+            updateFollow
+          })
+        }  
+      }
+                         
+      ret.open_!                                     
+    }      
+    
+    def displayConversation(in: NodeSeq): NodeSeq = {
 
-    Script(
-      OnLoad(JsCrVar(jsId, JsArray(
-          msgs.map(m => JsObj(("message", m.asJs)) ) :_*)) &
-      JsFunc(" displayMessages", JsVar(jsId), jsId).cmd)
-    )
+      val jsId = "timeline_messages"                  
 
-  }
+      val cid = S.param("cid").map(toLong).openOr(-1L)
 
+      val msgs = Message.findAndPrime(By(Message.conversation, cid),
+                                      OrderBy(Message.id, Descending))
+
+      Script(
+        OnLoad(JsCrVar(jsId, JsArray(
+            msgs.map(m => JsObj(("message", m.asJs)) ) :_*)) &
+        JsFunc(" displayMessages", JsVar(jsId), jsId).cmd)
+      )
+
+    }
+
+    def updateFollow: JsCmd = SetHtml("following", followOrUnfollow)
+
+    bind("conv", in, 
+         "followButton" -> followOrUnfollow,
+         "displayConversation" -> displayConversation _ )       
+  }                                
 }

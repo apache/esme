@@ -102,6 +102,12 @@ case class DirectReason(fromUserId: Long) extends MailboxReason {
 }
 case class ConversationReason(conversationId: Long) extends MailboxReason {
   def attr = new UnprefixedAttribute("conversation", conversationId.toString, Null)
+}                                                                                 
+case class TagFollowReason(tagName: String) extends MailboxReason {
+  def attr = new UnprefixedAttribute("tag", tagName, Null)
+}            
+case class ConvFollowReason(convId: Long) extends MailboxReason {
+  def attr = new UnprefixedAttribute("conversation", convId, Null)
 }
 case class LoginReason(userId: Long) extends MailboxReason {
   def attr = new UnprefixedAttribute("login", userId.toString, Null)

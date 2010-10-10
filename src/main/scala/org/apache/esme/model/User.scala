@@ -198,7 +198,7 @@ object User extends User with KeyedMetaMapper[Long, User] {
 /**
  * An O-R mapped "User" class that includes first name, last name, password
  */
-class User extends KeyedMapper[Long, User] with UserIdAsString {// OpenIDProtoUser[User] {
+class User extends KeyedMapper[Long, User] with UserIdAsString with ManyToMany {// OpenIDProtoUser[User] {
   import S._
 
   def getSingleton = User // what's the "meta" server
@@ -400,5 +400,9 @@ class User extends KeyedMapper[Long, User] with UserIdAsString {// OpenIDProtoUs
 
   def timezoneDisplayName = S.?("base_user_ui_timezone")
 
-  def localeDisplayName = S.?("base_user_ui_locale")
+  def localeDisplayName = S.?("base_user_ui_locale")  
+  
+  object tagsfollowing extends MappedManyToMany(UserTagFollow, UserTagFollow.user, UserTagFollow.tag, Tag)
+  
+  object convsfollowing extends MappedManyToMany(UserConvFollow, UserConvFollow.user, UserConvFollow.conversation, Message) 
 }
