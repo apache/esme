@@ -61,12 +61,14 @@ object Tag extends Tag with MetaProtoTag[Tag] {
   
 }
 
-class Tag extends ProtoTag[Tag] {
-  def getSingleton = Tag // what's the "meta" server
+class Tag extends ProtoTag[Tag] with ManyToMany {
+  def getSingleton = Tag // what's the "meta" server    
   
   def findMessages(): List[Message] =
   Message.findAndPrime(In.fk(MessageTag.message, By(MessageTag.tag, this)),
 		       OrderBy(Message.id, Descending))
 
-  override def toXml = <tag id={id.is.toString} name={name.is}>{"#" + name.is}</tag>
-}
+  override def toXml = <tag id={id.is.toString} name={name.is}>{"#" + name.is}</tag>    
+                                                                                           
+  object followers extends MappedManyToMany(UserTagFollow, UserTagFollow.tag, UserTagFollow.user, User)                                                                                         
+}               

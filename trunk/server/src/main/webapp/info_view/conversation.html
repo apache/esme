@@ -17,24 +17,25 @@
  under the License.                                           *
 -->
 <lift:surround with="base" at="left">
-    <lift:TableSorterSnip/>
-    <link rel="stylesheet" type="text/css" href="../style/style.css" />
-<head>
-        <script src="../scripts/display_messages.js" type="text/javascript"/> 
-        <script src="../scripts/pretty.js" type="text/javascript"/> 
-</head>
-
-<div id="back-header">
-	<h1><lift:loc>ui_default_conversation</lift:loc></h1>
-	<div class="container-aux">
-        <div>
-            <lift:displayConversation/>
-	    <lift:embed what="templates-hidden/message_core"/>
-        </div>
-	</div><!--container-settings-->
+  <lift:TableSorterSnip/>
+  <link rel="stylesheet" type="text/css" href="../style/style.css" />
+  <head>
+    <script src="../scripts/display_messages.js" type="text/javascript"/> 
+    <script src="../scripts/pretty.js" type="text/javascript"/> 
+  </head>
+                   
+  <div id="back-header">  
+    <lift:conv_info>
+    <h1><lift:loc>ui_default_conversation</lift:loc></h1>
+    <div class="container-aux">        
+      <span id="following"><conv:followButton/></span>
+      <div>
+        <conv:displayConversation/>
+        <lift:embed what="templates-hidden/message_core"/>
+      </div>
+    </div><!--container-settings-->    
+    </lift:conv_info>
 	</div>
-
-	<!-- End demo -->    
 </lift:surround>
 
 

@@ -74,7 +74,9 @@ object Distributor extends LiftActor {
 
       case nm @ NewMessage(msg) =>
         val toSend = UserActor.TestForTracking(msg)
-        users.values.foreach(_ ! toSend)
+        users.values.foreach(_ ! toSend) 
+        TagDistributor ! nm      
+        ConvDistributor ! nm
         listeners.foreach(_ ! nm)    
 
       case UpdateTrackingFor(userId, ttype) =>
