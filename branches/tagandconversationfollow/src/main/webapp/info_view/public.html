@@ -18,16 +18,14 @@
 -->
 
 <lift:surround with="base" at="left">
-	<div id="left">
 	<div id="back-header">
+	<div id="left">
 	<h1><lift:loc>ui_public_title</lift:loc></h1>
-<div class="container-aux">
+        <div class="container-public">
 		<!--updates-box -->
 		<lift:comet type="PublicTimeline"/>
 		<lift:embed what="templates-hidden/message_core"/>
 	</div>
-	<!--updates-box-->
-	
-	</div><!-- End demo -->
+	</div>
 </div><!-- End demo -->
 </lift:surround>

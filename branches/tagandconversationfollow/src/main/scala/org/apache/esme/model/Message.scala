@@ -202,7 +202,8 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
         Privilege.findViewablePools(user.id.is)
       }                                      
     val newQueryParams: Seq[QueryParam[Message]] = viewablePools match {
-      case Full(pools: List[Long]) if !pools.isEmpty => List(
+      case Full(Nil) => List(By(pool, Empty))
+      case Full(pools: List[Long]) => List(
         BySql(" POOL in ( ?" + ( ", ?" * (pools.size - 1)) + " ) OR POOL IS NULL ",
               IHaveValidatedThisSQL("vdichev", "22 June 2009"),
               pools.toSeq:_*)
@@ -311,7 +312,8 @@ class Message extends LongKeyedMapper[Message] with ManyToMany {
  
   lazy val body: String = originalXml \ "body" text
   
-  lazy val metadata: String = originalXml \ "metadata" text
+  //lazy val metadata: String = originalXml \ "metadata" text
+  lazy val metadata: String = (originalXml \ "metadata").toString
 
   lazy val metaData: String = {
     val org = originalXml
@@ -392,9 +394,16 @@ class Message extends LongKeyedMapper[Message] with ManyToMany {
 
         case e: Elem if e.label == "url" =>
           e.attribute("url").flatMap(url =>
-            e.attribute("uniqueId").map(id =>
-              <xml:group> <a href={"/u/"+id} target="_blank">{url}</a> </xml:group>)).
-          getOrElse(Text("") )
+            e.attribute("uniqueId").map { id =>
+              val href =
+                if (pool.defined_?)
+                  // disable shortener to avoid popularity statistics
+                  url.toString
+                else
+                  "/u/" + id
+              <xml:group> <a class="tiplelement" href={href} target="_blank" title={url}>{url.toString.substring(0,20)}...</a> </xml:group>
+            }
+          ).getOrElse(Text("") )
 
         case e: Elem if e.label == "em" =>
           e.attribute("text").map(text =>
@@ -498,8 +507,9 @@ class Message extends LongKeyedMapper[Message] with ManyToMany {
    * Note that the text representation of the XML must be readable
    * for clients that don't support markup formatting
    * and is recommended to result in the same XML when parsed
-   */
-  def setTextAndTags(in: String, tags: List[Tag], metaData: Box[Elem]): Box[Message] = {
+   */                                                                                        
+   
+  def setTextAndTags(in: String, tags: List[Tag], metaData: Box[Node]): Box[Message] = {
     MsgParser.parseMessage(in).map{
       lst =>
       val xml = <message><body>{

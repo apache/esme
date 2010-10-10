@@ -114,19 +114,26 @@ function displayMessages(msgArray, elementId)
       .attr('alt',msgAuthor.firstname + ' ' + msgAuthor.lastname);
 
 
-      newMsg.find('#body').html(msgBody);
-      newMsg.find('#supp_data').text(msgPool + " " + msgDateStr  + " " +  msgReason  + " " +   msgSource);
-      //newMsg.find('#source').text(msgSource);
-      //newMsg.find('#reason').text(msgReason);
-      //newMsg.find('#when').text(msgDateStr);
+      newMsg.find('#msgbody').html(msgBody);
+      if (msgReason)
+         newMsg.find('#supp_data').text(msgPool + " " + msgDateStr  + " " +  msgReason );
+      else {
+      	 newMsg.find('#supp_data').text(msgPool + " " + msgDateStr  + " via "  +   msgSource);
+      }
       var id = cometMsg.id;
       var resendButton = newMsg.find('#resend');
       if (cometResent) {
         resendButton.css("display", "none");
       } else {
-        resendButton.attr('id', 'resend_' + id).
+        resendButton
+            .attr('id', 'resend_' + id)
+            .click(function() { resend_msg(id);
+                                clearResend("resend_" + id );
+                                return false;})
+          /*
           attr('onclick', 'javascript:resend_msg(' + id + ');' +
                                      'clearResend("resend_' + id + '")');
+          */
       }
       newMsg.find('#reply').attr('href',
         "javascript:setReplyTo(" + id + ", '"+ msgBody + "', " + msgPoolId + ")");

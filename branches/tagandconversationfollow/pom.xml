@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.esme</groupId>
     <artifactId>esme-server</artifactId>
-    <version>apache-esme-1.0-RC1-incubating</version>
+    <version>apache-esme-1.1-incubating</version>
     <packaging>war</packaging>
     <name>Apache Enterprise Social Messaging Experiment (ESME)</name>
      <url>http://incubator.apache.org/esme</url>
@@ -75,7 +75,7 @@
     </developer>
     </developers>
     <properties>
-        <lift.version>2.0-SNAPSHOT</lift.version>
+        <lift.version>2.0</lift.version>
         <scala.version>2.7.7</scala.version>
         <compass.version>2.1.1</compass.version>
         <lucene.version>2.4.0</lucene.version>
@@ -177,6 +177,7 @@
             <groupId>net.liftweb</groupId>
             <artifactId>lift-testkit</artifactId>
             <version>${lift.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>net.liftweb</groupId>
@@ -225,7 +226,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.mortbay.jetty</groupId>
+          <groupId>org.mortbay.jetty</groupId>
             <artifactId>jetty</artifactId>
             <version>[6.1.6,)</version>
             <scope>test</scope>
@@ -242,11 +243,21 @@
             <artifactId>lucene-snowball</artifactId>
             <version>${lucene.version}</version>
         </dependency>
-        <!--dependency>
-            <groupId>com.twitter</groupId>
-            <artifactId>stats</artifactId>
-            <version>${scala.stats.version}</version>
-        </dependency-->
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.14</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.5.11</version>
+        </dependency>
+        <dependency>
+            <groupId>net.lag</groupId>
+            <artifactId>configgy</artifactId>
+            <version>1.5.3</version>
+        </dependency>
         <dependency>
             <groupId>com.twitter</groupId>
             <artifactId>ostrich</artifactId>

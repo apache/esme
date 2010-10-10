@@ -18,26 +18,31 @@
 -->
 
 <div id="timeline_messages">
-<head>
-        <script src="../scripts/display_messages.js" type="text/javascript"/> 
-        <script src="../scripts/pretty.js" type="text/javascript"/> 
-</head>
-	<div class="updates-box" id="message">
-		<div class="avatar">
-			<img id="avatar" width="50px"/>
-		</div>
-		<div class="update">
-			<div id="body"></div>
-			<div class="info">
-				<a href="" id="author"></a>
-				<div class="time">
-					<div id="supp_data"></div>
-				</div>
-			</div>
-		</div>
-		<div class="time">  </div>
-		<div class="separator">                    </div>
-	</div>
-</div>		
+    <head>
+        <script src="../scripts/display_messages_top.js" type="text/javascript" />
+        <script src="../scripts/pretty.js" type="text/javascript" />
+    </head>
+    <div class="updates-box" id="message">
+        <div class="avatar">
+            <img id="avatar" width="40px" />
+        </div>
+        <!--end avatar-->
+        <div class="update2">
+            <div class="info2">
+                <a href="" id="author" />
+                <div id="msgbody" />
+                <div class="supp_data_class" id="supp_data" />
+            </div>
+            <!--end info2-->
+            <div class="actions"></div>
+            <!--end actions-->
+            <div id="msgsep" class="separator"></div>
+            <!-- separator works here but is too short-->
+        </div>
+        <!--end update2-->
+    </div>
+    <!--end updates-box-->
+    <!-- <div id="msgsep" class="separator"/> seprator should be here but doesn't work-->
+</div>
 				
 

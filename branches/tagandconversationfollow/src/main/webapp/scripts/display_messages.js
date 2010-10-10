@@ -125,9 +125,15 @@ function displayMessages(msgArray, elementId)
       if (cometResent) {
         resendButton.css("display", "none");
       } else {
-        resendButton.attr('id', 'resend_' + id).
+        resendButton
+            .attr('id', 'resend_' + id)
+            .click(function() { resend_msg(id);
+                                clearResend("resend_" + id );
+                                return false;})
+          /*
           attr('onclick', 'javascript:resend_msg(' + id + ');' +
                                      'clearResend("resend_' + id + '")');
+          */
       }
       
       
@@ -136,7 +142,7 @@ function displayMessages(msgArray, elementId)
       var conversation = newMsg.find('#conversation');
       if (msgConversation != 0) {
         conversation.attr('href', 
-          '/conversation/' + msgConversation);
+          '../conversation/' + msgConversation);
       } else {
         conversation.css("display", "none");
       }

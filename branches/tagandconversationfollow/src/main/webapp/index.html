@@ -56,20 +56,19 @@
 
 			<lift:comet type="SinglePublicTimeline"/>
 			<!--updates-box -->
-			<div class="gray-box">
-			<h1>Now on ESME</h1>
-			<div class = "mesg-box">
-			   <div id="timeline_messages">
-				<div id="message">
-							
-				 <div class="avatar"> <img id="avatar" src="/images/avatar.jpg" alt="Anonymous" width="50px"/></div>
-				   <div class="update"> <div id="body">-</div>
-				   <div class="info"><a id="author">-</a><div class="time"></div></div>
-				 </div>	
-				 <div class="time"> <div id="supp_data"> -</div> </div>	
-				</div>
-				</div>
-			</div>
+			<h1><lift:loc>ui_default_on_esme</lift:loc></h1>
+			<div id="timeline_messages" class="gray-box">
+			    <div class="updates-box" id="message" style ="">
+			            <div class="avatar">
+			                <img id="avatar" width="40px" />
+			            </div>
+			            <!--end avatar-->
+			            <div class="info2">
+			                <a href="" id="author" />
+			                <div id="msgbody" />
+			                <div class="supp_data_class" id="supp_data" />
+			            </div>
+			        </div>
 			</div><!--gray-box-->
 		</lift:surround>
 	</logged:out>

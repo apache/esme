@@ -33,7 +33,7 @@ import common._
 import org.apache.esme._
 import model._
 
-import scala.xml.{Elem}
+import scala.xml.{Node, Elem}
 
 /**
  * The Distributor actor forwards messages to the appropriate user actor
@@ -102,8 +102,8 @@ object Distributor extends LiftActor {
   }                             
 
   case class UserCreatedMessage(user: Long, text: String, tags: List[String],
-                                when: Long,
-                                metaData: Box[Elem],
+                                when: Long,               
+                                metaData: Box[Node],
                                 source: String,
                                 replyTo: Box[Long],
                                 pool: Box[Long])

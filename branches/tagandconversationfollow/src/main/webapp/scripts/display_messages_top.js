@@ -62,6 +62,11 @@ function searchMe()
 {
    if(document.forms["validateForm"].term.value.trim.length > 0)
    	document.forms["validateForm"].submit();
+}    
+
+var resendFunction = function(id){
+  resend_msg(id);
+  clearResend("resend_" + id );
 }
 
 function displayMessages(msgArray, elementId)
@@ -107,7 +112,7 @@ function displayMessages(msgArray, elementId)
 
       
       var msgPool = '';
-      if (cometMsg.pool) msgPool = 'in pool ' + cometMsg.pool.name; 
+      if (cometMsg.pool) msgPool = 'in pool \'' + cometMsg.pool.name + "\'"; 
       var msgPoolId = 0;
       if (cometMsg.pool) msgPoolId = cometMsg.pool.id; 
       var msgSource = cometMsg.source;
@@ -130,13 +135,17 @@ function displayMessages(msgArray, elementId)
       // Put the marshalled data into a copy of the template
       var newMsg = msgTemplate.clone(true).attr('id',msgId);
 
+      
       newMsg.find('#author').text(msgAuthor.nickname);
       newMsg.find('#author').attr('href', "/user/" + msgAuthor.nickname );
      
      
-      // Dealing with users with no avatars
+           // Dealing with users with no avatars
       if (!msgAuthor.imageUrl) {
+      	if (top.location.pathName == "/") 
       	 msgAuthor.imageUrl= "images/avatar.jpg"
+      	else
+      	msgAuthor.imageUrl= "../images/avatar.jpg" 
      }
      
      	
@@ -145,24 +154,25 @@ function displayMessages(msgArray, elementId)
       	
       var avatar = newMsg.find('#avatar')
       .attr('src', msgAuthor.imageUrl)
-      .attr('alt',msgAuthor.firstname + ' ' + msgAuthor.lastname);
+      .attr('alt',msgAuthor.firstName + ' ' + msgAuthor.lastName);
       
-      newMsg.find('#body').html(msgBody);
-      newMsg.find('#supp_data').text(msgPool + " " + msgDateStr  + " " +  msgReason  + " " +   msgSource);
-      newMsg.find('#msgPool').text(msgPool);
-      //newMsg.find('#reason').text(msgReason);
-      //newMsg.find('#when').text(msgDateStr);
+      newMsg.find('#msgbody').html(msgBody);
+      if (msgReason)
+         newMsg.find('#supp_data').text(msgPool + " " + msgDateStr  + " " +  msgReason );
+      else {
+      	 newMsg.find('#supp_data').text(msgPool + " " + msgDateStr  + " via "  +   msgSource);
+      }
       var id = cometMsg.id;
 
-      var resendButton = newMsg.find('#resend');
+      var resendButton = newMsg.find('#resend');    
+      
       if (cometResent) {
         resendButton.css("display", "none");
       } else {
-        resendButton.attr('id', 'resend_' + id).
-          attr('onclick', 'javascript:resend_msg(' + id + ');' +
-                                     'clearResend("resend_' + id + '")');
+        resendButton
+            .attr('id', 'resend_' + id)     
+            .attr('href', "javascript:resendFunction(" + id + ");")       
       }
-
 
       var tempStr = strip(msgBody).replaceAll ("'", "ZZZ$%$");
       
@@ -191,6 +201,7 @@ function displayMessages(msgArray, elementId)
 
       // Insert the updated copy of the message into the page
       newMsg.prependTo(msgInsertPt).show();
+      jQuery('#msgsep').clone().show();
     }
   }
 }

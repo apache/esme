@@ -92,8 +92,7 @@
                                      </fieldset>
 				</lift:poolDetail>
 			</div>
-			<div id="PoolSpan">
-			     
+			<div id="PoolSpan">  
 				<lift:ignore>
 					<!--  The poolUsers snippet *MUST* appear on the page before the editPool snippet                        -->
 				</lift:ignore>
@@ -125,7 +124,7 @@
 						</table>
 					<div class="post-form-row">
 						<div class="submit-btn tipelement" title="Add a user to an existing pool." >
-							<input type="image" onclick="javascript:$('#dialog-form-user').dialog('open')" id="create-user" src="../images/add1.gif"/>
+							<input type="image" onclick="javascript:$('#dialog-form-user').dialog('open')" id="create-user" src="../images/edit.gif"/>
 						</div>
 					</div>
 				</lift:poolUsers>
@@ -137,7 +136,39 @@
 						<edit:pool class="tipelement" title="Select a pool to edit"/>
 					</lift:editPool>
 				</lift:form>
-			</div>
+			</div>      
+			<div id="pool_membership_and_roles" title="My Pool Roles" >
+        <lift:myPools the_id="pool_membership_and_roles">
+          <br/>
+          <br/>
+          <br/>
+          <b><lift:loc>ui_pool_list_mine_title</lift:loc></b>
+          <table id="esme-table" class="tablesorter">
+            <thead>
+              <tr>
+                <th>
+                  <lift:loc>ui_pool_list_mine_pool_name</lift:loc>
+                </th>
+                <th>
+                  <lift:loc>ui_pool_list_mine_role</lift:loc>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <myPool:pool>
+                <tr>
+                  <td>
+                    <pool:poolName/>
+                      </td>
+                      <td>
+                    <pool:role/>
+                  </td>
+                </tr>
+              </myPool:pool>
+            </tbody>
+          </table>
+        </lift:myPools>
+      </div>
 			<div id="dialog-form" title="Create new  pool" style="display: none">
 				<p class="validateTips">
 					<!--lift:loc>ui_form_all_fields_required</lift:loc-->
@@ -158,7 +189,7 @@
 					</lift:addPool>
 				</form>
 			</div>
-			<div id="dialog-form-user" title="Add a user to a pool" style="display: none">
+			<div id="dialog-form-user" title="Add a user/Change a user's role" style="display: none">
 				<p class="validateTips">
 					<lift:loc>ui_form_all_fields_required</lift:loc>
 				</p>
@@ -168,11 +199,13 @@
 							<label for="poolName">
 								<lift:loc>ui_pool_add</lift:loc>
 							</label>
-							<edit:username class="text ui-widget-content ui-corner-all tipelement" title="This is the user that will be added to a pool." />
+							<!--edit:username class="text ui-widget-content ui-corner-all tipelement" title="This is the user that will be added to a pool." /-->
+                            <edit:username class="text ui-widget-content ui-corner-all tipelement" title="This will be the new user or the user whose role is being changed" />
 							<label for="permission">
 								<lift:loc>ui_pool_list_user_role</lift:loc>
 							</label>
-							<edit:permission class="text ui-widget-content ui-corner-all tipelement" title="This is the type of permission that the new user will have." />
+							<!--edit:permission class="text ui-widget-content ui-corner-all tipelement" title="This is the type of permission that the new user will have." /-->
+                            <edit:permission class="text ui-widget-content ui-corner-all tipelement" title="This is the type of permission that the user will have." />
 						</fieldset>
 					</lift:editPool>
 				</form>
