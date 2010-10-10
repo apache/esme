@@ -17,26 +17,16 @@ package org.apache.esme.model
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
- */
+ */              
+ 
+import net.liftweb._    
+import mapper._       
 
-import net.liftweb._
-import mapper._
-import util._
-import common._
-import Helpers._
+object UserConvFollow extends UserConvFollow with LongKeyedMetaMapper[UserConvFollow]
 
-object MessageTag extends MessageTag with LongKeyedMetaMapper[MessageTag] {
+class UserConvFollow extends LongKeyedMapper[UserConvFollow] with IdPK {  
+  def getSingleton = UserConvFollow
 
-}
-
-class MessageTag extends LongKeyedMapper[MessageTag] {
-  def getSingleton = MessageTag // what's the "meta" server
-  def primaryKeyField = id
-
-  object id extends MappedLongIndex(this)
-  
-  object message extends MappedLongForeignKey(this, Message)
-  object tag extends MappedLongForeignKey(this, Tag)
-  object sentTo extends MappedLongForeignKey(this, User)
-  object url extends MappedLongForeignKey(this, UrlStore)
+  object user extends LongMappedMapper(this, User)
+  object conversation extends LongMappedMapper(this, Message)
 }

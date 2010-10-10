@@ -279,7 +279,7 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
 
 
 @Searchable
-class Message extends LongKeyedMapper[Message] {
+class Message extends LongKeyedMapper[Message] with ManyToMany {
   import Message._
   
   def getSingleton = Message // what's the "meta" server
@@ -324,7 +324,9 @@ class Message extends LongKeyedMapper[Message] {
 
   object replyTo extends MappedLongForeignKey(this, Message)
 
-  object conversation extends MappedLongForeignKey(this, Message)
+  object conversation extends MappedLongForeignKey(this, Message)  
+  
+  object followers extends MappedManyToMany(UserConvFollow, UserConvFollow.conversation, UserConvFollow.user, User) 
 
   object pool extends MappedLongForeignKey(this, AccessPool) {
     override def asJs = 
