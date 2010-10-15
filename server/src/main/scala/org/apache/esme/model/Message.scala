@@ -401,7 +401,12 @@ class Message extends LongKeyedMapper[Message] with ManyToMany {
                   url.toString
                 else
                   "/u/" + id
-              <xml:group> <a class="tiplelement" href={href} target="_blank" title={url}>{url.toString.substring(0,20)}...</a> </xml:group>
+              def truncateUrl(urlString: String, len: Int) =
+                if (urlString.length <= len)
+                  urlString
+                else
+                  urlString.substring(0, len - 3) + "..."
+              <xml:group> <a class="tiplelement" href={href} target="_blank" title={url}>{truncateUrl(url.toString, 20)}</a> </xml:group>
             }
           ).getOrElse(Text("") )
 
