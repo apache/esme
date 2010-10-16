@@ -171,7 +171,7 @@ class Boot {
     // Build SiteMap
     val entries = Menu(Loc("Home", List("index"), "Home")) ::
         Menu(Loc("user", List("info_view", "user"), "User Info", ifIsLoggedIn,
-          Loc.Snippet("user_info", TagDisplay.userInfo))) ::
+          Loc.Snippet("user_info", UserDisplay.userInfo))) ::
         logLevel.menu  ::
         Menu(Loc("tag", List("info_view", "tag"), "Tag", ifIsLoggedIn,
           Loc.Snippet("tag_display", TagDisplay.display))) ::
