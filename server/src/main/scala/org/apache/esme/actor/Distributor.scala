@@ -51,9 +51,9 @@ object Distributor extends LiftActor {
         // toact ! UserActor.CreateMessage(text, tags,
         //                                when, metaData, source, inReplyTo, pool)
 		
-		forwardMessageTo(
-			UserActor.CreateMessage(text,tags,when,metaData,source,inReplyTo,pool),
-			toact)
+		    forwardMessageTo(
+			    UserActor.CreateMessage(text,tags,when,metaData,source,inReplyTo,pool),
+			      toact)
 
         toact ! text
 
