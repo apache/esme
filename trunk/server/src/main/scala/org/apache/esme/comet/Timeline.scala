@@ -35,18 +35,11 @@ import lib._
 
 import java.text._
 
-class Timeline extends CometActor {
-  private var messages: List[(Long,MailboxReason,Boolean)] = Nil
+trait Timeline extends CometActor {
+  protected var messages: List[(Long,MailboxReason,Boolean)] = Nil
   
   override def localSetup() {
     super.localSetup()
-    for (user <- User.currentUser) {
-      Distributor ! Distributor.Listen(user.id, this)
-      Distributor !? (2000, Distributor.LatestMessages(user.id, 40)) match {
-        case Full(msg: List[(Long,MailboxReason,Boolean)]) => messages = msg
-        case x =>
-      }
-    }
   }
   
   override def localShutdown() {
