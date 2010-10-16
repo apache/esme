@@ -20,7 +20,8 @@
 package org.apache.esme.snippet
 
 import org.apache.esme._
-import model._
+import model._    
+import lib.MessageUtils
 import org.apache.esme.actor._
 
 import net.liftweb._
@@ -39,48 +40,6 @@ import scala.xml.{NodeSeq, Text}
 import java.util.Date
 
 object TagDisplay {
-  def userInfo(in: NodeSeq): NodeSeq = {
-    val user: User = S.param("uid").flatMap(User.findFromWeb) openOr {
-      S.error(S.?("base_ui_no_user_found"))
-      S.redirectTo(S.referer openOr "/")
-    }
-   
-    def updateFollow: JsCmd = SetHtml("following", followOrNot)
-
-    def followOrNot: NodeSeq = {
-      User.currentUser match {
-        case Full(u) if u != user =>
-          if (u.following_?(user))
-          ajaxButton(S.?("base_ui_unfollow"), () => {u.unfollow(user); updateFollow})
-          else ajaxButton(S.?("base_ui_follow"), () => {u.follow(user); updateFollow})
-
-        case _ => <xml:group> <div class="thatsyou">{S.?("base_user_thats_you")}</div></xml:group> 
-      }
-    }
-
-
-     bind("user", in,
-         "nicename" -> user.niceName,
-         "lastName" -> user.lastName,
-         "firstName" -> user.firstName,
-          "image" -> user.image_url,
-         "followButton" -> followOrNot,
-         "timeline" -> bindTag(Mailbox.mostRecentMessagesFor(user.id, 50).map(_._1)) _,
-         "messages" -> bindTag(Message.findAll(By(Message.author, user), OrderBy(Message.id, Descending), MaxRows(50))) _,
-         AttrBindParam("userId", Text(user.id.toString),"userId")
-    )
-
-  
-  }
-
-  private def bindTag(tagList: List[Message])(in: NodeSeq): NodeSeq =
-    tagList.flatMap{m =>
-      val nickname = m.author.obj.map(_.nickname.is) openOr ""
-      bind("item", in,
-           "author" -> <a href={"/user/"+urlEncode(nickname)}>{nickname}</a>,
-           "body" -> m.digestedXHTML,
-           "date" -> Text(new Date(m.when.is).toString))
-    }
 
   def display(in: NodeSeq): NodeSeq = {  
   
@@ -89,7 +48,7 @@ object TagDisplay {
     val tag = Tag.findAll(By(Tag.name, name))
     val user = User.currentUser
 
-    val tagList: List[Message] =
+    val messageList: List[Message] =
     for {
       t <- tag
       item <- t.findMessages()
@@ -121,8 +80,8 @@ object TagDisplay {
     def updateFollow: JsCmd = SetHtml("following", followOrUnfollow)
 
     bind("tag", in, "name" -> name,
-         "each" -> bindTag(tagList) _,
+         "each" -> MessageUtils.bindMessages(messageList) _,
          "followButton" -> followOrUnfollow )
 
-  }  
+  }       
 }

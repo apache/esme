@@ -85,8 +85,6 @@ object ConversationMgr {
 
       val jsId = "timeline_messages"                  
 
-      val cid = S.param("cid").map(toLong).openOr(-1L)
-
       val msgs = Message.findAndPrime(By(Message.conversation, cid),
                                       OrderBy(Message.id, Descending))
 
