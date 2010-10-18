@@ -64,8 +64,19 @@ object Distributor extends LiftActor {
         findOrCreateUser(user) ! UserActor.Listen(who)
 
       case Unlisten(user, who) =>
-        findOrCreateUser(user) ! UserActor.Unlisten(who)
-
+        findOrCreateUser(user) ! UserActor.Unlisten(who)    
+        
+      case ListenObject(listenable, who) => listenable match {
+        case u:User => findOrCreateUser(u.id) ! UserActor.Listen(who) 
+        case c:Message => ConvDistributor ! ConvDistributor.Listen(c,who)   
+        case x => println("This is all wrong " + x)
+      }              
+      
+      case UnlistenObject(listenable, who) => listenable match {
+        case u:User => findOrCreateUser(u.id) ! UserActor.Unlisten(who) 
+        case c:Message => ConvDistributor ! ConvDistributor.Unlisten(c,who)
+      }
+                         
       case LatestMessages(user, cnt) =>
         forwardMessageTo(UserActor.LatestMessages(cnt), findOrCreateUser(user))
 
@@ -109,7 +120,9 @@ object Distributor extends LiftActor {
                                 pool: Box[Long])
   case class AddMessageToMailbox(user: Long, message: Message, reason: MailboxReason)
   case class Listen(user: Long, who: LiftActor)
-  case class Unlisten(user: Long, who: LiftActor)
+  case class Unlisten(user: Long, who: LiftActor)    
+  case class ListenObject(listenable: Any, who: LiftActor)
+  case class UnlistenObject(listenable: Any, who: LiftActor)
   case class LatestMessages(user: Long, cnt: Int)
   case class NewMessage(msg: Message)
   case class UpdateTrackingFor(user: Long, which: TrackingType)

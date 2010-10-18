@@ -22,10 +22,12 @@ package org.apache.esme.comet
 import net.liftweb.common._    
 
 import org.apache.esme._
-import actor.Distributor
+import actor.{Distributor,UserActor}
 import model._   
 
-class PersonalTimeline extends Timeline { 
+class PersonalTimeline extends Timeline {   
+
+  val jsId = "personal_timeline_messages"  
 
   override def localSetup() {
     super.localSetup()
@@ -36,6 +38,29 @@ class PersonalTimeline extends Timeline {
         case x =>
       }
     }
-  }     
+  }  
+  
+  override def localShutdown() {
+    super.localShutdown()
+    for (user <- User.currentUser) {
+      Distributor ! Distributor.Unlisten(user.id, this)
+    }
+  }
+  
+  override def lowPriority = {
+    case UserActor.MessageReceived(msg, r) =>
+      messages = ( (msg.id.is,r,false) :: messages).take(40)
+      reRender(false)
+      
+    case UserActor.Resend(msgId) =>
+      messages = messages.map {
+        case (`msgId`, r, _) => (msgId, r, true)
+        case x => x
+      }
+      reRender(false)
+      
+    case Distributor.UserUpdated(_) =>
+      reRender(false)
+  }   
 
 }

@@ -36,7 +36,8 @@ import lib._
 import java.text._
 
 trait Timeline extends CometActor {
-  protected var messages: List[(Long,MailboxReason,Boolean)] = Nil
+  protected var messages: List[(Long,MailboxReason,Boolean)] = Nil    
+  protected val jsId: String
   
   override def localSetup() {
     super.localSetup()
@@ -44,9 +45,6 @@ trait Timeline extends CometActor {
   
   override def localShutdown() {
     super.localShutdown()
-    for (user <- User.currentUser) {
-      Distributor ! Distributor.Unlisten(user.id, this)
-    }
   }
   
   def render = {
@@ -55,28 +53,11 @@ trait Timeline extends CometActor {
       for ((id, reason, resent) <- messages;
            msg <- msgMap.get(id))
       yield (msg, reason, resent)
-    val jsId = "personal_timeline_messages";
 
     OnLoad(JsCrVar(jsId, JsArray(
         toDisplay.map{case (msg, reason, resent) =>
                   JsObj(("message",msg.asJs),("reason",reason.asJs), ("resent",resent))
                   } :_*)) &
     JsFunc("displayMessages", JsVar(jsId), jsId).cmd)
-  }
-  
-  override def lowPriority = {
-    case UserActor.MessageReceived(msg, r) =>
-      messages = ( (msg.id.is,r,false) :: messages).take(40)
-      reRender(false)
-      
-    case UserActor.Resend(msgId) =>
-      messages = messages.map {
-        case (`msgId`, r, _) => (msgId, r, true)
-        case x => x
-      }
-      reRender(false)
-      
-    case Distributor.UserUpdated(_) =>
-      reRender(false)
   }
 }
