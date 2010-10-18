@@ -23,24 +23,39 @@ import net.liftweb._
 import actor._        
 
 import org.apache.esme._
-import model.{Message, User, ConvFollowReason}
+import model.{Message, User, ConvFollowReason, NoReason, MailboxReason}   
+
+import scala.collection.mutable.HashMap
 
 object ConvDistributor extends LiftActor {   
-
-  println("ConvDistributor started")
-                             
+                                       
   protected def messageHandler = {
     case Distributor.NewMessage(msg) => {                                                            
       Message.findMessages(List(msg.conversation)).values.toList.map( m => {  
         m.followers.refresh.map( u => {                             
           Distributor ! Distributor.AddMessageToMailbox(u.id, msg, ConvFollowReason(m.id)); 
-        })
+        })   
+        listeners.getOrElse(m, List()).map(
+          _ ! MessageReceived(msg, NoReason)
+        )
       })
     }
+    
+    case Listen(conv, who) =>
+      listeners.update(conv, who :: listeners.getOrElse(conv, List()))
+      
+    case Unlisten(conv, who) =>
+      listeners.update(conv, listeners.getOrElse(conv, List()).filter( _ ne who))
   } 
   
   def touch {
   
-  }                   
+  }    
+  
+  private var listeners: HashMap[Message,List[LiftActor]] = new HashMap
+  
+  case class Listen(conv:Message,who:LiftActor)
+  case class Unlisten(conv:Message,who:LiftActor)      
+  case class MessageReceived(msg: Message, reason: MailboxReason)          
 
 }
