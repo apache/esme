@@ -69,7 +69,7 @@ object Distributor extends LiftActor {
       case ListenObject(listenable, who) => listenable match {
         case u:User => findOrCreateUser(u.id) ! UserActor.Listen(who) 
         case c:Message => ConvDistributor ! ConvDistributor.Listen(c,who)   
-        case x => println("This is all wrong " + x)
+        case x =>
       }              
       
       case UnlistenObject(listenable, who) => listenable match {
