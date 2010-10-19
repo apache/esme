@@ -49,7 +49,7 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
         if (!replyTo.conversation.defined_?) {
           replyTo.conversation(replyTo.id).save
         }
-        msg.conversation(replyTo.conversation).save
+        msg.conversation(replyTo.conversation)
       }
     }
   }
