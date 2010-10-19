@@ -124,8 +124,9 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
     msg.saveTheTags()
   }
 
-  override def afterCreate = fixConversation _ ::
-  saveTags _ :: super.afterCreate
+  override def afterCreate = saveTags _ :: super.afterCreate
+  
+  override def beforeCreate = fixConversation _ :: super.beforeCreate
 
   override def afterSave = uncache _ :: super.afterSave
 
