@@ -23,7 +23,9 @@ import net.liftweb._
 import actor._        
 
 import org.apache.esme._
-import model.{Tag, User, TagFollowReason}
+import model.{Tag, User, Message, TagFollowReason, NoReason, MailboxReason}       
+
+import scala.collection.mutable.HashMap   
 
 object TagDistributor extends LiftActor {
                              
@@ -34,13 +36,28 @@ object TagDistributor extends LiftActor {
           t.followers.refresh.map( u => {  
             Distributor ! Distributor.AddMessageToMailbox(u.id, msg, TagFollowReason(t.name));  
           })
+          listeners.getOrElse(t, List()).map(
+            _ ! MessageReceived(msg, NoReason)
+          )
         })
       })                                                            
     }
+    
+    case Listen(tag, who) =>
+      listeners.update(tag, who :: listeners.getOrElse(tag, List()))
+      
+    case Unlisten(tag, who) =>
+      listeners.update(tag, listeners.getOrElse(tag, List()).filter( _ ne who))
   } 
   
   def touch {
   
-  }                   
+  }     
+  
+  private var listeners: HashMap[Tag,List[LiftActor]] = new HashMap
+  
+  case class Listen(tag:Tag,who:LiftActor)
+  case class Unlisten(tag:Tag,who:LiftActor)      
+  case class MessageReceived(msg: Message, reason: MailboxReason)              
 
 }

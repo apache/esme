@@ -154,7 +154,7 @@ class UserActor extends LiftActor {
                                              
           Distributor ! Distributor.NewMessage(msg)     
 
-		  reply(msg)  
+		      reply(msg)  
         }
 
       case AddToMailbox(msg, reason) =>

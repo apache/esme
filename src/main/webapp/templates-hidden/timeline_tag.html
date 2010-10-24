@@ -16,15 +16,14 @@
  specific language governing permissions and limitations      *
  under the License.                                           *
 -->
-<lift:surround with="base" at="left">    
-  <link rel="stylesheet" type="text/css" href="../style/style.css" />
-  <lift:tag_display>                                              
-    <div id="back-header">  
-      <h1><lift:loc>ui_tag_title</lift:loc> '<tag:name/>'</h1>
-  	</div>                                                 
-  	<div class="container-aux">     
-  	    <span id="following"><tag:followButton/></span>   
-  	  <lift:embed what="templates-hidden/timeline_tag"/>   
-    </div>                                                          
-  </lift:tag_display>                                             
-</lift:surround>
+                   
+<div id="tag_timeline_messages">                           
+  <head>                        
+    <script src="../scripts/display_messages_top.js" type="text/javascript"/>  
+    <script src="../scripts/pretty.js" type="text/javascript"/> 
+  </head>          
+  <lift:tag_display>           
+    <tag:cometTimeline />        
+  </lift:tag_display>  
+  <lift:embed what="templates-hidden/message_core"/>
+</div>  
