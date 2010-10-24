@@ -68,13 +68,14 @@ object Distributor extends LiftActor {
         
       case ListenObject(listenable, who) => listenable match {
         case u:User => findOrCreateUser(u.id) ! UserActor.Listen(who) 
-        case c:Message => ConvDistributor ! ConvDistributor.Listen(c,who)   
-        case x =>
+        case c:Message => ConvDistributor ! ConvDistributor.Listen(c,who)
+        case t:Tag => TagDistributor ! TagDistributor.Listen(t,who)   
       }              
       
       case UnlistenObject(listenable, who) => listenable match {
         case u:User => findOrCreateUser(u.id) ! UserActor.Unlisten(who) 
         case c:Message => ConvDistributor ! ConvDistributor.Unlisten(c,who)
+        case t:Tag => TagDistributor ! TagDistributor.Unlisten(t,who)
       }
                          
       case LatestMessages(user, cnt) =>

@@ -45,19 +45,16 @@ object TagDisplay {
   
     val name = (S.param("tag") openOr "N/A").trim 
     
-    val tag = Tag.findAll(By(Tag.name, name))
+    val tag = Tag.findAll(By(Tag.name, name)).headOption
     val user = User.currentUser
 
-    val messageList: List[Message] =
-    for {
-      t <- tag
-      item <- t.findMessages()
-    } yield item   
+    val messageList: List[Message] = 
+    {for(t <- tag) yield { t.findMessages() }}.getOrElse(List())
     
     def followOrUnfollow: NodeSeq = {          
       val ret: Box[NodeSeq] = for { 
         u <- user
-        t = tag.first
+        t <- tag
       } yield {                 
         if (!t.followers.contains(u)) {
           ajaxButton("Follow tag", () => {  
@@ -78,9 +75,14 @@ object TagDisplay {
     }  
     
     def updateFollow: JsCmd = SetHtml("following", followOrUnfollow)
+    
+    def cometTimeline:NodeSeq = { for(t <- tag) yield {
+      <lift:comet type="TagTimeline" name={"tag"+t.id.is} />
+    }}.getOrElse(Text(""))
 
     bind("tag", in, "name" -> name,
-         "each" -> MessageUtils.bindMessages(messageList) _,
+         "each" -> MessageUtils.bindMessages(messageList) _,   
+         "cometTimeline" -> cometTimeline,
          "followButton" -> followOrUnfollow )
 
   }       
