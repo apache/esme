@@ -342,6 +342,7 @@
                 </executions>
                 <configuration>
                     <nosuffix>true</nosuffix>
+                    <statistics>false</statistics>
                     <jswarn>false</jswarn>
                 </configuration>
             </plugin>
