@@ -230,7 +230,7 @@ label {
 }
 
 .post-form-row {
-	margin:7px 0;
+  margin-top:10px;    
 }
 .line {
 	margin-top:12px;
@@ -238,22 +238,22 @@ label {
 }
 .login-btn, .update-btn, .submit-btn { 
 	float:right;	
-}             
-.share-select {
-	float:left;
+}                
+
+.share-select {  
+  display:inline;            
 }                  
-.update-btn {
+
+.update-btn {    
+  display:inline;
 	margin-right:40px;
-}
-.update-btn, .share-select {
-	margin-top:10px;
-}
+}                  
+
 #form-update label {
 	font-weight:bold;
 	color:#000;
 	margin-top: 5px;
-	padding-right:5px;
-	float:left;
+	padding-right:5px; 
 }
 select.inputBox2 { 
 	background-color:#FFFFFF !important;	
@@ -263,8 +263,7 @@ select.inputBox2 {
 	padding:4px; 
 }
 
-textarea.inputBox2 { 
-	float:left; 
+textarea.inputBox2 {  
 	background-color:#FFFFFF !important;	
 	border:1px solid #a7aaad; 
 	width:95%; 
@@ -406,15 +405,27 @@ ul.main-links  {
 /* UPDATES
 *******************************************************************************/
 #back-header {
-	margin-top:20px;
-	}
+	margin-top:20px; 
+}
+
 .container-update {
-	
-	width: 550px; 
-	height:185px; 
-	padding:20px 30px; 
-	background: url(../images/bg-update.png) no-repeat; 
-	margin-bottom:20px; 
+	width: 550px;  
+	padding:10px 30px;                                    
+	background: url(../images/bg-update-mid.png) repeat-y;
+}      
+
+.container-update-top {
+  height:15px;
+	width: 550px;       
+	padding:0px 30px;  
+  background: url(../images/bg-update-top.png) no-repeat;     
+} 
+
+.container-update-bot {
+  height:20px;
+  width: 550px;       
+	padding:0px 30px;  
+  background: url(../images/bg-update-bot.png) no-repeat;  
 }
 
 .gray-box {
