@@ -26,8 +26,6 @@ import net.liftweb.http.ActorWatcher
 import net.liftweb.util._
 import Helpers._
 import net.liftweb.common._
-//import com.twitter.stats.Stats
-//import com.twitter.stats.Stats
 import com.twitter.ostrich.Stats
 
 
@@ -96,8 +94,7 @@ object SchedulerActor extends LiftActor{
       }
       Stats incr "schedulerMessagesCreated"
       Stats incr "messagesCreated"
-      Stats incr "schedulerMessagesCreated"
-      Stats incr "messagesCreated"
+
     }
     
   }
