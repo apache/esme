@@ -18,74 +18,78 @@
 -->
 
 <!---UPDATE BOX -->
-<div class="container-update">
-	<h3 id="message_request">
-		<lift:loc>ui_messages_message_label_message_request</lift:loc>
-	</h3>
-	<div id="form-update">
-		<div id="messages"></div>
-		<div class="post-form-row">
-			<textarea class="inputBox2 tipelement" title="Enter your status message here." id="vMsg" rows="5" cols="80%"></textarea>
-			<div class="row clear" style="display: none">
-				<input id="vTag" style="width: 90%"/>
-			</div>
-		</div>
-		<div class="row clear" style="display: none" id="reply-to-div">
-			<p>
-				<b><lift:loc>ui_messages_message_label_message_reply</lift:loc></b>
-				<span id="reply-to-span"><i></i></span>
-				<a href="javascript: clearReplyTo()">
-					<lift:loc>ui_messages_message_label_message_remove_reply</lift:loc>
-				</a>
-			</p>
-		</div>
-		<div class="post-form-row">
-			<div class="share-select">
-				<label>
-					<lift:loc>ui_messages_share</lift:loc>
-				</label>
-				<select id="vPool" class="inputBox2 tipelement" title="Select the pool in which your message should be submitted">
-					<option value="0">
-						<lift:loc>ui_messages_message_label_message_pool_public</lift:loc>
-					</option>
-					<lift:UserSnip.accessPools/>
-				</select>
-			</div>
-			<div class="update-btn">
-				<input type="image" onclick="javascript:post_msg();" src="images/btn-update.gif" />
-			</div>
-		</div>
-		<script>
-                                  // <![CDATA[
-                                  var currentConvNumber = 0;
+<div>
+  <div class="container-update-top"></div> 
+  <div class="container-update">   
+  	<h3 id="message_request">
+  		<lift:loc>ui_messages_message_label_message_request</lift:loc>
+  	</h3>
+  	<div id="form-update">
+  		<div id="messages"></div>
+  		<div class="post-form-row">
+  			<textarea class="inputBox2 tipelement" title="Enter your status message here." id="vMsg" rows="5" cols="80%"></textarea>
+  			<div class="row clear" style="display: none">
+  				<input id="vTag" style="width: 90%"/>
+  			</div>
+  		</div>
+  		<div class="row clear" style="display: none" id="reply-to-div">
+  			<p>
+  				<b><lift:loc>ui_messages_message_label_message_reply</lift:loc></b>
+  				<span id="reply-to-span"><i></i></span>
+  				<a href="javascript: clearReplyTo()">
+  					<lift:loc>ui_messages_message_label_message_remove_reply</lift:loc>
+  				</a>
+  			</p>
+  		</div>
+  		<div class="post-form-row">
+  			<div class="share-select">
+  				<label>
+  					<lift:loc>ui_messages_share</lift:loc>
+  				</label>
+  				<select id="vPool" class="inputBox2 tipelement" title="Select the pool in which your message should be submitted">
+  					<option value="0">
+  						<lift:loc>ui_messages_message_label_message_pool_public</lift:loc>
+  					</option>
+  					<lift:UserSnip.accessPools/>
+  				</select>
+  			</div>
+  			<div class="update-btn">
+  				<input type="image" onclick="javascript:post_msg();" src="images/btn-update.gif" />
+  			</div>
+  		</div>
+  		<script>
+                                    // <![CDATA[
+                                    var currentConvNumber = 0;
                                   
-                                  function setReplyTo(id, text, msgPool, author){
-                                      currentConvNumber = id;
-                                      document.getElementById('reply-to-div').style.display = "block";
-                                      jQuery('#message_request').html("Reply to: " + author);
-                                      var rep_msg = text
-                                      if (text.length > 50)
-                                       rep_msg = text.substr(0, 47) + "..."
-                                      jQuery('#reply-to-span').html(rep_msg);
-                                      jQuery('#vMsg').val("@" + author + " ")	
-                                      jQuery('#vMsg').focus()
-		    jQuery('#vPool').val(msgPool);
-                                  }
+                                    function setReplyTo(id, text, msgPool, author){
+                                        currentConvNumber = id;
+                                        document.getElementById('reply-to-div').style.display = "block";
+                                        jQuery('#message_request').html("Reply to: " + author);
+                                        var rep_msg = text
+                                        if (text.length > 50)
+                                         rep_msg = text.substr(0, 47) + "..."
+                                        jQuery('#reply-to-span').html(rep_msg);
+                                        jQuery('#vMsg').val("@" + author + " ")	
+                                        jQuery('#vMsg').focus()
+  		    jQuery('#vPool').val(msgPool);
+                                    }
                                   
-                                  function clearReplyTo(){
-                                      currentConvNumber = 0;
-                                      document.getElementById('reply-to-div').style.display = "none";
-		    jQuery('#vPool').val(0);
-		    jQuery('#message_request').html('What are you working on?');
-                                  }
+                                    function clearReplyTo(){
+                                        currentConvNumber = 0;
+                                        document.getElementById('reply-to-div').style.display = "none";
+  		    jQuery('#vPool').val(0);
+  		    jQuery('#message_request').html('What are you working on?');
+                                    }
                                   
-                                  function clearResend(id){
-                                      document.getElementById(id).style.display = "none"
-                                  }
+                                    function clearResend(id){
+                                        document.getElementById(id).style.display = "none"
+                                    }
                                   
-                                  // ]]>						
-                                  </script>
-		<lift:UserSnip.postScript/>
-	</div>
+                                    // ]]>						
+                                    </script>
+  		<lift:UserSnip.postScript/>
+  	</div>     
+	</div>    
+	<div class="container-update-bot"></div>
 </div>
 <!--END UPDATE BOX-->
