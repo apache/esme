@@ -109,7 +109,12 @@
             <id>scala-stats</id>
             <name>Twitter Repo</name>
             <url>http://www.lag.net/nest</url>
-        </repository-->
+        </repository-->    
+        <repository>
+          <id>com.twitter</id>
+          <name>Twitter</name>
+          <url>http://maven.twttr.com</url>
+        </repository>
          <repository>
                <id>Configgy</id>
               <name>http://www.lag.net/repo</name>
