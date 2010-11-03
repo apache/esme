@@ -24,7 +24,7 @@
     <artifactId>esme-server</artifactId>
     <version>apache-esme-1.1-incubating</version>
     <packaging>war</packaging>
-    <name>Apache Enterprise Social Messaging Experiment (ESME)</name>
+    <name>Apache Enterprise Social Messaging Environment (ESME)</name>
      <url>http://incubator.apache.org/esme</url>
     <description>ESME is a social tool that takes the immediacy of messaging and applies it to real time business process problem solving</description>
     <inceptionYear>2008</inceptionYear>
