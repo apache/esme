@@ -32,15 +32,6 @@
   				<input id="vTag" style="width: 90%"/>
   			</div>
   		</div>
-  		<div class="row clear" style="display: none" id="reply-to-div">
-  			<p>
-  				<b><lift:loc>ui_messages_message_label_message_reply</lift:loc></b>
-  				<span id="reply-to-span"><i></i></span>
-  				<a href="javascript: clearReplyTo()">
-  					<lift:loc>ui_messages_message_label_message_remove_reply</lift:loc>
-  				</a>
-  			</p>
-  		</div>
   		<div class="post-form-row">
   			<div class="share-select">
   				<label>
@@ -56,6 +47,15 @@
   			<div class="update-btn">
   				<input type="image" onclick="javascript:post_msg();" src="images/btn-update.gif" />
   			</div>
+  		</div>   
+  		<div class="post-form-row clear" style="display: none" id="reply-to-div">
+  			<p>
+  				<b><lift:loc>ui_messages_message_label_message_reply</lift:loc></b>
+  				<span id="reply-to-span"><i></i></span>
+  				<a href="javascript: clearReplyTo()">
+  					<lift:loc>ui_messages_message_label_message_remove_reply</lift:loc>
+  				</a>
+  			</p>
   		</div>
   		<script>
                                     // <![CDATA[
