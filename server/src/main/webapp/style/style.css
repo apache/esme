@@ -423,9 +423,9 @@ ul.main-links  {
 
 .updates-box {
 	float:left;
-	padding:10px 0px;
-	word-wrap:break-word;
-	border:1px;
+	padding:10px 0px 5px 0px;
+	word-wrap:break-word;    
+	border-bottom: 1px solid #ddd;
 }
 .avatar {
 	float:left;
@@ -463,7 +463,8 @@ ul.main-links  {
 	margin:10px;
 	width:90%;
 }
-.supp_data_class {
+.supp_data_class { 
+  padding-top:5px;
 	color:#07376d;
 	font-size:80%;
 }
@@ -482,8 +483,9 @@ ul.main-links  {
 .style5 {
 	font-size:160%;
 }
-.actions {
-	float:right;
+.actions { 
+  margin-top:-15px; 
+	float:right;  
 }
 .separator {
 	float:left;
@@ -569,7 +571,7 @@ ul#toc li.current a {
 .container-aux {
 	float:left; 
 	width: 563px; 
-	padding:20px 30px; 
+	padding:10px 30px; 
 	background: url(../images/bg-tabs.png) no-repeat; 
 	margin-bottom:20px; 
 }
