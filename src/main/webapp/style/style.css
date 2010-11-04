@@ -267,7 +267,7 @@ textarea.inputBox2 {
 	background-color:#FFFFFF !important;	
 	border:1px solid #a7aaad; 
 	width:95%; 
-	height:50px; 
+	height:70px; 
 	padding:4px; 
 	margin-right:10px;color:#000;
 }
@@ -409,24 +409,11 @@ ul.main-links  {
 }
 
 .container-update {
-	width: 550px;  
-	padding:10px 30px;                                    
-	background: url(../images/bg-update-mid.png) repeat-y;
-}      
-
-.container-update-top {
-  height:15px;
-	width: 550px;       
-	padding:0px 30px;  
-  background: url(../images/bg-update-top.png) no-repeat;     
-} 
-
-.container-update-bot {
-  height:20px;
-  width: 550px;       
-	padding:0px 30px;  
-  background: url(../images/bg-update-bot.png) no-repeat;  
-}
+	width: 550px;      
+	height: 195px;
+	padding:20px 30px;                                    
+	background: url(../images/bg-update.png) no-repeat;
+}         
 
 .gray-box {
 	float:left;
