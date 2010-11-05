@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.esme</groupId>
     <artifactId>esme-server</artifactId>
-    <version>apache-esme-1.1-incubating</version>
+    <version>apache-esme-1.2-incubating</version>
     <packaging>war</packaging>
     <name>Apache Enterprise Social Messaging Environment (ESME)</name>
      <url>http://incubator.apache.org/esme</url>
