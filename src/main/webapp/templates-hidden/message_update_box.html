@@ -45,7 +45,7 @@
   				</select>
   			</div>
   			<div class="update-btn">
-  				<input type="image" onclick="javascript:post_msg();" src="images/btn-update.gif" />
+  				<input type="image" onclick="javascript:post_msg();" src="/images/btn-update.gif" />
   			</div>
   		</div>   
   		<div class="post-form-row clear" style="display: none" id="reply-to-div">
@@ -64,12 +64,18 @@
                                     function setReplyTo(id, text, msgPool, author){
                                         currentConvNumber = id;
                                         document.getElementById('reply-to-div').style.display = "block";
-                                        jQuery('#message_request').html("Reply to: " + author);
+                                        if (author.length > 0) {
+                                          jQuery('#message_request').html("Reply to: " + author);
+                                        } else {
+                                          jQuery('#message_request').html("Reply to conversation");
+                                        }
                                         var rep_msg = text
                                         if (text.length > 50)
                                          rep_msg = text.substr(0, 47) + "..."
                                         jQuery('#reply-to-span').html(rep_msg);
-                                        jQuery('#vMsg').val("@" + author + " ")	
+                                        if (author.length > 0) {
+                                          jQuery('#vMsg').val("@" + author + " ")	
+                                        }
                                         jQuery('#vMsg').focus()
   		                                  jQuery('#vPool').val(msgPool);
                                     }
