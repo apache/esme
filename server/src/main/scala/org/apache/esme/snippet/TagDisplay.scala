@@ -80,7 +80,8 @@ object TagDisplay {
       <lift:comet type="TagTimeline" name={"tag"+t.id.is} />
     }}.getOrElse(Text(""))
 
-    bind("tag", in, "name" -> name,
+    bind("tag", in,
+         "name" -> name,
          "each" -> MessageUtils.bindMessages(messageList) _,   
          "cometTimeline" -> cometTimeline,
          "followButton" -> followOrUnfollow )

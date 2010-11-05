@@ -55,13 +55,14 @@ object ConversationMgr {
 
     val cid = S.param("cid").map(toLong).openOr(-1L)
     val messages = Message.findMessages(List(cid))   
-    val user = User.currentUser  
+    val user = User.currentUser 
+    var msgPool:Long = 0 
 
     def followOrUnfollow: NodeSeq = {          
       val ret: Box[NodeSeq] = for { 
         u <- user
         m = messages.values.toList.first
-      } yield {                 
+      } yield {         
         if (!m.followers.contains(u)) {
           ajaxButton("Follow conversation", () => {  
             m.followers += u
@@ -84,7 +85,9 @@ object ConversationMgr {
                            
     def updateFollow: JsCmd = SetHtml("following", followOrUnfollow)
 
-    bind("conv", in, 
+    bind("conv", in,       
+         "conversationId" -> cid,
+         "messagePool" -> messages.values.toList.first.pool.is,
          "cometTimeline" -> cometTimeline,
          "followButton" -> followOrUnfollow )       
   }                                
