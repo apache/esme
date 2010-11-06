@@ -64,7 +64,7 @@ class RssFeed(user: User, rssURL: String, source: String, truncateChars: Int, ta
     if (date isEmpty)
       System.currentTimeMillis
     else
-      parseInternetDate(date text).getTime
+      parseInternetDate(date text).map(_.getTime).getOrElse(System.currentTimeMillis)
   }
   
   // need to compare by text since a pubDate is not mandatory and indeed, often is missing
