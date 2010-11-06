@@ -63,7 +63,7 @@ class AtomFeed(user: User, atomURL: String, source: String, truncateChars: Int, 
     val date = if (published isEmpty)
       node \ "updated"
       else published
-    parseInternetDate(date text).getTime
+    parseInternetDate(date text).map(_.getTime).getOrElse(System.currentTimeMillis)
   }
 }
 
