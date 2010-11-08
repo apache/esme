@@ -671,6 +671,10 @@ top: 60px
 
 .stream_body {    
 top: 100px
+}      
+
+.table-break {
+  word-break: break-all;
 }
 
 /* Contacts
