@@ -59,14 +59,14 @@ object SearchMgr {
   
   def displaySearch(in: NodeSeq): NodeSeq = {
 
-    val jsId = "timeline_messages";
+    val jsId = "search_timeline_messages";
     
     {Script(
       (for (term <- S.param("term");
            user <- User.currentUser)
       yield {
 
-        val msgs = Message.search(term, user.following, 50)
+        val msgs = Message.search(term, user.following, 50)    
         OnLoad(JsCrVar(jsId, JsArray(
             msgs.map(m => JsObj(("message", m.asJs)) ) :_*)) &
         JsFunc("displayMessages", JsVar(jsId), jsId).cmd)
