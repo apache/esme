@@ -17,22 +17,19 @@
  under the License.                                           *
 -->
 <lift:surround with="base" at="left">
-       <div id="back-header">
-            <div id="left">
-                  <h1>
-                        <lift:loc>ui_messages_search_for</lift:loc>
-                        <i>
-                              <lift:searchTerm/>
-                        </i>
-                  </h1>
-                  <div class="container-public">
-                        <!--updates-box -->
-                        <lift:displaySearch/>
-                        <lift:embed what="templates-hidden/message_core"/>
-                  </div>
-                  <!--updates-box-->
-                  </div>
-            <!-- End demo -->
-            </div>
+  <div id="back-header">
+    <div id="left">
+      <h1>
+        <lift:loc>ui_messages_search_for</lift:loc>
+        <i><lift:searchTerm/></i> 
+      </h1>
+      <div class="container-public">
+        <lift:displaySearch/> 
+        <div id="search_timeline_messages">
+          <lift:embed what="templates-hidden/message_core"/>        
+        </div>
+      </div>     
+    </div>  
+  </div>     
 </lift:surround>
 
