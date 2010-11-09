@@ -20,16 +20,16 @@
   <div id="back-header">
     <div id="left">
       <h1>
-        <lift:loc>ui_messages_search_for</lift:loc>
-        <i><lift:searchTerm/></i> 
-      </h1>
-      <div class="container-public">
-        <lift:displaySearch/> 
-        <div id="search_timeline_messages">
-          <lift:embed what="templates-hidden/message_core"/>        
-        </div>
-      </div>     
-    </div>  
+        <lift:loc>ui_messages_search_for</lift:loc><i><lift:searchTerm/></i>     
+      </h1>                                                                      
+      <lift:embed what="templates-hidden/message_update_box"/>    
+    </div> 
+    <div class="container-aux">
+      <lift:displaySearch/> 
+      <div id="search_timeline_messages">
+        <lift:embed what="templates-hidden/message_core"/>        
+      </div>
+    </div> 
   </div>     
 </lift:surround>
 
