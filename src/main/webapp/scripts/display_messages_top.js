@@ -67,6 +67,10 @@ function searchMe()
 var resendFunction = function(id){
   resend_msg(id);
   clearResend("resend_" + id );
+}                           
+
+function clearMessages(elementId) {
+  jQuery('.updates-box').not("#message").remove(); 
 }
 
 function displayMessages(msgArray, elementId)

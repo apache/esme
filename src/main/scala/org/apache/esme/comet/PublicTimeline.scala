@@ -36,17 +36,19 @@ import lib._
 
 import java.text._
 
-class PublicTimeline extends CometActor {
-  private var messages: List[Long] = Nil
-  private var lastRender = millis
-  private var scheduled = false
+class PublicTimeline extends Timeline {       
+
+  val jsId = "public_timeline_messages"
+                                             
+  protected var lastRender = millis
+  protected var scheduled = false
 
   override def localSetup() {
     super.localSetup()
     Distributor ! Distributor.PublicTimelineListeners(this) 
     messages = Message.findAll(By(Message.pool, Empty),
         OrderBy(Message.id, Descending), 
-                               MaxRows(40)).map(_.id.is)
+                               MaxRows(40)).map( m => (m.id.is, NoReason, false))
   }
   
   override def localShutdown() {
@@ -54,16 +56,11 @@ class PublicTimeline extends CometActor {
     Distributor ! Distributor.PublicTimelineUnlisteners(this)
   }
   
-  def render = {
+  override def render = {
     lastRender = millis
-    scheduled = false
-    val msgMap = Message.findMessages(messages)
-    val toDisplay = messages.flatMap(msgMap.get)
-    val jsId = "public_timeline_messages";
-
-    OnLoad(JsCrVar(jsId, JsArray(
-        toDisplay.map(m => JsObj(("message", m.asJs)) ) :_*)) &
-    JsFunc("displayMessages", JsVar(jsId), jsId).cmd)
+    scheduled = false  
+    
+    super.render
   }
 
   override def lowPriority = {
@@ -72,7 +69,7 @@ class PublicTimeline extends CometActor {
 
     case Distributor.NewMessage(msg) =>
       if (!msg.pool.defined_?)
-        messages = (msg.id.is :: messages).take(40)
+        messages = ((msg.id.is, NoReason, false) :: messages).take(40)
 
       if ((millis - lastRender) < 30000L) {
         if (!scheduled) {
