@@ -39,7 +39,7 @@ class TagTimeline extends Timeline {
     
     for(t <- tag) {
       Distributor ! Distributor.ListenObject(t, this)
-      messages = t.findMessages().map(m => (m.id.is, NoReason, false)).take(40)
+      messages = t.findMessages().take(40).map(m => (m.id.is, NoReason, false))
     }
   }  
   

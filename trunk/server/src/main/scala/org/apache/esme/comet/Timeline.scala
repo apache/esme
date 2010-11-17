@@ -36,10 +36,13 @@ import lib._
 import java.text._
 
 trait Timeline extends CometActor {
-  protected var messages: List[(Long,MailboxReason,Boolean)] = Nil    
-  protected val jsId: String
+  protected var messages: List[(Long,MailboxReason,Boolean)] = Nil  
+  protected var clearMessages: Boolean = false  
+  protected val jsId: String  
   
-  override def localSetup() {
+  override def defaultPrefix = Full("timeline")
+  
+  override def localSetup() {  
     super.localSetup()
   }
   
@@ -49,15 +52,30 @@ trait Timeline extends CometActor {
   
   def render = {
     val msgMap = Message.findMessages(messages map {_._1})
-    val toDisplay =
-      for ((id, reason, resent) <- messages;
-           msg <- msgMap.get(id))
-      yield (msg, reason, resent)
+    val toDisplay = for ((id, reason, resent) <- messages;
+                         msg <- msgMap.get(id))
+                    yield (msg, reason, resent)
+               
+    // Only clear messages if someone has demanded a complete reset by setting the flag     
+    def clearFunc:JsCmd = if(clearMessages) {
+      clearMessages = false
+      JsFunc("clearMessages", jsId).cmd 
+    } else {
+      Run("")
+    }
 
-    OnLoad(JsCrVar(jsId, JsArray(
-        toDisplay.map{case (msg, reason, resent) =>
+    OnLoad(
+      clearFunc &
+      JsCrVar(jsId, JsArray(
+        filter(toDisplay).map{case (msg, reason, resent) =>
                   JsObj(("message",msg.asJs),("reason",reason.asJs), ("resent",resent))
                   } :_*)) &
-    JsFunc("displayMessages", JsVar(jsId), jsId).cmd)
+      JsFunc("displayMessages", JsVar(jsId), jsId).cmd
+    )
+  }                                              
+  
+  // If we need to filter out some messages on display, override this method.
+  def filter(msgs:List[(Message,MailboxReason,Boolean)]):List[(Message,MailboxReason,Boolean)] = {
+    msgs 
   }
 }
