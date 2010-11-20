@@ -40,7 +40,7 @@ class ConversationTimeline extends Timeline {
     Distributor ! Distributor.ListenObject(convMess, this)
     messages = Message.findAndPrime(By(Message.conversation, convId),
                                     OrderBy(Message.id, Descending)).map( m => 
-                                    (m.id.is, NoReason, false)).take(40)
+                                    (m.id.is, NoReason, true)).take(40)
   }  
   
   override def localShutdown() {
@@ -52,7 +52,7 @@ class ConversationTimeline extends Timeline {
   
   override def lowPriority = {
     case ConvDistributor.MessageReceived(msg, r) =>
-      messages = ((msg.id.is,r,false) :: messages).take(40)
+      messages = ((msg.id.is,r,true) :: messages).take(40)
       reRender(false)
   }   
 

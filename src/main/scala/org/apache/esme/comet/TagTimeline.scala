@@ -39,7 +39,7 @@ class TagTimeline extends Timeline {
     
     for(t <- tag) {
       Distributor ! Distributor.ListenObject(t, this)
-      messages = t.findMessages().take(40).map(m => (m.id.is, NoReason, false))
+      messages = t.findMessages().take(40).map(m => (m.id.is, NoReason, true))
     }
   }  
   
@@ -54,7 +54,7 @@ class TagTimeline extends Timeline {
   
   override def lowPriority = {
     case TagDistributor.MessageReceived(msg, r) =>
-      messages = ((msg.id.is,r,false) :: messages).take(40)
+      messages = ((msg.id.is,r,true) :: messages).take(40)
       reRender(false)
   }   
 
