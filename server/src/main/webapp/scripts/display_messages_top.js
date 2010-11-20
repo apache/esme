@@ -67,7 +67,39 @@ function searchMe()
 var resendFunction = function(id){
   resend_msg(id);
   clearResend("resend_" + id );
-}                           
+}      
+
+var currentConvNumber = 0;
+
+function setReplyTo(id, text, msgPool, author){
+    currentConvNumber = id;
+    document.getElementById('reply-to-div').style.display = "block";
+    if (author.length > 0) {
+      jQuery('#message_request').html("Reply to: " + author);
+    } else {
+      jQuery('#message_request').html("Reply to conversation");
+    }
+    var rep_msg = text
+    if (text.length > 50)
+     rep_msg = text.substr(0, 47) + "..."
+    jQuery('#reply-to-span').html(rep_msg);
+    if (author.length > 0) {
+      jQuery('#vMsg').val("@" + author + " ")	
+    }
+    jQuery('#vMsg').focus()
+    jQuery('#vPool').val(msgPool);
+}
+
+function clearReplyTo(){
+    currentConvNumber = 0;
+    document.getElementById('reply-to-div').style.display = "none";
+    jQuery('#vPool').val(0);
+    jQuery('#message_request').html('What are you working on?');
+}
+
+function clearResend(id){
+    document.getElementById(id).style.display = "none"
+}                            
 
 function clearMessages(elementId) {
   jQuery('.updates-box').not("#message").remove(); 

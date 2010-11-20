@@ -48,7 +48,7 @@ class PublicTimeline extends Timeline {
     Distributor ! Distributor.PublicTimelineListeners(this) 
     messages = Message.findAll(By(Message.pool, Empty),
         OrderBy(Message.id, Descending), 
-                               MaxRows(40)).map( m => (m.id.is, NoReason, false))
+                               MaxRows(40)).map( m => (m.id.is, NoReason, true))
   }
   
   override def localShutdown() {
