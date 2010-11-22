@@ -586,8 +586,7 @@ ul#toc li.current a {
 
 .user_message {
 	float:left;
-	width:300px;
-	background:#fff;
+	width:200px;
 	word-wrap:break-word;
 }
 
@@ -682,5 +681,8 @@ top: 100px
 
 .b-contacts {
   list-style-type:none;
+}
+
+e-type:none;
 }
 
