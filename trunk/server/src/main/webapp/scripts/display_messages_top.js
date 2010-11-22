@@ -73,21 +73,43 @@ var currentConvNumber = 0;
 
 function setReplyTo(id, text, msgPool, author){
     currentConvNumber = id;
+     jQuery('#vMsg').focus();
     document.getElementById('reply-to-div').style.display = "block";
     if (author.length > 0) {
       jQuery('#message_request').html("Reply to: " + author);
     } else {
       jQuery('#message_request').html("Reply to conversation");
     }
-    var rep_msg = text
+    var rep_msg = text 
     if (text.length > 50)
      rep_msg = text.substr(0, 47) + "..."
     jQuery('#reply-to-span').html(rep_msg);
     if (author.length > 0) {
       jQuery('#vMsg').val("@" + author + " ")	
     }
-    jQuery('#vMsg').focus()
+    jQuery('#vMsg').focus();
+    setCaretToPos(jQuery('#vMsg'), jQuery('#vMsg').val.length);
     jQuery('#vPool').val(msgPool);
+   
+}
+
+function setSelectionRange(input, selectionStart, selectionEnd) {
+  if (input.setSelectionRange) {
+    input.focus();
+    input.setSelectionRange(selectionStart, selectionEnd);
+  }
+  else if (input.createTextRange) {
+    var range = input.createTextRange();
+    range.collapse(true);
+    range.moveEnd('character', selectionEnd);
+    range.moveStart('character', selectionStart);
+    range.select();
+    
+  }
+}
+
+function setCaretToPos (input, pos) {
+  setSelectionRange(input, pos, pos);
 }
 
 function clearReplyTo(){
