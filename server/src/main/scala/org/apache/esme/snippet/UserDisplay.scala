@@ -64,10 +64,9 @@ object UserDisplay {
          "nicename" -> user.niceName,
          "lastName" -> user.lastName,
          "firstName" -> user.firstName,
-          "image" -> user.image_url,
+          "image" -> user.image_link,
          "followButton" -> followOrNot,
-         "timeline" -> MessageUtils.bindMessages(Mailbox.mostRecentMessagesFor(user.id, 50).map(_._1)) _,
-         "messages" -> MessageUtils.bindMessages(Message.findAll(
+          "messages" -> MessageUtils.bindMessages(Message.findAll(
             By(Message.author, user), 
             OrderBy(Message.id, Descending), 
             MaxRows(50))) _,
