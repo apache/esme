@@ -118,7 +118,7 @@ class UserSnip extends DispatchSnippet {
   }
 
   def userFmt(u: User): Node = 
-   <li> <img width="30px" src={(u.image_url)} id="avatar" /> <a href={"/user/"+urlEncode(u.nickname.is)}>{u.niceName}</a> {u.firstName} {u.lastName}</li>
+   <li> <img width="30px" src={(u.image_url)} id="avatar"/> <a href={"/user/"+urlEncode(u.nickname.is)}>{u.niceName}</a> {u.firstName} {u.lastName}</li>
 
 
 
