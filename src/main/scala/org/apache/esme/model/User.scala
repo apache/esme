@@ -341,7 +341,7 @@ class User extends KeyedMapper[Long, User] with UserIdAsString with ManyToMany {
     case _ => nickname // email.is
   }
 
-  // def niceNameWEmailLink = <a href={"mailto:"+email.is}>{niceName}</a>
+   def image_link = <img src={""+image_url} width="30px" /> 
 
   object uniqueId extends MappedUniqueId(this, 32) {
     override def dbIndexed_? = true
