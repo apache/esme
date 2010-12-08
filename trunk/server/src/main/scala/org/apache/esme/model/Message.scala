@@ -486,26 +486,26 @@ class Message extends LongKeyedMapper[Message] with ManyToMany {
   def getAuthor:Long = author.is
 
   // termVector=YES means that we get the word frequencies for tag clouds
-  @SearchableProperty{val termVector=TermVector.YES, val analyzer="stemming"}
+  @SearchableProperty(termVector=TermVector.YES, analyzer="stemming")
   def getText:String = originalXml.text
   
   // Body without extra tags
   def getBody:String = body
 
-  @SearchableProperty{val termVector=TermVector.YES, val analyzer="default"}
+  @SearchableProperty(termVector=TermVector.YES, analyzer="default")
   def getTextWords:String = originalXml.text
 
-  @SearchableProperty{val format="yyyy-MM-dd mm:ss"}
+  @SearchableProperty(format="yyyy-MM-dd mm:ss")
   def getWhen = new java.util.Date(when.is)
 
-  @SearchableProperty{val termVector=TermVector.YES, val analyzer="default"}
+  @SearchableProperty(termVector=TermVector.YES, analyzer="default")
   def getTags:String = {
     // Create a string of space-separated tags, with the spaces in each tag converted to underscores 
     val tagString: String = tags.map(x => x.split(" ").mkString("_")).mkString(" ").toLowerCase()  
     tagString
   } 
 
-  @SearchableProperty{val termVector=TermVector.YES, val analyzer="pool"}
+  @SearchableProperty(termVector=TermVector.YES, analyzer="pool")
   def getPool = pool.is
 
   /**
