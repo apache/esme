@@ -35,6 +35,7 @@ import util._
 import common._
 import Helpers._
 
+import org.apache.esme._
 import model._
 
 import scala.xml._
