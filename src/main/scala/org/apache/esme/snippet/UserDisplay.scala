@@ -57,14 +57,19 @@ object UserDisplay {
 
         case _ => <xml:group> <div class="thatsyou">{S.?("base_user_thats_you")}</div></xml:group> 
       }
+    }    
+    
+    def cometTimeline:NodeSeq = {                                        
+      println(<lift:comet type="UserMessagesTimeline" name={"user"+user.id.is} />)
+      <lift:comet type="UserMessagesTimeline" name={"user"+user.id.is} />
     }
-
-
+                                                      
      bind("user", in,
          "nicename" -> user.niceName,
          "lastName" -> user.lastName,
          "firstName" -> user.firstName,
-          "image" -> user.image_link,
+         "image" -> user.image_link,   
+         "cometTimeline" -> cometTimeline,
          "followButton" -> followOrNot,
           "messages" -> MessageUtils.bindMessages(Message.findAll(
             By(Message.author, user), 
