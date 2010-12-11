@@ -19,25 +19,33 @@
 
 package org.apache.esme.comet   
 
-import net.liftweb.common._    
+import net.liftweb.common._ 
+import net.liftweb.mapper._  
+import net.liftweb.http._      
+import net.liftweb.util.Helpers.TimeSpan  
 
 import org.apache.esme._
 import actor.{Distributor,UserActor}
 import model._   
 
-class PersonalTimeline extends Timeline {   
+class UserMessagesTimeline extends Timeline {   
 
-  val jsId = "personal_timeline_messages"  
+  val jsId = "user_messages_timeline_messages"   
+  
+  override def lifespan = Full(TimeSpan(300000))    
+  
+  val user: User = S.param("uid").flatMap(User.findFromWeb) openOr {
+    S.error(S.?("base_ui_no_user_found"))
+    S.redirectTo(S.referer openOr "/")
+  }
 
   override def localSetup() {
-    super.localSetup()
-    for (user <- User.currentUser) {
-      Distributor ! Distributor.ListenObject(user, this)
-      Distributor !? (2000, Distributor.LatestMessages(user.id, 40)) match {
-        case Full(msg: List[(Long,MailboxReason,Boolean)]) => messages = msg
-        case x =>
-      }
-    }
+    super.localSetup()                
+    Distributor ! Distributor.ListenObject(user, this) 
+    messages = Message.findAll(
+      By(Message.author, user), 
+      OrderBy(Message.id, Descending), 
+      MaxRows(40)).map(m => (m.id.is,NoReason,true))          
   }  
   
   override def localShutdown() {
@@ -48,19 +56,14 @@ class PersonalTimeline extends Timeline {
   }
   
   override def lowPriority = {
-    case UserActor.MessageReceived(msg, r) =>
-      messages = ( (msg.id.is,r,false) :: messages).take(40)
-      reRender(false)
+    case UserActor.MessageReceived(msg, r) =>   
+      if(msg.author == user) {
+        messages = ( (msg.id.is,r,true) :: messages).take(40)
+        reRender(false)
+      }        
       
-    case UserActor.Resend(msgId) =>
-      messages = messages.map {
-        case (`msgId`, r, _) => (msgId, r, true)
-        case x => x
-      }
-      reRender(false)
-      
-    case Distributor.UserUpdated(_) =>
-      reRender(false)
+    case UserActor.Resend(msgId) =>     
+      messages = ( (msgId,ResendReason(user.id.is),true) :: messages).take(40)
+      reRender(false)      
   }   
-
 }
