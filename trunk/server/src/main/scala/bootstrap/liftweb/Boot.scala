@@ -46,8 +46,8 @@ import org.compass.core.config.CompassConfiguration
 
 import net.liftweb.widgets.tablesorter._
 //import com.twitter.stats._
-import com.twitter.ostrich.{ServiceTracker, Stats, StatsMBean}
-import net.lag.configgy.{RuntimeEnvironment, Config}
+import com.twitter.ostrich.{ServiceTracker, Stats, StatsMBean, RuntimeEnvironment}
+import net.lag.configgy.Config
 
 import _root_.net.liftweb.widgets.logchanger._
 

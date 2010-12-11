@@ -177,7 +177,7 @@
             <groupId>net.liftweb</groupId>
             <artifactId>lift-testkit_${scala.version}</artifactId>
             <version>${lift.version}</version>
-            <scope>test</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.liftweb</groupId>

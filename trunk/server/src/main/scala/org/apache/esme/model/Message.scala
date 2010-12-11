@@ -145,7 +145,7 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
   }
 
   def search(searchTerm: String, following: List[User], numHits: Int): List[Message] = {
-    val users:List[String] = following.map(user => user.nickname)
+    val users:List[String] = following.map(user => user.nickname.is)
 
     logger.debug("Inside Message.search() with user list "+(users.mkString(", ")))
 

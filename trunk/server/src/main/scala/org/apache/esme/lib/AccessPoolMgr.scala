@@ -182,7 +182,7 @@ object AccessPoolMgr {
       case _ => Nil
     })
 
-    val permissions = Permission.map(perm => (perm.id.toString, perm.toString)).collect
+    val permissions = Permission.values.map(perm => (perm.id.toString, perm.toString)).toSeq
 
 
       /*

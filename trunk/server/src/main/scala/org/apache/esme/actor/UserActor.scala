@@ -190,7 +190,7 @@ class UserActor extends LiftActor {
       case LatestMessages(cnt) =>
         reply(_mailbox.take(cnt).toList)
       
-      case AllowPool(poolId) => pools += poolId
+      case AllowPool(poolId) => pools :+ poolId
       
       case Resend(msgId) =>
         for (msg <- Message.find(msgId)) {

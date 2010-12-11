@@ -419,7 +419,7 @@ object TwitterXmlAPI extends TwitterAPI with XMLApiHelper {
   override def dispatch: LiftRules.DispatchPF = {
     // modify the returned function to one which converts the result to XML
     dispatchMethod.andThen(x =>
-      {() => Full(nodeSeqToResponse(toXml(unbox(x)))) }
+      {() => Full(listElemToResponse(toXml(unbox(x)))) }
     )
   }
 
@@ -441,7 +441,7 @@ object TwitterJsonAPI extends TwitterAPI {
   }
   
   def jsonAttributes(o: Any): JsExp = { o match {
-    case m: Map[String, Any] => toJson(m.values.next)
+    case m: Map[String, Any] => toJson(m.values.iterator.next)
     case o => toJson(o)}
   }
 

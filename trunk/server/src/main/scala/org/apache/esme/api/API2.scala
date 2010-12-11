@@ -723,7 +723,7 @@ object API2 extends ApiHelper with XmlHelper {
   }
 
   def unAuthorized(): LiftResponse = {
-    Full((403,Map(),Empty))
+    Full((403,Map.empty[String, String],Empty))
   }
 
   private def findAction(actionId: Box[String]): Box[Action] =
