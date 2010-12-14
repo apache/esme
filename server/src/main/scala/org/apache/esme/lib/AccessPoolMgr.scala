@@ -197,12 +197,14 @@ object AccessPoolMgr {
       ) yield if(Privilege.hasPermission(admin.id.is, p.id.is, Permission.Admin)) {
         val result = try {
           import org.apache.esme.model.Permission
+          logger.info("ACCESS: " + S.?("base_pool_msg_new_user",user.id.is, p.id.is, permission))
           Privilege.create.user(user).pool(p).permission(Permission(permission.toInt)).save
+
         } catch {
           case _: Exception => false
         }
         if (result) {
-        	Distributor ! Distributor.AllowUserInPool(user.id.is, p.id.is)
+        	Distributor ! Distributor.AllowUserInPool(user.id.is, p.id.is)   	
         	DisplayMessage("messages", <b>{S.?("base_pool_msg_permission_set")}</b>,  3 seconds, 2 seconds)
        }
         result
