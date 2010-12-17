@@ -16,21 +16,28 @@
  specific language governing permissions and limitations      *
  under the License.                                           *
 -->
-
-        
+ 
+ 
 	<div id="login-box">
 	
-
+        <script type="text/javascript">
+        jQuery(function() {
+            jQuery('input[type=\'image\']').bind('click', function() {
+                jQuery('form[name=\'loginFrm\']').attr('action', 'javascript:login()').submit();
+            });
+        });
+        </script>
+ 
 		<div class="top-login"></div>
-
+ 
 		<div class="mid-login">
 	         <lift:Msgs>
                      <lift:error_class>error_major</lift:error_class>
                      <lift:notice_msg><lift:loc>ui_base_note</lift:loc></lift:notice_msg>
                      <lift:notice_class>note_major</lift:notice_class>
                  </lift:Msgs>
-
-			<form name="loginFrm" action="javascript:login()" method="post" >
+ 
+			<form name="loginFrm" action="javascript:void(0)" method="post" >
 				<div class="form">
 						<div class="post-form-row">
 							<label> <lift:loc>ui_login_user</lift:loc></label>
