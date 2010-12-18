@@ -211,7 +211,7 @@ class Action extends LongKeyedMapper[Action] {
               case FetchAtom(_, _) => new AtomFeed(u, url.url, urlSourcePrefix + url.uniqueId, 0, tags)
               case FetchRss(_, _) => new RssFeed(u, url.url, urlSourcePrefix + url.uniqueId, 0, tags)
             }
-            MessagePullActor ! MessagePullActor.StartPullActor(id, lastMsg, feed)
+            MessagePullActor ! MessagePullActor.StartPullActor(id.is, lastMsg, feed)
           
           case _ =>
         }
