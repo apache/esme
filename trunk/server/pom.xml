@@ -75,7 +75,7 @@
     </developer>
     </developers>
     <properties>
-        <lift.version>2.2-RC1</lift.version>
+        <lift.version>2.2-RC3</lift.version>
         <scala.version>2.8.1</scala.version>
         <compass.version>2.1.1</compass.version>
         <lucene.version>2.4.0</lucene.version>
