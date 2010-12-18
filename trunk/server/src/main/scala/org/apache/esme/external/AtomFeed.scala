@@ -51,8 +51,8 @@ class AtomFeed(user: User, atomURL: String, source: String, truncateChars: Int, 
     if (link isEmpty)
       node \ "content" text
     else {
-      val alternate = link find(_ \ "@rel" == "alternate")
-      val anyLink = alternate getOrElse((link find(_ \ "@rel" == Nil)).get)
+      val alternate = link find(_ \ "@rel" xml_== "alternate")
+      val anyLink = alternate getOrElse((link find(_ \ "@rel" isEmpty)).get)
       anyLink \ "@href" text
     }
   }
