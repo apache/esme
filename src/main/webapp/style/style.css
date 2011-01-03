@@ -238,7 +238,10 @@ label {
 }
 .login-btn, .update-btn, .submit-btn { 
 	float:right;	
-}                
+}             
+.login-btn {
+  margin-top:10px;
+}   
 
 .share-select {  
   display:inline;            
