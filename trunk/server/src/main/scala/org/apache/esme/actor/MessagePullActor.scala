@@ -98,5 +98,5 @@ trait UniqueMessageSource extends (() => List[Msg]) {
       case Some(message: Msg) => msgs.filter{messageSorter(message, _)}
       case None => msgs
     }
-  }.sort(messageSorter)
+  }.sortWith(messageSorter)
 }

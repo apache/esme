@@ -134,8 +134,8 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
     val ret: List[Message] = this.findAll(params :_*)
 
 
-    val userIds: List[Long] = (ret.flatMap(_.author.can) :::
-                               ret.flatMap(_.sentToIds)).removeDuplicates
+    val userIds: List[Long] = (ret.flatMap(_.author.box) :::
+                               ret.flatMap(_.sentToIds)).distinct
 
     val users:Map[Long, User] = Map(User.findAll(InRaw(User.id, userIds.mkString(","),
                                                        IHaveValidatedThisSQL("dpp", "Aug 23, 2008"))).map(u => (u.id.is, u)) :_*)
@@ -252,7 +252,7 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
     val weights = compoundStem(messages.flatMap(_.wordFrequencies))
 
     // Start with the top N tags
-    val sortedWeights = weights.sort(_._2 > _._2).take(n)
+    val sortedWeights = weights.sortWith(_._2 > _._2).take(n)
 
     // And create a normalized cente-weighted list, e.g. smallest, small, Larger, BIG, *HUGE*, BIG, Larger, small, smallest
     TagUtils.normalize(TagUtils.everyEven(sortedWeights).reverse ::: TagUtils.everyOdd(sortedWeights))
@@ -274,7 +274,7 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
         case e: Elem if "body" == e.label => <body>{ns}</body>
         case _ => n
       }
-    })).first
+    })).head
   }
 }
 
@@ -319,7 +319,7 @@ class Message extends LongKeyedMapper[Message] with ManyToMany {
   lazy val metaData: String = {
     val org = originalXml
 
-    (org \ "metadata").map(_.text).first
+    (org \ "metadata").map(_.text).head
   }
 
 
@@ -335,7 +335,7 @@ class Message extends LongKeyedMapper[Message] with ManyToMany {
   }
   
   private[model] def preload(users: Map[Long, User]) {
-    author.can.foreach{
+    author.box.foreach{
       id =>
       this.author.primeObj(users.get(id))
     }
@@ -345,12 +345,12 @@ class Message extends LongKeyedMapper[Message] with ManyToMany {
 
   private def replyToTag: MetaData =
   new UnprefixedAttribute("reply_to",
-                          replyTo.can.map(i => Text(i.toString)).toOption,
+                          replyTo.box.map(i => Text(i.toString)).toOption,
                           Null)
 
   private def conversationTag: MetaData =
   new UnprefixedAttribute("conversation",
-                          conversation.can.map(i => Text(i.toString)).toOption,
+                          conversation.box.map(i => Text(i.toString)).toOption,
                           Null)
 
   override lazy val toXml: Elem = {
@@ -532,7 +532,7 @@ class Message extends LongKeyedMapper[Message] with ManyToMany {
           }</body>
         <tags>{
             ((lst.flatMap{case HashTag(t) => Full(t) case _ => Empty})
-             ::: tags).removeDuplicates.map(_.toXml)
+             ::: tags).distinct.map(_.toXml)
           }</tags>{
           metaData match {
             case Full(xs) => <metadata>{xs}</metadata>

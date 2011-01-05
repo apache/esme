@@ -103,7 +103,7 @@ object SHtml {
   private def getSortedOpts(opts: Seq[(String, String)], excludeFirstOpt: Boolean): Seq[(String, String)] =
     if ( excludeFirstOpt )
       opts match {
-        case first :: rest => first :: rest.toList.sort( (first: (String, String), second: (String, String)) => first._2.toUpperCase < second._2.toUpperCase)
+        case first :: rest => first :: rest.toList.sortWith( (first: (String, String), second: (String, String)) => first._2.toUpperCase < second._2.toUpperCase)
         case _ => opts
       }
     else

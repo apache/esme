@@ -110,7 +110,7 @@ class UserActor extends LiftActor {
          pools = Privilege.findViewablePools(user)
         
       case CreateMessage(text, tags, when, metaData, source, replyTo, pool) =>
-        val tagLst = tags.removeDuplicates.map(Tag.findOrCreate)
+        val tagLst = tags.distinct.map(Tag.findOrCreate)
 
         Message.create.author(userId).when(when).
         source(source).
@@ -144,12 +144,12 @@ class UserActor extends LiftActor {
           Distributor ! Distributor.AddMessageToMailbox(id, msg,
                                                         DirectReason(userId))
 
-          for (convId <- msg.conversation.can ;
+          for (convId <- msg.conversation.box ;
                val msgId = Message.findMap(By(Message.conversation, convId))
                (m => Full(m.id.is));
                userId <- (Mailbox.findMap(InRaw(Mailbox.message, msgId.mkString(", "),
                                                 IHaveValidatedThisSQL("dpp", "Aug 27. 2008")))
-                          (mb => Full(mb.user.is))).removeDuplicates)
+                          (mb => Full(mb.user.is))).distinct)
           Distributor ! Distributor.AddMessageToMailbox(userId, msg, ConversationReason(convId))
                                              
           Distributor ! Distributor.NewMessage(msg)     

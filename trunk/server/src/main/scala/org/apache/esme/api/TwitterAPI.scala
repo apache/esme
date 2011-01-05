@@ -168,7 +168,7 @@ abstract class TwitterAPI {
                                   OrderBy(Message.id, Descending),
                                   MaxRows(1))
     userAttributes(user) +
-      (("status", lastMsg.map(msgAttributes _).firstOption.getOrElse("")))
+      (("status", lastMsg.map(msgAttributes _).headOption.getOrElse("")))
   }
   
   def extendedUserData(user: User) =
@@ -423,7 +423,7 @@ object TwitterXmlAPI extends TwitterAPI with XMLApiHelper {
     )
   }
 
-  def createTag(in: NodeSeq) = in.first match {
+  def createTag(in: NodeSeq) = in.head match {
     case e: Elem => e
     case _ => <error/>
   }

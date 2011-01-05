@@ -288,7 +288,7 @@ object RestAPI extends XMLApiHelper {
   def sendMsgWithToken(req: Req): Box[LiftResponse] = {
     for (token <- req.param("token");
          auth <- AuthToken.find(By(AuthToken.uniqueId, token));
-         userId <- auth.user.can;
+         userId <- auth.user.box;
          ret <- sendMsg(Full(userId), req))  yield ret
   }
   
@@ -384,7 +384,7 @@ object RestAPI extends XMLApiHelper {
          userName <- S.param("user") ?~ S.?("base_rest_api_err_missing_param", "user");
          user <- User.findFromWeb(userName) ?~  S.?("base_rest_api_err_param_not_found", "User");
          permissionName <- (S.param("permission") or Full("Write"));
-         permission <- Box(Permission.valueOf(permissionName)) ?~ S.?("base_rest_api_err_param_not_found", "Permission")
+         permission <- Box(Permission.values.find(_.toString == permissionName)) ?~ S.?("base_rest_api_err_param_not_found", "Permission")
     ) yield if(Privilege.hasPermission(adminUser.id.is, pool.id.is, Permission.Admin)) {
       val result = try {
         Privilege.create.user(user).pool(pool).permission(permission).save

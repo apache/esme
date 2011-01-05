@@ -53,7 +53,7 @@ object Tag extends Tag with MetaProtoTag[Tag] {
     val weights = compound(messages.flatMap(_.tagFrequencies))
 
     // Start with the top 20 tags, sorted by frequency
-    val sortedWeights = weights.sort(_._2 > _._2).take(n)
+    val sortedWeights = weights.sortWith(_._2 > _._2).take(n)
 
     // And create a normalized cente-weighted list, e.g. smallest, small, Larger, BIG, *HUGE*, BIG, Larger, small, smallest
     TagUtils.normalize(TagUtils.everyEven(sortedWeights).reverse ::: TagUtils.everyOdd(sortedWeights))

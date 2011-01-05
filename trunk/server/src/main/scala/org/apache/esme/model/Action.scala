@@ -203,7 +203,7 @@ class Action extends LongKeyedMapper[Action] {
                                           MaxRows(1))
             val lastMsg = if (msgList.isEmpty) None 
               else {
-                val m = msgList.first
+                val m = msgList.head
                 Some(Distributor.UserCreatedMessage(user, m.body, m.tags, m.when, Empty, m.source, Full(m.replyTo), None))
               }
 

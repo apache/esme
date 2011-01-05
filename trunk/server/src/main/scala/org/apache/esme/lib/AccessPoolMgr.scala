@@ -120,7 +120,7 @@ object AccessPoolMgr {
                   case Full(u)=> Privilege.findViewablePools(u.id).map(
                     p => (p.toString, AccessPool.find(p).get.getName)).toList
                   case _ => Nil
-                }).sort(_._2 < _._2)
+                }).sortWith(_._2 < _._2)
                 SetValById(theInput, "")  &
                 ReplaceOptions("edit_pool", selectPools, Full(p.id.is.toString))  &
                 FireOnchangeById("edit_pool") &

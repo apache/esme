@@ -82,7 +82,7 @@ class Boot {
     LiftRules.addToPackages("org.apache.esme")
 
     if (Props.mode == Props.RunModes.Test) {
-      Schemifier.destroyTables_!!(Log.infoF _, User, ExtSession,
+      Schemifier.destroyTables_!!(Schemifier.infoF _, User, ExtSession,
         Message, Mailbox, Tag, UserTagFollow, UserConvFollow,
         Relationship, MessageTag,
         AuthToken, UrlStore, Tracking,
@@ -90,7 +90,7 @@ class Boot {
         Privilege, UserAuth, UserCryptoSig)
     }
 
-    Schemifier.schemify(true, Log.infoF _, User, ExtSession, Message,
+    Schemifier.schemify(true, Schemifier.infoF _, User, ExtSession, Message,
       Mailbox, Tag, UserTagFollow, UserConvFollow,
       Relationship, MessageTag, AuthToken,
       UrlStore, Tracking, Action, 
@@ -140,7 +140,7 @@ class Boot {
 
      //Dealing with URL-based request parameters
      
-    LiftRules.rewrite.prepend {
+    LiftRules.statelessRewrite.prepend {
       case RewriteRequest(ParsePath("user" :: user :: Nil, "", _, _), _, _) =>
         RewriteResponse(List("info_view", "user"), Map("uid" -> user))
       case RewriteRequest(ParsePath("tag" :: tag :: Nil, "", _, _), _, _) =>
