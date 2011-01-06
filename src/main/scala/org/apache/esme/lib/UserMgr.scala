@@ -35,6 +35,7 @@ import mapper._
 import util._
 import common._
 import Helpers._
+import org.apache.esme._
 import model._
 import org.apache.esme.model.{Message, User}
 

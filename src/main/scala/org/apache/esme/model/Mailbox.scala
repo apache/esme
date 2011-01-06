@@ -72,8 +72,8 @@ class Mailbox extends LongKeyedMapper[Mailbox] {
   object resent extends MappedBoolean(this)
 
   lazy val reason: MailboxReason =
-  viaTrack.can.map(TrackReason) or directlyFrom.can.map(DirectReason)  or
-  conversation.can.map(ConversationReason) openOr NoReason
+  viaTrack.box.map(TrackReason) or directlyFrom.box.map(DirectReason)  or
+  conversation.box.map(ConversationReason) openOr NoReason
 }
 
 sealed trait MailboxReason {

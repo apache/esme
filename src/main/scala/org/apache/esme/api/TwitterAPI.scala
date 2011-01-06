@@ -168,7 +168,7 @@ abstract class TwitterAPI {
                                   OrderBy(Message.id, Descending),
                                   MaxRows(1))
     userAttributes(user) +
-      (("status", lastMsg.map(msgAttributes _).firstOption.getOrElse("")))
+      (("status", lastMsg.map(msgAttributes _).headOption.getOrElse("")))
   }
   
   def extendedUserData(user: User) =
@@ -419,11 +419,11 @@ object TwitterXmlAPI extends TwitterAPI with XMLApiHelper {
   override def dispatch: LiftRules.DispatchPF = {
     // modify the returned function to one which converts the result to XML
     dispatchMethod.andThen(x =>
-      {() => Full(nodeSeqToResponse(toXml(unbox(x)))) }
+      {() => Full(listElemToResponse(toXml(unbox(x)))) }
     )
   }
 
-  def createTag(in: NodeSeq) = in.first match {
+  def createTag(in: NodeSeq) = in.head match {
     case e: Elem => e
     case _ => <error/>
   }
@@ -441,7 +441,7 @@ object TwitterJsonAPI extends TwitterAPI {
   }
   
   def jsonAttributes(o: Any): JsExp = { o match {
-    case m: Map[String, Any] => toJson(m.values.next)
+    case m: Map[String, Any] => toJson(m.values.iterator.next)
     case o => toJson(o)}
   }
 

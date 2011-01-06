@@ -114,8 +114,8 @@ object User extends User with KeyedMetaMapper[Long, User] {
            "timezone" -%> user.timezone.toForm,
            "locale" -%> user.locale.toForm,
            "credentials" -> auth.toForm,
-           "submit" -%> SHtml.submit(S.?("base_user_ui_signup"), doSubmit _),
-    ) ++ SHtml.hidden(doSubmit _)
+           "submit" -%> SHtml.submit(S.?("base_user_ui_signup"), doSubmit _)
+    ) ++ SHtml.hidden(() => { doSubmit})
     }
 
 
@@ -187,9 +187,9 @@ object User extends User with KeyedMetaMapper[Long, User] {
 
   def currentUser: Box[User] = curUser.is
 
-  def getNickname(userId: long) = {
+  def getNickname(userId: Long) = {
     User.find(userId) match {
-      case Full(u) => u.nickname.is
+      case Full(u : User) => u.nickname.is
       case _ => "ERROR"
     }
   }

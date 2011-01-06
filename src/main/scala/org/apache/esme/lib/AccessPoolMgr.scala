@@ -38,6 +38,7 @@ import util._
 import common._
 import Helpers._
 
+import org.apache.esme._
 import model._
 import org.apache.esme.actor.Distributor
 
@@ -119,7 +120,7 @@ object AccessPoolMgr {
                   case Full(u)=> Privilege.findViewablePools(u.id).map(
                     p => (p.toString, AccessPool.find(p).get.getName)).toList
                   case _ => Nil
-                }).sort(_._2 < _._2)
+                }).sortWith(_._2 < _._2)
                 SetValById(theInput, "")  &
                 ReplaceOptions("edit_pool", selectPools, Full(p.id.is.toString))  &
                 FireOnchangeById("edit_pool") &
@@ -181,7 +182,7 @@ object AccessPoolMgr {
       case _ => Nil
     })
 
-    val permissions = Permission.map(perm => (perm.id.toString, perm.toString)).collect
+    val permissions = Permission.values.map(perm => (perm.id.toString, perm.toString)).toSeq
 
 
       /*

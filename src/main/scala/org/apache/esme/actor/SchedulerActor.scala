@@ -40,7 +40,7 @@ object SchedulerActor extends LiftActor{
       if (!regularsPerAction.contains(id)) {
         regularsPerAction += (id -> List(regularActor))
       } else {
-        regularsPerAction(id) += regularActor
+        regularsPerAction.updated(id,  regularActor :: regularsPerAction(id))
       }
     }
     

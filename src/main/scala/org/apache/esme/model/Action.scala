@@ -203,7 +203,7 @@ class Action extends LongKeyedMapper[Action] {
                                           MaxRows(1))
             val lastMsg = if (msgList.isEmpty) None 
               else {
-                val m = msgList.first
+                val m = msgList.head
                 Some(Distributor.UserCreatedMessage(user, m.body, m.tags, m.when, Empty, m.source, Full(m.replyTo), None))
               }
 
@@ -211,7 +211,7 @@ class Action extends LongKeyedMapper[Action] {
               case FetchAtom(_, _) => new AtomFeed(u, url.url, urlSourcePrefix + url.uniqueId, 0, tags)
               case FetchRss(_, _) => new RssFeed(u, url.url, urlSourcePrefix + url.uniqueId, 0, tags)
             }
-            MessagePullActor ! MessagePullActor.StartPullActor(id, lastMsg, feed)
+            MessagePullActor ! MessagePullActor.StartPullActor(id.is, lastMsg, feed)
           
           case _ =>
         }
