@@ -210,7 +210,7 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
   def isNameChar(in: Char): Boolean = isTagChar(in) 
 
   lazy val hashTag: Parser[HashTag] = '#' ~> rep1(tagChar) ^^ {
-    case xs => HashTag(Tag.findOrCreate(xs))
+    case xs => HashTag(Tag.findOrCreate(xs.mkString("").trim))
   }
   
   lazy val tagChar: Parser[Elem] = elem("Tag Char", isTagChar _)

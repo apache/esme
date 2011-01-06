@@ -576,7 +576,7 @@ object API2 extends ApiHelper with XmlHelper {
            userName <- S.param("userId");
            user <- User.findFromWeb(userName);
            permissionName <- (S.param("permission") or Full("Write"));
-           permission <- Box(Permission.valueOf(permissionName)))
+           permission <- Box(Permission.values.find(_.toString == permissionName)))
       yield
         if(Privilege.hasPermission(adminUser.id.is, pool.id.is, Permission.Admin)) {
           val result = try {
@@ -723,7 +723,7 @@ object API2 extends ApiHelper with XmlHelper {
   }
 
   def unAuthorized(): LiftResponse = {
-    Full((403,Map(),Empty))
+    Full((403,Map.empty[String, String],Empty))
   }
 
   private def findAction(actionId: Box[String]): Box[Action] =

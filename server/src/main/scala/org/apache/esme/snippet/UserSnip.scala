@@ -114,7 +114,7 @@ class UserSnip extends DispatchSnippet {
     
     (<foo>{in}</foo> \ lookFor).toList.
     filter(_.prefix == "logged").
-    map(_.child).firstOption.getOrElse(NodeSeq.Empty)
+    map(_.child).headOption.getOrElse(NodeSeq.Empty)
   }
 
   def userFmt(u: User): Node = 
@@ -179,7 +179,7 @@ class UserSnip extends DispatchSnippet {
       yield p)
         .map( p => {val pool = AccessPool.find(p); (pool.get.id.is.toString, pool.get.getName)} )
         .toList
-        .sort( ( first: (String, String), second: (String, String)) => first._2.toUpperCase < second._2.toUpperCase)
+        .sortWith( ( first: (String, String), second: (String, String)) => first._2.toUpperCase < second._2.toUpperCase)
         .map(p => <option value={p._1}>{p._2}</option>)
   }
   

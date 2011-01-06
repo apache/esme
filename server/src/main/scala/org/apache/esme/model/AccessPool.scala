@@ -44,9 +44,9 @@ object AccessPool extends AccessPool with LongKeyedMetaMapper[AccessPool] {
     ap
   }
 
-  def getPoolName(poolId: long) = {
+  def getPoolName(poolId: Long) = {
     AccessPool.find(poolId) match {
-      case Full(p) => p.getName
+      case Full(p : AccessPool) => p.getName
       case _ => "ERROR"
     }
   }

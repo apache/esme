@@ -32,7 +32,7 @@ class ConversationTimeline extends Timeline {
   
   val jsId = "conversation_timeline_messages"
   var convId:Long = S.param("cid").map(_.toLong).openOr(-1L)  
-  var convMess:Message = Message.findMessages(List(convId)).values.toList.first   
+  var convMess:Message = Message.findMessages(List(convId)).values.toList.head
                                   
   override def localSetup() {
     super.localSetup()       

@@ -75,8 +75,8 @@
     </developer>
     </developers>
     <properties>
-        <lift.version>2.0</lift.version>
-        <scala.version>2.7.7</scala.version>
+        <lift.version>2.2</lift.version>
+        <scala.version>2.8.1</scala.version>
         <compass.version>2.1.1</compass.version>
         <lucene.version>2.4.0</lucene.version>
         <netbeans.hint.deploy.server>gfv3</netbeans.hint.deploy.server>
@@ -115,11 +115,6 @@
           <name>Twitter</name>
           <url>http://maven.twttr.com</url>
         </repository>
-         <repository>
-               <id>Configgy</id>
-              <name>http://www.lag.net/repo</name>
-              <url>http://www.lag.net/repo</url>
-          </repository>
           <repository>
              <id>Apache Repo</id> 
               <name>Apache repository for Derby 10.5.1.1</name> 
@@ -160,48 +155,48 @@
         </dependency>
         <dependency>
             <groupId>net.liftweb</groupId>
-            <artifactId>lift-util</artifactId>
+            <artifactId>lift-util_${scala.version}</artifactId>
             <version>${lift.version}</version>
         </dependency>
         <dependency>
             <groupId>net.liftweb</groupId>
-            <artifactId>lift-webkit</artifactId>
+            <artifactId>lift-webkit_${scala.version}</artifactId>
             <version>${lift.version}</version>
         </dependency>
         <dependency>
             <groupId>net.liftweb</groupId>
-            <artifactId>lift-widgets</artifactId>
+            <artifactId>lift-widgets_${scala.version}</artifactId>
             <version>${lift.version}</version>
         </dependency>
         <dependency>
             <groupId>net.liftweb</groupId>
-            <artifactId>lift-mapper</artifactId>
+            <artifactId>lift-mapper_${scala.version}</artifactId>
             <version>${lift.version}</version>
         </dependency>
         <dependency>
             <groupId>net.liftweb</groupId>
-            <artifactId>lift-testkit</artifactId>
+            <artifactId>lift-testkit_${scala.version}</artifactId>
             <version>${lift.version}</version>
-            <scope>test</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.liftweb</groupId>
-            <artifactId>lift-openid</artifactId>
+            <artifactId>lift-openid_${scala.version}</artifactId>
             <version>${lift.version}</version>
         </dependency>
          <dependency>
             <groupId>net.liftweb</groupId>
-            <artifactId>lift-actor</artifactId>
+            <artifactId>lift-actor_${scala.version}</artifactId>
             <version>${lift.version}</version>
         </dependency>
          <dependency>
             <groupId>net.liftweb</groupId>
-            <artifactId>lift-json</artifactId>
+            <artifactId>lift-json_${scala.version}</artifactId>
             <version>${lift.version}</version>
         </dependency>
          <dependency>
             <groupId>net.liftweb</groupId>
-            <artifactId>lift-common</artifactId>
+            <artifactId>lift-common_${scala.version}</artifactId>
             <version>${lift.version}</version>
         </dependency>
         <dependency>
@@ -251,17 +246,22 @@
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-            <version>1.2.14</version>
+            <version>1.2.16</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.5.11</version>
+            <version>1.6.1</version>
+        </dependency>
+        <dependency>
+           <groupId>org.slf4j</groupId>
+           <artifactId>slf4j-log4j12</artifactId>
+           <version>1.6.1</version>
         </dependency>
         <dependency>
             <groupId>net.lag</groupId>
             <artifactId>configgy</artifactId>
-            <version>1.5.3</version>
+            <version>2.0.1</version>
             <exclusions> 
               <exclusion> 
                 <groupId>org.scala-tools</groupId>
@@ -272,7 +272,7 @@
         <dependency>
             <groupId>com.twitter</groupId>
             <artifactId>ostrich</artifactId>
-            <version>1.1.26</version>    
+            <version>2.3.2</version>    
             <exclusions> 
               <exclusion> 
                 <groupId>org.scala-tools</groupId>

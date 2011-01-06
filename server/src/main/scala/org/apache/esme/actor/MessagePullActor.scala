@@ -28,7 +28,7 @@ import com.twitter.ostrich.Stats
 
 object MessagePullActor extends LiftActor {
   
-  private var messagePullActors: Map[Any, LiftActor] = Map()
+  private var messagePullActors: Map[Long, LiftActor] = Map()
   
   protected def messageHandler = {
     case StartPullActor(obj, lastMessage, messageSource) => 
@@ -58,9 +58,9 @@ object MessagePullActor extends LiftActor {
   private case object StartUp
   private case object ByeBye
   private case object FetchMessages
-  case class StartPullActor(any: Any, lastMessage: Option[Msg], messageSource: UniqueMessageSource)
-  case class StopPullActor(any: Any)
-  case class Fetch(any: Any)
+  case class StartPullActor(id: Long, lastMessage: Option[Msg], messageSource: UniqueMessageSource)
+  case class StopPullActor(id: Long)
+  case class Fetch(id: Long)
 
 
   private class MessagePullActor(
@@ -98,5 +98,5 @@ trait UniqueMessageSource extends (() => List[Msg]) {
       case Some(message: Msg) => msgs.filter{messageSorter(message, _)}
       case None => msgs
     }
-  }.sort(messageSorter)
+  }.sortWith(messageSorter)
 }

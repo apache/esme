@@ -35,6 +35,7 @@ import util._
 import common._
 import Helpers._
 
+import org.apache.esme._
 import model._
 
 import scala.xml._
@@ -61,7 +62,7 @@ object ConversationMgr {
     def followOrUnfollow: NodeSeq = {          
       val ret: Box[NodeSeq] = for { 
         u <- user
-        m = messages.values.toList.first
+        m = messages.values.toList.head
       } yield {         
         if (!m.followers.contains(u)) {
           ajaxButton("Follow conversation", () => {  
@@ -87,7 +88,7 @@ object ConversationMgr {
 
     bind("conv", in,       
          "conversationId" -> cid,
-         "messagePool" -> messages.values.toList.first.pool.is,
+         "messagePool" -> messages.values.toList.head.pool.is,
          "cometTimeline" -> cometTimeline,
          "followButton" -> followOrUnfollow )       
   }                                

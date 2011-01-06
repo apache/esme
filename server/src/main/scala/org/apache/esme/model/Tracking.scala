@@ -48,7 +48,7 @@ class Tracking extends LongKeyedMapper[Tracking] {
 
   override def toXml: Elem = 
   <tracking id={id.toString} 
-    user={user.can.map(l => Text(l.toString)).toOption}
+    user={user.box.map(l => Text(l.toString)).toOption}
     pattern={pattern}
     removed={removed.toString}
     createdAt={createdAt.toString}></tracking>
@@ -93,7 +93,7 @@ object uniqueId extends MappedUniqueId(this, 24) {
     }
 
     def matcher: Box[TrackingMatcher] = {
-      who.can match {
+      who.box match {
         case Full(whoId) =>
           Full(new PersonTrackingMatcher(id, whoId))
 

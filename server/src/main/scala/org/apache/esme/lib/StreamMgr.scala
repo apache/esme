@@ -41,7 +41,8 @@ import util._
 import common._
 import Helpers._
 
-import model._   
+import org.apache.esme._
+import model._ 
 import snippet.StreamDisplay
 
 import scala.xml._

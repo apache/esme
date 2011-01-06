@@ -60,7 +60,7 @@ object UserDisplay {
     }    
     
     def cometTimeline:NodeSeq = {                                        
-      println(<lift:comet type="UserMessagesTimeline" name={"user"+user.id.is} />)
+      //println(<lift:comet type="UserMessagesTimeline" name={"user"+user.id.is} />)
       <lift:comet type="UserMessagesTimeline" name={"user"+user.id.is} />
     }
                                                       

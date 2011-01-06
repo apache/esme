@@ -82,7 +82,7 @@ abstract class Feed(val user: User, val url: String, val source: String, val tru
   
   protected def parseInternetDate(dateString: String): Option[Date] = {
     val fixedDateString = fixDateString(dateString)
-    dateFormats.projection.flatMap(df => Helpers.tryo {
+    dateFormats.view.flatMap(df => Helpers.tryo {
       df.parse(fixedDateString)
     }).headOption
   }
