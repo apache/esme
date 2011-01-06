@@ -1,7 +1,7 @@
 import sbt._
 
 class EsmeProject(info: ProjectInfo) extends DefaultWebProject(info) {
-  val liftVersion = "2.2-RC4"
+  val liftVersion = "2.2"
   val compassVersion = "2.1.1"
   val luceneVersion = "2.4.0"
 
