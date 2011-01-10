@@ -92,7 +92,7 @@ object PopStatsActor extends LiftActor {
         stats += (id -> (stats.getOrElse(id,0) + 1))
         
       case Top(n) =>
-        val topList = stats.toList.sort{
+        val topList = stats.toList.sortWith{
           case ((_,freq1),(_,freq2)) =>
             freq2 < freq1
         }.take(n)

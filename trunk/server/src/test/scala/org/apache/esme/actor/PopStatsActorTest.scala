@@ -41,7 +41,7 @@ object PopStatsActorSpecs extends Specification {
 
       PopStatsActor !? (SendTimeout, PopStatsActor.IncrStats(ResendStat, 3))
       val stats2 = PopStatsActor !? PopStatsActor.TopStats(ResendStat, 5, ExpireTimeout)
-      stats2 must beEqualTo(List(3 -> 1, 1 -> 1))
+      stats2 must beEqualTo(List(3 -> 1, 1 -> 1)) or beEqualTo(List(1 -> 1, 3 -> 1))
 
       PopStatsActor !? (SendTimeout, PopStatsActor.IncrStats(ResendStat, 1))
       val stats3 = PopStatsActor !? PopStatsActor.TopStats(ResendStat, 5, ExpireTimeout)
