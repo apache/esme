@@ -22,10 +22,10 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.esme</groupId>
     <artifactId>esme-server</artifactId>
-    <version>apache-esme-1.2-incubating</version>
+    <version>apache-esme-1.2</version>
     <packaging>war</packaging>
     <name>Apache Enterprise Social Messaging Environment (ESME)</name>
-     <url>http://incubator.apache.org/esme</url>
+     <url>http://esme.apache.org</url>
     <description>ESME is a social tool that takes the immediacy of messaging and applies it to real time business process problem solving</description>
     <inceptionYear>2008</inceptionYear>
         <issueManagement>
@@ -43,21 +43,21 @@
        </license>
     </licenses>
         <organization>
-       <name>Apache Software Foundation: Incubator</name>
-       <url>http://inciubator.apache.org</url>
+       <name>Apache Software Foundation</name>
+       <url>http://www.apache.org</url>
     </organization>
       <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/esme</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/esme</developerConnection>
-          <url>http://svn.apache.org/repos/asf/incubator/esme</url>
+         <connection>scm:svn:http://svn.apache.org/repos/asf/esme</connection>
+         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/esme</developerConnection>
+          <url>http://svn.apache.org/repos/asf/esme</url>
      </scm>
     <mailingLists>
      <mailingList>
       <name>ESME Dev List</name>
-      <subscribe>esme-dev-subscribe@incubator.apache.org</subscribe>
-      <unsubscribe>esme-dev-unsubscribe@incubator.apache.org</unsubscribe>
-      <post>esme-dev@incubator.apache.org</post>
-      <archive>http://mail-archives.apache.org/mod_mbox/incubator-esme-dev/</archive>
+      <subscribe>dev-subscribe@esme.apache.org</subscribe>
+      <unsubscribe>dev-unsubscribe@esme.apache.org</unsubscribe>
+      <post>dev@esme.apache.org</post>
+      <archive>http://mail-archives.apache.org/mod_mbox/esme-dev/</archive>
     </mailingList>
    </mailingLists>
      <developers>
