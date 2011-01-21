@@ -157,6 +157,17 @@ object User extends User with KeyedMetaMapper[Long, User] {
     curUser.remove()
     curUserId(Full(who.id.toString))
     onLogIn.foreach(_(who))
+    
+    Message.create.author(who.id).
+    when(Helpers.timeNow.getTime).
+    source("login").
+    setTextAndTags(S.?("base_user_msg_login", who.nickname), Nil, Empty).
+    foreach{ msg =>
+      if (msg.save) {
+        Distributor ! Distributor.AddMessageToMailbox(who.id, msg, LoginReason(who.id))
+       }
+    }
+
 
     Stats incr "usersLoggedIn"
   }
