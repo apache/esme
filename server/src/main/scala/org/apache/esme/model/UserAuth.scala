@@ -211,16 +211,6 @@ object OpenIDAuthModule extends AuthModule {
               User.logUserIn(user)
               S.notice(S.?("base_user_msg_welcome",user.niceName))
 
-              Message.create.author(user.id).
-              when(Helpers.timeNow.getTime).
-              source("login").
-              setTextAndTags(S.?("base_user_msg_login", user.nickname), Nil, Empty).
-              foreach{ msg =>
-                if (msg.save) {
-                  Distributor ! Distributor.AddMessageToMailbox(user.id, msg, LoginReason(user.id))
-                }
-              }
-
               RedirectResponse(from, S responseCookies :_*)
 
             case (Full(id), _) =>
