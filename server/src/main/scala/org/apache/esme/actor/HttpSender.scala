@@ -41,8 +41,8 @@ object HttpSender extends LiftActor with GetPoster {
         send(action, msg, user, reason, token)
 
       case _ =>
-  }
-
+  } 
+ 
   private case object StartMeUp
   case class SendAMessage(action: Performances, msg: Message, user: User, reason: MailboxReason, token: String)
 
@@ -55,7 +55,7 @@ object HttpSender extends LiftActor with GetPoster {
           case None => XHTMLMailBodyType(msg.digestedXHTML)
           case Some(t) => PlainMailBodyType(expandText(t, msg, user, reason))
         }
-        Mailer.sendMail(From(S.?("custom_mail_from_adress")), Subject(S.?("custom_mail_subject")),
+        Mailer.sendMail(From("esme@esme.apache.org"), Subject("Message from ESME"),
                         To(who), body)
           
       case HttpTo(url, username, password, headers, data) =>
