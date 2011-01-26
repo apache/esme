@@ -195,7 +195,13 @@ function displayMessages(msgArray, elementId)
 
       
       newMsg.find('#author').text(msgAuthor.nickname);
-      newMsg.find('#author').attr('href', "/user/" + msgAuthor.nickname );
+      
+      // Dealing with tomcat
+      if (top.location.pathName == "/") 
+      	  newMsg.find('#author').attr('href',"/user/" + msgAuthor.nickname );
+     else
+      	 newMsg.find('#author').attr('href', window.location.pathname + "user/" + msgAuthor.nickname ); 
+     
      
      
            // Dealing with users with no avatars
