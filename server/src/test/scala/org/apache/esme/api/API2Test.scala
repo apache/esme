@@ -30,7 +30,8 @@ import Helpers._
 import org.apache.esme._
 import model._
 import net.liftweb.http._
-import testing.{ReportFailure, TestKit, HttpResponse, TestFramework, TestResponse}
+import testing.{ReportFailure, TestKit, HttpResponse, TestFramework, TestResponse} 
+import scala.xml.{Text}
 
 import _root_.junit.framework.AssertionFailedError
 
@@ -592,18 +593,20 @@ object Api2Specs extends Specification with TestKit {
         for{
           sess <- post_session
           mess_res <- sess.post("user/messages", "message"->"test")
+          mess_xml <- mess_res.xml
           wait <- sleep(1000)
-          mess_res <- sess.post("user/messages",
+          mess_res2 <- sess.post("user/messages",
                                 "message" -> "test_convo",
-                                "replyto" -> 9)
+                                "replyto" -> (mess_xml \\ "message" \ "id").text)
           wait2 <- sleep(1000)
-          res <- sess.get("conversations/9")
-        } {                     
+          res <- sess.get("/conversations/" + (mess_xml \\ "message" \ "id").text)
+        } {                                       
+          val conv_id = (mess_xml \\ "message" \ "id").text  
           res.code must be equalTo 200
-          ( res.xml.open_! \\ "message" ).last must \\(<conversation>9</conversation>)
-          ( res.xml.open_! \\ "message" ).last must \\(<replyto>9</replyto>)
-          ( res.xml.open_! \\ "message" ).first must \\(<conversation>9</conversation>)
-          ( res.xml.open_! \\ "message" ).first must \\(<replyto></replyto>)
+          ( res.xml.openOr(Text("")) \\ "message" ).last must \\(<conversation>{conv_id}</conversation>)
+          ( res.xml.openOr(Text("")) \\ "message" ).last must \\(<replyto>{conv_id}</replyto>)
+          ( res.xml.openOr(Text("")) \\ "message" ).first must \\(<conversation>{conv_id}</conversation>)
+          ( res.xml.openOr(Text("")) \\ "message" ).first must \\(<replyto></replyto>)
         }
       }
 
