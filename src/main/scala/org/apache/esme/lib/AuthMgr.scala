@@ -54,11 +54,15 @@ object AuthMgr {
 
   val ifIsLoggedIn = If(loggedIn_? _, strFuncToFailMsg(() => S.?("base_error_not_logged_in")))
 
-  val menuItems =
-  Menu(Loc("authToken", List("auth_view", "index"), S.?("base_token_menu"), ifIsLoggedIn,
+  val menuItems:List[Menu] = {
+    if(Props.get("esme.enable_tokens").openOr("true") == "true") {
+      Menu(Loc("authToken", List("auth_view", "index"), S.?("base_token_menu"), ifIsLoggedIn,
            Loc.Snippet("displayTokens", displayTokens),
-           Loc.Snippet("main", mainTokens))) ::
-  Nil
+           Loc.Snippet("main", mainTokens))) :: Nil   
+    } else {
+      List()
+    }     
+  }
 
   object updateTokens extends RequestVar[() => JsCmd](() => Noop)
   
