@@ -194,7 +194,7 @@ class UserSnip extends DispatchSnippet {
                                             "reply-to" -> JsVar("currentConvNumber"))) &
                      SetValById("vMsg", "") &
                      SetValById("vPool", "0") &
-                     JsRaw("clearReplyTo();")
+                     JsRaw("postPostCallback();")
         ))
     }
   </xml:group>

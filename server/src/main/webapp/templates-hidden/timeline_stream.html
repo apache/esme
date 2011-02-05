@@ -21,6 +21,11 @@
   <head>                        
     <script src="/scripts/display_messages_top.js" type="text/javascript"/>  
     <script src="/scripts/pretty.js" type="text/javascript"/> 
+    <script type="text/javascript">
+      var postPostCallback = function() {
+        clearReplyTo();
+      };
+    </script>
   </head>                         
   <stream:cometTimeline />    
   <lift:embed what="templates-hidden/message_core"/>

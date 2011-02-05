@@ -20,7 +20,12 @@
 <div id="tag_timeline_messages">                           
   <head>                        
     <script src="/scripts/display_messages_top.js" type="text/javascript"/>  
-    <script src="/scripts/pretty.js" type="text/javascript"/> 
+    <script src="/scripts/pretty.js" type="text/javascript"/>   
+    <script type="text/javascript">
+      var postPostCallback = function() {
+        clearReplyTo();
+      };
+    </script>
   </head>          
   <lift:tag_display>           
     <tag:cometTimeline />        
