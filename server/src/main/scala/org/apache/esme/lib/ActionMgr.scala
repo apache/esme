@@ -58,11 +58,15 @@ object ActionMgr {
 
   val ifIsLoggedIn = If(loggedIn_? _, strFuncToFailMsg(() => S.?("base_menu_logout_error")))
 
-  val menuItems =
-  Menu(Loc("actionMgt", List("action_view", "index"), S.?("base_actions_menu"), ifIsLoggedIn,
+  val menuItems:List[Menu] = {
+    if(Props.get("esme.enable_actions").openOr("true") == "true") {
+      Menu(Loc("actionMgt", List("action_view", "index"), S.?("base_actions_menu"), ifIsLoggedIn,
            Loc.Snippet("displayActions", displayActions),
-           Loc.Snippet("main", mainActions))) ::
-  Nil
+           Loc.Snippet("main", mainActions))) :: Nil     
+    } else {
+      List()
+    }   
+  }
 
   object updateActions extends RequestVar[() => JsCmd](() => Noop)
   

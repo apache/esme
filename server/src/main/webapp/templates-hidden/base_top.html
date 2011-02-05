@@ -79,31 +79,9 @@
                         </div><strong><lift:loc>ui_messages_message_label_welcome</lift:loc></strong>
                         <div class="info4">
                             <a lift:snippet="UserSnip.userDetailshref"><span class="name"><lift:UserSnip.name/></span></a>
-                        </div>
-                        <ul class="main-links">
-                           <li>
-                                <lift:Menu.item donthide="true" name="Home" a:class="tipelement" a:title="This is the your timeline."/>
-                            </li>
-                            <li>
-                                <lift:Menu.item donthide="true" name="profile" a:class="tipelement" a:title="You can change your profile."/>     
-                            </li>
-                            <li>
-                                <lift:Menu.item donthide="true" name="trackMgt" a:class="tipelement" a:title="You can track words."/>
-                            </li>
-                            <li>
-                                <lift:Menu.item donthide="true" name="actionMgt" a:class="tipelement" a:title="You can create actions to fire when certain events occur"/>
-                            </li>
-                            <li>
-                                <lift:Menu.item donthide="true" name="authToken" a:class="tipelement" a:title="You can create tokens to use when accessing ESME via other clients."/>
-                            </li>
-                            <li>
-                                <lift:Menu.item donthide="true" name="accessPools" a:class="tipelement" a:title="You can create access pools to restrict access top certain messages."/>
-                            </li>
-                            <li>
-                                <lift:Menu.item donthide="true" name="contacts" a:class="tipelement" a:title="You can manage your followers and those you follow."/>
-                            </li>
-
-                        </ul><!--search form-->
+                        </div>     
+                        <lift:MenuSnippet.menu />
+                        <!--search form-->
                         <form  action="/info_view/search" method="post" id = "validateForm">
                             <div id="search">
                                 <div class="searchBox">

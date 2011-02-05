@@ -51,11 +51,15 @@ object TrackMgr {
 
   val ifIsLoggedIn = If(loggedIn_? _, strFuncToFailMsg(() => S.?("base_error_not_logged_in")))
 
-  val menuItems =
-  Menu(Loc("trackMgt", List("track_view", "index"), S.?("base_track_menu"), ifIsLoggedIn,
-           Loc.Snippet("displayTracking", displayTracking),
-           Loc.Snippet("main", mainTracking))) ::
-  Nil
+  val menuItems:List[Menu] = {
+    if(Props.get("esme.enable_tracks").openOr("true") == "true") {
+      Menu(Loc("trackMgt", List("track_view", "index"), S.?("base_track_menu"), ifIsLoggedIn,
+             Loc.Snippet("displayTracking", displayTracking),
+             Loc.Snippet("main", mainTracking))) :: Nil
+    } else {
+      List()
+    }      
+  }
 
   object updateTracking extends RequestVar[() => JsCmd](() => Noop)
 
