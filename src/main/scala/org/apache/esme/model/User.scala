@@ -45,7 +45,7 @@ import java.util.logging._
 //import com.twitter.stats.Stats
 import com.twitter.ostrich.Stats
 
-object User extends User with KeyedMetaMapper[Long, User] {
+object User extends User with KeyedMetaMapper[Long, User] with Loggable {
   override def afterSave = profileChanged _ :: notifyActors _ :: super.afterSave
 
   override def afterCreate = createCryptoRecord _ :: super.afterCreate
@@ -85,7 +85,7 @@ object User extends User with KeyedMetaMapper[Long, User] {
 
 
     def processEntryAdd() {
-        Log.debug("processEntryAdd: " + firstName + ", " + lastName)
+        logger.debug("processEntryAdd: " + firstName + ", " + lastName)
     }
 
 

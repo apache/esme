@@ -35,7 +35,7 @@ import org.apache.commons.httpclient.auth._
 import methods._
 import java.io.OutputStream
 
-object HttpSender extends LiftActor with GetPoster {
+object HttpSender extends LiftActor with GetPoster with Loggable {
   protected def messageHandler = {
       case SendAMessage(action, msg, user, reason, token) =>
         send(action, msg, user, reason, token)
@@ -117,8 +117,8 @@ object HttpSender extends LiftActor with GetPoster {
 
     try {
       httpClient.executeMethod(poster)
-      Log.debug(poster.getStatusText)
-      Log.debug(poster.getResponseBodyAsString)
+      logger.debug(poster.getStatusText)
+      logger.debug(poster.getResponseBodyAsString)
     } finally {
       poster.releaseConnection
     }
