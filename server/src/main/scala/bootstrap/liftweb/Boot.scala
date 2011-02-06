@@ -57,7 +57,7 @@ import _root_.net.liftweb.widgets.logchanger._
  * A class that's instantiated early and run.  It allows the application
  * to modify lift's environment
  */
-class Boot {
+class Boot extends Loggable {
   def boot {
 
     // Get DB from container if available
@@ -107,7 +107,7 @@ class Boot {
     //Added exceptions to the log
     LiftRules.exceptionHandler.prepend {
       case (_, _, exception) => {
-        Log.error(exception.getStackTrace.toString)
+        logger.error(exception.getStackTrace.toString)
         RedirectResponse("/")
       }
     } 
@@ -302,11 +302,11 @@ object Compass {
 * Logger to track request times
 */
 
-object RequestAnalyzer {
+object RequestAnalyzer extends Loggable {
   def analyze(req: Box[Req], time: Long, queries: List[(String, Long)]): Unit = {
     val longQueries = (queries.filter(_._2 > 30))
     if (time > 50 || longQueries.?) {
-      Log.debug("Request " + req.map(_.uri).openOr("No Request") +
+      logger.debug("Request " + req.map(_.uri).openOr("No Request") +
           " took " + time + " query " + longQueries.comma)
     }
   }
@@ -315,7 +315,7 @@ object RequestAnalyzer {
 /*
 * Logger to dump session info
 */
-object SessionInfoDumper extends LiftActor {
+object SessionInfoDumper extends LiftActor with Loggable {
   private var lastTime = millis
 
   val tenMinutes: Long = 10 minutes
@@ -329,9 +329,9 @@ object SessionInfoDumper extends LiftActor {
         rt.gc
 
         val dateStr: String = timeNow.toString
-        Log.debug("[MEMDEBUG] At " + dateStr + " Number of open sessions: " + sessions.size)
-        Log.debug("[MEMDEBUG] Free Memory: " + pretty(rt.freeMemory))
-        Log.debug("[MEMDEBUG] Total Memory: " + pretty(rt.totalMemory))
+        logger.debug("[MEMDEBUG] At " + dateStr + " Number of open sessions: " + sessions.size)
+        logger.debug("[MEMDEBUG] Free Memory: " + pretty(rt.freeMemory))
+        logger.debug("[MEMDEBUG] Total Memory: " + pretty(rt.totalMemory))
       }
 
   }

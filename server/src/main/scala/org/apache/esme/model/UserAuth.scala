@@ -294,11 +294,11 @@ object ESMEOpenIDVendor extends OpenIDVendor {
   def createAConsumer = new ESMEOpenIDConsumer
 }
 
-class ESMEOpenIDConsumer extends OpenIDConsumer[User]
+class ESMEOpenIDConsumer extends OpenIDConsumer[User] with Loggable
 {
   override val manager = {
 
-    Log.info("Proxy settings: " + Props.get("http.proxyHost", "[no host]")
+    logger.info("Proxy settings: " + Props.get("http.proxyHost", "[no host]")
              + ":" + Props.get("http.proxyPort", "[no port]"))
 
     for (host <- Props.get("http.proxyHost")){

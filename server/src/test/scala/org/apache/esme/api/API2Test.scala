@@ -605,8 +605,8 @@ object Api2Specs extends Specification with TestKit {
           res.code must be equalTo 200
           ( res.xml.openOr(Text("")) \\ "message" ).last must \\(<conversation>{conv_id}</conversation>)
           ( res.xml.openOr(Text("")) \\ "message" ).last must \\(<replyto>{conv_id}</replyto>)
-          ( res.xml.openOr(Text("")) \\ "message" ).first must \\(<conversation>{conv_id}</conversation>)
-          ( res.xml.openOr(Text("")) \\ "message" ).first must \\(<replyto></replyto>)
+          ( res.xml.openOr(Text("")) \\ "message" ).head must \\(<conversation>{conv_id}</conversation>)
+          ( res.xml.openOr(Text("")) \\ "message" ).head must \\(<replyto></replyto>)
         }
       }
 
