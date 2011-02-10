@@ -227,7 +227,7 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
   }
 
   lazy val begOrSpace: Parser[Int] = rep1(' ') ^^ {case lst => lst.length} | beginl ^^^ 0
-  lazy val spaceOrEnd: Parser[Int] = EOL ^^^ 0 | rep1(' ') ^^ {case lst => lst.length}
+  lazy val spaceOrEnd: Parser[Int] = EOL ^^^ 0 | (rep1(' ') | rep1('?')) ^^ {case lst => lst.length} 
 
   def peek[T](p: Parser[T]): Parser[T] = Parser { in =>
     p(in) match {
