@@ -422,29 +422,40 @@ ul.main-links  {
 .gray-box {
 	float:left;
 	background:#f9f9f9;
-
 }
 
 .updates-box {
-	float:left;
+/*	float:left; */
 	padding:10px 0px 5px 0px;
 	word-wrap:break-word;    
 	border-bottom: 1px solid #ddd;
 }
 .avatar {
+/*	float:left; */
+  display: inline;
+	width:62px;
+}          
+.user-avatar {
 	float:left;
 	width:62px;
 }
 .update {
-	float:left;
+/*	float:left; */
 	width:470px;
 	padding:0 10px; 
 	word-wrap:break-word;
 }
 .update2 {
-	float:left;
+/*	float:left; */ 
+  display:block;     
+  margin-top: -45px;
+  margin-left:62px;
 	width:500px;
 	padding:0px;
+}         
+.author {        
+	font-weight:bold;
+	font-size:110%;
 }
 .tag, .tag a {
 	margin:10px 0 2px;
@@ -453,7 +464,7 @@ ul.main-links  {
 .info a {
 	font-weight:bold;
 }
-.info2 a {
+.info2 a {        
 	font-weight:bold;
 	font-size:110%;
 }
@@ -467,7 +478,7 @@ ul.main-links  {
 	margin:10px;
 	width:90%;
 }
-.supp_data_class { 
+.supp_data { 
   padding-top:5px;
 	color:#07376d;
 	font-size:80%;
@@ -504,6 +515,9 @@ ul.main-links  {
 	padding:20px 30px; 
 	background: url(../images/bg-tabs.png) no-repeat; 
 	margin-bottom:20px; 
+}               
+.user-tabs {
+  margin: -10px -25px;
 }
 /* CONTENT TABS*/
 ul#toc {
