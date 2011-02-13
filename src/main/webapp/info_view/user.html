@@ -17,12 +17,14 @@
  under the License.                                           *
 -->
 
-<lift:surround with="base" at="left">
+<lift:surround with="base" at="left">   
+  <head>
     <lift:TableSorterSnip/><!-- STYLESHEETS  -->
     <link type="text/css" href="../style/jqueryui-theme/jquery-ui-1.8.2.custom.css" rel="stylesheet" />   
-    <script type="text/javascript" src="../scripts/jquery-ui-1.8.2.custom.min.js">    </script>
+    <script type="text/javascript" src="../scripts/jquery-ui-1.8.2.custom.min.js"></script>
     <script type="text/javascript" src="../scripts/esme_table_sorter.js"></script>
     <script type="text/javascript" src="../scripts/esme.js"></script>
+  </head>
   <lift:user_info>
     <div id="back-header">
     	<h1>
@@ -31,35 +33,29 @@
     	</h1>                                           
     </div>      
   	<div class="container-aux">
-      <div class="ui-tabs ui-widget ui-widget-content ui-corner-all" id="tabs">
-        <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
-          <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active">
-            <a href="#tabs-1"><user:nicename/><lift:loc>ui_user_messages</lift:loc></a>
-          </li>
-          <li class="ui-state-default ui-corner-top">
-            <a href="#tabs-2"><lift:loc>ui_user_following</lift:loc></a>
-          </li>
-          <li class="ui-state-default ui-corner-top">
-            <a href="#tabs-3"><lift:loc>ui_user_followers</lift:loc></a>
-          </li>            
+      <div id="tabs" class="user-tabs">
+        <ul>
+          <li><a href="#tabs-1"><user:nicename/><lift:loc>ui_user_messages</lift:loc></a></li>
+          <li><a href="#tabs-2"><lift:loc>ui_user_following</lift:loc></a></li>
+          <li><a href="#tabs-3"><lift:loc>ui_user_followers</lift:loc></a></li>            
         </ul>
-        <div class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide" id="tabs-1">
+        <div id="tabs-1">
           <dl class="">
             <dd class="b-clouds">
               <lift:embed what="templates-hidden/timeline_user_messages"/> 
             </dd>
           </dl>
         </div>         
-        <div class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide" id="tabs-2">
+        <div id="tabs-2">
           <dl class="">
-            <dd class="b-contacts" style="height: 240px; overflow: auto">
+            <dd class="b-contacts">
               <lift:UserSnip.following user:userId=""/>
             </dd>
           </dl>
         </div>
-        <div class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide" id="tabs-3">
+        <div id="tabs-3">
           <dl class="">
-            <dd class="b-contacts" style="height: 240px; overflow: auto">
+            <dd class="b-contacts">
               <lift:UserSnip.followers user:userId=""/>
             </dd>
           </dl>

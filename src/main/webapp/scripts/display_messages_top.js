@@ -194,13 +194,13 @@ function displayMessages(msgArray, elementId)
       var newMsg = msgTemplate.clone(true).attr('id',msgId);
 
       
-      newMsg.find('#author').text(msgAuthor.nickname);
+      newMsg.find('.author').text(msgAuthor.nickname);
       
       // Dealing with tomcat
       if (top.location.pathName == "/") 
-      	  newMsg.find('#author').attr('href',"/user/" + msgAuthor.nickname );
+      	  newMsg.find('.author').attr('href',"/user/" + msgAuthor.nickname );
      else
-      	 newMsg.find('#author').attr('href', window.location.pathname + "user/" + msgAuthor.nickname ); 
+      	 newMsg.find('.author').attr('href', window.location.pathname + "user/" + msgAuthor.nickname ); 
      
      
      
@@ -220,15 +220,15 @@ function displayMessages(msgArray, elementId)
       .attr('src', msgAuthor.imageUrl)
       .attr('alt',msgAuthor.firstName + ' ' + msgAuthor.lastName);
       
-      newMsg.find('#msgbody').html(msgBody);
+      newMsg.find('.msgbody').html(msgBody);
       if (msgReason)
-         newMsg.find('#supp_data').text(msgPool + " " + msgDateStr  + " " +  msgReason );
+         newMsg.find('.supp_data').text(msgPool + " " + msgDateStr  + " " +  msgReason );
       else {
-      	 newMsg.find('#supp_data').text(msgPool + " " + msgDateStr  + " via "  +   msgSource);
+      	 newMsg.find('.supp_data').text(msgPool + " " + msgDateStr  + " via "  +   msgSource);
       }
       var id = cometMsg.id;
 
-      var resendButton = newMsg.find('#resend');    
+      var resendButton = newMsg.find('.resend');    
       
       if (cometResent) {
         resendButton.css("display", "none");
@@ -243,9 +243,9 @@ function displayMessages(msgArray, elementId)
       var myReplyMsg = tempStr.replaceAll ("ZZZ$%$", "\\'");   
       
           
-      newMsg.find('#reply').attr('href',
+      newMsg.find('.reply').attr('href',
         "javascript:setReplyTo(" + id + ", '"+ myReplyMsg + "'," + msgPoolId + ", '" + msgAuthor.nickname + "')");
-      var conversation = newMsg.find('#conversation');
+      var conversation = newMsg.find('.conversation');
       if (msgConversation != 0) {
         conversation.attr('href', 
           '/conversation/' + msgConversation);
