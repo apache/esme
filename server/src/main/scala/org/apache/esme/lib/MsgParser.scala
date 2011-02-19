@@ -55,6 +55,12 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
   lazy val begin: Parser[List[MsgInfo]] = 
   startSpace ~> rep1(url | atName | hashTag | emph | strong | text) <~ spaceEOF
 
+  val punctRegex = java.util.regex.Pattern.compile("""\p{Punct}""")
+
+  def isPunct(c: Char) = punctRegex.matcher(c.toString).matches
+
+  lazy val punct: Parser[Elem] = elem("separator", isPunct)
+
   lazy val startSpace = rep(' ')
 
   lazy val url: Parser[URL] = fragmentAddress ^^ {url => URL(UrlStore.make(url))}
@@ -227,7 +233,7 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
   }
 
   lazy val begOrSpace: Parser[Int] = rep1(' ') ^^ {case lst => lst.length} | beginl ^^^ 0
-  lazy val spaceOrEnd: Parser[Int] = EOL ^^^ 0 | (rep1(' ') | rep1('?') | rep1('!') | rep1('.') | rep1(',') | rep1(':') | rep1(';') | rep1('-')) ^^ {case lst => lst.length} 
+  lazy val spacePunctOrEnd: Parser[Boolean] = (EOL | ' ' | punct) ^^^ true
 
   def peek[T](p: Parser[T]): Parser[T] = Parser { in =>
     p(in) match {
@@ -242,7 +248,7 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
   }
   
   def surrounded(sep: String)(constructor: (String) => MsgInfo): Parser[MsgInfo] =
-    begOrSpace ~ accept(sep) ~> rep1(not(spaceEOF) ~ not(accept(sep)) ~ not(hashTag) ~ not(atName) ~> anyChar) <~ accept(sep) ~ peek(spaceOrEnd) ^^ {
+    begOrSpace ~ accept(sep) ~> rep1(not(spaceEOF) ~ not(accept(sep)) ~ not(hashTag) ~ not(atName) ~> anyChar) <~ (accept(sep) ~ peek(spacePunctOrEnd)) ^^ {
     case xs => constructor(xs.mkString)
   }
   

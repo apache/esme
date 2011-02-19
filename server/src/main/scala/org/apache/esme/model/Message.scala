@@ -526,8 +526,8 @@ class Message extends LongKeyedMapper[Message] with ManyToMany {
               case MsgText(text) => Text(text)
               case URL(url) => <url id={url.id.toString}
                   url={url.url.toString} uniqueId={url.uniqueId.is} >{url.url.toString}</url>
-              case Emph(text) => <xml:group> <em text={text}>_{text}_</em> </xml:group>
-              case Strong(text) => <xml:group> <strong text={text}>*{text}*</strong> </xml:group>
+              case Emph(text) => <xml:group> <em text={text}>_{text}_</em></xml:group>
+              case Strong(text) => <xml:group> <strong text={text}>*{text}*</strong></xml:group>
             }
           }</body>
         <tags>{
