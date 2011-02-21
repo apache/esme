@@ -22,6 +22,38 @@
  * displayMessages called by lift:comet, type="Timeline" and type="PublicTimeline"
  */
  
+  // Replaces all instances of the given substring.
+String.prototype.replaceAll = function( 
+	strTarget, // The substring you want to replace
+	strSubString // The string you want to replace in.
+	){
+	var strText = this;
+	var intIndexOfMatch = strText.indexOf( strTarget );
+	 
+	// Keep looping while an instance of the target string
+	// still exists in the string.
+	while (intIndexOfMatch != -1){
+		// Relace out the current instance.
+		strText = strText.replace( strTarget, strSubString )
+		 
+		// Get the index of any next matching substring.
+		intIndexOfMatch = strText.indexOf( strTarget );
+	}
+	 
+	// Return the updated string with ALL the target strings
+	// replaced out with the new substring.
+	return( strText );
+} 
+
+function parseXml(xml) {
+    if (jQuery.browser.msie) {
+    	  var xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+          xmlDoc.loadXML(xml);
+           xml = xmlDoc;    
+      }       
+  return xml;
+}
+ 
 
 function login()
 {
@@ -71,7 +103,18 @@ function displayMessages(msgArray, elementId)
     {
       var msgAuthor = cometMsg.author;
       var msgText = cometMsg.text
-      var msgBody = jQuery(cometMsg.text).find("body").html();
+      // Dealing with an IE bug when parsing XML with jQuery
+      
+      if (jQuery.browser.msie) {
+      	var msgBodyXML = parseXml(cometMsg.text);
+        var msgBodyBase = jQuery(msgBodyXML).find('body');
+        msgBody = msgBodyBase[0].xml.replaceAll ("<body>", "").replaceAll ("</body>", ""); 
+      }
+      else
+      	msgBody = jQuery(cometMsg.text).find('body').html();
+      
+      if (!msgBody)
+      	msgBody = cometMsg.text;
       
       if (!msgBody)
       	msgBody = cometMsg.text;

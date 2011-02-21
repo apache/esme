@@ -529,8 +529,7 @@ class Message extends LongKeyedMapper[Message] with ManyToMany {
               case Emph(text) => <xml:group> <em text={text}>_{text}_</em></xml:group>
               case Strong(text) => <xml:group> <strong text={text}>*{text}*</strong></xml:group>
             }
-          }</body>
-        <tags>{
+          }</body><tags>{
             ((lst.flatMap{case HashTag(t) => Full(t) case _ => Empty})
              ::: tags).distinct.map(_.toXml)
           }</tags>{

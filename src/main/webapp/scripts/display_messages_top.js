@@ -127,6 +127,16 @@ function clearMessages(elementId) {
   jQuery('.updates-box').not("#message").remove(); 
 }
 
+function parseXml(xml) {
+    if (jQuery.browser.msie) {
+    	  var xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+          xmlDoc.loadXML(xml);
+           xml = xmlDoc;    
+      }       
+  return xml;
+}
+
+
 function displayMessages(msgArray, elementId)
 {
 	
@@ -159,7 +169,18 @@ function displayMessages(msgArray, elementId)
     if (jQuery('#'+elementId+' #'+msgId).size() == 0)
     {
       var msgAuthor = cometMsg.author;
-      var msgBody = jQuery(cometMsg.text).find('body').html();
+      var msgBody = null;
+      
+      // Dealing with an IE bug when parsing XML with jQuery
+      
+      if (jQuery.browser.msie) {
+      	var msgBodyXML = parseXml(cometMsg.text);
+        var msgBodyBase = jQuery(msgBodyXML).find('body');
+        msgBody = msgBodyBase[0].xml.replaceAll ("<body>", "").replaceAll ("</body>", ""); 
+      }
+      else
+      	msgBody = jQuery(cometMsg.text).find('body').html();
+      	
       var msgDateObj = new Date(parseInt(cometMsg.when));
       
       if (!msgBody)
@@ -200,8 +221,7 @@ function displayMessages(msgArray, elementId)
       if (top.location.pathName == "/") 
       	  newMsg.find('.author').attr('href',"/user/" + msgAuthor.nickname );
      else
-      	 newMsg.find('.author').attr('href', window.location.pathname + "user/" + msgAuthor.nickname ); 
-     
+      	 newMsg.find('.author').attr('href', window.location.pathname + "user/" + msgAuthor.nickname );    
      
      
            // Dealing with users with no avatars
@@ -252,16 +272,6 @@ function displayMessages(msgArray, elementId)
       } else {
         conversation.css("display", "none");
       }
-      for (var tagIndex=0; tagIndex < msgTags.length; tagIndex++) {
-        var newTag = tagTemplate.clone(true).attr('id',msgTags[tagIndex]);
-        newTag.find('a')
-        .attr('href','tag/'+msgTags[tagIndex])
-        .text(msgTags[tagIndex]);
-        newTag.insertBefore(newMsg.find('#tag:first'));
-      }
-
-      // Remove any old tags from the template
-      newMsg.find('*[id=tag]').remove();
 
       // Insert the updated copy of the message into the page
       newMsg.prependTo(msgInsertPt).show();
