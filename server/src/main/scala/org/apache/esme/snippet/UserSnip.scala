@@ -192,8 +192,7 @@ class UserSnip extends DispatchSnippet {
                                             "tags" -> ValById("vTag"),
                                             "access_pool" -> ValById("vPool"),
                                             "reply-to" -> JsVar("currentConvNumber"))) &
-                     SetValById("vMsg", "") &
-                     SetValById("vPool", "0") &
+                     SetValById("vMsg", "") &     
                      JsRaw("postPostCallback();")
         ))
     }

@@ -113,11 +113,11 @@ function setCaretToPos (input, pos) {
 }
 
 function clearReplyTo(){
-    currentConvNumber = 0;
-    document.getElementById('reply-to-div').style.display = "none";
-    jQuery('#vPool').val(0);
-    jQuery('#message_request').html('What are you working on?');
-}
+  currentConvNumber = 0;
+  document.getElementById('reply-to-div').style.display = "none";
+  jQuery('#vPool').val(0);
+  jQuery('#message_request').html('What are you working on?');
+}           
 
 function clearResend(id){
     document.getElementById(id).style.display = "none"
