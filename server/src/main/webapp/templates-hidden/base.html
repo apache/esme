@@ -1,0 +1,138 @@
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one   *
+ or more contributor license agreements.  See the NOTICE file *
+ distributed with this work for additional information        *
+ regarding copyright ownership.  The ASF licenses this file   *
+ to you under the Apache License, Version 2.0 (the            *
+ "License"); you may not use this file except in compliance   *
+ with the License.  You may obtain a copy of the License at   *
+                                                              *
+   http://www.apache.org/licenses/LICENSE-2.0                 *
+                                                              *
+ Unless required by applicable law or agreed to in writing,   *
+ software distributed under the License is distributed on an  *
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY       *
+ KIND, either express or implied.  See the License for the    *
+ specific language governing permissions and limitations      *
+ under the License.                                           *
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title><lift:loc>ui_default_title</lift:loc></title>
+        <meta http-equiv="Content-Language" content="en-US" />
+        <meta http-equiv="Content-Script-Type" content="text/javascript" />
+        <meta http-equiv="Content-Style-Type" content="text/css" />
+        <meta http-equiv="imagetoolbar" content="no" />
+        <meta name="keywords" content="ESME" lang="en-US" />
+        <meta name="description" content="ESME" lang="en-US" />
+        <meta name="copyright" content="ESME" lang="en-US" />
+        <meta name="generator" content="" lang="en-US" />
+        <meta name="author" content="ESME Designed by Joy Reyes" lang="en-US" />
+        <meta name="Robots" content="index,follow,noodp" />
+        <link rel="stylesheet" href="../style/style.css" type="text/css" media="screen" />
+        <link rel="stylesheet" href="../style/tipTip.css" type="text/css" media="screen" />
+        <script id="jquery" src="/classpath/jquery.js" type="text/javascript"/>
+        <script id="json" src="/classpath/json.js" type="text/javascript"/>
+        <script src="../scripts/jquery.TipTip.js" type="text/javascript"/> 
+        <script src="../scripts/esme_tool_tip.js" type="text/javascript"/> 
+        <script src="../scripts/jquery.validate.js" type="text/javascript"/> 
+        <script src="../scripts/esme_validate.js" type="text/javascript"/> 
+    </head>
+    <body id="back">
+     <div id="messages" class="esme_message_bar" style="display: none"></div>
+        <div id="container-bg">
+            <div id="container">
+                <div id="header">
+                    <div id="logo">
+                        <h1><a href="/"><lift:loc>ui_default_pagetitle</lift:loc></a></h1>
+                    </div>
+                    <div id="top-menu">
+                        <ul>
+                            <li>
+                                 <lift:Menu.item donthide="true" name="public" a:class="tipelement" a:title="The public timeline includes messages from all users not only those you are following. "/>  |  
+                            </li>
+                            <li>
+                              <lift:Menu.item donthide="true" name="list_users" a:class="tipelement" a:title="Users are listed along with their details. "/>  | 
+                            </li>
+                             <li>
+                               <lift:Menu.item donthide="true" name="streams" a:class="tipelement" a:title="Streams allow you to view pools or the messages sent by particular users. "/>
+                            </li>
+                        </ul>
+
+                        <lift:Menu.item name="logout">
+                           <img src="../images/btn-signout.gif" alt="" class="tipelement" title="Log out of ESME." />
+                         </lift:Menu.item>
+                    </div>
+                </div><!--// ENDS HEADER -->
+                <div id="left">
+                     <lift:bind name="left" />
+                </div>
+                <!--left-->
+                <div id="right">
+                    <div class="box-right-back">
+                        <div class="user-avatar">
+                            <img lift:snippet="UserSnip.image" alt="" width="80%"/>
+                        </div><strong><lift:loc>ui_messages_message_label_welcome</lift:loc></strong>
+                        <div class="info4">
+                            <a lift:snippet="UserSnip.userDetailshref"><span class="name"><lift:UserSnip.name/></span></a>
+                        </div>
+                        <lift:MenuSnippet.menu />
+                        <!--search form-->
+                        <form action="/info_view/search" method="post" id = "validateForm">
+                            <div id="search">
+                                <div class="searchBox">
+                                    <input type="text" class="inputBox required alphanumeric nowhitespace" name="term" value=""/>
+                                </div>
+                                <div class="searchButton">
+                                    <input type="image" onclick="javascript:form.submit();" src="../images/btn-search.gif" style="padding:0;"/>
+                                </div>
+                            </div>
+                        </form><!--search form--><h3 class ="tipelement" title="These are tags that appear often in your timeline."><lift:loc>ui_messages_message_label_tag_cloud</lift:loc></h3>
+                       <div class="right-content">
+                             <lift:comet type="TagCloud"/>
+                        </div>
+                        <h3 class ="tipelement" title="These are popular messages that users have resent often"><lift:loc>ui_messages_message_label_popular</lift:loc></h3>
+                        <div class="right-content">
+                                        <lift:UserSnip.popular>
+                                        <ul>
+                                            <disp:item>
+                                                <li>
+	                                                <item:author/>: <item:text/><!--<item:date/>--> 
+                                                </li>
+                                            </disp:item>
+                                        </ul>
+                                    </lift:UserSnip.popular> 
+                                     </div>
+                        <h3 class ="tipelement" title="These are popular links that users have clicked often."><lift:loc>ui_messages_message_label_popular_links</lift:loc></h3>
+                        <div class="right-content">
+                                  <lift:UserSnip.links>
+                                        <ul>
+                                            <disp:item>
+                                                <li>
+	                                                <item:url/>
+                                                </li>
+                                            </disp:item>
+                                        </ul>
+                                    </lift:UserSnip.links>                        
+                       </div>
+                    </div>
+                </div>
+            </div>
+            <!--// ENDS CONTAINER -->
+        </div>
+        <!--// ENDS CONTAINER-BG -->
+        <div id="footer">
+                <div class="ftr-links">			
+				<a href="http://cwiki.apache.org/confluence/display/ESME/Index"><lift:loc>custom_text_link1</lift:loc></a> |
+				<a href="http://cwiki.apache.org/confluence/display/ESME/Index#Index-GettingStarted"><lift:loc>custom_text_link2</lift:loc></a> |
+				<a href="http://blog.esme.us/"><lift:loc>custom_text_link3</lift:loc></a> 
+				<br />
+                <lift:loc>ui_default_footer</lift:loc>
+          <br />
+         </div> 
+         </div>
+    </body>
+</html>

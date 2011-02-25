@@ -1,0 +1,56 @@
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one   *
+ or more contributor license agreements.  See the NOTICE file *
+ distributed with this work for additional information        *
+ regarding copyright ownership.  The ASF licenses this file   *
+ to you under the Apache License, Version 2.0 (the            *
+ "License"); you may not use this file except in compliance   *
+ with the License.  You may obtain a copy of the License at   *
+                                                              *
+   http://www.apache.org/licenses/LICENSE-2.0                 *
+                                                              *
+ Unless required by applicable law or agreed to in writing,   *
+ software distributed under the License is distributed on an  *
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY       *
+ KIND, either express or implied.  See the License for the    *
+ specific language governing permissions and limitations      *
+ under the License.                                           *
+-->    
+
+<lift:surround with="base" at="left">   
+  <head>
+    <lift:TableSorterSnip/><!-- STYLESHEETS  -->
+    <link type="text/css" href="../style/jqueryui-theme/jquery-ui-1.8.2.custom.css" rel="stylesheet" />  
+    <style type="text/css">
+        .actions { display: none; }
+    </style> 
+    <script type="text/javascript" src="../scripts/jquery-ui-1.8.2.custom.min.js"></script>
+    <script type="text/javascript" src="../scripts/esme_table_sorter.js"></script>
+    <script type="text/javascript" src="../scripts/esme.js"></script>
+  </head>          
+    <div id="back-header">
+    	<h1><lift:loc>base_profile_contacts</lift:loc></h1>                                            
+    </div>      
+  	<div class="container-aux">
+      <div id="tabs" class="user-tabs">
+        <ul>                                                                                     
+          <li><a href="#tabs-1"><lift:loc>ui_user_following</lift:loc></a></li>
+          <li><a href="#tabs-2"><lift:loc>ui_user_followers</lift:loc></a></li>            
+        </ul>        
+        <div id="tabs-1">
+          <dl class="">
+            <dd class="b-contacts">
+              <lift:UserSnip.following user:userId=""/>
+            </dd>
+          </dl>
+        </div>
+        <div id="tabs-2">
+          <dl class="">
+            <dd class="b-contacts">
+              <lift:UserSnip.followers user:userId=""/>
+            </dd>
+          </dl>
+        </div>            
+      </div>
+    </div>               
+</lift:surround>
