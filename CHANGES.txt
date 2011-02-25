@@ -1,5 +1,52 @@
 ESME Change Log
 
+Release 1.2 - 02/25/2011
+
+ESME-5	        Conversation ID missing for Messages in REST-Call "get_msgs"
+ESME-139	Access-related changes should be logged
+ESME-256	Allow user to follow a conversation or tag
+ESME-270	Add word wrap to action page
+ESME-274	Have to click "SignOn" 2x when logging in in Chrome
+ESME-275	Feed error in parseInternetDate
+ESME-279	Search result does not show message text for matches.
+ESME-284	Make new message area expand/contract as needed to accommodate reply text
+ESME-285	Allow turning features on and off through configuration options
+ESME-286	Make My Contacts view lists expand to fix list
+ESME-287	All message timelines should use standard timeline format
+ESME-288	Style for conversations page is wrong
+ESME-289	All message timelines should have new messages pushed using Comet
+ESME-290	Public View no longer working
+ESME-291	Messages are present multiple times in streams view
+ESME-295	Tags appear in the main timeline twice
+ESME-296	ESME-284 Split images/bg-update.png into top/middle/bottom sections
+ESME-297	Change ESME name from Experiment -> Environment
+ESME-298	lines are double in SchedulerActor.scala
+ESME-299	Shrink the vertical display of messages in the standard timelines
+ESME-300	Clicking "reply" link in the main timeline results in a focus at the beginning of the text. Should be at the end.
+ESME-301	General Task to perform release associated tasks
+ESME-302	Add update box to tag and conversation pages
+ESME-303	Error in user timeline display
+ESME-305	Search is broken in local build
+ESME-306	Add message update box to search page
+ESME-307	Format rendering gets confused by some punctuation
+ESME-309	Remove Timeline tab from user page
+ESME-310	Replace "Contacts" tab on user page with "Following" and "Followers" tabs
+ESME-311	Profile picture doesn't display on the user page
+ESME-312	Improve users table
+ESME-313	Move to Liftweb 2.2
+ESME-314	Fix formatting of timeline on user page so that it aligns with other timelines
+ESME-315	Remove "reply" option from timeline on the user page
+ESME-316	Sign-in button has gotten out of place
+ESME-317	Display of single message on opening page is wrong
+ESME-318	Can't reply to conversations correctly
+ESME-320	Add SBT integration for building project
+ESME-322	Some Scripts aren't loaded on tomcat
+ESME-324	Login message not generated
+ESME-325	Action mailto: failure
+ESME-326	"tags" parameter doesn't work in API2 "messages" call
+ESME-327	URL path problems
+ESME-330	Test failing - API2 should conversations/CONVERSATIONID GET with valid session
+
 Release 1.1-incubating - 09/10/2010 
 
 ESME-14	        Redesign, rework, write unit tests for, and fully document API
