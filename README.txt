@@ -1,24 +1,11 @@
 ===========================================================
-Welcome to Apache ESME  <http://incubator.apache.org/ESME/>
+Welcome to Apache ESME  <http://esme.apache.org/>
 ===========================================================
 
 Enterprise Social Messaging Experiment (ESME) is a secure and highly 
 scalable microsharing and micromessaging platform that allows people to 
 discover and meet one another and get controlled access to other sources 
 of information, all in a business process context.   
-
-
-Apache ESME is an effort undergoing incubation at The Apache Software
-Foundation (ASF), sponsored by the Apache Lucene PMC. Incubation is
-required of all newly accepted projects until a further review indicates
-that the infrastructure, communications, and decision making process have
-stabilized in a manner consistent with other successful ASF projects.
-While incubation status is not necessarily a reflection of the completeness
-or stability of the code, it does indicate that the project has yet to be
-fully endorsed by the ASF.
-
-See http://incubator.apache.org/projects/ESME.html for the current
-incubation status of the Apache ESME project.
 
 
 Building ESME
@@ -40,11 +27,11 @@ Mailing Lists
 =============
 
 Discussion about the ESME project takes place on the development mailing
-list ESME-dev@incubator.apache.org. The list is open to anyone and
+list dev@esme.apache.org. The list is open to anyone and
 publicly archived. You can subscribe the mailing list by sending a
-message to ESME-dev-subscribe@incubator.apache.org, and unsubscribe by
-sending a message to ESME-dev-unsubscribe@incubator.apache.org. To receive
-more instructions, send a message to ESME-dev-help@incubator.apache.org.
+message to dev-subscribe@esme.apache.org, and unsubscribe by
+sending a message to dev-unsubscribe@esme.apache.org. To receive
+more instructions, send a message to dev-help@esme.apache.org.
 
 Issue Tracker
 =============

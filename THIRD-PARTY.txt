@@ -3,21 +3,18 @@ were identified as having unknown licenses via "mvn site".
 
 In this release, the following dependencies have unknown licenses:
 
-Unknown: 
+Unknown:
+Commons Codec
 Unnamed - com.twitter:xrayspecs:pom:1.0.7, 
-Unnamed - org.jboss.netty:netty:pom:3.1.5.GA, 
-Unnamed - org.scala-tools:vscaladoc:pom:1.1-md-3, 
 asm, 
 cglib
 
 We've tracked down the licenses for these dependents accordingly: 
+
+Commons Codec is from Apache Commons. Checked via looking at the jar file. 
  
 xrayspecs is also Apache 2.0 but you have to look in the source to see the license, at
 http://github.com/twitter/xrayspecs/blob/master/src/main/scala/com/twitter/xrayspecs/Time.scala
-
-netty is Apache 2.0 - http://www.jboss.org/netty/downloads.html
-
-vscaladoc is Apache License 2.0 - see http://code.google.com/p/vscaladoc/
 
 cglib is Apache 2.0 License - http://mvnrepository.com/artifact/cglib/cglib/2.2
 
