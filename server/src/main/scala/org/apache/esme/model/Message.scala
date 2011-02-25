@@ -23,7 +23,8 @@ import net.liftweb._
 import mapper._
 import util._
 import common._
-import http.js._
+import http._
+import js._
 import Helpers._
 
 import scala.xml._
@@ -42,6 +43,8 @@ import lib._
 
 object Message extends Message with LongKeyedMetaMapper[Message] {
   val logger: Logger = Logger ("org.apache.esme.model.Message")
+
+  val root = LiftRules.context.path
 
   private def fixConversation(msg: Message) {
     if (!msg.conversation.defined_? && msg.replyTo.defined_?) {
@@ -385,12 +388,12 @@ class Message extends LongKeyedMapper[Message] with ManyToMany {
         case e: Elem if e.label == "at_name" =>
           e.attribute("nickname").
           map(nickname =>
-            <xml:group> @<a href={"/user/"+urlEncode(nickname.text)}>{nickname}</a> </xml:group>).
+            <xml:group> @<a href={root+"/user/"+urlEncode(nickname.text)}>{nickname}</a> </xml:group>).
           getOrElse(Text(""))
 
         case e: Elem if e.label == "tag" =>
           e.attribute("name").map(tag =>
-            <xml:group> #<a href={"/tag/"+urlEncode(tag.text)}>{tag}</a> </xml:group>).
+            <xml:group> #<a href={root+"/tag/"+urlEncode(tag.text)}>{tag}</a> </xml:group>).
           getOrElse(Text(""))
 
         case e: Elem if e.label == "url" =>
@@ -407,7 +410,7 @@ class Message extends LongKeyedMapper[Message] with ManyToMany {
                   urlString
                 else
                   urlString.substring(0, len - 3) + "..."
-              <xml:group> <a class="tiplelement" href={href} target="_blank" title={url}>{truncateUrl(url.toString, 20)}</a> </xml:group>
+              <xml:group> <a class="tiplelement" href={root+href} target="_blank" title={url}>{truncateUrl(url.toString, 20)}</a> </xml:group>
             }
           ).getOrElse(Text("") )
 
@@ -529,7 +532,8 @@ class Message extends LongKeyedMapper[Message] with ManyToMany {
               case Emph(text) => <xml:group> <em text={text}>_{text}_</em></xml:group>
               case Strong(text) => <xml:group> <strong text={text}>*{text}*</strong></xml:group>
             }
-          }</body><tags>{
+          }</body>
+        <tags>{
             ((lst.flatMap{case HashTag(t) => Full(t) case _ => Empty})
              ::: tags).distinct.map(_.toXml)
           }</tags>{
