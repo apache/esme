@@ -23,7 +23,10 @@
 	  <lift:embed what="templates-hidden/message_update_box"/>   
 	</div>
   <div class="container-aux"> 
-    <div id="public_timeline_messages">  
+    <div id="public_timeline_messages"> 
+        <head> 
+           <script src="/scripts/rel_path_two_level.js" type="text/javascript" />                          
+        </head>  
   		<!--updates-box -->
   		<lift:comet type="PublicTimeline"/>
   		<lift:embed what="templates-hidden/message_core"/>   
