@@ -136,23 +136,6 @@ function parseXml(xml) {
   return xml;
 }
 
-function pathAdjust (targetPath) {
-	
-   var targetPathTemp = targetPath;
-   
-    if (window.location.pathname == "/") 
-      	  targetPathTemp = targetPath;
-      else {
-      	 if (relative_root_path== "./")
-      	   targetPathTemp = window.location.pathname + "/"  + targetPath; 
-      	else 
-      	    targetPathTemp = window.location.pathname + "/" +  relative_root_path  + targetPath; 
-      } 
-   
-   return targetPathTemp;
-	
-}
-
 
 function displayMessages(msgArray, elementId)
 {
@@ -232,15 +215,21 @@ function displayMessages(msgArray, elementId)
       var newMsg = msgTemplate.clone(true).attr('id',msgId);
 
       
-      newMsg.find('.author').text(msgAuthor.nickname);     
-            
-     newMsg.find('.author').attr('href',pathAdjust("user/" + msgAuthor.nickname) );
+      newMsg.find('.author').text(msgAuthor.nickname);
+      
+      // Dealing with tomcat
+      if (top.location.pathName == "/") 
+      	  newMsg.find('.author').attr('href',"/user/" + msgAuthor.nickname );
+     else
+      	 newMsg.find('.author').attr('href', window.location.pathname + "user/" + msgAuthor.nickname );    
      
      
-   
-      // Dealing with users with no avatars
+           // Dealing with users with no avatars
       if (!msgAuthor.imageUrl) {
-      	 msgAuthor.imageUrl= pathAdjust( "images/avatar.jpg"); 
+      	if (top.location.pathName == "/") 
+      	 msgAuthor.imageUrl= "images/avatar.jpg"
+      	else
+      	msgAuthor.imageUrl= "../images/avatar.jpg" 
      }
      
      	
@@ -257,7 +246,7 @@ function displayMessages(msgArray, elementId)
       else {
       	 newMsg.find('.supp_data').text(msgPool + " " + msgDateStr  + " via "  +   msgSource);
       }
-      var id = cometMsg.id; 
+      var id = cometMsg.id;
 
       var resendButton = newMsg.find('.resend');    
       
@@ -290,3 +279,4 @@ function displayMessages(msgArray, elementId)
     }
   }
 }
+// ]]
