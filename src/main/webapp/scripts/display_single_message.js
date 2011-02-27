@@ -52,23 +52,6 @@ function parseXml(xml) {
            xml = xmlDoc;    
       }       
   return xml;
-} 
-
-function pathAdjust (targetPath) {
-	
-   var targetPathTemp = targetPath;
-   
-    if (window.location.pathname == "/") 
-      	  targetPathTemp = targetPath;
-      else {
-      	 if (relative_root_path== "./")
-      	   targetPathTemp = window.location.pathname + "/"  + targetPath; 
-      	else 
-      	    targetPathTemp = window.location.pathname + "/" +  relative_root_path  + targetPath; 
-      } 
-   
-   return targetPathTemp;
-	
 }
  
 
@@ -164,8 +147,7 @@ function displayMessages(msgArray, elementId)
      
       // Dealing with users with no avatars
       if (!msgAuthor.imageurl)
-      	msgAuthor.imageurl=pathAdjust( "images/avatar.jpg");
-      	
+      	msgAuthor.imageurl="images/avatar.jpg"
       	
      if (!msgPool)
       	msgPool="public"
