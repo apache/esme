@@ -61,9 +61,11 @@ class SinglePublicTimeline extends CometActor {
     val toDisplay = messages.flatMap(msgMap.get)
     val jsId = "timeline_messages";
 
-    OnLoad(JsCrVar(jsId, JsArray(
+    OnLoad(
+      JsCrVar ("root", Message.root) &
+      JsCrVar(jsId, JsArray(
         toDisplay.map(m => JsObj(("message", m.asJs)) ) :_*)) &
-    JsFunc("displayMessages", JsVar(jsId), jsId).cmd)
+        JsFunc("displayMessages", JsVar(jsId), jsId, JsVar("root")).cmd)
   }
 
   override def lowPriority = {
