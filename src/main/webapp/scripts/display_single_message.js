@@ -73,7 +73,7 @@ function msgDateCompare(msg1, msg2)
   return parseInt(msg1.message.when) - parseInt(msg2.message.when);
 }
 
-function displayMessages(msgArray, elementId)
+function displayMessages(msgArray, elementId, root)
 {
   // Select the first element in table id="timeline_messages"
   //  with id="message" as the message template
@@ -147,7 +147,7 @@ function displayMessages(msgArray, elementId)
      
       // Dealing with users with no avatars
       if (!msgAuthor.imageurl)
-      	msgAuthor.imageurl="images/avatar.jpg"
+      	msgAuthor.imageurl= root + "/images/avatar.jpg"
       	
      if (!msgPool)
       	msgPool="public"
@@ -183,7 +183,7 @@ function displayMessages(msgArray, elementId)
       var conversation = newMsg.find('#conversation');
       if (msgConversation != 0) {
         conversation.attr('href',
-          '/conversation/' + msgConversation);
+          root + '/conversation/' + msgConversation);
       } else {
         conversation.css("display", "none");
       }
