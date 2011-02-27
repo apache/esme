@@ -66,11 +66,12 @@ trait Timeline extends CometActor {
 
     OnLoad(
       clearFunc &
+      JsCrVar ("root", Message.root) &
       JsCrVar(jsId, JsArray(
         filter(toDisplay).map{case (msg, reason, resent) =>
                   JsObj(("message",msg.asJs),("reason",reason.asJs), ("resent",resent))
                   } :_*)) &
-      JsFunc("displayMessages", JsVar(jsId), jsId).cmd
+      JsFunc("displayMessages", JsVar(jsId), jsId, JsVar("root")).cmd
     )
   }                                              
   

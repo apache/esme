@@ -137,7 +137,7 @@ function parseXml(xml) {
 }
 
 
-function displayMessages(msgArray, elementId)
+function displayMessages(msgArray, elementId, root)
 {
 	
 
@@ -217,20 +217,13 @@ function displayMessages(msgArray, elementId)
       
       newMsg.find('.author').text(msgAuthor.nickname);
       
-      // Dealing with tomcat
-      if (top.location.pathName == "/") 
-      	  newMsg.find('.author').attr('href',"/user/" + msgAuthor.nickname );
-     else
-      	 newMsg.find('.author').attr('href', window.location.pathname + "user/" + msgAuthor.nickname );    
+      newMsg.find('.author').attr('href', root + "/user/" + msgAuthor.nickname );
      
      
            // Dealing with users with no avatars
       if (!msgAuthor.imageUrl) {
-      	if (top.location.pathName == "/") 
-      	 msgAuthor.imageUrl= "images/avatar.jpg"
-      	else
-      	msgAuthor.imageUrl= "../images/avatar.jpg" 
-     }
+        msgAuthor.imageUrl= root + "/images/avatar.jpg"
+      }
      
      	
      if (!msgPool)
@@ -268,7 +261,7 @@ function displayMessages(msgArray, elementId)
       var conversation = newMsg.find('.conversation');
       if (msgConversation != 0) {
         conversation.attr('href', 
-          '/conversation/' + msgConversation);
+          root + '/conversation/' + msgConversation);
       } else {
         conversation.css("display", "none");
       }
