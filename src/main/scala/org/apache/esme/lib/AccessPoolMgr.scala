@@ -349,13 +349,21 @@ object AccessPoolMgr {
     val accessPool = AccessPool.find(By(AccessPool.id, poolId.is))  
     Privilege.findAll(By(Privilege.pool, poolId.is), NotBy(Privilege.permission, Permission.Denied)) match {
       case Nil => NodeSeq.Empty
-      case xs => bind("pool", in,
-                      "user" -> 
-                      (lst => xs.flatMap(i => bind("user", lst,
-                                                   "name" -> User.find(i.user).map(
-                                                             _.nickname.is).getOrElse(""),
-                                                   "privilege" -> i.permission.is.toString
-                      ))))
+      case xs => {
+        def userNamePrivilege(lst : NodeSeq) : NodeSeq = {
+          xs.flatMap(i => bind("user", lst,
+                               "name" -> User.find(i.user).map(
+                                         _.nickname.is).getOrElse(""),
+                               "privilege" -> i.permission.is.toString
+                          ))
+        }
+
+        def renderEditButton(in : NodeSeq) : NodeSeq = if(Privilege.findAdminPools(user.open_!.id).contains(poolId.is)) in else NodeSeq.Empty
+
+        bind("pool", in,
+          "user" -> userNamePrivilege _,
+          "action" -> renderEditButton _)
+      }
     }
     }
 
