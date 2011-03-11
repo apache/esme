@@ -55,21 +55,24 @@ object StreamDisplay {
   val filterResentInput = "filter_resent_input"
   val filterPoolsInput = "filter_pools_input" 
 
-  val following = (AnyResender.toString, S.?("base_streams_resend_any")) ::
+  object following extends RequestVar[Seq[(String, String)]] (Nil)
+  object pools extends RequestVar[Seq[(String, String)]] (Nil)
+
+  def display(in: NodeSeq): NodeSeq = {
+  
+    following.set((AnyResender.toString, S.?("base_streams_resend_any")) ::
     (User.currentUser match {
       case Full(u) => u.following.map(u => (u.id.is.toString, u.nickname.is) )
       case _ => Nil
-    })          
-    
-  val pools = (PublicPool.toString, S.?("base_streams_pool_default")) ::
+    }))
+
+    pools.set((PublicPool.toString, S.?("base_streams_pool_default")) ::
     (User.currentUser match {
       case Full(u)=> Privilege.findViewablePools(u.id).map(
         p => (p.toString, AccessPool.find(p).get.getName)).toList
       case _ => Nil
-    })
+    }))
 
-  def display(in: NodeSeq): NodeSeq = {        
-  
     val name = randomString(20)
                                   
     def cometTimeline:NodeSeq = <lift:comet type="StreamTimeline" name={ name } />    
@@ -79,7 +82,7 @@ object StreamDisplay {
     bind("stream", in,                                           
          "cometTimeline" -> cometTimeline,
          
-         "resent" -> ajaxSortedSelect(following, true, Empty,
+         "resent" -> ajaxSortedSelect(following.is, true, Empty,
            u => {
              for {
                ta <- timelineActor
@@ -90,7 +93,7 @@ object StreamDisplay {
            },
            "id" -> resenderInput),
          
-         "pools" -> ajaxSortedSelect(pools, true, Empty,
+         "pools" -> ajaxSortedSelect(pools.is, true, Empty,
            p => {  
              for {
                ta <- timelineActor
