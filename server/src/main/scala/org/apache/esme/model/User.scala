@@ -235,7 +235,7 @@ class User extends KeyedMapper[Long, User] with UserIdAsString with ManyToMany {
         Message.create.author(who.id).
         when(Helpers.timeNow.getTime).
         source("followed").
-        setTextAndTags("User " + this.nickname + " followed " + who.nickname + ".", Nil, Empty).
+        setTextAndTags("User @" + this.nickname + " followed @" + who.nickname, Nil, Empty).
         foreach { msg =>
           if (msg.save) {
             Distributor ! Distributor.AddMessageToMailbox(who.id, msg, FollowedReason(this.id))
@@ -253,7 +253,7 @@ class User extends KeyedMapper[Long, User] with UserIdAsString with ManyToMany {
       if (r.delete_!) Message.create.author(who.id).
       when(Helpers.timeNow.getTime).
       source("unfollowed").
-      setTextAndTags("User " + this.nickname + " unfollowed " + who.nickname + ".", Nil, Empty).
+      setTextAndTags("User @" + this.nickname + " unfollowed @" + who.nickname, Nil, Empty).
       foreach{ msg =>
         if (msg.save) {
           Distributor ! Distributor.AddMessageToMailbox(who.id, msg, UnfollowedReason(this.id))
