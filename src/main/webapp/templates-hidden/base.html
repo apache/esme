@@ -63,7 +63,7 @@
                         </ul>
 
                         <lift:Menu.item name="logout">
-                           <img src="../images/btn-signout.gif" alt="" class="tipelement" title="Log out of ESME." />
+                           <img lift:snippet="UserSnip.logoutimage" alt="" class="tipelement" title="Log out of ESME." />
                          </lift:Menu.item>
                     </div>
                 </div><!--// ENDS HEADER -->
@@ -87,7 +87,7 @@
                                     <input type="text" class="inputBox required alphanumeric nowhitespace" name="term" value=""/>
                                 </div>
                                 <div class="searchButton">
-                                    <input type="image" onclick="javascript:form.submit();" src="../images/btn-search.gif" style="padding:0;"/>
+                                    <input type="image" onclick="javascript:form.submit();" lift:snippet="UserSnip.searchimage" style="padding:0;"/>
                                 </div>
                             </div>
                         </form><!--search form--><h3 class ="tipelement" title="These are tags that appear often in your timeline."><lift:loc>ui_messages_message_label_tag_cloud</lift:loc></h3>

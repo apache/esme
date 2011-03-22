@@ -148,7 +148,7 @@ object User extends User with KeyedMetaMapper[Long, User] with Loggable {
   var onLogOut: List[Box[User] => Unit] = List(ExtSession.userDidLogout _)
 
   def loggedIn_? : Boolean = currentUserId.isDefined
-
+  
   def logUserIdIn(id: String) {
     curUser.remove()
     curUserId(Full(id))
