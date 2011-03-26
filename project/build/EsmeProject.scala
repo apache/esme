@@ -5,6 +5,8 @@ class EsmeProject(info: ProjectInfo) extends DefaultWebProject(info) {
   val compassVersion = "2.1.1"
   val luceneVersion = "2.4.0"
 
+  //override def compileOptions = CompileOption("-Xprint:typer") :: super.compileOptions.toList
+
   val mavenLocal = "Local Maven Repository" at "file://"+Path.userHome+"/.m2/repository"
 
   val scalatoolsSnapshot = ScalaToolsSnapshots
