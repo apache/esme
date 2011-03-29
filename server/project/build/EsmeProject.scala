@@ -37,6 +37,7 @@ class EsmeProject(info: ProjectInfo) extends DefaultWebProject(info) {
     "net.liftweb" %% "lift-actor" % liftVersion % "compile->default",
     "net.liftweb" %% "lift-json" % liftVersion % "compile->default",
     "net.liftweb" %% "lift-common" % liftVersion % "compile->default",
+    "javax.servlet" % "servlet-api" % "2.4" % "compile->default",
     "org.compass-project" % "compass" % compassVersion % "compile->default",
     "org.apache.lucene" % "lucene-core" % luceneVersion % "compile->default",
     "org.apache.lucene" % "lucene-snowball" % luceneVersion % "compile->default",

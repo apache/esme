@@ -33,11 +33,15 @@ import js._
 import js.jquery._
 import http.jquery._
 import JqJsCmds._
-import JsCmds._ 
+import JsCmds._
 import SHtml._
 import JE._
 
 import net.liftweb.openid._
+
+import provider.HTTPRequest
+import provider.servlet.HTTPRequestServlet
+
 
 import scala.xml._
 
@@ -46,6 +50,8 @@ import org.apache.esme.actor._
 import org.openid4java.discovery.Identifier
 import org.openid4java.consumer._
 import org.openid4java.util._
+
+import javax.servlet.http.HttpServletRequest
 
 
 /**
@@ -73,7 +79,7 @@ class UserAuth extends LongKeyedMapper[UserAuth] with IdPK {
   object authData extends MappedText(this)
 }
 
-object UserAuth extends UserAuth with LongKeyedMetaMapper[UserAuth] {
+object UserAuth extends UserAuth with LongKeyedMetaMapper[UserAuth] with Logger {
   override def dbIndexes = Index(authType, authKey) :: super.dbIndexes
 
   private var modules: Map[String, AuthModule] = Map()
@@ -92,7 +98,7 @@ object UserAuth extends UserAuth with LongKeyedMetaMapper[UserAuth] {
   def defaultAuthModule: AuthModule = defAuth.open_!
 }
 
-trait AuthModule {
+trait AuthModule extends Logger {
   def loginPresentation: Box[NodeSeq]
   def signupPresentation: Box[NodeSeq] = Empty
   def moduleName: String
@@ -263,6 +269,84 @@ object OpenIDAuthModule extends AuthModule {
   } yield user
 }
 
+
+object ContainerManagedAuthModule extends AuthModule {
+
+  // It's possible to get roles list from some external source
+  // for example from LDAP via Lift API
+  val rolesToCheck = List(
+    "User", "Admin"
+  )
+
+  override def isDefault = false
+
+  def loginPresentation: Box[NodeSeq] = Empty
+
+  def moduleName: String = "cm"
+
+  def performInit(): Unit = {
+
+    LiftRules.dispatch.append {
+      case Req("cm" :: "login" :: Nil, _, _) =>  {
+        val from = "/"
+
+        S.request match {
+          case Full(req) => {
+            val httpRequest: HTTPRequest = req.request
+            info("httpRequest: %s ".format(httpRequest))
+            val hrs = httpRequest.asInstanceOf[HTTPRequestServlet]
+            val hsr: HttpServletRequest = hrs.req
+            val username : String = hsr.getRemoteUser
+            if(username!=null){
+              val currentRoles = rolesToCheck.filter(hsr.isUserInRole(_))
+              if(currentRoles.size == 0) {
+                S.error(S.?("base_user_err_unknown_creds"))
+              } else {
+                currentRoles.map(cr => {
+                (for {
+                    user <- UserAuth.find(By(UserAuth.authKey, username),
+                                          By(UserAuth.authType, moduleName)).flatMap(_.user.obj) or
+                    User.find(By(User.nickname, username))
+                  } yield user) match {
+                    case Full(user) => {
+                      logInUser(user)
+                    }
+                    case _ => {
+                      val usr = User.createAndPopulate.nickname(username).saveMe
+                      //TODO: find and save additional attributes
+                      UserAuth.create.authType(moduleName).user(usr).authKey(username).save
+                      logInUser(usr)
+                    }
+                  }
+                })
+              }
+            } else {
+              S.error(S.?("base_user_err_unknown_creds"))
+            }
+
+          }
+          case Empty => {
+            S.error(S.?("base_user_err_unknown_creds"))
+          }
+        }
+
+        S.redirectTo(from)
+      }
+    }
+
+    def logInUser(who: User) {
+      User.logUserIn(who)
+      //TODO: save role for user
+      S.notice(S.?("base_user_msg_welcome", who.niceName))
+    }
+  }
+
+  def createHolder(): FieldSet = new FieldSet {
+    def toForm: NodeSeq = NodeSeq.Empty
+    def validate: List[FieldError] = Nil
+    def save(user: User): Unit = {}
+  }
+}
 
 object ESMEOpenIDVendor extends OpenIDVendor {
   type UserType = User
