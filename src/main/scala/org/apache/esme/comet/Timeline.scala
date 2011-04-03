@@ -35,7 +35,8 @@ import lib._
 
 import java.text._
 
-trait Timeline extends CometActor {
+trait Timeline extends CometActor {   
+                                                                           
   protected var messages: List[(Long,MailboxReason,Boolean)] = Nil  
   protected var clearMessages: Boolean = false  
   protected val jsId: String  
@@ -50,33 +51,72 @@ trait Timeline extends CometActor {
     super.localShutdown()
   }
   
-  def render = {
+  def render = { 
+  
+// TODO - handle clearMessages = true.   
+// TODO - Get resend, reply, and conversation working
+  
     val msgMap = Message.findMessages(messages map {_._1})
     val toDisplay = for ((id, reason, resent) <- messages;
                          msg <- msgMap.get(id))
-                    yield (msg, reason, resent)
-               
-    // Only clear messages if someone has demanded a complete reset by setting the flag     
-    def clearFunc:JsCmd = if(clearMessages) {
-      clearMessages = false
-      JsFunc("clearMessages", jsId).cmd 
+                    yield (msg, reason, resent)    
+                    
+    <div id={"\""+jsId+"\""}>{toDisplay.map(renderMessage(_))}</div>
+  }  
+  
+  private def renderMessage(m: (Message,MailboxReason,Boolean)) = {
+    val imageUrl = m._1.author.obj.map(_.image_url).openOr("")
+    val messageId = "message_" + m._1.id.is.toString
+    val messageBody = m._1.digestedXHTML
+    val messagePool:String = m._1.pool.obj.map("in pool \'" + _.getName + "\'").openOr("")  
+    
+// TODO: Put date in the "ago" format
+    val messageDateStr = toInternetDate(m._1.when)
+    val messageReason = if(m._2.attr.length > 0){
+      if(m._2.attr.key == "resent_from") {
+        "resent by " + User.find(m._2.attr.value).map(_.nickname).openOr("")
+      } else {
+        "caused by " + m._2.attr.key
+      }
     } else {
-      Run("")
+      "via " + m._1.source
     }
-
-    OnLoad(
-      clearFunc &
-      JsCrVar ("root", Message.root) &
-      JsCrVar(jsId, JsArray(
-        filter(toDisplay).map{case (msg, reason, resent) =>
-                  JsObj(("message",msg.asJs),("reason",reason.asJs), ("resent",resent))
-                  } :_*)) &
-      JsFunc("displayMessages", JsVar(jsId), jsId, JsVar("root")).cmd
-    )
-  }                                              
+      
+    val suppString = messagePool + " " + messageDateStr + " " + messageReason
+  
+    ("#avatar [src]" #> imageUrl &
+     ".updates-box [id]" #> messageId &
+     ".msgbody *" #> messageBody &
+     ".supp_data *" #> suppString )(messageTemplate)
+  }                                                 
   
   // If we need to filter out some messages on display, override this method.
   def filter(msgs:List[(Message,MailboxReason,Boolean)]):List[(Message,MailboxReason,Boolean)] = {
     msgs 
-  }
+  } 
+
+// TODO Should be factored out into a template  
+  val messageTemplate = 
+    <div class="updates-box" id="message"> 
+    	<div class="avatar">
+    		<img id="avatar" width="40px" src=""/>
+    	</div>
+    	<div class="update2">
+    		<a href="" class="author"/>
+    		<div class="msgbody"/>
+      	<div class="supp_data"/>				
+    		<div class="actions">
+    			<a href="#"  class="resend">
+    				<lift:loc>ui_messages_message_label_resend</lift:loc>
+    			</a><span class="resend">| </span>
+    			<a href="#" class="reply">
+    				<lift:loc>ui_messages_message_label_reply</lift:loc>
+    			</a>
+    			<span class="conversation">| </span>
+    			<a class="conversation">
+    			<lift:loc>ui_messages_message_label_conversation</lift:loc>
+    			</a>
+    		</div>
+    	</div>
+    </div>   
 }
