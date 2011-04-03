@@ -309,13 +309,13 @@ object ContainerManagedAuthModule extends AuthModule {
   }
 
   def getAttrs(who : String) : Map[String, List[String]] = {
-    val cnPrefix = S.?("ldap.cnPrefix")
-    info("LDAP CN prefix: %s".format(cnPrefix))
+    val uidPrefix = S.?("ldap.uidPrefix")
+    info("LDAP uid prefix: %s".format(uidPrefix))
     val userBase = S.?("ldap.userBase")
     info("LDAP user base: %s".format(userBase))
 
     var attrsMap = Map.empty[String, List[String]]
-    val dn = "%s=%s,%s".format(cnPrefix, who, userBase)
+    val dn = "%s=%s,%s".format(uidPrefix, who, userBase)
     info("Distinguished name: %s".format(dn))
     val attrs : Attributes = myLdap.attributesFromDn(dn)
     if (attrs != null) {
@@ -342,7 +342,7 @@ object ContainerManagedAuthModule extends AuthModule {
     "esme-users"
   )
 
-  override def isDefault = true
+  override def isDefault = false
 
   def loginPresentation: Box[NodeSeq] = Empty
 
