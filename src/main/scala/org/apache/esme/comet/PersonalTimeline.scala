@@ -23,7 +23,8 @@ import net.liftweb.common._
 
 import org.apache.esme._
 import actor.{Distributor,UserActor}
-import model._   
+import model._                
+import net.liftweb.http.js.jquery.JqJsCmds.{PrependHtml}  
 
 class PersonalTimeline extends Timeline {   
 
@@ -48,9 +49,13 @@ class PersonalTimeline extends Timeline {
   }
   
   override def lowPriority = {
-    case UserActor.MessageReceived(msg, r) =>
+    case UserActor.MessageReceived(msg, r) => {
       messages = ( (msg.id.is,r,false) :: messages).take(40)
-      reRender(false)
+      val mess = Message.findMessages(Seq(msg.id.is)).head._2
+      val newMessage = renderMessage((mess,r,false))    
+      val update = PrependHtml(jsId, newMessage)
+      partialUpdate(update)
+    }
       
     case UserActor.Resend(msgId) =>
       messages = messages.map {

@@ -61,10 +61,10 @@ trait Timeline extends CometActor {
                          msg <- msgMap.get(id))
                     yield (msg, reason, resent)    
                     
-    <div id={"\""+jsId+"\""}>{toDisplay.map(renderMessage(_))}</div>
+    <div id={jsId}>{toDisplay.map(renderMessage(_))}</div>
   }  
   
-  private def renderMessage(m: (Message,MailboxReason,Boolean)) = {
+  protected def renderMessage(m: (Message,MailboxReason,Boolean)) = {
     val imageUrl = m._1.author.obj.map(_.image_url).openOr("")
     val messageId = "message_" + m._1.id.is.toString
     val messageBody = m._1.digestedXHTML
