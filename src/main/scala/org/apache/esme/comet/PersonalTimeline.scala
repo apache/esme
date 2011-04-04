@@ -61,10 +61,12 @@ class PersonalTimeline extends Timeline {
       messages = messages.map {
         case (`msgId`, r, _) => (msgId, r, true)
         case x => x
-      }
+      }                               
+// TODO: Adapt to new timeline format
       reRender(false)
       
     case Distributor.UserUpdated(_) =>
+// TODO: Adapt to new timeline format
       reRender(false)
   }   
 

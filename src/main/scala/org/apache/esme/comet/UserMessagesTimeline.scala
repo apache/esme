@@ -58,12 +58,14 @@ class UserMessagesTimeline extends Timeline {
   override def lowPriority = {
     case UserActor.MessageReceived(msg, r) =>   
       if(msg.author == user) {
-        messages = ( (msg.id.is,r,true) :: messages).take(40)
+        messages = ( (msg.id.is,r,true) :: messages).take(40)   
+// TODO: Adapt to new timeline format
         reRender(false)
       }        
       
     case UserActor.Resend(msgId) =>     
-      messages = ( (msgId,ResendReason(user.id.is),true) :: messages).take(40)
+      messages = ( (msgId,ResendReason(user.id.is),true) :: messages).take(40)       
+// TODO: Adapt to new timeline format
       reRender(false)      
   }   
 }

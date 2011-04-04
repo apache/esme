@@ -54,7 +54,7 @@ trait Timeline extends CometActor {
   def render = { 
   
 // TODO - handle clearMessages = true.   
-// TODO - Get resend, reply, and conversation working
+// TODO - Get resend working
   
     val msgMap = Message.findMessages(messages map {_._1})
     val toDisplay = for ((id, reason, resent) <- messages;
@@ -69,6 +69,15 @@ trait Timeline extends CometActor {
     val messageId = "message_" + m._1.id.is.toString
     val messageBody = m._1.digestedXHTML
     val messagePool:String = m._1.pool.obj.map("in pool \'" + _.getName + "\'").openOr("")  
+    val replyHref = "javascript:setReplyTo(" + m._1.id.is.toString + ", '"+ messageBody + "', " + m._1.pool.obj.map(_.id.is).openOr(0) + ", '" + m._1.author.obj.map(_.nickname).openOr("") + "')" 
+                              
+    val convId = m._1.conversation.is  
+    val convHref = LiftRules.context.path + "/conversation/" + convId
+    val convTransform:CssBindFunc = if(convId != 0) {
+      ".conversation [href]" #> convHref
+    } else {
+      ".conversation" #> Text("")
+    }
     
 // TODO: Put date in the "ago" format
     val messageDateStr = toInternetDate(m._1.when)
@@ -87,7 +96,9 @@ trait Timeline extends CometActor {
     ("#avatar [src]" #> imageUrl &
      ".updates-box [id]" #> messageId &
      ".msgbody *" #> messageBody &
-     ".supp_data *" #> suppString )(messageTemplate)
+     ".supp_data *" #> suppString &
+     ".reply [href]" #> replyHref &
+     convTransform )(messageTemplate)
   }                                                 
   
   // If we need to filter out some messages on display, override this method.
