@@ -197,7 +197,7 @@ class Boot extends Loggable {
 
     LiftRules.setSiteMap(SiteMap(entries: _*))
 
-    S.addAround(ExtSession.requestLoans)          
+    LiftRules.earlyInStateful.append(ExtSession.testCookieEarlyInStateful)
 
     // API security rules
     LiftRules.dispatch.append(API2.authorizationRules)
