@@ -26,7 +26,8 @@ import net.liftweb.util.Helpers._
 import scala.xml._
 import js._
 import JsCmds._
-import JE._
+import JE._      
+import net.liftweb.http.js.jquery.JqJsCmds.{PrependHtml} 
 
 import org.apache.esme._
 import org.apache.esme.actor._
@@ -54,7 +55,8 @@ trait Timeline extends CometActor {
   def render = { 
   
 // TODO - handle clearMessages = true.   
-// TODO - Get resend working
+// TODO - Get resend working    
+// TODO - need to escape the replyHref string so that messages with ? in them don't bomb
   
     val msgMap = Message.findMessages(messages map {_._1})
     val toDisplay = for ((id, reason, resent) <- messages;
@@ -65,11 +67,12 @@ trait Timeline extends CometActor {
   }  
   
   protected def renderMessage(m: (Message,MailboxReason,Boolean)) = {
-    val imageUrl = m._1.author.obj.map(_.image_url).openOr("")
+    val imageUrl = m._1.author.obj.map(_.image_url).openOr("")       
+    val authorNickname = m._1.author.obj.map(_.niceName).openOr("")
     val messageId = "message_" + m._1.id.is.toString
     val messageBody = m._1.digestedXHTML
     val messagePool:String = m._1.pool.obj.map("in pool \'" + _.getName + "\'").openOr("")  
-    val replyHref = "javascript:setReplyTo(" + m._1.id.is.toString + ", '"+ messageBody + "', " + m._1.pool.obj.map(_.id.is).openOr(0) + ", '" + m._1.author.obj.map(_.nickname).openOr("") + "')" 
+    val replyHref = "javascript:setReplyTo(" + m._1.id.is.toString + ", '"+ messageBody + "', " + m._1.pool.obj.map(_.id.is).openOr(0) + ", '" + authorNickname + "')" 
                               
     val convId = m._1.conversation.is  
     val convHref = LiftRules.context.path + "/conversation/" + convId
@@ -77,7 +80,9 @@ trait Timeline extends CometActor {
       ".conversation [href]" #> convHref
     } else {
       ".conversation" #> Text("")
-    }
+    }   
+                        
+    val authorHref = LiftRules.context.path + "/user/" + authorNickname
     
 // TODO: Put date in the "ago" format
     val messageDateStr = toInternetDate(m._1.when)
@@ -98,13 +103,21 @@ trait Timeline extends CometActor {
      ".msgbody *" #> messageBody &
      ".supp_data *" #> suppString &
      ".reply [href]" #> replyHref &
-     convTransform )(messageTemplate)
+     convTransform &       
+     ".author [href]" #> authorHref &
+     ".author *" #> authorNickname )(messageTemplate)
   }                                                 
   
   // If we need to filter out some messages on display, override this method.
   def filter(msgs:List[(Message,MailboxReason,Boolean)]):List[(Message,MailboxReason,Boolean)] = {
     msgs 
-  } 
+  }     
+  
+  protected def prependMessage(m:Message, r:MailboxReason, rs:Boolean) {     
+    val newMessage = renderMessage((m,r,rs))    
+    val update = PrependHtml(jsId, newMessage)
+    partialUpdate(update)
+  }
 
 // TODO Should be factored out into a template  
   val messageTemplate = 

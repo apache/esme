@@ -52,10 +52,8 @@ class ConversationTimeline extends Timeline {
   
   override def lowPriority = {   
     case ConvDistributor.MessageReceived(msg, r) =>         
-      messages = ((msg.id.is,r,true) :: messages).take(40)  
-      
-//TODO: Adapt to new timeline format
-      reRender(false)
+      messages = ((msg.id.is,r,true) :: messages).take(40) 
+      prependMessage(msg,r,true)
   }   
 
 }

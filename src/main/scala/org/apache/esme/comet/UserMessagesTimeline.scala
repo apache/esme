@@ -59,13 +59,12 @@ class UserMessagesTimeline extends Timeline {
     case UserActor.MessageReceived(msg, r) =>   
       if(msg.author == user) {
         messages = ( (msg.id.is,r,true) :: messages).take(40)   
-// TODO: Adapt to new timeline format
-        reRender(false)
+        prependMessage(msg,r,true)
       }        
       
-    case UserActor.Resend(msgId) =>     
-      messages = ( (msgId,ResendReason(user.id.is),true) :: messages).take(40)       
-// TODO: Adapt to new timeline format
-      reRender(false)      
+    case UserActor.Resend(msgId) =>      
+      val resendReason = ResendReason(user.id.is)
+      messages = ( (msgId,resendReason,true) :: messages).take(40)       
+      prependMessage(Message.findMessages(Seq(msgId)).head._2, resendReason, true)
   }   
 }

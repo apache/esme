@@ -100,7 +100,7 @@ class StreamTimeline extends PublicTimeline {
   override def lowPriority = {
     case ForceRender =>      
 // TODO: Adapt to new timeline format
-      reRender(false)
+      reRender(true)
 
     case Distributor.NewMessage(msg) =>     
       
@@ -124,7 +124,7 @@ class StreamTimeline extends PublicTimeline {
         }
       }  
 // TODO: Adapt to new timeline format
-      else reRender(false)
+      else reRender(true)
   }
   
   def getMessages:List[(Long,MailboxReason,Boolean)] = {     

@@ -51,10 +51,7 @@ class PersonalTimeline extends Timeline {
   override def lowPriority = {
     case UserActor.MessageReceived(msg, r) => {
       messages = ( (msg.id.is,r,false) :: messages).take(40)
-      val mess = Message.findMessages(Seq(msg.id.is)).head._2
-      val newMessage = renderMessage((mess,r,false))    
-      val update = PrependHtml(jsId, newMessage)
-      partialUpdate(update)
+      prependMessage(msg,r,false)
     }
       
     case UserActor.Resend(msgId) =>
