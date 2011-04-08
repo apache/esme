@@ -149,8 +149,6 @@ class UserSnip extends DispatchSnippet {
   
 
    // Image of user as part of an img tag
-  def logoutimage: MetaData = ("src" -> (Message.root + "/images/btn-signout.gif"))
-  def searchimage: MetaData = ("src" -> (Message.root + "/images/btn-search.gif"))
   
   def image: MetaData = ("src" -> (User.currentUser.map(_.image_url)openOr "/images/avatar.jpg"))
   
