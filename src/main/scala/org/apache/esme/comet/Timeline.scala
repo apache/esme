@@ -23,11 +23,12 @@ import net.liftweb.http._
 import net.liftweb.util._
 import net.liftweb.common._
 import net.liftweb.util.Helpers._
-import scala.xml._
+import scala.xml._ 
 import js._
-import JsCmds._
+import JsCmds._             
 import JE._      
-import net.liftweb.http.js.jquery.JqJsCmds.{PrependHtml} 
+import net.liftweb.http.js.jquery.JqJsCmds.{PrependHtml,FadeOut}  
+import net.liftweb.http.SHtml.{BasicElemAttr}
 
 import org.apache.esme._
 import org.apache.esme.actor._
@@ -39,7 +40,6 @@ import java.text._
 trait Timeline extends CometActor {   
                                                                            
   protected var messages: List[(Long,MailboxReason,Boolean)] = Nil  
-  protected var clearMessages: Boolean = false  
   protected val jsId: String  
   
   override def defaultPrefix = Full("timeline")
@@ -53,71 +53,19 @@ trait Timeline extends CometActor {
   }
   
   def render = { 
-  
-// TODO - handle clearMessages = true.   
-// TODO - Get resend working    
-// TODO - need to escape the replyHref string so that messages with ? in them don't bomb
-  
+                                        
     val msgMap = Message.findMessages(messages map {_._1})
     val toDisplay = for ((id, reason, resent) <- messages;
                          msg <- msgMap.get(id))
                     yield (msg, reason, resent)    
                     
     <div id={jsId}>{toDisplay.map(renderMessage(_))}</div>
-  }  
-  
-  protected def renderMessage(m: (Message,MailboxReason,Boolean)) = {
-    val imageUrl = m._1.author.obj.map(_.image_url).openOr("")       
-    val authorNickname = m._1.author.obj.map(_.niceName).openOr("")
-    val messageId = "message_" + m._1.id.is.toString
-    val messageBody = m._1.digestedXHTML
-    val messagePool:String = m._1.pool.obj.map("in pool \'" + _.getName + "\'").openOr("")  
-    val replyHref = "javascript:setReplyTo(" + m._1.id.is.toString + ", '"+ messageBody + "', " + m._1.pool.obj.map(_.id.is).openOr(0) + ", '" + authorNickname + "')" 
-                              
-    val convId = m._1.conversation.is  
-    val convHref = LiftRules.context.path + "/conversation/" + convId
-    val convTransform:CssBindFunc = if(convId != 0) {
-      ".conversation [href]" #> convHref
-    } else {
-      ".conversation" #> Text("")
-    }   
-                        
-    val authorHref = LiftRules.context.path + "/user/" + authorNickname
-    
-// TODO: Put date in the "ago" format
-    val messageDateStr = toInternetDate(m._1.when)
-    val messageReason = if(m._2.attr.length > 0){
-      if(m._2.attr.key == "resent_from") {
-        "resent by " + User.find(m._2.attr.value).map(_.nickname).openOr("")
-      } else {
-        "caused by " + m._2.attr.key
-      }
-    } else {
-      "via " + m._1.source
-    }
-      
-    val suppString = messagePool + " " + messageDateStr + " " + messageReason
-  
-    ("#avatar [src]" #> imageUrl &
-     ".updates-box [id]" #> messageId &
-     ".msgbody *" #> messageBody &
-     ".supp_data *" #> suppString &
-     ".reply [href]" #> replyHref &
-     convTransform &       
-     ".author [href]" #> authorHref &
-     ".author *" #> authorNickname )(messageTemplate)
   }                                                 
   
   // If we need to filter out some messages on display, override this method.
   def filter(msgs:List[(Message,MailboxReason,Boolean)]):List[(Message,MailboxReason,Boolean)] = {
     msgs 
   }     
-  
-  protected def prependMessage(m:Message, r:MailboxReason, rs:Boolean) {     
-    val newMessage = renderMessage((m,r,rs))    
-    val update = PrependHtml(jsId, newMessage)
-    partialUpdate(update)
-  }
 
 // TODO Should be factored out into a template  
   val messageTemplate = 
@@ -130,7 +78,7 @@ trait Timeline extends CometActor {
     		<div class="msgbody"/>
       	<div class="supp_data"/>				
     		<div class="actions">
-    			<a href="#"  class="resend">
+    			<a href="#"  class="resend resend_link">
     				<lift:loc>ui_messages_message_label_resend</lift:loc>
     			</a><span class="resend">| </span>
     			<a href="#" class="reply">
@@ -142,5 +90,79 @@ trait Timeline extends CometActor {
     			</a>
     		</div>
     	</div>
-    </div>   
+    </div>      
+    
+  protected def prependMessage(m:Message, r:MailboxReason, rs:Boolean) {     
+    val newMessage = renderMessage((m,r,rs))    
+    val update = PrependHtml(jsId, newMessage)
+    partialUpdate(update)
+  }       
+
+  private def resendMessage(m:Message):JsCmd = {
+    for (user <- User.currentUser;
+         msgId = m.id.is) {
+           Distributor ! Distributor.ResendMessage(user.id, msgId)       
+    }        
+
+    val resendId = "resend_" + m.id.toString
+
+    FadeOut(resendId,0,200)
+  }   
+    
+  protected def renderMessage(m: (Message,MailboxReason,Boolean)) = {
+    val imageUrl = m._1.author.obj.map(_.image_url).openOr("")       
+    val authorNickname = m._1.author.obj.map(_.niceName).openOr("")
+    val messageId = "message_" + m._1.id.is.toString
+    val messageBody = m._1.digestedXHTML  
+    val replyBody = m._1.body.replaceAll("\\'","\\\\\\'")
+    val messagePool:String = m._1.pool.obj.map("in pool \'" + _.getName + "\'").openOr("")  
+    val replyHref = "javascript:setReplyTo(" + m._1.id.is.toString + ", '"+ replyBody + "', " + m._1.pool.obj.map(_.id.is).openOr(0) + ", '" + authorNickname + "')"             
+
+    val convId = m._1.conversation.is  
+    val convHref = LiftRules.context.path + "/conversation/" + convId
+    val convTransform:CssBindFunc = if(convId != 0) {
+      ".conversation [href]" #> convHref
+    } else {
+      ".conversation" #> Text("")
+    }       
+
+    val resendId = "resend_" + m._1.id.toString 
+    val resendAttrs = BasicElemAttr("id",resendId).compose(BasicElemAttr("class","resend"))
+
+    val resendTransform:CssBindFunc = 
+      if(m._3 || m._1.author.is == User.currentUser.map(_.id.is).openOr(0)) {
+        ".resend" #> Text("")
+      } else {  
+        ".resend_link" #> SHtml.a(
+          () => resendMessage(m._1), 
+          S.loc("ui_messages_message_label_resend").openOr(Text("")),
+          resendAttrs)
+      } 
+
+    val authorHref = LiftRules.context.path + "/user/" + authorNickname
+
+// TODO: Put date in the "ago" format
+    val messageDateStr = toInternetDate(m._1.when)
+    val messageReason = if(m._2.attr.length > 0){
+      if(m._2.attr.key == "resent_from") {
+        "resent by " + User.find(m._2.attr.value).map(_.nickname).openOr("")
+      } else {
+        "caused by " + m._2.attr.key
+      }
+    } else {
+      "via " + m._1.source
+    }
+
+    val suppString = messagePool + " " + messageDateStr + " " + messageReason
+
+    ("#avatar [src]" #> imageUrl &
+     ".updates-box [id]" #> messageId &
+     ".msgbody *" #> messageBody &
+     ".supp_data *" #> suppString &
+     ".reply [href]" #> replyHref &
+     convTransform &       
+     ".author [href]" #> authorHref &
+     ".author *" #> authorNickname &
+     resendTransform )(messageTemplate)
+  }   
 }
