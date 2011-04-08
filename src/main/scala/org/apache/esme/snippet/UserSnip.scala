@@ -79,21 +79,6 @@ object JsonPoster extends JsonHandler{
   }
 }
 
-object JsonResender extends JsonHandler{
-  def apply(in: Any): JsCmd = in match {
-    case JsonCmd("resend", _, map: Map[String, Any], _) =>
-      for (msgId <- map.get("msg_id").map(toLong);
-           user  <- User.currentUser)
-             Distributor ! Distributor.ResendMessage(user.id, msgId)
-    
-      Noop
-
-    case _ => Noop
-  }
-}
-
-
-
 class UserSnip extends DispatchSnippet {
 
   def dispatch: DispatchIt = 
@@ -104,8 +89,7 @@ class UserSnip extends DispatchSnippet {
       "following" -> following _,
       "loginForm" -> loginForm _,
       "loggedIn" -> loggedInFilter _,
-      "accessPools" -> accessPools _,
-      "resendScript" -> resendScript _,
+      "accessPools" -> accessPools _,  
       "popular" -> popular _,
       "links" -> links _)
 
@@ -193,18 +177,7 @@ class UserSnip extends DispatchSnippet {
                                             "tags" -> ValById("vTag"),
                                             "access_pool" -> ValById("vPool"),
                                             "reply-to" -> JsVar("currentConvNumber"))) &
-                     SetValById("vMsg", "") &     
-                     JsRaw("postPostCallback();")
-        ))
-    }
-  </xml:group>
-  
-  def resendScript(in: NodeSeq): NodeSeq = 
-  <xml:group>
-    {Script(JsonResender.jsCmd)}
-    {Script(Function("resend_msg", List("msg_id"),
-                     JsonResender.call("resend",
-                                        JsObj("msg_id" -> JsVar("msg_id")))
+                     SetValById("vMsg", "")
         ))
     }
   </xml:group>

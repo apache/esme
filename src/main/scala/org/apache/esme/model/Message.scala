@@ -43,9 +43,7 @@ import lib._
 
 object Message extends Message with LongKeyedMetaMapper[Message] {
   val logger: Logger = Logger ("org.apache.esme.model.Message")
-
-  val root = LiftRules.context.path
-
+                                      
   private def fixConversation(msg: Message) {
     if (!msg.conversation.defined_? && msg.replyTo.defined_?) {
       for (replyTo <- msg.replyTo.obj) {
@@ -55,7 +53,9 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
         msg.conversation(replyTo.conversation)
       }
     }
-  }
+  }      
+  
+  val root = LiftRules.context.path
 
   def cacheSize: Int = 10000
 
