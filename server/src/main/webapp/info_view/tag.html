@@ -16,7 +16,14 @@
  specific language governing permissions and limitations      *
  under the License.                                           *
 --> 
-<lift:surround with="base" at="left">    
+<lift:surround with="base" at="left"> 
+  <head>     
+    <script type="text/javascript">
+      var postPostCallback = function() {
+        clearReplyTo();
+      };
+    </script>
+  </head>
   <lift:tag_display>                                              
     <div id="back-header">  
       <h1>
@@ -25,8 +32,10 @@
       </h1>
       <lift:embed what="templates-hidden/message_update_box"/> 
   	</div>                                                 
-  	<div class="container-aux">        
-  	  <lift:embed what="templates-hidden/timeline_tag"/>   
+  	<div class="container-aux">            
+      <lift:tag_display>           
+        <tag:cometTimeline />        
+      </lift:tag_display> 
     </div>                                 
     <script> 
       jQuery('#vMsg').val("#<tag:name/>")

@@ -26,7 +26,7 @@ import net.liftweb.util.Helpers.TimeSpan
 
 import org.apache.esme._
 import actor.{Distributor,UserActor,TagDistributor}
-import model._        
+import model._                    
 
 class TagTimeline extends Timeline {  
   
@@ -54,8 +54,8 @@ class TagTimeline extends Timeline {
   
   override def lowPriority = {
     case TagDistributor.MessageReceived(msg, r) =>
-      messages = ((msg.id.is,r,true) :: messages).take(40)
-      reRender(false)
+      messages = ((msg.id.is,r,true) :: messages).take(40) 
+      prependMessage(msg,r,false)
   }   
 
 }

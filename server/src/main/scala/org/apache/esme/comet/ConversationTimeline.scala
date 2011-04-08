@@ -50,10 +50,10 @@ class ConversationTimeline extends Timeline {
   
   override def lifespan = Full(TimeSpan(300000))
   
-  override def lowPriority = {
-    case ConvDistributor.MessageReceived(msg, r) =>
-      messages = ((msg.id.is,r,true) :: messages).take(40)
-      reRender(false)
+  override def lowPriority = {   
+    case ConvDistributor.MessageReceived(msg, r) =>         
+      messages = ((msg.id.is,r,true) :: messages).take(40) 
+      prependMessage(msg,r,true)
   }   
 
 }

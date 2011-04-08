@@ -62,9 +62,8 @@ class StreamTimeline extends PublicTimeline {
         case _ => currentPool = StreamTimeline.PublicPool    
       }
                                              
-      if(filterPool) {                    
-        messages = getMessages 
-        clearMessages = true                       
+      if(filterPool) {                     
+        messages = getMessages                      
         this ! ForceRender
       }                    
     }
@@ -76,30 +75,27 @@ class StreamTimeline extends PublicTimeline {
       }
       
       if(filterResender) {
-        messages = getMessages  
-        clearMessages = true                   
+        messages = getMessages                  
         this ! ForceRender
       }                    
     }
     
     case FilterPool(on) => {
       filterPool = on 
-      messages = getMessages    
-      clearMessages = true                   
+      messages = getMessages                   
       this ! ForceRender
     }
     
     case FilterResender(on) => {
       filterResender = on
-      messages = getMessages      
-      clearMessages = true              
+      messages = getMessages              
       this ! ForceRender
     }                     
   }    
   
   override def lowPriority = {
-    case ForceRender =>
-      reRender(false)
+    case ForceRender =>                 
+      reRender(true)
 
     case Distributor.NewMessage(msg) =>     
       
@@ -121,8 +117,8 @@ class StreamTimeline extends PublicTimeline {
           scheduled = true    
           ActorPing.schedule(this, ForceRender, 30000L)
         }
-      }
-      else reRender(false)
+      }                                
+      else reRender(true)
   }
   
   def getMessages:List[(Long,MailboxReason,Boolean)] = {     
