@@ -53,17 +53,17 @@ class PersonalTimeline extends Timeline {
       messages = ( (msg.id.is,r,false) :: messages).take(40)
       prependMessage(msg,r,false)
     }
-      
+    
+// TODO: Why do we do this???  
     case UserActor.Resend(msgId) =>
       messages = messages.map {
         case (`msgId`, r, _) => (msgId, r, true)
         case x => x
       }                               
-// TODO: Adapt to new timeline format
       reRender(false)
-      
-    case Distributor.UserUpdated(_) =>
-// TODO: Adapt to new timeline format
+
+// TODO: Why do we do this???      
+    case Distributor.UserUpdated(_) => 
       reRender(false)
   }   
 

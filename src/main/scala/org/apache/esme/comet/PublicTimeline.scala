@@ -64,9 +64,8 @@ class PublicTimeline extends Timeline {
   }
 
   override def lowPriority = {
-    case ForceRender =>   
-// TODO: Adapt to new timeline format
-      reRender(false)
+    case ForceRender =>                   
+      reRender(true)
 
     case Distributor.NewMessage(msg) =>
       if (!msg.pool.defined_?)
@@ -77,9 +76,8 @@ class PublicTimeline extends Timeline {
           scheduled = true    
           ActorPing.schedule(this, ForceRender, 30000L)
         }
-      }                              
-// TODO: Adapt to new timeline format
-      else reRender(false)
+      }                                  
+      else reRender(true)
   }
 }
 

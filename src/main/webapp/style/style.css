@@ -424,12 +424,17 @@ ul.main-links  {
 	background:#f9f9f9;
 }
 
-.updates-box {
-/*	float:left; */
+.updates-box {      
 	padding:10px 0px 5px 0px;
 	word-wrap:break-word;    
 	border-bottom: 1px solid #ddd;
+}   
+
+.single-updates-box { 
+  padding:10px 0px 5px 0px;
+	word-wrap:break-word;
 }
+
 .avatar {
 /*	float:left; */
   display: inline;

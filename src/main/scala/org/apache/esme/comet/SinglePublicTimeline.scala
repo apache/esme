@@ -36,17 +36,19 @@ import lib._
 
 import java.text._
 
-class SinglePublicTimeline extends CometActor {
-  private var messages: List[Long] = Nil
-  private var lastRender = millis
-  private var scheduled = false
+class SinglePublicTimeline extends Timeline {       
+
+  val jsId = "single_public_timeline_messages"
+                                             
+  protected var lastRender = millis
+  protected var scheduled = false
 
   override def localSetup() {
     super.localSetup()
     Distributor ! Distributor.PublicTimelineListeners(this) 
     messages = Message.findAll(By(Message.pool, Empty),
         OrderBy(Message.id, Descending), 
-                               MaxRows(1)).map(_.id.is)
+                               MaxRows(1)).map( m => (m.id.is, NoReason, true))
   }
   
   override def localShutdown() {
@@ -54,36 +56,42 @@ class SinglePublicTimeline extends CometActor {
     Distributor ! Distributor.PublicTimelineUnlisteners(this)
   }
   
-  def render = {
+  override def render = {
     lastRender = millis
-    scheduled = false
-    val msgMap = Message.findMessages(messages)
-    val toDisplay = messages.flatMap(msgMap.get)
-    val jsId = "timeline_messages";
-
-    OnLoad(
-      JsCrVar ("root", Message.root) &
-      JsCrVar(jsId, JsArray(
-        toDisplay.map(m => JsObj(("message", m.asJs)) ) :_*)) &
-        JsFunc("displayMessages", JsVar(jsId), jsId, JsVar("root")).cmd)
+    scheduled = false  
+    
+    super.render
   }
 
   override def lowPriority = {
-    case SingleForceRender =>
-      reRender(false)
+    case SingleForceRender =>                   
+      reRender(true)
 
     case Distributor.NewMessage(msg) =>
       if (!msg.pool.defined_?)
-        messages = (msg.id.is :: messages).take(1)
+        messages = ((msg.id.is, NoReason, false) :: messages).take(1)
 
       if ((millis - lastRender) < 30000L) {
         if (!scheduled) {
           scheduled = true    
-          ActorPing.schedule(this, ForceRender, 30000L)
+          ActorPing.schedule(this, SingleForceRender, 30000L)
         }
-      }
-      else reRender(false)
-  }
+      }                                  
+      else reRender(true)
+  } 
+  
+// TODO Should be factored out into a template  
+  override val messageTemplate = 
+    <div class="single-updates-box" id="message"> 
+    	<div class="avatar">
+    		<img id="avatar" width="40px" src=""/>
+    	</div>
+    	<div class="update2">
+    		<a class="author"/>
+    		<div class="msgbody"/>
+      	<div class="supp_data"/>				
+    	</div>
+    </div>    
 }
 
 case object SingleForceRender
