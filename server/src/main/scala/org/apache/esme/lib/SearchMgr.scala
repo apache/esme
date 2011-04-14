@@ -50,29 +50,24 @@ object SearchMgr {
 
   val menuItems =
   Menu(Loc("search", List("info_view", "search"), S.?("base_menu_search"), ifIsLoggedIn,
-           Loc.Snippet("displaySearch", displaySearch),
+           Loc.Snippet("display_search", displaySearch),
            Loc.Snippet("searchTerm", searchTerm))) ::
-  Nil
-
+  Nil                                        
+  
   def searchTerm(in: NodeSeq): NodeSeq = {
     Text(S.param("term").getOrElse("no words specified"))
   }
   
-  def displaySearch(in: NodeSeq): NodeSeq = {
+  def displaySearch(in: NodeSeq): NodeSeq = {   
+  
+// TODO: Switch to a random string for the name of the comet timeline. At least until we
+// get streaming search timelines working for real.
 
-    val jsId = "search_timeline_messages";
-    
-    {Script(
-      (for (term <- S.param("term");
-           user <- User.currentUser)
-      yield {
+    def cometTimeline:NodeSeq = { for(term <- S.param("term")) yield {
+      <lift:comet type="SearchTimeline" name={term} />
+    }}.openOr(Text(""))
 
-        val msgs = Message.search(term, user.following, 50)    
-        OnLoad(JsCrVar(jsId, JsArray(
-            msgs.map(m => JsObj(("message", m.asJs)) ) :_*)) &
-        JsFunc("displayMessages", JsVar(jsId), jsId).cmd)
-      }).getOrElse(Noop)
-    )}
+    bind("search", in, "cometTimeline" -> cometTimeline )  
 
   }
 

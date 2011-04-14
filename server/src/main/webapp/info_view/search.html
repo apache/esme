@@ -25,10 +25,9 @@
       <lift:embed what="templates-hidden/message_update_box"/>    
     </div> 
     <div class="container-aux">
-      <lift:displaySearch/> 
-      <div id="search_timeline_messages">
-        <lift:embed what="templates-hidden/message_core"/>        
-      </div>
+      <lift:display_search> 
+         <search:cometTimeline />
+      </lift:display_search>
     </div> 
   </div>     
 </lift:surround>
