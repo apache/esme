@@ -284,16 +284,18 @@ textarea.inputBox2 {
 	height:28px; 
 	width:181px; 
 	margin:15px 0 20px 0; 
-	}
+	}        
+/* TODO: Need some cross-browser compatibility work to make this pretty in all
+         browsers. */
 .searchBox .inputBox { 
-	padding:5px 0 0 8px;
+	padding:7px 0 0 11px;
 	float:left;	
-	width:140px; 
+	width:140px;
 	border:0;
-	}
+	}             
 .searchButton {	
 	float:left;	
-	
+	padding-top:2px;
 	}
 
 /*RIGHT box
