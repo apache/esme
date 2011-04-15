@@ -132,7 +132,7 @@ class Boot extends Loggable {
     LiftRules.dispatch.append(ESMEOpenIDVendor.dispatchPF)
 
     //Resources for Internationalization
-    LiftRules.resourceNames = "ESMELdap" :: "ESMECustom" :: "ESMEBase" :: "ESMEUI" :: Nil
+    LiftRules.resourceNames = "ESMECustom" :: "ESMEBase" :: "ESMEUI" :: Nil
 
     //Jquery functions
 

@@ -280,21 +280,21 @@ object ContainerManagedAuthModule extends AuthModule {
   object myLdapVendor extends LDAPVendor
 
   def myLdap : LDAPVendor = {
-    val ldapSrvHost = S.?("ldap.server.host")
+    val ldapSrvHost = Props.get("ldap.server.host") openOr ""
     info("LDAP server host: %s".format(ldapSrvHost))
-    val ldapSrvPort = S.?("ldap.server.port")
+    val ldapSrvPort = Props.get("ldap.server.port") openOr ""
     info("LDAP server port: %s".format(ldapSrvPort))
-    val ldapSrvBase = S.?("ldap.server.base")
+    val ldapSrvBase = Props.get("ldap.server.base") openOr ""
     info("LDAP server base: %s".format(ldapSrvBase))
-    val ldapSrvUsrName = S.?("ldap.server.userName")
+    val ldapSrvUsrName = Props.get("ldap.server.userName") openOr ""
     info("LDAP server username: %s".format(ldapSrvUsrName))
-    val ldapSrvPwd = S.?("ldap.server.password")
+    val ldapSrvPwd = Props.get("ldap.server.password") openOr ""
     info("LDAP server password: %s".format(ldapSrvPwd))
-    val ldapSrvAuthType = S.?("ldap.server.authType")
+    val ldapSrvAuthType = Props.get("ldap.server.authType") openOr ""
     info("LDAP server authentication type: %s".format(ldapSrvAuthType))
-    val ldapSrvReferral= S.?("ldap.server.referral")
+    val ldapSrvReferral= Props.get("ldap.server.referral") openOr ""
     info("LDAP server referral: %s".format(ldapSrvReferral))
-    val ldapSrvCtxFactory = S.?("ldap.server.initial_context_factory")
+    val ldapSrvCtxFactory = Props.get("ldap.server.initial_context_factory") openOr ""
     info("LDAP server initial context factory class: %s".format(ldapSrvCtxFactory))
 
 
@@ -309,9 +309,9 @@ object ContainerManagedAuthModule extends AuthModule {
   }
 
   def getAttrs(who : String) : Map[String, List[String]] = {
-    val uidPrefix = S.?("ldap.uidPrefix")
+    val uidPrefix = Props.get("ldap.uidPrefix") openOr ""
     info("LDAP uid prefix: %s".format(uidPrefix))
-    val userBase = S.?("ldap.userBase")
+    val userBase = Props.get("ldap.userBase") openOr ""
     info("LDAP user base: %s".format(userBase))
 
     var attrsMap = Map.empty[String, List[String]]
@@ -381,8 +381,8 @@ object ContainerManagedAuthModule extends AuthModule {
                     case _ => {
                       val usr = User.createAndPopulate.nickname(username).saveMe
                       //find and save additional attributes in LDAP if it's enabled
-                      val ldapEnabled = S.?("ldap.enabled")
-                      if(ldapEnabled.toBoolean) {
+                      val ldapEnabled = Props.getBool("ldap.enabled") openOr false
+                      if(ldapEnabled) {
                         val ldapAttrs = getAttrs(username)
                         val firstName = ldapAttrs("givenName").head
                         val lastName = ldapAttrs("sn").head
