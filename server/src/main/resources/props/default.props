@@ -27,3 +27,28 @@ admin_http_port=8087
 esme.enable_tracks=true
 esme.enable_actions=true
 esme.enable_tokens=true
+
+;Enable LDAP
+ldap.enabled=false
+
+;Hostname or IP of LDAP server
+ldap.server.host=localhost
+;Port of LDAP server
+ldap.server.port=389
+;Base DN from the LDAP Server
+ldap.server.base=ou=esme,dc=somedomain,dc=org
+;User that has access to LDAP server to perform search operations
+ldap.server.userName=cn=Directory Manager
+;Password for user above
+ldap.server.password=********
+;Authentication type
+ldap.server.authType=simple
+;Referral
+ldap.server.referral=follow
+;Initial context factory class
+ldap.server.initial_context_factory=com.sun.jndi.ldap.LdapCtxFactory
+
+;Prefix for user to whom additional LDAP attributes belong, for example 'uid' or 'sAMAccountName'
+ldap.uidPrefix=uid
+;User base DN for user to whom additional LDAP attributes belong
+ldap.userBase=ou=esme,dc=somedomain,dc=org
