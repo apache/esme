@@ -34,13 +34,13 @@ ldap.enabled=false
 ;Hostname or IP of LDAP server
 ldap.server.host=localhost
 ;Port of LDAP server
-ldap.server.port=389
+ldap.server.port=10389
 ;Base DN from the LDAP Server
-ldap.server.base=ou=esme,dc=somedomain,dc=org
+ldap.server.base=ou=esme,dc=lester,dc=org
 ;User that has access to LDAP server to perform search operations
-ldap.server.userName=cn=Directory Manager
+ldap.server.userName=uid=admin,ou=system
 ;Password for user above
-ldap.server.password=********
+ldap.server.password=secret
 ;Authentication type
 ldap.server.authType=simple
 ;Referral
@@ -51,4 +51,4 @@ ldap.server.initial_context_factory=com.sun.jndi.ldap.LdapCtxFactory
 ;Prefix for user to whom additional LDAP attributes belong, for example 'uid' or 'sAMAccountName'
 ldap.uidPrefix=uid
 ;User base DN for user to whom additional LDAP attributes belong
-ldap.userBase=ou=esme,dc=somedomain,dc=org
+ldap.userBase=ou=Users,ou=esme,dc=lester,dc=org
