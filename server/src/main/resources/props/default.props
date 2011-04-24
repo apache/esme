@@ -52,3 +52,5 @@ ldap.server.initial_context_factory=com.sun.jndi.ldap.LdapCtxFactory
 ldap.uidPrefix=uid
 ;User base DN for user to whom additional LDAP attributes belong
 ldap.userBase=ou=Users,ou=esme,dc=lester,dc=org
+;Group base DN to check whether user has specific role
+ldap.groupBase=ou=Groups,ou=esme,dc=lester,dc=org

@@ -20,6 +20,7 @@
 package org.apache.esme.model
 
 import net.liftweb._
+import common.Logger._
 import mapper._
 import openid._
 import util._
@@ -274,28 +275,29 @@ object OpenIDAuthModule extends AuthModule {
   } yield user
 }
 
+trait LDAPBase {
 
-object ContainerManagedAuthModule extends AuthModule {
+  this : AuthModule =>
 
   object myLdapVendor extends LDAPVendor
 
   def myLdap : LDAPVendor = {
     val ldapSrvHost = Props.get("ldap.server.host") openOr ""
-    info("LDAP server host: %s".format(ldapSrvHost))
+    debug("LDAP server host: %s".format(ldapSrvHost))
     val ldapSrvPort = Props.get("ldap.server.port") openOr ""
-    info("LDAP server port: %s".format(ldapSrvPort))
+    debug("LDAP server port: %s".format(ldapSrvPort))
     val ldapSrvBase = Props.get("ldap.server.base") openOr ""
-    info("LDAP server base: %s".format(ldapSrvBase))
+    debug("LDAP server base: %s".format(ldapSrvBase))
     val ldapSrvUsrName = Props.get("ldap.server.userName") openOr ""
-    info("LDAP server username: %s".format(ldapSrvUsrName))
+    debug("LDAP server username: %s".format(ldapSrvUsrName))
     val ldapSrvPwd = Props.get("ldap.server.password") openOr ""
-    info("LDAP server password: %s".format(ldapSrvPwd))
+    debug("LDAP server password: %s".format(ldapSrvPwd))
     val ldapSrvAuthType = Props.get("ldap.server.authType") openOr ""
-    info("LDAP server authentication type: %s".format(ldapSrvAuthType))
+    debug("LDAP server authentication type: %s".format(ldapSrvAuthType))
     val ldapSrvReferral= Props.get("ldap.server.referral") openOr ""
-    info("LDAP server referral: %s".format(ldapSrvReferral))
+    debug("LDAP server referral: %s".format(ldapSrvReferral))
     val ldapSrvCtxFactory = Props.get("ldap.server.initial_context_factory") openOr ""
-    info("LDAP server initial context factory class: %s".format(ldapSrvCtxFactory))
+    debug("LDAP server initial context factory class: %s".format(ldapSrvCtxFactory))
 
 
     myLdapVendor.configure(Map("ldap.url" -> "ldap://%s:%s".format(ldapSrvHost, ldapSrvPort),
@@ -308,15 +310,8 @@ object ContainerManagedAuthModule extends AuthModule {
     myLdapVendor
   }
 
-  def getAttrs(who : String) : Map[String, List[String]] = {
-    val uidPrefix = Props.get("ldap.uidPrefix") openOr ""
-    info("LDAP uid prefix: %s".format(uidPrefix))
-    val userBase = Props.get("ldap.userBase") openOr ""
-    info("LDAP user base: %s".format(userBase))
-
+  def getAttrs(dn : String) : Map[String, List[String]] = {
     var attrsMap = Map.empty[String, List[String]]
-    val dn = "%s=%s,%s".format(uidPrefix, who, userBase)
-    info("Distinguished name: %s".format(dn))
     val attrs : Attributes = myLdap.attributesFromDn(dn)
     if (attrs != null) {
       val allAttrs = attrs.getAll();
@@ -335,6 +330,31 @@ object ContainerManagedAuthModule extends AuthModule {
     }
     attrsMap
   }
+
+  def constructDistinguishedName(who : String, isGroup : Boolean = false) = {
+    val base = Props.get( if(isGroup) {"ldap.groupBase"} else {"ldap.userBase"} )  openOr ""
+     debug("LDAP base: %s".format(base))
+
+     val dn = "%s,%s".format(constructNameWithPrefix(who, isGroup), base)
+     debug("Distinguished name: %s".format(dn))
+     dn
+  }
+
+  def constructNameWithPrefix(username: String, isGroup: Boolean = false) = {
+    val prefix = if(isGroup) {"cn"} else {Props.get("ldap.uidPrefix") openOr ""}
+    val nameWithPrefix = "%s=%s".format(prefix, username)
+    debug("Name with prefix: '%s'".format(nameWithPrefix))
+    nameWithPrefix
+  }
+
+  def logInUser(who: User) {
+    User.logUserIn(who)
+    //TODO: save role for user
+    S.notice(S.?("base_user_msg_welcome", who.niceName))
+  }
+}
+
+object ContainerManagedAuthModule extends AuthModule with LDAPBase {
 
   // It's possible to get roles list from some external source
   // for example from LDAP via Lift API
@@ -363,9 +383,9 @@ object ContainerManagedAuthModule extends AuthModule {
             debug("Username: '%s'".format(username))
             if(username!=null){
               val currentRoles = rolesToCheck.filter(hsr.isUserInRole(_))
-              info("User from HTTP Request: %s has following roles=%s".format(username, currentRoles))
+              debug("User from HTTP Request: %s has following roles=%s".format(username, currentRoles))
               if(currentRoles.size == 0) {
-                info("No roles have been found")
+                debug("No roles have been found")
                 S.error(S.?("base_user_err_unknown_creds"))
               } else {
                 currentRoles.map(cr => {
@@ -375,7 +395,7 @@ object ContainerManagedAuthModule extends AuthModule {
                     User.find(By(User.nickname, username))
                   } yield user) match {
                     case Full(user) => {
-                      info("User: '%s' has been found".format(user.niceName))
+                      debug("User: '%s' has been found".format(user.niceName))
                       logInUser(user)
                     }
                     case _ => {
@@ -383,11 +403,11 @@ object ContainerManagedAuthModule extends AuthModule {
                       //find and save additional attributes in LDAP if it's enabled
                       val ldapEnabled = Props.getBool("ldap.enabled") openOr false
                       if(ldapEnabled) {
-                        val ldapAttrs = getAttrs(username)
+                        val ldapAttrs = getAttrs(constructDistinguishedName(username))
                         val firstName = ldapAttrs("givenName").head
                         val lastName = ldapAttrs("sn").head
                         val mail = ldapAttrs("mail").head
-                        info("Attributes from LDAP for user '%s'. Firstname: '%s', lastname: '%s', email: '%s'".format(username, firstName, lastName, mail))
+                        debug("Attributes from LDAP for user '%s'. Firstname: '%s', lastname: '%s', email: '%s'".format(username, firstName, lastName, mail))
                         usr.firstName(firstName).lastName(lastName).save
                       }
                       UserAuth.create.authType(moduleName).user(usr).authKey(username).save
@@ -415,6 +435,77 @@ object ContainerManagedAuthModule extends AuthModule {
       //TODO: save role for user
       S.notice(S.?("base_user_msg_welcome", who.niceName))
     }
+  }
+
+  def createHolder(): FieldSet = new FieldSet {
+    def toForm: NodeSeq = NodeSeq.Empty
+    def validate: List[FieldError] = Nil
+    def save(user: User): Unit = {}
+  }
+}
+
+object LDAPAuthModule extends AuthModule with LDAPBase {
+
+  // It's possible to get roles list from some external source
+  // for example from LDAP via Lift API
+  val rolesToCheck = List(
+    "esme-users"
+  )
+
+  override def isDefault = false
+
+  def loginPresentation: Box[NodeSeq] = TemplateFinder.findAnyTemplate("templates-hidden" :: "ldap_login_form" :: Nil)
+
+  def moduleName: String = "ldap"
+
+  def performInit(): Unit = {
+    LiftRules.dispatch.append {
+      case Req("ldap" :: "login" :: Nil, _, PostRequest) =>
+        val from = S.referer openOr "/"
+
+      val ldapEnabled = Props.getBool("ldap.enabled") openOr false
+      if(ldapEnabled) {
+        val name = S.param("username").map(_.trim.toLowerCase) openOr ""
+        val pwd = S.param("password").map(_.trim) openOr ""
+        if(myLdap.bindUser(constructNameWithPrefix(name), pwd) && checkRoles(constructDistinguishedName(name))) {
+          (for {
+              user <- UserAuth.find(By(UserAuth.authKey, name),
+                                    By(UserAuth.authType, moduleName)).flatMap(_.user.obj) or
+              User.find(By(User.nickname, name))
+            } yield user) match {
+            case Full(user) =>
+              debug("User: '%s' has been found".format(user.niceName))
+              logInUser(user)
+            case Empty =>
+              val usr = User.createAndPopulate.nickname(name).saveMe
+              //find and save additional attributes in LDAP if it's enabled
+              val ldapAttrs = getAttrs(constructDistinguishedName(name))
+              val firstName = ldapAttrs("givenName").head
+              val lastName = ldapAttrs("sn").head
+              val mail = ldapAttrs("mail").head
+              debug("Attributes from LDAP for user '%s'. Firstname: '%s', lastname: '%s', email: '%s'".format(name, firstName, lastName, mail))
+              usr.firstName(firstName).lastName(lastName).save
+              UserAuth.create.authType(moduleName).user(usr).authKey(name).save
+              logInUser(usr)
+          }
+        } else {
+          S.error(S.?("base_user_err_unknown_creds"))
+        }
+      }
+
+      S.redirectTo(from)
+    }
+  }
+
+  def checkRoles(who : String) : Boolean = {
+    for (role <-rolesToCheck) {
+      val ldapAttrs = getAttrs(constructDistinguishedName(role, true))
+      val uniqueMember = ldapAttrs("uniqueMember").head
+      debug("'uniqueMember' attribute value: '%s'".format(uniqueMember))
+      if(who == uniqueMember) return true
+    }
+    debug("No roles have been found")
+    return false;
   }
 
   def createHolder(): FieldSet = new FieldSet {
