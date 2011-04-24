@@ -166,6 +166,7 @@ class Boot extends Loggable {
     UserAuth.register(UserPwdAuthModule)
     UserAuth.register(OpenIDAuthModule)  
     UserAuth.register(ContainerManagedAuthModule)
+    UserAuth.register(LDAPAuthModule)
 
     def ifIsLoggedIn = If(User.loggedIn_? _, strFuncToFailMsg(() => S.?("base_error_not_logged_in")))
 
