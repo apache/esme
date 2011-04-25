@@ -53,6 +53,10 @@
 				updateTips("Length of " + n + " must be between "+min+" and "+max+".");
 				return false;
 			} else {
+				o.removeClass('ui-state-error');
+                tips
+                  .text("")
+                  .removeClass('ui-state-highlight');
 				return true;
 			}
 
@@ -65,6 +69,10 @@
 				updateTips(n);
 				return false;
 			} else {
+				o.removeClass('ui-state-error');
+                tips
+                  .text("")
+                  .removeClass('ui-state-highlight');
 				return true;
 			}
 
@@ -111,8 +119,9 @@
 					var bValid = true;
 					allFieldsUser.removeClass('ui-state-error');
 
-					bValid = bValid && checkLength(edit_username,"User name",2,16);
-					bValid = bValid && checkRegexp(edit_username,/^[a-z]([0-9a-z_])+$/i,"Name may consist of a-z, 0-9, underscores, begin with a letter.");
+                    var editUsername = $("input[name='edit_username']")
+					bValid = bValid && checkLength(editUsername,"User name",2,16);
+					bValid = bValid && checkRegexp(editUsername,/^[a-z]([0-9a-z_])+$/i,"Name may consist of a-z, 0-9, underscores, begin with a letter.");
 					
 					if (bValid) {
 						 liftAjax.lift_ajaxHandler(jQuery("#pool_new_user_dialog").serialize(), null, null, "javascript");  

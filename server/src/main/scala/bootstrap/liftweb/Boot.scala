@@ -45,6 +45,7 @@ import org.compass.core._
 import org.compass.core.config.CompassConfiguration
 
 import net.liftweb.widgets.tablesorter._
+import widgets.autocomplete.AutoComplete
 //import com.twitter.stats._
 import com.twitter.ostrich.{ServiceTracker, Stats, StatsMBean, RuntimeEnvironment}
 import net.lag.configgy.Config
@@ -264,6 +265,8 @@ class Boot extends Loggable {
 
     // DB.addLogFunc(S.logQuery _)
     S.addAnalyzer(RequestAnalyzer.analyze _)
+
+    AutoComplete.init
 
     /*
      * Show the spinny image when an Ajax call starts

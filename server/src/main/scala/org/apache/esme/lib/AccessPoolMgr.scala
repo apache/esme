@@ -38,6 +38,8 @@ import util._
 import common._
 import Helpers._
 
+import widgets.autocomplete.AutoComplete
+
 import org.apache.esme._
 import model._
 import org.apache.esme.actor.Distributor
@@ -262,7 +264,11 @@ object AccessPoolMgr {
                                                        redisplay() //redisplay pooluser and pool detail
                                                        },
                                                  "id" -> editPoolName),
-         "username" -%> text(username, username = _, "id" -> editUsername),
+         "username" -%> AutoComplete("", (current : String,limit : Int) =>
+          User.findAll(Like(User.nickname, (current + "%"))).map(_.nickname.is),
+          username = _ : String,
+          List(("selectFirst", "false"), ("minChars", "1")),
+          "name" -> editUsername),
          "permission" -%> select(permissions, Empty, addPoolUser, "id" -> editPermission)
     )
   }
