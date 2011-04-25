@@ -198,16 +198,30 @@
 				<form id="pool_new_user_dialog" onsubmit="false">
 					<lift:editPool>
 						<fieldset>
-							<label for="poolName">
-								<lift:loc>ui_pool_add</lift:loc>
-							</label>
-							<!--edit:username class="text ui-widget-content ui-corner-all tipelement" title="This is the user that will be added to a pool." /-->
-                            <edit:username class="text ui-widget-content ui-corner-all tipelement" title="This will be the new user or the user whose role is being changed" />
-							<label for="permission">
-								<lift:loc>ui_pool_list_user_role</lift:loc>
-							</label>
-							<!--edit:permission class="text ui-widget-content ui-corner-all tipelement" title="This is the type of permission that the new user will have." /-->
-                            <edit:permission class="text ui-widget-content ui-corner-all tipelement" title="This is the type of permission that the user will have." />
+                            <table border="0">
+                              <tr>
+                                  <td>
+                                    <label for="edit_username">
+                                        <lift:loc>ui_pool_add</lift:loc>
+                                    </label>
+                                  </td>
+                                  <td>
+                                    <!--edit:username class="text ui-widget-content ui-corner-all tipelement" title="This is the user that will be added to a pool." /-->
+                                    <edit:username class="text ui-corner-all tipelement" title="This will be the new user or the user whose role is being changed" />
+                                  </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                    <label for="permission">
+                                        <lift:loc>ui_pool_list_user_role</lift:loc>
+                                    </label>
+                                </td>
+                                  <td>
+                                    <!--edit:permission class="text ui-widget-content ui-corner-all tipelement" title="This is the type of permission that the new user will have." /-->
+                                    <edit:permission class="text ui-widget-content ui-corner-all tipelement" title="This is the type of permission that the user will have." />
+                                  </td>
+                              </tr>
+                            </table>
 						</fieldset>
 					</lift:editPool>
 				</form>
