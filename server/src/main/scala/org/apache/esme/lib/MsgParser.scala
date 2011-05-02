@@ -26,6 +26,7 @@ import net.liftweb._
 import util._
 import common._
 import mapper._
+import textile.TextileParser._
 import Helpers._
 import net.liftweb.common.{Failure => BoxFailure}
 import scala.util.parsing.input.Reader
@@ -46,14 +47,30 @@ import model._
  * - a parser for a hashtag, which returns an existing Tag
  *     or creating a new one if it doesn't exist
  */
-object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers {
-  def parseMessage(in: String): Box[List[MsgInfo]] = begin(in) match {
-    case Success(xs, _) => Full(xs)
-    case _ => Empty
-  }
+object MsgParser extends TextileParsers(None,false) with CombParserHelpers {
+  override type Elem = Char
+  // shadow ambiguous implicit
+  override def strToLst(s: String) = super.strToLst(s)
 
-  lazy val begin: Parser[List[MsgInfo]] = 
-  startSpace ~> rep1(url | atName | hashTag | emph | strong | text) <~ spaceEOF
+  def parseMessage(in: String): Box[List[Textile]] =
+    // must end with blank line to parse
+    document(in + "\n\n") match {
+      case Success(lst, _) => Full(lst.elems)
+      case _ => Empty
+    }
+
+  // can't super a lazy val
+  override lazy val lineElem : Parser[Textile] = {
+    not(blankLine) ~> (endOfLine | image | footnote_def |
+                       anchor | dimension | elipsis  |
+                       copyright | trademark | registered |
+                       emDash |
+                       enDash | italic | emph | bold  |
+                       cite |  span | code | delete | insert |
+                       sup | sub | strong | html |
+                       single_quote | quote | acronym | 
+                       shortUrl | atName | hashTag | charBlock)
+  }
 
   val punctRegex = java.util.regex.Pattern.compile("""\p{Punct}""")
 
@@ -63,7 +80,7 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
 
   lazy val startSpace = rep(' ')
 
-  lazy val url: Parser[URL] = fragmentAddress ^^ {url => URL(UrlStore.make(url))}
+  lazy val shortUrl: Parser[URL] = fragmentAddress ^^ {url => URL(UrlStore.make(url))}
 
   lazy val userNameStr: Parser[String] = alpha ~ rep(alpha | digit | '_') ^^ {
     case first ~ more => first + more.mkString
@@ -71,13 +88,13 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
   
   lazy val poolNameStr = userNameStr
   
-  lazy val atName: Parser[MsgInfo] = '@' ~> userNameStr ~ rep('.' ~> userNameStr) ^^ {
+  lazy val atName: Parser[Textile] = '@' ~> userNameStr ~ rep('.' ~> userNameStr) ^^ {
     case name ~ domainlist => 
       val nickName: String = name
       val wholeName: String = (name :: domainlist).mkString(".")
       User.find(By(User.nickname, nickName)) match {
         case Full(u) => AtName(u)
-        case _ => MsgText("@"+wholeName)
+        case _ => CharBlock("@"+wholeName)
       }
   }
   
@@ -226,34 +243,7 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
 
   lazy val spaceEOF = rep(' ') ~ EOF
 
-  lazy val text: Parser[MsgText] =
-    rep1(not(spaceEOF) ~ not(url) ~ not(atName) ~ not(hashTag) ~ not(emph) ~ not(strong) ~>
-      anyChar) ^^ {
-    case xs => MsgText(xs.mkString(""))
-  }
-
-  lazy val begOrSpace: Parser[Int] = rep1(' ') ^^ {case lst => lst.length} | beginl ^^^ 0
   lazy val spacePunctOrEnd: Parser[Boolean] = (EOL | ' ' | punct) ^^^ true
-
-  def peek[T](p: Parser[T]): Parser[T] = Parser { in =>
-    p(in) match {
-      case s @ Success(v, _) => Success(v, in)
-      case e @ Error(msg, _) => Error(msg, in)
-      case f @ Failure(msg, _) => Failure(msg, in)
-    }
-  }
-
-  lazy val beginl = Parser[Unit]{ in =>
-    if(in.pos.column==1) Success((), in) else Failure("", in)
-  }
-  
-  def surrounded(sep: String)(constructor: (String) => MsgInfo): Parser[MsgInfo] =
-    begOrSpace ~ accept(sep) ~> rep1(not(spaceEOF) ~ not(accept(sep)) ~ not(hashTag) ~ not(atName) ~> anyChar) <~ (accept(sep) ~ peek(spacePunctOrEnd)) ^^ {
-    case xs => constructor(xs.mkString)
-  }
-  
-  lazy val emph = surrounded("_"){Emph(_)}
-  lazy val strong = surrounded("*"){Strong(_)}
 
   lazy val EOF: Parser[Elem] = elem("EOF", isEof _)
 
@@ -461,13 +451,24 @@ object MsgParser extends Parsers with ImplicitConversions with CombParserHelpers
 
 }
 
-sealed trait MsgInfo
-case class MsgText(text: String) extends MsgInfo
-case class AtName(user: User) extends MsgInfo
-case class HashTag(tag: Tag) extends MsgInfo
-case class URL(url: UrlStore) extends MsgInfo
-case class Emph(text: String) extends MsgInfo
-case class Strong(text: String) extends MsgInfo
+sealed trait MsgInfo extends Textile
+case class AtName(user: User) extends MsgInfo {
+  def toHtml: NodeSeq =
+    <at_name id={user.id.toString}
+             nickname={user.nickname.is} >{"@" + user.nickname.is}</at_name>
+}
+
+case class HashTag(tag: Tag) extends MsgInfo {
+  def toHtml = tag.toXml
+}
+
+case class URL(url: UrlStore) extends MsgInfo {
+  def toHtml: NodeSeq =
+    <url id={url.id.toString}
+         url={url.url.toString}
+         uniqueId={url.uniqueId.is} >{url.url.toString}</url>
+}
+
 
 case class ResenderName(user: User)
 case class PoolName(pool: AccessPool)

@@ -18,7 +18,7 @@
  */
 
 package org.apache.esme.lib
-
+/*
 import org.specs._
 import org.specs.runner.JUnit3
 import org.specs.runner.ConsoleRunner
@@ -306,4 +306,4 @@ object MsgParserSpecs extends Specification with TestKit {
   }
   
 
-}
+}*/
