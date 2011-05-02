@@ -22,12 +22,14 @@ package org.apache.esme.model
 import net.liftweb._
 import mapper._
 import util._
+import textile.TextileParser._
 import common._
 import http._
 import js._
 import Helpers._
 
 import scala.xml._
+import scala.xml.transform.{RuleTransformer, RewriteRule}
 
 import java.util.regex.Matcher
 
@@ -269,9 +271,8 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
     stemmer.stem()
     stemmer.getCurrent()
   }
-  
+
   def transformBody(ns: NodeSeq) = {
-    import scala.xml.transform.{RuleTransformer, RewriteRule}
     toXml.map(new RuleTransformer(new RewriteRule{
       override def transform(n: Node) = n match {
         case e: Elem if "body" == e.label => <body>{ns}</body>
@@ -279,6 +280,7 @@ object Message extends Message with LongKeyedMetaMapper[Message] {
       }
     })).head
   }
+
 }
 
 
@@ -383,8 +385,9 @@ class Message extends LongKeyedMapper[Message] with ManyToMany {
 
   }
 
-  lazy val digestedXHTML = {
-    (toXml \ "body").flatMap(_.child map {
+  lazy val msgInfoTransformer = new RuleTransformer(
+    new RewriteRule {
+      override def transform(n: Node) = n match {
         case e: Elem if e.label == "at_name" =>
           e.attribute("nickname").
           map(nickname =>
@@ -414,19 +417,13 @@ class Message extends LongKeyedMapper[Message] with ManyToMany {
             }
           ).getOrElse(Text("") )
 
-        case e: Elem if e.label == "em" =>
-          e.attribute("text").map(text =>
-            <em>{text}</em>).
-          getOrElse(e)
-        
-        case e: Elem if e.label == "strong" =>
-          e.attribute("text").map(text =>
-            <strong>{text}</strong>).
-          getOrElse(e)
-        
         case x => x
-      })
-  }
+      }
+    }
+  )
+
+  lazy val digestedXHTML =
+    (toXml \ "body").map(msgInfoTransformer).flatMap(_.child)
 
   private lazy val originalXml = PCDataXmlParser(text.is).openOr(<message/>)
   
@@ -523,14 +520,8 @@ class Message extends LongKeyedMapper[Message] with ManyToMany {
       lst =>
       val xml = <message><body>{
             lst map {
-              case HashTag(t) => t.toXml
-              case AtName(user) => <at_name id={user.id.toString}
-                  nickname={user.nickname.is} >{"@" + user.nickname.is}</at_name>
-              case MsgText(text) => Text(text)
-              case URL(url) => <url id={url.id.toString}
-                  url={url.url.toString} uniqueId={url.uniqueId.is} >{url.url.toString}</url>
-              case Emph(text) => <xml:group> <em text={text}>_{text}_</em></xml:group>
-              case Strong(text) => <xml:group> <strong text={text}>*{text}*</strong></xml:group>
+              // get rid of extra paragraphs
+              case textile: Textile => paraFixer(textile.toHtml)
             }
           }</body>
         <tags>{

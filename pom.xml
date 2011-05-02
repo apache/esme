@@ -203,6 +203,11 @@
            <version>${lift.version}</version>
        </dependency>
         <dependency>
+           <groupId>net.liftweb</groupId>
+           <artifactId>lift-textile_${scala.version}</artifactId>
+           <version>${lift.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.compass-project</groupId>
             <artifactId>compass</artifactId>
             <version>${compass.version}</version>
