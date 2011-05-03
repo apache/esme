@@ -69,7 +69,7 @@ object MsgParser extends TextileParsers(None,false) with CombParserHelpers {
                        cite |  span | code | delete | insert |
                        sup | sub | strong | html |
                        single_quote | quote | acronym | 
-                       shortUrl | atName | hashTag | charBlock)
+                       atName | hashTag | charBlock)
   }
 
   val punctRegex = java.util.regex.Pattern.compile("""\p{Punct}""")
@@ -79,8 +79,6 @@ object MsgParser extends TextileParsers(None,false) with CombParserHelpers {
   lazy val punct: Parser[Elem] = elem("separator", isPunct)
 
   lazy val startSpace = rep(' ')
-
-  lazy val shortUrl: Parser[URL] = fragmentAddress ^^ {url => URL(UrlStore.make(url))}
 
   lazy val userNameStr: Parser[String] = alpha ~ rep(alpha | digit | '_') ^^ {
     case first ~ more => first + more.mkString
@@ -168,11 +166,26 @@ object MsgParser extends TextileParsers(None,false) with CombParserHelpers {
 
   lazy val scheme: Parser[String] = (accept("http://") | accept("https://")) ^^ {_ mkString}
 
-  lazy val fragmentAddress: Parser[String] = httpUrl ~ opt( '#' ~> fragmentid ) ^^ {
+  override lazy val httpStr: Parser[String] = httpUrl ~ opt( '#' ~> fragmentid ) ^^ {
     case uri ~ None => uri
     case uri ~ Some(fragmentid) => uri + "#" + fragmentid
   }
-  
+
+  def truncateUrl(urlString: String, len: Int) =
+    if (urlString.length <= len)
+      urlString
+    else
+      urlString.substring(0, len - 3) + "..."
+
+  override lazy val url: Parser[Textile] = httpStr ^^ { u =>
+    URL(UrlStore.make(u), truncateUrl(u, 20))
+  }
+
+  override lazy val quote_url: Parser[Textile] = ('"' ~> rep(attribute) ~ chrsExcept('"', '\n')) ~ ('"' ~> ':' ~> httpStr) ^^ {
+    case attr ~ fs ~ url =>
+      URL(UrlStore.make(url), fs)
+  }
+
   lazy val fragmentid: Parser[String] = rep( uchar ) ^^ {_ mkString}
   
   lazy val httpUrl: Parser[String] = scheme ~ login ~ urlpart ^^ {
@@ -462,10 +475,11 @@ case class HashTag(tag: Tag) extends MsgInfo {
   def toHtml = tag.toXml
 }
 
-case class URL(url: UrlStore) extends MsgInfo {
+case class URL(url: UrlStore, name: String) extends MsgInfo {
   def toHtml: NodeSeq =
     <url id={url.id.toString}
          url={url.url.toString}
+         name={name}
          uniqueId={url.uniqueId.is} >{url.url.toString}</url>
 }
 
