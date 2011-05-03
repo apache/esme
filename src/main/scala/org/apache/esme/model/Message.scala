@@ -401,20 +401,17 @@ class Message extends LongKeyedMapper[Message] with ManyToMany {
 
         case e: Elem if e.label == "url" =>
           e.attribute("url").flatMap(url =>
-            e.attribute("uniqueId").map { id =>
-              val href =
-                if (pool.defined_?)
-                  // disable shortener to avoid popularity statistics
-                  url.toString
-                else
-                  "/u/" + id
-              def truncateUrl(urlString: String, len: Int) =
-                if (urlString.length <= len)
-                  urlString
-                else
-                  urlString.substring(0, len - 3) + "..."
-              <xml:group> <a class="tiplelement" href={root+href} target="_blank" title={url}>{truncateUrl(url.toString, 20)}</a> </xml:group>
-            }
+            e.attribute("name").flatMap(name =>
+              e.attribute("uniqueId").map { id =>
+                val href =
+                  if (pool.defined_?)
+                    // disable shortener to avoid popularity statistics
+                    url.toString
+                  else
+                    root + "/u/" + id
+                <xml:group> <a class="tiplelement" href={href} target="_blank" title={name}>{name}</a> </xml:group>
+              }
+            )
           ).getOrElse(Text("") )
 
         case x => x
