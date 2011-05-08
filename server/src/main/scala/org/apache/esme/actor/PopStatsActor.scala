@@ -82,7 +82,7 @@ object PopStatsActor extends LiftActor {
     private var running = true
 
     protected def messageHandler = {
-      case StartUp => ActorPing.schedule(this, Expire, refreshInterval)
+      case StartUp => Schedule.schedule(this, Expire, refreshInterval)
 
       case ByeBye =>
         running = false
@@ -92,7 +92,7 @@ object PopStatsActor extends LiftActor {
         stats += (id -> (stats.getOrElse(id,0) + 1))
         
       case Top(n) =>
-        val topList = stats.toList.sort{
+        val topList = stats.toList.sortWith{
           case ((_,freq1),(_,freq2)) =>
             freq2 < freq1
         }.take(n)
@@ -101,7 +101,7 @@ object PopStatsActor extends LiftActor {
       case Expire => {
         val (live, expired) = queue.partition(_.when + period > now)
         expired.foreach(stats -= _.id)
-        ActorPing.schedule(this, Expire, refreshInterval)
+        Schedule.schedule(this, Expire, refreshInterval)
         live
       }
     }

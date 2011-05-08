@@ -827,7 +827,7 @@ object API2 extends ApiHelper with XmlHelper {
           case Nil =>
             listener.foreach(_.satisfy(Nil))
             listener = Full(who)
-            ActorPing.schedule(this, ReleaseListener, len)
+            Schedule.schedule(this, ReleaseListener, len)
 
           case xs =>
             who.satisfy(xs)

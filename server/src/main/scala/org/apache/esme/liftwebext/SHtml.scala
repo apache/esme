@@ -107,5 +107,5 @@ object SHtml {
         case _ => opts
       }
     else
-      opts.toList.sort( (first: (String, String), second: (String, String)) => first._2.toUpperCase < second._2.toUpperCase)
+      opts.toList.sortWith( (first: (String, String), second: (String, String)) => first._2.toUpperCase < second._2.toUpperCase)
 }

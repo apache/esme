@@ -387,7 +387,7 @@ abstract class TwitterAPI {
   }
   
   protected def unbox(x: () => Box[TwitterResponse]) = {
-    Either.merge(
+    new Either.MergeableEither(
       x() match {
         case Full(res) => res
         case Empty => 
@@ -395,7 +395,7 @@ abstract class TwitterAPI {
         case failMsg: Failure => 
           Right(Map("hash" -> Map("error" -> failMsg.messageChain)))
       }
-    )
+    ).merge
   }
 }
 

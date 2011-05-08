@@ -62,7 +62,7 @@ object SchedulerActor extends LiftActor{
     
     private def setupPing() {
       if (running)
-        ActorPing.schedule(this, DoItDude, everySeconds * 1000L)
+        Schedule.schedule(this, DoItDude, everySeconds * 1000L)
     }
     
     sendMessage()
