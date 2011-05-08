@@ -74,7 +74,7 @@ class SinglePublicTimeline extends Timeline {
       if ((millis - lastRender) < 30000L) {
         if (!scheduled) {
           scheduled = true    
-          ActorPing.schedule(this, SingleForceRender, 30000L)
+          Schedule.schedule(this, SingleForceRender, 30000L)
         }
       }                                  
       else reRender(true)

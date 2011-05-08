@@ -22,8 +22,7 @@ package org.apache.esme.comet
 import net.liftweb.common._    
 import net.liftweb.mapper._
 import net.liftweb.http._ 
-import net.liftweb.util.ActorPing
-import net.liftweb.util.Helpers._           
+import net.liftweb.util.Helpers._
 import scala.xml._     
 
 import js._
@@ -32,7 +31,8 @@ import JE._
 
 import org.apache.esme._
 import actor.{Distributor}
-import model._        
+import model._
+import net.liftweb.util.{Schedule, ActorPing}
 
 class StreamTimeline extends PublicTimeline { 
                                                 
@@ -115,7 +115,7 @@ class StreamTimeline extends PublicTimeline {
       if ((millis - lastRender) < 30000L) {
         if (!scheduled) {
           scheduled = true    
-          ActorPing.schedule(this, ForceRender, 30000L)
+          Schedule.schedule(this, ForceRender, 30000L)
         }
       }                                
       else reRender(true)

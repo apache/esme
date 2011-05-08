@@ -568,9 +568,25 @@ case object MinuteDateType extends DateType {
 sealed trait Performances
 case class MailTo(who: String, text: Option[String]) extends Performances
 case class HttpTo(url: String, user: String, password: String, headers: List[(String, String)], data: Option[String]) extends Performances
-case class FetchFeed(url: UrlStore, tags: List[String]) extends Performances
 case class FetchAtom(override val url: UrlStore, override val tags: List[String]) extends FetchFeed(url, tags)
 case class FetchRss(override val url: UrlStore, override val tags: List[String]) extends FetchFeed(url, tags)
 case object PerformResend extends Performances
 case object PerformFilter extends Performances
 case object ScalaInterpret extends Performances
+
+object FetchFeed extends ((UrlStore, List[String]) => FetchFeed) {
+  def unapply(f: FetchFeed): Option[(UrlStore, List[String])] = {
+    Some(f.url, f.tags)
+  }
+  def apply(url: UrlStore, tags: List[String]) = new FetchFeed(url, tags)
+}
+
+class FetchFeed(val url: UrlStore, val tags: List[String]) extends Performances {
+  override def hashCode = 41 * (41 + url.hashCode) + tags.hashCode
+  override def equals(other: Any) = other match {
+    case that: FetchFeed => (that canEqual this) && super.equals(that) && this.url == that.url && this.tags == that.tags
+    case _ => false
+  }
+  def canEqual(other: Any) = other.isInstanceOf[FetchFeed]
+  def copy(url1: UrlStore = url, tags1: List[String] = tags) = new FetchFeed(url1, tags1)
+}
