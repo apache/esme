@@ -281,6 +281,8 @@ trait LDAPBase {
 
   object myLdapVendor extends LDAPVendor
 
+  var currentRole : String = _
+
   def myLdap : LDAPVendor = {
     val ldapSrvHost = Props.get("ldap.server.host") openOr ""
     debug("LDAP server host: %s".format(ldapSrvHost))
@@ -349,7 +351,7 @@ trait LDAPBase {
 
   def logInUser(who: User) {
     User.logUserIn(who)
-    //TODO: save role for user
+    User.setRole(currentRole)
     S.notice(S.?("base_user_msg_welcome", who.niceName))
   }
 }
@@ -389,6 +391,7 @@ object ContainerManagedAuthModule extends AuthModule with LDAPBase {
                 S.error(S.?("base_user_err_unknown_creds"))
               } else {
                 currentRoles.map(cr => {
+                currentRole = cr
                 (for {
                     user <- UserAuth.find(By(UserAuth.authKey, username),
                                           By(UserAuth.authType, moduleName)).flatMap(_.user.obj) or
@@ -429,12 +432,6 @@ object ContainerManagedAuthModule extends AuthModule with LDAPBase {
         S.redirectTo(from)
       }
     }
-
-    def logInUser(who: User) {
-      User.logUserIn(who)
-      //TODO: save role for user
-      S.notice(S.?("base_user_msg_welcome", who.niceName))
-    }
   }
 
   def createHolder(): FieldSet = new FieldSet {
@@ -449,7 +446,7 @@ object LDAPAuthModule extends AuthModule with LDAPBase {
   // It's possible to get roles list from some external source
   // for example from LDAP via Lift API
   val rolesToCheck = List(
-    "esme-users"
+    "esme-users", "monitoring-admin"
   )
 
   override def isDefault = false
@@ -502,7 +499,10 @@ object LDAPAuthModule extends AuthModule with LDAPBase {
       val ldapAttrs = getAttrs(constructDistinguishedName(role, true))
       val uniqueMember = ldapAttrs("uniqueMember").head
       debug("'uniqueMember' attribute value: '%s'".format(uniqueMember))
-      if(who == uniqueMember) return true
+      if(who == uniqueMember) {
+        currentRole = role
+        return true
+      }
     }
     debug("No roles have been found")
     return false;
