@@ -113,15 +113,16 @@ class Boot extends Loggable {
       }
     } 
     
-    
-  
-
-    
+       
     //Add logchanger
     import _root_.net.liftweb.widgets.logchanger._
     LogLevelChanger.init
 
-    object logLevel extends LogLevelChanger with Log4jLoggingBackend
+   val notProdOrHasAdminRights = If(() => (!(Props.productionMode) ||User.checkRole("monitoring-admin")), () => RedirectResponse("/"))
+
+   object logLevel extends LogLevelChanger with Log4jLoggingBackend {
+    override def menuLocParams: List[Loc.AnyLocParam] = List(notProdOrHasAdminRights)
+   }
 
 
       LiftRules
