@@ -189,10 +189,16 @@ object User extends User with KeyedMetaMapper[Long, User] with Loggable {
 
   private object curUser extends RequestVar[Box[User]](currentUserId.flatMap(id => getSingleton.find(id)))
   
-  private object currentRole extends RequestVar[Box[String]](currentUser.flatMap(u => Props.get("role."+u.niceName)))
+  private object currentRole extends SessionVar[Box[String]](currentUser.flatMap(u => Props.get("role."+u.niceName)))
+
+  def setRole(role : String) = {
+    logger.debug("User.setRole() is being called. Role: '%s'".format(role))
+    currentRole.set(Full(role))
+  }
 
   def checkRole(role: String): Boolean = {
     val userRole:String = currentRole.openOr("")
+    logger.debug("User.checkRole() is being called. Role to check: '%s'. Current role: '%s'".format(role, userRole))
     userRole.equals(role)
   }
 
