@@ -574,19 +574,9 @@ case object PerformResend extends Performances
 case object PerformFilter extends Performances
 case object ScalaInterpret extends Performances
 
-object FetchFeed extends ((UrlStore, List[String]) => FetchFeed) {
-  def unapply(f: FetchFeed): Option[(UrlStore, List[String])] = {
-    Some(f.url, f.tags)
-  }
-  def apply(url: UrlStore, tags: List[String]) = new FetchFeed(url, tags)
+object FetchFeed {
+  def unapply(f: FetchFeed): Option[(UrlStore, List[String])] =
+    Some((f.url, f.tags))
 }
 
-class FetchFeed(val url: UrlStore, val tags: List[String]) extends Performances {
-  override def hashCode = 41 * (41 + url.hashCode) + tags.hashCode
-  override def equals(other: Any) = other match {
-    case that: FetchFeed => (that canEqual this) && super.equals(that) && this.url == that.url && this.tags == that.tags
-    case _ => false
-  }
-  def canEqual(other: Any) = other.isInstanceOf[FetchFeed]
-  def copy(url1: UrlStore = url, tags1: List[String] = tags) = new FetchFeed(url1, tags1)
-}
+abstract class FetchFeed(val url: UrlStore, val tags: List[String]) extends Performances
