@@ -387,8 +387,7 @@ abstract class TwitterAPI {
   }
   
   protected def unbox(x: () => Box[TwitterResponse]) = {
-    new Either.MergeableEither(
-      x() match {
+    ( x() match {
         case Full(res) => res
         case Empty => 
           Right(Map("response" -> Nil))
