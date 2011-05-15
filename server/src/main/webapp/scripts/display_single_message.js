@@ -24,10 +24,12 @@ function login()
   	
   if (document.forms[0].open_id.value != "")
      document.forms[0].action = 'open_id/login';
- else
+  else if(jQuery('input#ldapEnabled').val() == 'true')
+     document.forms[0].action = 'ldap/login';
+  else
      document.forms[0].action = 'authentication/login';
-    
-     
+
+
   document.forms[0].submit();	
 }                      
 // ]]>

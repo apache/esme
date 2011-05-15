@@ -20,6 +20,7 @@
 package org.apache.esme.model
 
 import net.liftweb._
+import common.Box._
 import common.Logger._
 import mapper._
 import openid._
@@ -120,8 +121,13 @@ trait FieldSet {
 }
 
 object UserPwdAuthModule extends AuthModule {
-  def loginPresentation: Box[NodeSeq] =
-  TemplateFinder.findAnyTemplate("templates-hidden" :: "upw_login_form" :: Nil)
+  def loginPresentation: Box[NodeSeq] = {
+    val ldapBind : CssBindFunc = "#ldapEnabled [value]" #> (Props.getBool("ldap.enabled") openOr false)
+    TemplateFinder.findAnyTemplate("templates-hidden" :: "upw_login_form" :: Nil) match {
+      case Full(tpl) => Full(ldapBind(tpl))
+      case _ => Empty
+    }
+  }
 
   def moduleName: String = "upw"
 
@@ -281,6 +287,11 @@ trait LDAPBase {
 
   object myLdapVendor extends LDAPVendor
 
+  val rolesToCheck = Props.get("role_list") match {
+    case Full(s) => s.split(',').toList
+    case _ => Nil
+  }
+
   var currentRole : String = _
 
   def myLdap : LDAPVendor = {
@@ -357,12 +368,6 @@ trait LDAPBase {
 }
 
 object ContainerManagedAuthModule extends AuthModule with LDAPBase {
-
-  // It's possible to get roles list from some external source
-  // for example from LDAP via Lift API
-  val rolesToCheck = List(
-    "esme-users"
-  )
 
   override def isDefault = false
 
@@ -442,12 +447,6 @@ object ContainerManagedAuthModule extends AuthModule with LDAPBase {
 }
 
 object LDAPAuthModule extends AuthModule with LDAPBase {
-
-  // It's possible to get roles list from some external source
-  // for example from LDAP via Lift API
-  val rolesToCheck = List(
-    "esme-users", "monitoring-admin"
-  )
 
   override def isDefault = false
 
