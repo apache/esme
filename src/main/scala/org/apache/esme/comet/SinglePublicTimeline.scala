@@ -89,7 +89,12 @@ class SinglePublicTimeline extends Timeline {
     	<div class="update2">
     		<a class="author"/>
     		<div class="msgbody"/>
-      	<div class="supp_data"/>				
+      	<div class="supp_data">
+      	  <span class="supp_pool"/>
+      	  <span class="supp_date"/>
+      	  <span class="supp_millidate" style="display:none"/>
+      	  <span class="supp_reason"/>
+      	</div>				
     	</div>
     </div>    
 }

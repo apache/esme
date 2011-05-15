@@ -76,7 +76,12 @@ trait Timeline extends CometActor {
     	<div class="update2">
     		<a href="" class="author"/>
     		<div class="msgbody"/>
-      	<div class="supp_data"/>				
+      	<div class="supp_data">
+      	  <span class="supp_pool"/>
+      	  <span class="supp_date"/>
+      	  <span class="supp_millidate" style="display:none"/>
+      	  <span class="supp_reason"/>
+      	</div>				
     		<div class="actions">
     			<a href="#"  class="resend resend_link">
     				<lift:loc>ui_messages_message_label_resend</lift:loc>
@@ -94,7 +99,7 @@ trait Timeline extends CometActor {
     
   protected def prependMessage(m:Message, r:MailboxReason, rs:Boolean) {     
     val newMessage = renderMessage((m,r,rs))    
-    val update = PrependHtml(jsId, newMessage)
+    val update = PrependHtml(jsId, newMessage) & Run("calculateDates();")
     partialUpdate(update)
   }       
 
@@ -140,9 +145,9 @@ trait Timeline extends CometActor {
       } 
 
     val authorHref = LiftRules.context.path + "/user/" + authorNickname
-
-// TODO: Put date in the "ago" format
-    val messageDateStr = toInternetDate(m._1.when)
+                                       
+    val messageDate = toInternetDate(m._1.when)
+    
     val messageReason = if(m._2.attr.length > 0){
       if(m._2.attr.key == "resent_from") {
         "resent by " + User.find(m._2.attr.value).map(_.nickname).openOr("")
@@ -151,14 +156,14 @@ trait Timeline extends CometActor {
       }
     } else {
       "via " + m._1.source
-    }
-
-    val suppString = messagePool + " " + messageDateStr + " " + messageReason
+    }                                                                          
 
     ("#avatar [src]" #> imageUrl &
      ".updates-box [id]" #> messageId &
      ".msgbody *" #> messageBody &
-     ".supp_data *" #> suppString &
+     ".supp_pool *" #> messagePool &
+     ".supp_millidate *" #> messageDate &
+     ".supp_reason *" #> messageReason &
      ".reply [href]" #> replyHref &
      convTransform &       
      ".author [href]" #> authorHref &

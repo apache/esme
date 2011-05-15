@@ -39,3 +39,23 @@ if ( typeof jQuery != "undefined" )
 				jQuery(this).text( date );
 		});
 	};
+	
+// Added by Ethan
+// Find all divs with class "supp_data" and populate the child div "supp_date"
+// based on the contents of the child div "supp_isodate".
+
+function calculateDates() {
+  var message_date = "";
+  
+  jQuery(".supp_data").each(function(){
+    message_date = prettyDate(new Date($(this).children(".supp_millidate").html()));
+    $(this).children(".supp_date").html(message_date);
+  });
+}    
+              
+jQuery(document).ready(function(){
+  calculateDates();
+});
+window.setInterval(calculateDates, 30000);
+
+
