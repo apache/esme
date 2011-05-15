@@ -25,6 +25,10 @@
             jQuery('input[type=\'image\']').bind('click', function() {
                 jQuery('form[name=\'loginFrm\']').attr('action', 'javascript:login()').submit();
             });
+            if(jQuery('input#ldapEnabled').val() == 'true') {
+                jQuery('div#openIdSection').hide();
+                jQuery('img#btn_signup').hide();
+            }
         });
         </script>
  
@@ -49,9 +53,11 @@
 							<input type="password" name="password" value="" class="inputBox2"/><!--narrow input field-->
 						</div>	
 						
+                        <input id="ldapEnabled" type="hidden" value=""/>
+
 						<div class="line"></div>
 						
-						<div class="post-form-row"> 
+						<div id="openIdSection" class="post-form-row">
 							<label><lift:loc>ui_login_openid</lift:loc></label>
 							<input type="text" name="open_id" value="" class="inputBox2"/><!--narrow input field-->
 						</div>	
