@@ -49,7 +49,7 @@ object ConversationMgr {
   val ifIsLoggedIn = If(loggedIn_? _, strFuncToFailMsg(() => S.?("base_error_not_logged_in")))
 
   val menuItems =
-  Menu(Loc("conversation", List("info_view", "conversation"), S.?("base_conv_menu"), ifIsLoggedIn,
+  Menu(Loc("conversation", List("conversation"), S.?("base_conv_menu"), ifIsLoggedIn,
            Loc.Snippet("conv_info", convInfo))) :: Nil         
   
   def convInfo(in: NodeSeq): NodeSeq = {  

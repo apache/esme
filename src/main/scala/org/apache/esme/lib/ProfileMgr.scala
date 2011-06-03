@@ -54,7 +54,7 @@ object ProfileMgr {
   val ifIsLoggedIn = If(loggedIn_? _, strFuncToFailMsg(() => S.?("base_error_not_logged_in")))
 
   val menuItems =
-  Menu(Loc("profile", List("profile_view", "edit"), S.?("base_profile_menu"), ifIsLoggedIn,
+  Menu(Loc("profile", List("profile", "edit"), S.?("base_profile_menu"), ifIsLoggedIn,
            Loc.Snippet("editProfile", editProfile))) ::
   Nil
 

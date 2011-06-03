@@ -49,7 +49,7 @@ object UserMgr {
   val ifIsLoggedIn = If(loggedIn_? _, strFuncToFailMsg(() => S.?("base_error_not_logged_in")))
 
   val menuItems =
-  Menu(Loc("list_users", List("info_view", "users"), S.?("base_users_menu"), ifIsLoggedIn,
+  Menu(Loc("users", List("users"), S.?("base_users_menu"), ifIsLoggedIn,
            Loc.Snippet("displayUsers", displayUsers))) ::
   Nil
 

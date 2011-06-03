@@ -38,26 +38,26 @@ class MenuSnippet extends DispatchSnippet {
     
     val itemTracks: NodeSeq = 
       if(Props.get("esme.enable_tracks").openOr("true") == "true") {
-        <li><lift:Menu.item donthide="true" name="trackMgt" a:class="tipelement" a:title="You can track words."/></li> 
+        <li><lift:Menu.item donthide="true" name="tracks" a:class="tipelement" a:title="You can track words."/></li> 
       } else {
         List()
       }
     
     val itemActions: NodeSeq = 
       if(Props.get("esme.enable_actions").openOr("true") == "true") {
-        <li><lift:Menu.item donthide="true" name="actionMgt" a:class="tipelement" a:title="You can create actions to fire when certain events occur"/></li>  
+        <li><lift:Menu.item donthide="true" name="actions" a:class="tipelement" a:title="You can create actions to fire when certain events occur"/></li>  
       } else {
         List()
       }
     
     val itemTokens: NodeSeq = 
       if(Props.get("esme.enable_tokens").openOr("true") == "true") {
-        <li><lift:Menu.item donthide="true" name="authToken" a:class="tipelement" a:title="You can create tokens to use when accessing ESME via other clients."/></li>
+        <li><lift:Menu.item donthide="true" name="tokens" a:class="tipelement" a:title="You can create tokens to use when accessing ESME via other clients."/></li>
       } else {
         List()
       }
         
-    val itemPools: NodeSeq = <li><lift:Menu.item donthide="true" name="accessPools" a:class="tipelement" a:title="You can create access pools to restrict access top certain messages."/></li>    
+    val itemPools: NodeSeq = <li><lift:Menu.item donthide="true" name="pools" a:class="tipelement" a:title="You can create access pools to restrict access top certain messages."/></li>    
     
     val itemContacts: NodeSeq = <li><lift:Menu.item donthide="true" name="contacts" a:class="tipelement" a:title="You can manage your followers and those you follow."/></li>     
     

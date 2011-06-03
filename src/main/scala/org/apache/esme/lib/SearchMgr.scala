@@ -49,7 +49,7 @@ object SearchMgr {
   val ifIsLoggedIn = If(loggedIn_? _, strFuncToFailMsg(() => S.?("base_error_not_logged_in")))
 
   val menuItems =
-  Menu(Loc("search", List("info_view", "search"), S.?("base_menu_search"), ifIsLoggedIn,
+  Menu(Loc("search", List("search"), S.?("base_menu_search"), ifIsLoggedIn,
            Loc.Snippet("display_search", displaySearch),
            Loc.Snippet("searchTerm", searchTerm))) ::
   Nil                                        

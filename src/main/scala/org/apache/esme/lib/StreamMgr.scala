@@ -58,7 +58,7 @@ object StreamMgr {
   val ifIsLoggedIn = If(loggedIn_? _, strFuncToFailMsg(() => S.?("base_error_not_logged_in")))
 
   val menuItems =
-  Menu(Loc("streams", List("info_view", "streams"), S.?("base_streams_menu"), ifIsLoggedIn,
+  Menu(Loc("streams", List("streams"), S.?("base_streams_menu"), ifIsLoggedIn,
            Loc.Snippet("stream_display", StreamDisplay.display))) ::
   Nil
 

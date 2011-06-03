@@ -59,7 +59,7 @@ object AccessPoolMgr {
   val ifIsLoggedIn = If(loggedIn_? _, strFuncToFailMsg(() => S.?("base_error_not_logged_in")))
 
   val menuItems =
-  Menu(Loc("accessPools", new Link("pools_view" :: Nil, true)/*List("pools_view", "index")*/, S.?("base_pool_menu"), ifIsLoggedIn,
+  Menu(Loc("pools", new Link("pools" :: Nil, true)/*List("pools_view", "index")*/, S.?("base_pool_menu"), ifIsLoggedIn,
            Loc.Snippet("addPool", addPool),
            Loc.Snippet("editPool", editPool),
            Loc.Snippet("poolUsers", displayPoolUsers),

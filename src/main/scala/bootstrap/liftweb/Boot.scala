@@ -177,11 +177,11 @@ class Boot extends Loggable {
         Menu(Loc("user", List("info_view", "user"), "User Info", ifIsLoggedIn,
           Loc.Snippet("user_info", UserDisplay.userInfo))) ::
         logLevel.menu  ::
-        Menu(Loc("tag", List("info_view", "tag"), "Tag", ifIsLoggedIn,
+        Menu(Loc("tag", List("tag"), "Tag", ifIsLoggedIn,
           Loc.Snippet("tag_display", TagDisplay.display))) ::
-        Menu(Loc("public", List("info_view", "public"), S.?("base_profile_public"), ifIsLoggedIn)) ::
-        Menu(Loc("contacts", List("info_view", "contacts"), S.?("base_profile_contacts"), ifIsLoggedIn)) ::
-        Menu(Loc("sign_up", List("signup"), S.?("base_menu_signup"),
+        Menu(Loc("public", List("public"), S.?("base_profile_public"), ifIsLoggedIn)) ::
+        Menu(Loc("contacts", List("contacts"), S.?("base_profile_contacts"), ifIsLoggedIn)) ::
+        Menu(Loc("signup", List("signup"), S.?("base_menu_signup"),
           Snippet("signup", User.signupForm),
           Unless(User.loggedIn_? _, S.?("base_menu_sign_up_error")))) ::
         Menu(Loc("logout", List("logout"), S.?("base_menu_logout"),
