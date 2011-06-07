@@ -105,9 +105,9 @@ object API2 extends ApiHelper with XmlHelper {
     case Req("api2" :: "tags" :: tag :: "messages" :: Nil, _, GetRequest)
             => () => allTagMsgs(tag)
            
-    case Req("api2" :: "tags" :: tag :: "followees" ::  Nil, _, PostRequest)  => ()
+    case Req("api2" :: "tags" :: tag :: "followers" ::  Nil, _, PostRequest)  => ()
             => followTag(Box(List(tag)))
-    case Req("api2" :: "tags" :: tag :: "followees" ::  Nil, _, DeleteRequest) => ()
+    case Req("api2" :: "tags" :: tag :: "followers" ::  Nil, _, DeleteRequest) => ()
             => unfollowTag(Box(List(tag)))  
 
     case Req("api2" :: "user" :: "followees" :: Nil, _, GetRequest) => allFollowees
@@ -143,9 +143,9 @@ object API2 extends ApiHelper with XmlHelper {
     case Req("api2" :: "conversations" :: conversationId :: Nil, _, GetRequest) => ()
             => getConversation(Box(List(conversationId)))
     
-    case Req("api2" :: "conversations" :: conversationId :: "followees" ::  Nil, _, PostRequest)  => ()
+    case Req("api2" :: "conversations" :: conversationId :: "followers" ::  Nil, _, PostRequest)  => ()
             => followConversation(Box(List(conversationId)))
-    case Req("api2" :: "conversations" :: conversationId :: "followees" ::  Nil, _, DeleteRequest) => ()
+    case Req("api2" :: "conversations" :: conversationId :: "followers" ::  Nil, _, DeleteRequest) => ()
             => unfollowConversation(Box(List(conversationId)))       
   }
 
@@ -732,11 +732,11 @@ object API2 extends ApiHelper with XmlHelper {
     r
   }
   
-   def followTag(tagId: Box[String]): LiftResponse = {
-    val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
-      for (user <- User.currentUser)         
-      yield {
-         val tag = Tag.findAll(By(Tag.name, tagId)).headOption
+    def followTag(tagId: Box[String]): LiftResponse = {
+         val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+          for (user <- User.currentUser)
+        yield {
+           val tag = Tag.findAll(By(Tag.name, tagId.openOr(""))).head
          
          if (!tag.followers.contains(user)) { 
             tag.followers += user
@@ -758,7 +758,7 @@ object API2 extends ApiHelper with XmlHelper {
     val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
       for (user <- User.currentUser)         
       yield {
-         val tag = Tag.findAll(By(Tag.name, tagId)).headOption
+          val tag = Tag.findAll(By(Tag.name, tagId.openOr(""))).head
          
          if (!tag.followers.contains(user)) { 
             tag.followers -= user
