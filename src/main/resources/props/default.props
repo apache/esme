@@ -23,7 +23,7 @@ jmx.enable=true
 ;Enable and set port for socket access (text output) (Ostrich)
 admin_text_port=9989
 ;Enable and set port for web access (JSON output) (Ostrich)
-admin_http_port=8087   
+admin_http_port=8099   
 esme.enable_tracks=true
 esme.enable_actions=true
 esme.enable_tokens=true
