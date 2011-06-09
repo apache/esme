@@ -19,6 +19,8 @@
 
 package org.apache.esme.actor
 
+/**
+ * dpp commented out for security reasons
 import java.io.PrintWriter
 import scala.tools.nsc.Interpreter
 import scala.tools.nsc.Settings
@@ -28,8 +30,6 @@ import net.liftweb.util._
 import net.liftweb.common._
 import net.liftweb.actor._
 
-/**
- * dpp commented out for security reasons
 object ScalaInterpreter extends LiftActor {
 
   private val settings = new Settings()
