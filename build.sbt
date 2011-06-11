@@ -46,7 +46,7 @@ libraryDependencies ++= {
     "log4j" % "log4j" % "1.2.16" % "compile->default",
     "org.slf4j" % "slf4j-api" % "1.6.1" % "compile->default",
     "org.slf4j" % "slf4j-log4j12" % "1.6.1" % "compile->default",
-    "org.scala-tools.testing" %% "specs" % "1.6.6" % "test->default",
+    "org.scala-tools.testing" %% "specs" % "1.6.8" % "test->default",
     "org.scala-lang" % "scala-compiler" % "2.8.1" % "test->default",
     "org.mortbay.jetty" % "jetty" % "[6.1.6,)" % "test->default"
   )
