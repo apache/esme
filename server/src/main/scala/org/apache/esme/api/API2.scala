@@ -736,13 +736,14 @@ object API2 extends ApiHelper with XmlHelper {
          val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
           for (user <- User.currentUser)
         yield {
-           val tag = Tag.findAll(By(Tag.name, tagId.openOr(""))).head
+           val tagList = Tag.findAll(By(Tag.name, tagId.openOr("")))
+           val tag = tagList.head
          
          if (!tag.followers.contains(user)) { 
             tag.followers += user
             tag.save       
         } 
-        if(tag.isEmpty)
+        if(tagList.length == 0)
           (404,Map(),Empty)
         else
           (200,Map(),Empty)
@@ -758,13 +759,14 @@ object API2 extends ApiHelper with XmlHelper {
     val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
       for (user <- User.currentUser)         
       yield {
-          val tag = Tag.findAll(By(Tag.name, tagId.openOr(""))).head
+           val tagList = Tag.findAll(By(Tag.name, tagId.openOr("")))
+           val tag = tagList.head
          
          if (!tag.followers.contains(user)) { 
             tag.followers -= user
             tag.save       
         } 
-        if(tag.isEmpty)
+        if(tagList.length == 0)
           (404,Map(),Empty)
         else
           (200,Map(),Empty)
