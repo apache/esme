@@ -104,6 +104,11 @@ object API2 extends ApiHelper with XmlHelper {
 
     case Req("api2" :: "tags" :: tag :: "messages" :: Nil, _, GetRequest)
             => () => allTagMsgs(tag)
+           
+    case Req("api2" :: "tags" :: tag :: "followers" ::  Nil, _, PostRequest)  => ()
+            => followTag(Box(List(tag)))
+    case Req("api2" :: "tags" :: tag :: "followers" ::  Nil, _, DeleteRequest) => ()
+            => unfollowTag(Box(List(tag)))  
 
     case Req("api2" :: "user" :: "followees" :: Nil, _, GetRequest) => allFollowees
     case Req("api2" :: "user" :: "followees" :: Nil, _, PostRequest) => addFollowee
@@ -137,6 +142,11 @@ object API2 extends ApiHelper with XmlHelper {
 
     case Req("api2" :: "conversations" :: conversationId :: Nil, _, GetRequest) => ()
             => getConversation(Box(List(conversationId)))
+    
+    case Req("api2" :: "conversations" :: conversationId :: "followers" ::  Nil, _, PostRequest)  => ()
+            => followConversation(Box(List(conversationId)))
+    case Req("api2" :: "conversations" :: conversationId :: "followers" ::  Nil, _, DeleteRequest) => ()
+            => unfollowConversation(Box(List(conversationId)))       
   }
 
   def allSessions(): LiftResponse = {
@@ -714,6 +724,104 @@ object API2 extends ApiHelper with XmlHelper {
           (404,Map(),Empty)
         else
           (200,Map(),Full(<conversation id={id.toString}>{messages.map(msgToXml(_))}</conversation>))
+      }
+
+    val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+      if(ret.isDefined) ret else Full((403,Map(),Empty))
+
+    r
+  }
+  
+    def followTag(tagId: Box[String]): LiftResponse = {
+         val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+          for (user <- User.currentUser)
+        yield {
+           val tagList = Tag.findAll(By(Tag.name, tagId.openOr("")))
+           val tag = tagList.head
+         
+         if (!tag.followers.contains(user)) { 
+            tag.followers += user
+            tag.save       
+        } 
+        if(tagList.length == 0)
+          (404,Map(),Empty)
+        else
+          (200,Map(),Empty)
+      }
+
+    val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+      if(ret.isDefined) ret else Full((403,Map(),Empty))
+
+    r
+  }
+  
+  def unfollowTag(tagId: Box[String]): LiftResponse = {
+    val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+      for (user <- User.currentUser)         
+      yield {
+           val tagList = Tag.findAll(By(Tag.name, tagId.openOr("")))
+           val tag = tagList.head
+         
+         if (tag.followers.contains(user)) { 
+            tag.followers -= user
+            tag.save       
+        } 
+        if(tagList.length == 0)
+          (404,Map(),Empty)
+        else
+          (200,Map(),Empty)
+      }
+
+    val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+      if(ret.isDefined) ret else Full((403,Map(),Empty))
+
+    r
+  }
+  
+  
+  
+  def followConversation(conversationId: Box[String]): LiftResponse = {
+    val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+      for (user <- User.currentUser;
+           id <- conversationId.map(toLong))
+      yield {
+      
+        val messages = Message.findMessages(List(id)) 
+        
+        val m = messages.values.toList.head
+         if (!m.followers.contains(user)) { 
+            m.followers += user
+            m.save       
+        } 
+        if(messages.isEmpty)
+          (404,Map(),Empty)
+        else
+          (200,Map(),Empty)
+      }
+
+    val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+      if(ret.isDefined) ret else Full((403,Map(),Empty))
+
+    r
+  }
+  
+    def unfollowConversation(conversationId: Box[String]): LiftResponse = {
+    val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
+      for (user <- User.currentUser;
+           id <- conversationId.map(toLong))
+      yield {
+      
+        val messages = Message.findMessages(List(id)) 
+        
+         val m = messages.values.toList.head
+         if (m.followers.contains(user)) { 
+            m.followers -= user
+            m.save       
+        } 
+        if(messages.isEmpty)
+          (404,Map(),Empty)
+        else
+          (200,Map(),Empty)
       }
 
     val r: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
