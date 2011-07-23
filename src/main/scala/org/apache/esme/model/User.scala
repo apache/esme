@@ -293,7 +293,7 @@ class User extends KeyedMapper[Long, User] with UserIdAsString with ManyToMany {
   
   def image_url: String = (imageUrl.is) match {
     case (f) if f.length > 1 => f
-    case (_) => LiftRules.context.path + "/images/avatar.jpg"
+    case (_) => "/images/avatar.jpg" 
   }
   
  
