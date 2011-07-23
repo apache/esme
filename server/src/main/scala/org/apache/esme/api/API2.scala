@@ -762,7 +762,7 @@ object API2 extends ApiHelper with XmlHelper {
            val tagList = Tag.findAll(By(Tag.name, tagId.openOr("")))
            val tag = tagList.head
          
-         if (!tag.followers.contains(user)) { 
+         if (tag.followers.contains(user)) { 
             tag.followers -= user
             tag.save       
         } 
