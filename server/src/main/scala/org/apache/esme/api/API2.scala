@@ -814,7 +814,7 @@ object API2 extends ApiHelper with XmlHelper {
         val messages = Message.findMessages(List(id)) 
         
          val m = messages.values.toList.head
-         if (!m.followers.contains(user)) { 
+         if (m.followers.contains(user)) { 
             m.followers -= user
             m.save       
         } 
