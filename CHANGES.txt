@@ -1,4 +1,39 @@
-ESME Change Log
+Apache Enterprise Social Messaging Environment (ESME) Change Log
+
+
+Release 1.3 - 07/23/2011
+
+** Bug
+    * [ESME-268] - User should not be offered the option to "resend" their own messages - it has no effect
+    * [ESME-282] - When a public message is resent by one user, no other users are able to resend it
+    * [ESME-304] - In the conversation view page, sending the message makes the reply go away
+    * [ESME-336] - Streams shows all pools rather than the pools in which I'm a member
+    * [ESME-342] - Sign On button doesn't work in IE9
+    * [ESME-344] - Searching for "test" doesn't display messages containing that string
+
+** Improvement
+    * [ESME-233] - Restrict access to the logchanger in production mode
+    * [ESME-308] - Update times in standard timeline on a regular basis
+    * [ESME-331] - Update documentation for message posting in API2 to address the misunderstanding in ESME-326
+    * [ESME-337] - User with no admin rights to a pool shouldn't be able to edit it. 
+    * [ESME-338] - Follow / unfollow messages should contain links
+    * [ESME-339] - Clean up web content
+    * [ESME-350] - Add DOAP File to site
+
+** New Feature
+    * [ESME-135] - Add LDAP to ESME
+    * [ESME-214] - Add container-based authentication
+    * [ESME-292] - Implement API2 methods for Tag/Conversation follow/unfollow
+    * [ESME-345] - Add autocompleter for add/edit pool member operation
+
+** Task
+    * [ESME-235] - add the profiler plugin by John Resig to profile our jQuery calls.
+    * [ESME-321] - Get rid of deprecated methods
+    * [ESME-328] - Rewrite the comet timeline 
+    * [ESME-340] - General Task to perform release associated tasks
+    * [ESME-341] - Upgrade to Lift 2.3 version
+    * [ESME-343] - Upgrade to SBT 0.7.5 version
+    * [ESME-349] - Migrate to SBT 0.10
 
 Release 1.2 - 02/25/2011
 
