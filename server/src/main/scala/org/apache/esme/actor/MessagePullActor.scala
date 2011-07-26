@@ -24,7 +24,7 @@ import common._
 import actor._
 import org.apache.esme.actor.Distributor.{UserCreatedMessage=>Msg}
 //import com.twitter.stats.Stats
-import com.twitter.ostrich.Stats
+import com.twitter.ostrich.stats.Stats
 
 object MessagePullActor extends LiftActor {
   

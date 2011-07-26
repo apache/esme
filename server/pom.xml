@@ -73,8 +73,8 @@
     </developer>
     </developers>
     <properties>
-        <lift.version>2.3</lift.version>
-        <scala.version>2.8.1</scala.version>
+        <lift.version>2.4-M3</lift.version>
+        <scala.version>2.9.0-1</scala.version>
         <compass.version>2.1.1</compass.version>
         <lucene.version>2.4.0</lucene.version>
         <netbeans.hint.deploy.server>gfv3</netbeans.hint.deploy.server>
@@ -273,20 +273,9 @@
            <version>1.6.1</version>
         </dependency>
         <dependency>
-            <groupId>net.lag</groupId>
-            <artifactId>configgy</artifactId>
-            <version>2.0.1</version>
-            <exclusions> 
-              <exclusion> 
-                <groupId>org.scala-tools</groupId>
-                <artifactId>vscaladoc</artifactId>
-              </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>com.twitter</groupId>
             <artifactId>ostrich</artifactId>
-            <version>2.3.2</version>    
+            <version>4.7.3</version>
             <exclusions> 
               <exclusion> 
                 <groupId>org.scala-tools</groupId>

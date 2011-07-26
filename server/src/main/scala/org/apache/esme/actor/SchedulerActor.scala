@@ -26,7 +26,7 @@ import net.liftweb.http.ActorWatcher
 import net.liftweb.util._
 import Helpers._
 import net.liftweb.common._
-import com.twitter.ostrich.Stats
+import com.twitter.ostrich.stats.Stats
 
 
 object SchedulerActor extends LiftActor{

@@ -47,8 +47,8 @@ import org.compass.core.config.CompassConfiguration
 import net.liftweb.widgets.tablesorter._
 import widgets.autocomplete.AutoComplete
 //import com.twitter.stats._
-import com.twitter.ostrich.{ServiceTracker, Stats, StatsMBean, RuntimeEnvironment}
-import net.lag.configgy.Config
+import com.twitter.ostrich.admin.{RuntimeEnvironment, AdminHttpService}
+import com.twitter.ostrich.stats.Stats
 
 import _root_.net.liftweb.widgets.logchanger._
 
@@ -222,17 +222,15 @@ class Boot extends Loggable {
     LiftRules.early.append(makeUtf8)
 
     //JMX
-    if (Props.getBool("jmx.enable", false))
-      StatsMBean("org.apache.esme.stats")
+    //if (Props.getBool("jmx.enable", false))
+    //  StatsMBean("org.apache.esme.stats")
       
-    Stats.makeGauge("users") {Distributor.getUsersCount}
-    Stats.makeGauge("listener") {Distributor.getListenersCount}
+    Stats.addGauge("users") {Distributor.getUsersCount}
+    Stats.addGauge("listener") {Distributor.getListenersCount}
 
     val runtime = new RuntimeEnvironment(getClass)
-    val config = new Config
-    config("admin_text_port") = Props.getInt("admin_text_port") openOr 9989
-    config("admin_http_port") = Props.getInt("admin_http_port") openOr 9990
-    ServiceTracker.startAdmin(config, runtime)
+    val adminService = new AdminHttpService(Props.getInt("admin_http_port") openOr 9990, 0, runtime)
+    adminService.start()
 
     // start Scala Actors used in ESME
     Distributor.touch

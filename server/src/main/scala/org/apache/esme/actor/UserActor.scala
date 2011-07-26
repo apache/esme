@@ -33,7 +33,7 @@ import lib._
 import java.util.{TimeZone, Calendar}
 import scala.xml.{Node, Elem}
 //import com.twitter.stats.Stats
-import com.twitter.ostrich.Stats
+import com.twitter.ostrich.stats.Stats
 
 object UserActor {
   private[actor] case class StartMeUp(user: Long)
