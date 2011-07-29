@@ -43,7 +43,7 @@ import org.tartarus.snowball.ext.PorterStemmer
 import org.apache.esme._
 import lib._
 
-object Message extends Message with LongKeyedMetaMapper[Message] {
+object Message extends Message with LongKeyedMetaMapper[Message] with Logger {
   val logger: Logger = Logger ("org.apache.esme.model.Message")
                                       
   private def fixConversation(msg: Message) {
@@ -522,7 +522,7 @@ class Message extends LongKeyedMapper[Message] with ManyToMany {
             }
           }</body>
         <tags>{
-            ((lst.flatMap{case HashTag(t) => Full(t) case _ => Empty})
+            ((lst.flatMap{case Paragraph(elems, _) => {elems.flatMap { case HashTag(t) => Full(t) case _ => Empty} }  case _ => Empty})
              ::: tags).distinct.map(_.toXml)
           }</tags>{
           metaData match {
@@ -531,6 +531,7 @@ class Message extends LongKeyedMapper[Message] with ManyToMany {
           }
 
         }</message>
+      debug("Message.setTextAndTags(), generated XML: %s".format(xml.toString))
       this.text(xml.toString)
       this
     }
