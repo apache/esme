@@ -177,7 +177,8 @@ class UserSnip extends DispatchSnippet {
                                             "tags" -> ValById("vTag"),
                                             "access_pool" -> ValById("vPool"),
                                             "reply-to" -> JsVar("currentConvNumber"))) &
-                     SetValById("vMsg", "")
+                     SetValById("vMsg", "") &
+                     Run("clearReplyTo()")
         ))
     }
   </xml:group>
