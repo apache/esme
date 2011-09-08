@@ -1,7 +1,7 @@
 Apache Enterprise Social Messaging Environment (ESME) Change Log
 
 
-Release 1.3 - 07/23/2011
+Release 1.3 - 08/22/2011
 
 ** Bug
     * [ESME-268] - User should not be offered the option to "resend" their own messages - it has no effect
@@ -10,6 +10,8 @@ Release 1.3 - 07/23/2011
     * [ESME-336] - Streams shows all pools rather than the pools in which I'm a member
     * [ESME-342] - Sign On button doesn't work in IE9
     * [ESME-344] - Searching for "test" doesn't display messages containing that string
+    * [ESME-353] - Tags aren't working any more
+    * [ESME-354] - Reply setting does not get removed from main timeline view after the message is sent
 
 ** Improvement
     * [ESME-233] - Restrict access to the logchanger in production mode
