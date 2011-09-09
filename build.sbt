@@ -1,6 +1,6 @@
 name := "Apache Enterprise Social Messaging Environment (ESME)"
 
-version := "1.3"
+version := "1.4"
 
 organization := "Apache Software Foundation"
 
@@ -34,6 +34,7 @@ libraryDependencies ++= {
     "net.liftweb" %% "lift-common" % liftVersion % "compile->default",
     "net.liftweb" %% "lift-ldap" % liftVersion % "compile->default",
     "net.liftweb" %% "lift-textile" % liftVersion % "compile->default",
+    "org.scalaz" %% "scalaz-core" % "6.0.1" % "compile->default",
     "javax.servlet" % "servlet-api" % "2.5" % "provided->default",
     "org.compass-project" % "compass" % compassVersion % "compile->default",
     "org.apache.lucene" % "lucene-core" % luceneVersion % "compile->default",
