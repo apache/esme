@@ -50,7 +50,7 @@ object ConversationMgr {
 
   val menuItems =
   Menu(Loc("conversation", List("info_view", "conversation"), S.?("base_conv_menu"), ifIsLoggedIn,
-           Loc.Snippet("conv_info", convInfo))) :: Nil         
+           Loc.Snippet("conv_info", convInfo _))) :: Nil
   
   def convInfo(in: NodeSeq): NodeSeq = {  
 

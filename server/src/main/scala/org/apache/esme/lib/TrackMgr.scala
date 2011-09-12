@@ -54,8 +54,8 @@ object TrackMgr {
   val menuItems:List[Menu] = {
     if(Props.get("esme.enable_tracks").openOr("true") == "true") {
       Menu(Loc("trackMgt", List("track_view", "index"), S.?("base_track_menu"), ifIsLoggedIn,
-             Loc.Snippet("displayTracking", displayTracking),
-             Loc.Snippet("main", mainTracking))) :: Nil
+             Loc.Snippet("displayTracking", displayTracking _),
+             Loc.Snippet("main", mainTracking _))) :: Nil
     } else {
       List()
     }      

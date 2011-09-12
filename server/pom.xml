@@ -73,8 +73,8 @@
     </developer>
     </developers>
     <properties>
-        <lift.version>2.4-M3</lift.version>
-        <scala.version>2.9.0-1</scala.version>
+        <lift.version>2.4-M4</lift.version>
+        <scala.version>2.9.1</scala.version>
         <compass.version>2.1.1</compass.version>
         <lucene.version>2.4.0</lucene.version>
         <netbeans.hint.deploy.server>gfv3</netbeans.hint.deploy.server>
@@ -286,7 +286,7 @@
         <dependency>
             <groupId>org.scala-tools.testing</groupId>
             <artifactId>specs_${scala.version}</artifactId>
-            <version>1.6.8</version>
+            <version>1.6.9</version>
             <scope>test</scope>
         </dependency>
         <dependency>

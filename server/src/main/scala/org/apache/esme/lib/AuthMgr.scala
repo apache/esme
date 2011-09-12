@@ -57,8 +57,8 @@ object AuthMgr {
   val menuItems:List[Menu] = {
     if(Props.get("esme.enable_tokens").openOr("true") == "true") {
       Menu(Loc("authToken", List("auth_view", "index"), S.?("base_token_menu"), ifIsLoggedIn,
-           Loc.Snippet("displayTokens", displayTokens),
-           Loc.Snippet("main", mainTokens))) :: Nil   
+           Loc.Snippet("displayTokens", displayTokens _),
+           Loc.Snippet("main", mainTokens _))) :: Nil
     } else {
       List()
     }     

@@ -4,7 +4,7 @@ version := "1.4"
 
 organization := "Apache Software Foundation"
 
-scalaVersion := "2.9.0-1"
+scalaVersion := "2.9.1"
 
 seq(webSettings :_*)
 
@@ -16,8 +16,8 @@ ivyXML :=
     </dependencies>
 
 libraryDependencies ++= {
-  val scalaVersion = "2.9.0-1"
-  val liftVersion = "2.4-M3"
+  val scalaVersion = "2.9.1"
+  val liftVersion = "2.4-M4"
   val compassVersion = "2.1.1"
   val luceneVersion = "2.4.0"
   Seq(
@@ -44,7 +44,7 @@ libraryDependencies ++= {
     "log4j" % "log4j" % "1.2.16" % "compile->default",
     "org.slf4j" % "slf4j-api" % "1.6.1" % "compile->default",
     "org.slf4j" % "slf4j-log4j12" % "1.6.1" % "compile->default",
-    "org.scala-tools.testing" %% "specs" % "1.6.8" % "test->default",
+    "org.scala-tools.testing" %% "specs" % "1.6.9" % "test->default",
     "org.scala-lang" % "scala-compiler" % scalaVersion % "test->default",
     "org.mortbay.jetty" % "jetty" % "[6.1.6,)" % "test->default"
   )

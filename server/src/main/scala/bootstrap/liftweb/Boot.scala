@@ -175,14 +175,14 @@ class Boot extends Loggable {
     // Build SiteMap
     val entries = Menu(Loc("Home", List("index"), "Home")) ::
         Menu(Loc("user", List("info_view", "user"), "User Info", ifIsLoggedIn,
-          Loc.Snippet("user_info", UserDisplay.userInfo))) ::
+          Loc.Snippet("user_info", UserDisplay.userInfo _))) ::
         logLevel.menu  ::
         Menu(Loc("tag", List("info_view", "tag"), "Tag", ifIsLoggedIn,
-          Loc.Snippet("tag_display", TagDisplay.display))) ::
+          Loc.Snippet("tag_display", TagDisplay.display _))) ::
         Menu(Loc("public", List("info_view", "public"), S.?("base_profile_public"), ifIsLoggedIn)) ::
         Menu(Loc("contacts", List("info_view", "contacts"), S.?("base_profile_contacts"), ifIsLoggedIn)) ::
         Menu(Loc("sign_up", List("signup"), S.?("base_menu_signup"),
-          Snippet("signup", User.signupForm),
+          Snippet("signup", User.signupForm _),
           Unless(User.loggedIn_? _, S.?("base_menu_sign_up_error")))) ::
         Menu(Loc("logout", List("logout"), S.?("base_menu_logout"),
           EarlyResponse(() => {User.logUserOut; S.redirectTo(S.referer openOr "/")}),
