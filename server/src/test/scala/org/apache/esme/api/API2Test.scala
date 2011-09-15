@@ -548,24 +548,31 @@ object Api2Specs extends Specification with TestKit {
       }
     }
 
-    /*
-    *    "/user/actions/ACTIONID PUT" in {
-    *     "with valid session" in {
-    *       for {
-    *         sess <- post_session
-    *         res <- sess.put("user/actions/1","enabled"->0)
-    *       } {
-    *         res.code must be equalTo 200
-    *       }
-    *     }
-    *
-    *     "with no session returns 403 (forbidden)" in {
-    *       for(res <- post("user/actions/1","enabled"->0)) {
-    *         res.code must be equalTo 403
-    *       }
-    *     }
-    *   }
-    */
+/*    "/user/actions/ACTIONID PUT" in {
+ *     "with valid session" in {
+ *       for {
+ *         sess <- post_session
+ *         res <- sess.put("user/actions/1", "enabled" -> "0") 
+ *       } {
+ *         res.code must be equalTo 200
+ *       }
+ *     }  
+ *     
+ *     "with no enabled parameter" in {
+ *       for {
+ *         sess <- post_session
+ *         res <- sess.put("user/actions/1")
+ *       } {
+ *         res.code must be equalTo 200
+ *       }  
+ *     }
+ *
+ *     "with no session returns 403 (forbidden)" in {
+ *       for(res <- put("user/actions/1", "enabled" -> "0")) {
+ *         res.code must be equalTo 403
+ *       }
+ *     }
+ *   } */
 
 // Brittle, brittle, brittle
     "/user/actions/ACTIONID DELETE" in {

@@ -513,7 +513,7 @@ object API2 extends ApiHelper with XmlHelper {
     val ret: Box[Tuple3[Int,Map[String,String],Box[Elem]]] =
       for (user <- User.currentUser;
            action <- findAction(actionId);
-           enabled <- S.param("enabled").map(toBoolean) ?~ S.?("base_rest_api_err_missing_param", "enable"))
+           val enabled = S.param("enabled").map(toBoolean).openOr(action.enabled))
       yield {
         action.disabled(!enabled).save
         (200,Map(),Full(action.toXml))

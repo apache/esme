@@ -202,18 +202,14 @@ object ApiSpecs extends Specification with TestKit {
      "SendMessageToken" in {
       for{
         send_msg <- post("/api/send_msg", "token" -> token, "message" -> "mymessage") !@ "Failed to send_msg with token" if (testSuccess(send_msg))
-       } {
-        println(send_msg.xml)
-      }
+       } { }
     }
     
     "AddPool" in {
       for{
         login <- post("/api/login", "token" -> token) !@ "Failed to log in" if (testSuccess(login))
         add_pool <- login.post("/api/add_pool/ttt87") !@ "Failed to add  a pool" if (testSuccess(add_pool))
-       } {
-        //println(add_pool.xml)
-      }
+       } { }
     }
 
     "AddPoolNeg" in {
@@ -236,9 +232,7 @@ object ApiSpecs extends Specification with TestKit {
     "SendMessageTokenNeg" in {
       for{
         send_msg1 <- post("/api/send_msg", "token" -> token) !@ "send_msg should have failed with no message" if shouldnt(testSuccess(send_msg1))
-       } {
-        println(send_msg1.xml)
-      }
+       } { }
     }
 
   }
