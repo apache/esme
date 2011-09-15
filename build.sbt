@@ -4,22 +4,20 @@ version := "1.4"
 
 organization := "Apache Software Foundation"
 
-scalaVersion := "2.8.1"
+scalaVersion := "2.9.1"
 
-seq(WebPlugin.webSettings: _*)
+seq(webSettings :_*)
 
 ivyXML :=
     <dependencies>
-      <dependency org="net.lag" name="configgy" rev="2.0.1">
-        <exclude org="org.scala-tools" module="vscaladoc"/>
-      </dependency>
-      <dependency org="com.twitter" name="ostrich" rev="2.3.2">
+      <dependency org="com.twitter" name="ostrich" rev="4.7.3">
         <exclude org="org.scala-tools" module="vscaladoc"/>
       </dependency>
     </dependencies>
 
 libraryDependencies ++= {
-  val liftVersion = "2.3"
+  val scalaVersion = "2.9.1"
+  val liftVersion = "2.4-M4"
   val compassVersion = "2.1.1"
   val luceneVersion = "2.4.0"
   Seq(
@@ -46,8 +44,8 @@ libraryDependencies ++= {
     "log4j" % "log4j" % "1.2.16" % "compile->default",
     "org.slf4j" % "slf4j-api" % "1.6.1" % "compile->default",
     "org.slf4j" % "slf4j-log4j12" % "1.6.1" % "compile->default",
-    "org.scala-tools.testing" %% "specs" % "1.6.8" % "test->default",
-    "org.scala-lang" % "scala-compiler" % "2.8.1" % "test->default",
+    "org.scala-tools.testing" %% "specs" % "1.6.9" % "test->default",
+    "org.scala-lang" % "scala-compiler" % scalaVersion % "test->default",
     "org.mortbay.jetty" % "jetty" % "[6.1.6,)" % "test->default"
   )
 }
@@ -59,6 +57,8 @@ resolvers += ScalaToolsSnapshots
 resolvers += "Compass Repository" at "http://repo.compass-project.org"
 
 resolvers += "Twitter Repository" at "http://maven.twttr.com"
+
+resolvers +=  "Java.net Maven2 Repository" at "http://download.java.net/maven/2/"
 
 // Execute tests in the current project serially.
 // Tests from other projects may still run concurrently.

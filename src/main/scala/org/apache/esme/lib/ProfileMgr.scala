@@ -55,7 +55,7 @@ object ProfileMgr {
 
   val menuItems =
   Menu(Loc("profile", List("profile_view", "edit"), S.?("base_profile_menu"), ifIsLoggedIn,
-           Loc.Snippet("editProfile", editProfile))) ::
+           Loc.Snippet("editProfile", editProfile _))) ::
   Nil
 
   def editProfile(in: NodeSeq): NodeSeq = {

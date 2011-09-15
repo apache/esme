@@ -39,6 +39,8 @@ class Api2SpecsAsTest extends JUnit3(Api2Specs)
 object Api2SpecsRunner extends ConsoleRunner(Api2Specs)
 
 object Api2Specs extends Specification with TestKit {
+  //noDetailedDiffs()
+
   JettyTestServer.start
 
   val baseUrl = JettyTestServer.urlFor("/api2/")

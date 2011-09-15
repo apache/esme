@@ -50,8 +50,8 @@ object SearchMgr {
 
   val menuItems =
   Menu(Loc("search", List("info_view", "search"), S.?("base_menu_search"), ifIsLoggedIn,
-           Loc.Snippet("display_search", displaySearch),
-           Loc.Snippet("searchTerm", searchTerm))) ::
+           Loc.Snippet("display_search", displaySearch _),
+           Loc.Snippet("searchTerm", searchTerm _))) ::
   Nil                                        
   
   def searchTerm(in: NodeSeq): NodeSeq = {

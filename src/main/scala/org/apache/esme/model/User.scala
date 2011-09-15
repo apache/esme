@@ -43,7 +43,7 @@ import org.apache.esme.actor._
 import java.net.URL
 import java.util.logging._
 //import com.twitter.stats.Stats
-import com.twitter.ostrich.Stats
+import com.twitter.ostrich.stats.Stats
 
 object User extends User with KeyedMetaMapper[Long, User] with Loggable {
   override def afterSave = profileChanged _ :: notifyActors _ :: super.afterSave
