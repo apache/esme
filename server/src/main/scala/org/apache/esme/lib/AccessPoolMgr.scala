@@ -60,11 +60,11 @@ object AccessPoolMgr {
 
   val menuItems =
   Menu(Loc("accessPools", new Link("pools_view" :: Nil, true)/*List("pools_view", "index")*/, S.?("base_pool_menu"), ifIsLoggedIn,
-           Loc.Snippet("addPool", addPool),
-           Loc.Snippet("editPool", editPool),
-           Loc.Snippet("poolUsers", displayPoolUsers),
-  		   Loc.Snippet("poolDetail", displayPoolDetail)//regist snippet for pool detail display
-          ,Loc.Snippet("myPools", myPoolsWithRoles)          
+           Loc.Snippet("addPool", addPool _),
+           Loc.Snippet("editPool", editPool _),
+           Loc.Snippet("poolUsers", displayPoolUsers _),
+  		   Loc.Snippet("poolDetail", displayPoolDetail _)//regist snippet for pool detail display
+          ,Loc.Snippet("myPools", myPoolsWithRoles _)
   		)) ::
   Nil
 

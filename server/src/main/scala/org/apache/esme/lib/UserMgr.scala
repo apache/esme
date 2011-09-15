@@ -50,7 +50,7 @@ object UserMgr {
 
   val menuItems =
   Menu(Loc("list_users", List("info_view", "users"), S.?("base_users_menu"), ifIsLoggedIn,
-           Loc.Snippet("displayUsers", displayUsers))) ::
+           Loc.Snippet("displayUsers", displayUsers _))) ::
   Nil
 
   def displayUsers(in: NodeSeq): NodeSeq = {

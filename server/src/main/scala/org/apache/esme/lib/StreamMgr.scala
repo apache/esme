@@ -59,7 +59,7 @@ object StreamMgr {
 
   val menuItems =
   Menu(Loc("streams", List("info_view", "streams"), S.?("base_streams_menu"), ifIsLoggedIn,
-           Loc.Snippet("stream_display", StreamDisplay.display))) ::
+           Loc.Snippet("stream_display", StreamDisplay.display _))) ::
   Nil
 
 }

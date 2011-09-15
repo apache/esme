@@ -47,8 +47,8 @@ import org.compass.core.config.CompassConfiguration
 import net.liftweb.widgets.tablesorter._
 import widgets.autocomplete.AutoComplete
 //import com.twitter.stats._
-import com.twitter.ostrich.{ServiceTracker, Stats, StatsMBean, RuntimeEnvironment}
-import net.lag.configgy.Config
+import com.twitter.ostrich.admin.{RuntimeEnvironment, AdminHttpService}
+import com.twitter.ostrich.stats.Stats
 
 import _root_.net.liftweb.widgets.logchanger._
 
@@ -175,14 +175,14 @@ class Boot extends Loggable {
     // Build SiteMap
     val entries = Menu(Loc("Home", List("index"), "Home")) ::
         Menu(Loc("user", List("info_view", "user"), "User Info", ifIsLoggedIn,
-          Loc.Snippet("user_info", UserDisplay.userInfo))) ::
+          Loc.Snippet("user_info", UserDisplay.userInfo _))) ::
         logLevel.menu  ::
         Menu(Loc("tag", List("info_view", "tag"), "Tag", ifIsLoggedIn,
-          Loc.Snippet("tag_display", TagDisplay.display))) ::
+          Loc.Snippet("tag_display", TagDisplay.display _))) ::
         Menu(Loc("public", List("info_view", "public"), S.?("base_profile_public"), ifIsLoggedIn)) ::
         Menu(Loc("contacts", List("info_view", "contacts"), S.?("base_profile_contacts"), ifIsLoggedIn)) ::
         Menu(Loc("sign_up", List("signup"), S.?("base_menu_signup"),
-          Snippet("signup", User.signupForm),
+          Snippet("signup", User.signupForm _),
           Unless(User.loggedIn_? _, S.?("base_menu_sign_up_error")))) ::
         Menu(Loc("logout", List("logout"), S.?("base_menu_logout"),
           EarlyResponse(() => {User.logUserOut; S.redirectTo(S.referer openOr "/")}),
@@ -222,17 +222,15 @@ class Boot extends Loggable {
     LiftRules.early.append(makeUtf8)
 
     //JMX
-    if (Props.getBool("jmx.enable", false))
-      StatsMBean("org.apache.esme.stats")
+    //if (Props.getBool("jmx.enable", false))
+    //  StatsMBean("org.apache.esme.stats")
       
-    Stats.makeGauge("users") {Distributor.getUsersCount}
-    Stats.makeGauge("listener") {Distributor.getListenersCount}
+    Stats.addGauge("users") {Distributor.getUsersCount}
+    Stats.addGauge("listener") {Distributor.getListenersCount}
 
     val runtime = new RuntimeEnvironment(getClass)
-    val config = new Config
-    config("admin_text_port") = Props.getInt("admin_text_port") openOr 9989
-    config("admin_http_port") = Props.getInt("admin_http_port") openOr 9990
-    ServiceTracker.startAdmin(config, runtime)
+    val adminService = new AdminHttpService(Props.getInt("admin_http_port") openOr 9990, 0, runtime)
+    adminService.start()
 
     // start Scala Actors used in ESME
     Distributor.touch

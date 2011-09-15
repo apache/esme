@@ -72,12 +72,6 @@ object MsgParser extends TextileParsers(None,false) with CombParserHelpers {
                        atName | hashTag | charBlock)
   }
 
-  val punctRegex = java.util.regex.Pattern.compile("""\p{Punct}""")
-
-  def isPunct(c: Char) = punctRegex.matcher(c.toString).matches
-
-  lazy val punct: Parser[Elem] = elem("separator", isPunct)
-
   lazy val startSpace = rep(' ')
 
   lazy val userNameStr: Parser[String] = alpha ~ rep(alpha | digit | '_') ^^ {
@@ -255,8 +249,6 @@ object MsgParser extends TextileParsers(None,false) with CombParserHelpers {
   Character.isDigit(in) || (in == '_')
 
   lazy val spaceEOF = rep(' ') ~ EOF
-
-  lazy val spacePunctOrEnd: Parser[Boolean] = (EOL | ' ' | punct) ^^^ true
 
   lazy val EOF: Parser[Elem] = elem("EOF", isEof _)
 
