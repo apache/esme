@@ -144,7 +144,7 @@ trait Timeline extends CometActor {
           resendAttrs)
       } 
 
-    val authorHref = LiftRules.context.path + "/user/" + authorNickname
+      val authorHref = "/user/" + authorNickname
                                        
     val messageDate = toInternetDate(m._1.when)
     
