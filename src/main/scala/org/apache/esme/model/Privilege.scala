@@ -112,7 +112,7 @@ class Privilege extends LongKeyedMapper[Privilege] {
  */
 object Permission extends Enumeration {
   val Read = Value(0, "Read")
-  val Write = Value(1, "Write")
+  val Write = Value(1, "Read/Write")
   val Admin = Value(2, "Admin")
   val Denied = Value(3, "Denied")
 }
