@@ -287,7 +287,7 @@ trait LDAPBase {
 
   object myLdapVendor extends LDAPVendor
 
-  val rolesToCheck = Props.get("role_list") match {
+  val rolesToCheck = Props.get("role.list") match {
     case Full(s) => s.split(',').toList
     case _ => Nil
   }
@@ -375,10 +375,15 @@ object ContainerManagedAuthModule extends AuthModule with LDAPBase {
 
   def moduleName: String = "cm"
 
+  val cmaPath = Props.get("cma.path") match {
+    case Full(s) => s.split('/').toList
+    case _ => List("cm", "login")
+  }
+
   def performInit(): Unit = {
 
     LiftRules.dispatch.append {
-      case Req("cm" :: "login" :: Nil, _, _) =>  {
+      case Req(`cmaPath`, _, _) =>  {
         val from = "/"
 
         S.request match {
