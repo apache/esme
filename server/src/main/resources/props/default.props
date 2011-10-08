@@ -57,4 +57,7 @@ ldap.groupBase=ou=Groups,ou=esme,dc=lester,dc=org
 
 
 ;Allow access to application for following roles
-role_list=esme-users,monitoring-admin
+role.list=esme-users,monitoring-admin
+
+;Path to resource secured by container-managed authentication
+cma.path=cm/login
