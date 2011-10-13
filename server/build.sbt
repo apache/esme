@@ -38,7 +38,7 @@ libraryDependencies ++= {
     "org.apache.lucene" % "lucene-snowball" % luceneVersion % "compile->default",
     "commons-httpclient" % "commons-httpclient" % "3.1" % "compile->default",
     "org.apache.derby" % "derby" % "10.5.3.0_1" % "compile->default",
-    "org.mortbay.jetty" % "jetty" % "[6.1.6,)" % "jetty->default",
+    "org.mortbay.jetty" % "jetty" % "[6.1.6,)" % "container",
     "junit" % "junit" % "3.8.1" % "test->default",
     "junit" % "junit" % "4.4" % "test->default",
     "log4j" % "log4j" % "1.2.16" % "compile->default",
