@@ -227,10 +227,12 @@ class Boot extends Loggable {
       
     Stats.addGauge("users") {Distributor.getUsersCount}
     Stats.addGauge("listener") {Distributor.getListenersCount}
-
-    val runtime = new RuntimeEnvironment(getClass)
-    val adminService = new AdminHttpService(Props.getInt("admin_http_port") openOr 9990, 0, runtime)
-    adminService.start()
+                                                             
+    for(port <- Props.getInt("admin_http_port")) {
+      val runtime = new RuntimeEnvironment(getClass)
+      val adminService = new AdminHttpService(port, 0, runtime)
+      adminService.start()
+    }
 
     // start Scala Actors used in ESME
     Distributor.touch
