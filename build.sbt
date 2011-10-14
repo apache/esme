@@ -1,3 +1,7 @@
+import com.typesafe.startscript.StartScriptPlugin
+
+seq(StartScriptPlugin.startScriptForClassesSettings: _*)
+
 name := "Apache Enterprise Social Messaging Environment (ESME)"
 
 version := "1.4"
@@ -38,7 +42,9 @@ libraryDependencies ++= {
     "org.apache.lucene" % "lucene-snowball" % luceneVersion % "compile->default",
     "commons-httpclient" % "commons-httpclient" % "3.1" % "compile->default",
     "org.apache.derby" % "derby" % "10.5.3.0_1" % "compile->default",
-    "org.mortbay.jetty" % "jetty" % "[6.1.6,)" % "container",
+    "org.mortbay.jetty" % "jetty" % "[6.1.6,)" % "container",    
+    "org.eclipse.jetty" % "jetty-server" % "7.3.1.v20110307" % "compile->default",
+    "org.eclipse.jetty" % "jetty-servlet" % "7.3.1.v20110307" % "compile->default",
     "junit" % "junit" % "3.8.1" % "test->default",
     "junit" % "junit" % "4.4" % "test->default",
     "log4j" % "log4j" % "1.2.16" % "compile->default",
@@ -58,7 +64,7 @@ resolvers += "Compass Repository" at "http://repo.compass-project.org"
 
 resolvers += "Twitter Repository" at "http://maven.twttr.com"
 
-resolvers +=  "Java.net Maven2 Repository" at "http://download.java.net/maven/2/"
+resolvers +=  "Java.net Maven2 Repository" at "http://download.java.net/maven/2/"   
 
 // Execute tests in the current project serially.
 // Tests from other projects may still run concurrently.
