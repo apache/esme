@@ -42,7 +42,8 @@ import common.Full
 import mapper._
 import provider.HTTPRequest
 import org.compass.core._
-import org.compass.core.config.CompassConfiguration
+import org.compass.core.config.CompassConfiguration    
+import scala.sys.SystemProperties
 
 import net.liftweb.widgets.tablesorter._
 import widgets.autocomplete.AutoComplete
@@ -51,9 +52,7 @@ import com.twitter.ostrich.admin.{RuntimeEnvironment, AdminHttpService}
 import com.twitter.ostrich.stats.Stats
 
 import _root_.net.liftweb.widgets.logchanger._
-
-
-
+          
 /**
  * A class that's instantiated early and run.  It allows the application
  * to modify lift's environment
@@ -62,17 +61,25 @@ class Boot extends Loggable {
   def boot {
 
     // Get DB from container if available
+    DefaultConnectionIdentifier.jndiName = Props.get("jndi.name") openOr "esme"        
     
-    DefaultConnectionIdentifier.jndiName = Props.get("jndi.name") openOr "esme"
-
-    // Deal with Database
-        
+    // Are we supposed to use an env variable for the JDBC connect URL?
+    val env_var:Box[String] = Props.get("jdbc_connect_url_from_env")
+    val jdbc_connect_url : String =   
+      if(env_var.isEmpty) {
+        Props.get("jdbc_connect_url") openOr "jdbc:derby:esme_db;create=true"
+      } else {                      
+        val sys = new SystemProperties
+        sys.get(env_var.openOr("DATABASE_URL")).getOrElse("jdbc:derby:esme_db;create=true")
+      }
+                      
+    // Deal with Database        
     if (!DB.jndiJdbcConnAvailable_?) {
-      val vendor = 
-	new StandardDBVendor(Props.get("db_driver") openOr "org.apache.derby.jdbc.EmbeddedDriver",
-			     Props.get("jdbc_connect_url") openOr 
-			     "jdbc:derby:esme_db;create=true",
-			     Props.get("db_user"), Props.get("db_pwd"))
+      val vendor = new StandardDBVendor(Props.get("db_driver") openOr 
+                                        "org.apache.derby.jdbc.EmbeddedDriver",
+			                                  jdbc_connect_url,
+			                                  Props.get("db_user"),
+			                                  Props.get("db_pwd"))
 
       LiftRules.unloadHooks.append(vendor.closeAllConnections_! _)
 

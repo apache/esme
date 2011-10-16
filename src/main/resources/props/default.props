@@ -26,7 +26,9 @@ admin_text_port=9989
 admin_http_port=8099   
 esme.enable_tracks=true
 esme.enable_actions=true
-esme.enable_tokens=true
+esme.enable_tokens=true   
+
+;jdbc_connect_url_from_env=DATABASE_URL
 
 ;Enable LDAP
 ldap.enabled=false
