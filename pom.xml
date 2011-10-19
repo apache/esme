@@ -75,6 +75,7 @@
     <properties>
         <lift.version>2.4-M4</lift.version>
         <scala.version>2.9.1</scala.version>
+        <scalaz.version>6.0.3</scalaz.version>
         <compass.version>2.1.1</compass.version>
         <lucene.version>2.4.0</lucene.version>
         <netbeans.hint.deploy.server>gfv3</netbeans.hint.deploy.server>
@@ -206,6 +207,11 @@
            <groupId>net.liftweb</groupId>
            <artifactId>lift-textile_${scala.version}</artifactId>
            <version>${lift.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.scalaz</groupId>
+          <artifactId>scalaz-core_${scala.version}</artifactId>
+          <version>${scalaz.version}</version>
         </dependency>
         <dependency>
             <groupId>org.compass-project</groupId>

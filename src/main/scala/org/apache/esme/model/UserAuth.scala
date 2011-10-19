@@ -49,6 +49,9 @@ import provider.servlet.HTTPRequestServlet
 
 import scala.xml._
 
+import scalaz._
+import Scalaz._
+
 import org.apache.esme.actor._
 
 import org.openid4java.discovery.Identifier
@@ -375,10 +378,7 @@ object ContainerManagedAuthModule extends AuthModule with LDAPBase {
 
   def moduleName: String = "cm"
 
-  val cmaPath = Props.get("cma.path") match {
-    case Full(s) => s.split('/').toList
-    case _ => List("cm", "login")
-  }
+  val cmaPath = Props.get("cma.path").toOption.cata(_.split('/').toList, List("cm", "login"))
 
   def performInit(): Unit = {
 
