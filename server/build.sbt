@@ -10,6 +10,8 @@ organization := "Apache Software Foundation"
 
 scalaVersion := "2.9.1"
 
+scalazVersion := "6.0.3"
+
 seq(webSettings :_*)
 
 ivyXML :=
@@ -36,6 +38,7 @@ libraryDependencies ++= {
     "net.liftweb" %% "lift-common" % liftVersion % "compile->default",
     "net.liftweb" %% "lift-ldap" % liftVersion % "compile->default",
     "net.liftweb" %% "lift-textile" % liftVersion % "compile->default",
+    "org.scalaz" %% "scalaz-core" % "6.0.3" % "compile->default",
     "javax.servlet" % "servlet-api" % "2.5" % "provided->default",
     "org.compass-project" % "compass" % compassVersion % "compile->default",
     "org.apache.lucene" % "lucene-core" % luceneVersion % "compile->default",
