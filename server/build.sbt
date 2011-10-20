@@ -26,6 +26,7 @@ libraryDependencies ++= {
   val liftVersion = "2.4-M4"
   val compassVersion = "2.1.1"
   val luceneVersion = "2.4.0"
+  val scalazVersion = "6.0.3"
   Seq(
     "net.liftweb" %% "lift-util" % liftVersion % "compile->default",
     "net.liftweb" %% "lift-webkit" % liftVersion % "compile->default",
@@ -38,7 +39,7 @@ libraryDependencies ++= {
     "net.liftweb" %% "lift-common" % liftVersion % "compile->default",
     "net.liftweb" %% "lift-ldap" % liftVersion % "compile->default",
     "net.liftweb" %% "lift-textile" % liftVersion % "compile->default",
-    "org.scalaz" %% "scalaz-core" % "6.0.3" % "compile->default",
+    "org.scalaz" %% "scalaz-core" % scalazVersion % "compile->default",
     "javax.servlet" % "servlet-api" % "2.5" % "provided->default",
     "org.compass-project" % "compass" % compassVersion % "compile->default",
     "org.apache.lucene" % "lucene-core" % luceneVersion % "compile->default",
