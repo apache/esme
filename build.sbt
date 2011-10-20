@@ -8,9 +8,7 @@ version := "1.4"
 
 organization := "Apache Software Foundation"
 
-scalaVersion := "2.9.1"
-
-scalazVersion := "6.0.3"
+scalaVersion := "2.9.1"      
 
 seq(webSettings :_*)
 
@@ -26,7 +24,11 @@ libraryDependencies ++= {
   val liftVersion = "2.4-M4"
   val compassVersion = "2.1.1"
   val luceneVersion = "2.4.0"
-  val scalazVersion = "6.0.3"
+  val scalazVersion = "6.0.3" 
+  val eclipsejettyVersion = "7.3.1.v20110307"    
+  val mortbayjettyVersion = "[6.1.6,)"
+  val slf4jVersion = "1.6.1" 
+  val scalatestVersion = "1.6.9"   
   Seq(
     "net.liftweb" %% "lift-util" % liftVersion % "compile->default",
     "net.liftweb" %% "lift-webkit" % liftVersion % "compile->default",
@@ -46,17 +48,17 @@ libraryDependencies ++= {
     "org.apache.lucene" % "lucene-snowball" % luceneVersion % "compile->default",
     "commons-httpclient" % "commons-httpclient" % "3.1" % "compile->default",
     "org.apache.derby" % "derby" % "10.5.3.0_1" % "compile->default",
-    "org.mortbay.jetty" % "jetty" % "[6.1.6,)" % "container",    
-    "org.eclipse.jetty" % "jetty-server" % "7.3.1.v20110307" % "compile->default",
-    "org.eclipse.jetty" % "jetty-servlet" % "7.3.1.v20110307" % "compile->default",
+    "org.mortbay.jetty" % "jetty" % mortbayjettyVersion % "container",    
+    "org.eclipse.jetty" % "jetty-server" % eclipsejettyVersion % "compile->default",
+    "org.eclipse.jetty" % "jetty-servlet" % eclipsejettyVersion % "compile->default",
     "junit" % "junit" % "3.8.1" % "test->default",
     "junit" % "junit" % "4.4" % "test->default",
     "log4j" % "log4j" % "1.2.16" % "compile->default",
-    "org.slf4j" % "slf4j-api" % "1.6.1" % "compile->default",
-    "org.slf4j" % "slf4j-log4j12" % "1.6.1" % "compile->default",
-    "org.scala-tools.testing" %% "specs" % "1.6.9" % "test->default",
+    "org.slf4j" % "slf4j-api" % slf4jVersion % "compile->default",
+    "org.slf4j" % "slf4j-log4j12" % slf4jVersion % "compile->default",
+    "org.scala-tools.testing" %% "specs" % scalatestVersion % "test->default",
     "org.scala-lang" % "scala-compiler" % scalaVersion % "test->default",
-    "org.mortbay.jetty" % "jetty" % "[6.1.6,)" % "test->default"
+    "org.mortbay.jetty" % "jetty" % mortbayjettyVersion % "test->default"
   )
 }
 
