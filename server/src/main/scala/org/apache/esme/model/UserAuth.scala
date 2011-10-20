@@ -49,7 +49,7 @@ import provider.servlet.HTTPRequestServlet
 
 import scala.xml._
 
-import scalaz._
+import scalaz.{OptionW, Scalaz}
 import Scalaz._
 
 import org.apache.esme.actor._
