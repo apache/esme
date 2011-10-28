@@ -88,6 +88,11 @@
               <name>http://repo2.maven.org/maven2/</name>
               <url>http://repo2.maven.org/maven2/</url>
           </repository> 
+           <repository>
+          <id>typesafe</id>
+          <name>Typesafe Repository</name>
+          <url>http://repo.typesafe.com/typesafe/releases/</url>
+        </repository>
         <repository>
             <id>scala-tools.org</id>
             <name>Scala-Tools Maven2 Repository</name>
@@ -119,7 +124,7 @@
               <name>Apache repository for Derby 10.5.1.1</name> 
               <url>http://people.apache.org/repo/m1-ibiblio-rsync-repository</url> 
               <layout>legacy</layout> 
-            </repository>           
+        </repository>           
     </repositories>
 
     <pluginRepositories>
@@ -311,6 +316,11 @@
             <version>4.4</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+         <groupId>se.scalablesolutions.akka</groupId>
+         <artifactId>akka-actor</artifactId>
+         <version>1.2</version>
+         </dependency>
     </dependencies>
 
     <build>
