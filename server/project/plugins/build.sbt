@@ -3,8 +3,8 @@ resolvers  ++= Seq(
   Resolver.url("Typesafe repository", new java.net.URL("http://typesafe.artifactoryonline.com/typesafe/ivy-releases/"))(Resolver.defaultIvyPatterns)
 )                                                                     
 
-libraryDependencies <+= sbtVersion(v => "com.github.siasia" %% "xsbt-web-plugin" % (v+"-0.2.4"))     
+libraryDependencies <+= sbtVersion(v => "com.github.siasia" %% "xsbt-web-plugin" % (v+"-0.2.9"))
 
 resolvers += Classpaths.typesafeResolver
 
-addSbtPlugin("com.typesafe.startscript" % "xsbt-start-script-plugin" % "0.3.0")   
+addSbtPlugin("com.typesafe.startscript" % "xsbt-start-script-plugin" % "0.5.0")
