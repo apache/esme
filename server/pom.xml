@@ -73,7 +73,7 @@
     </developer>
     </developers>
     <properties>
-        <lift.version>2.4-M5</lift.version>
+        <lift.version>2.4-RC1</lift.version>
         <scala.version>2.9.1</scala.version>
         <scalaz.version>6.0.3</scalaz.version>
         <compass.version>2.1.1</compass.version>
