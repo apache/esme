@@ -19,6 +19,9 @@
 
 package org.apache.esme.lib
 
+import scalaz._
+import Scalaz._
+
 object TagUtils {
 
   // Normalize the frequencies from arbitrary Integers to the range (0.0 - 1.0)
@@ -29,10 +32,8 @@ object TagUtils {
   }
   
   // Compounds a bunch of (String, Int) elements so that [(String1, Int1), (String1, Int2)] becomes [(String1, Int1+Int2)]
-  def compound(llsi: List[(String,Int)]): List[(String,Int)] =
-    llsi.foldLeft[Map[String, Int]](Map.empty) {
-      case (map, (str, cnt)) => map + (str -> (map.getOrElse(str, 0) + cnt))
-    }.toList
+  // foldMap with List as Foldable and append operation of Map Monoid
+  def compound(llsi: List[(String,Int)]): List[(String,Int)] = llsi.foldMap(Map(_)).toList
 
   
   def everyEven(x:List[(String, Int)]):List[(String, Int)] = everyOther(x)
