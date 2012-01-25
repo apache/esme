@@ -21,10 +21,10 @@ ivyXML :=
 
 libraryDependencies ++= {
   val scalaVersion = "2.9.1"
-  val liftVersion = "2.4-RC1"
+  val liftVersion = "2.4"
   val compassVersion = "2.1.1"
   val luceneVersion = "2.4.0"
-  val scalazVersion = "6.0.3" 
+  val scalazVersion = "6.0.4"
   val eclipsejettyVersion = "7.3.1.v20110307"    
   val mortbayjettyVersion = "[6.1.6,)"
   val slf4jVersion = "1.6.1" 
