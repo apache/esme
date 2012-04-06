@@ -22,7 +22,7 @@
  import org.eclipse.jetty.server.nio.SelectChannelConnector
  import net.liftweb.http.LiftFilter
 
- object JettyLauncher extends Application {
+ object JettyLauncher extends App {
    val port = if(System.getenv("PORT") != null) System.getenv("PORT").toInt else 8080
    val server = new Server
    val scc = new SelectChannelConnector

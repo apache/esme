@@ -8,7 +8,10 @@ version := "1.4"
 
 organization := "Apache Software Foundation"
 
-scalaVersion := "2.9.1"      
+scalaVersion := "2.9.1"    
+
+//scalacOptions ++= Seq("-unchecked", "-deprecation")  
+scalacOptions ++= Seq("-deprecation") 
 
 seq(webSettings :_*)
 
@@ -76,6 +79,4 @@ resolvers += "Maven central" at "http://repo1.maven.org/maven2/"
 
 // Execute tests in the current project serially.
 // Tests from other projects may still run concurrently.
-//parallelExecution in Test := false
-
-//scalacOptions += "-Xprint:typer"
+parallelExecution in Test := false 

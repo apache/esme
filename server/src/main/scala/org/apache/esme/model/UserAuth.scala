@@ -128,7 +128,7 @@ trait FieldSet {
 object UserPwdAuthModule extends AuthModule {
   def loginPresentation: Box[NodeSeq] = {
     val ldapBind : CssBindFunc = "#ldapEnabled [value]" #> (Props.getBool("ldap.enabled") openOr false)
-    TemplateFinder.findAnyTemplate("templates-hidden" :: "upw_login_form" :: Nil) match {
+    Templates("templates-hidden" :: "upw_login_form" :: Nil) match {
       case Full(tpl) => Full(ldapBind(tpl))
       case _ => Empty
     }
@@ -177,7 +177,7 @@ object UserPwdAuthModule extends AuthModule {
     private var email = ""
 
     def toForm: NodeSeq =
-    TemplateFinder.findAnyTemplate("templates-hidden" :: "upw_signup_form" :: Nil).map(
+    Templates("templates-hidden" :: "upw_signup_form" :: Nil).map(
       xhtml =>
       bind("signup", xhtml,
            "email" -%> SHtml.text(email, s => email = s.trim.toLowerCase),
@@ -218,8 +218,7 @@ object UserPwdAuthModule extends AuthModule {
 }
 
 object OpenIDAuthModule extends AuthModule {
-  def loginPresentation: Box[NodeSeq] =
-  TemplateFinder.findAnyTemplate("templates-hidden" :: "openid_login_form" :: Nil)
+  def loginPresentation: Box[NodeSeq] = Templates("templates-hidden" :: "openid_login_form" :: Nil)
 
   def moduleName: String = "openid"
 
@@ -328,7 +327,7 @@ trait LDAPBase {
     myLdapVendor
   }
 
-  @deprecated
+  @deprecated("Use getAttributesMap.","01-01-2012")
   def getAttrs(dn : String) : Map[String, List[String]] = {
     var attrsMap = Map.empty[String, List[String]]
     val attributes = getLDAPAttributes(dn)
@@ -501,7 +500,8 @@ object ContainerManagedAuthModule extends AuthModule with LDAPBase {
           }
           case Empty => {
             S.error(S.?("base_user_err_unknown_creds"))
-          }
+          }         
+          case _ => {}  
         }
 
         S.redirectTo(from)
@@ -520,7 +520,7 @@ object LDAPAuthModule extends AuthModule with LDAPBase {
 
   override def isDefault = false
 
-  def loginPresentation: Box[NodeSeq] = TemplateFinder.findAnyTemplate("templates-hidden" :: "ldap_login_form" :: Nil)
+  def loginPresentation: Box[NodeSeq] = Templates("templates-hidden" :: "ldap_login_form" :: Nil)
 
   def moduleName: String = "ldap"
 
@@ -551,10 +551,11 @@ object LDAPAuthModule extends AuthModule with LDAPBase {
                 //TODO: There's no corresponding property in User's Mapper
                 //ldapAttrs.get("mail").flatMap(_.headOption.map(usr))
                 debug("Attributes from LDAP for user '%s'. Firstname: '%s', lastname: '%s'".format(name, usr.firstName, usr.lastName))
-                usr.save
+                usr.save   
               })
               UserAuth.create.authType(moduleName).user(usr).authKey(name).save
               logInUser(usr)
+            case _ => {}
           }
         } else {
           S.error(S.?("base_user_err_unknown_creds"))
