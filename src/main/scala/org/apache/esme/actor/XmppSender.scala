@@ -23,7 +23,7 @@ object XmppSender {
   val logger: Logger = Logger("org.apache.esme.actor")
 }
 
-class XmppSender(esmeSrv: String, esmePort: Int, esmeUsr: String, esmePwd: String) extends Actor with Producer with Oneway  {
+class XmppSender(esmeSrv: String, esmePort: Int, esmeUsr: String, esmePwd: String, xmppServiceName: String) extends Actor with Producer with Oneway  {
   import XmppSender._
 
   // Ugly, but at the moment there's no other way
@@ -38,7 +38,7 @@ class XmppSender(esmeSrv: String, esmePort: Int, esmeUsr: String, esmePwd: Strin
       (action: @unchecked) match {
         case XmppTo(who, body) =>
           participant = who
-          new CamelMessage(body.cata(s => s, ""), Map("participant" -> ("%s" format who), "serviceName" -> "jabber.org"))
+          new CamelMessage(body.cata(s => s, ""), Map("participant" -> ("%s" format who), "serviceName" -> xmppServiceName))
       }
     }
     case _ =>

@@ -63,8 +63,9 @@ object UserActor {
   val xmppPort = Props.get("xmpp.port") openOr ""
   val xmppUsr = Props.get("xmpp.user") openOr ""
   val xmppPwd = Props.get("xmpp.password") openOr ""
+  val xmppServiceName = Props.get("xmpp.serviceName") openOr ""
   lazy val sys = ActorSystem("camel")
-  lazy val XmppSender = sys.actorOf(AkkaProps(new XmppSender(xmppHost, xmppPort.toInt, xmppUsr, xmppPwd)))
+  lazy val XmppSender = sys.actorOf(AkkaProps(new XmppSender(xmppHost, xmppPort.toInt, xmppUsr, xmppPwd, xmppServiceName)))
 }
 
 

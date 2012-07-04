@@ -72,3 +72,5 @@ xmpp.port=5222
 xmpp.user=esmeapp
 ;Password for user above
 xmpp.password=talk_2_us
+;Service name to exchange messages with, for example jabber.org
+xmpp.serviceName=jabber.org
