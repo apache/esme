@@ -27,6 +27,6 @@ object UserConvFollow extends UserConvFollow with LongKeyedMetaMapper[UserConvFo
 class UserConvFollow extends LongKeyedMapper[UserConvFollow] with IdPK {  
   def getSingleton = UserConvFollow
 
-  object user extends LongMappedMapper(this, User)
-  object conversation extends LongMappedMapper(this, Message)
+  object user extends MappedLongForeignKey(this, User)
+  object conversation extends MappedLongForeignKey(this, Message)
 }

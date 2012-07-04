@@ -250,7 +250,7 @@ object API2 extends ApiHelper with XmlHelper {
       } yield {
         val token: AuthToken = AuthToken.create
           .user(user)
-          .description(S.param("description"))
+          .description(S.param("description").openOr(""))
           .saveMe
         (200,Map(),Full(tokenToXml(token)))
       }
@@ -351,7 +351,7 @@ object API2 extends ApiHelper with XmlHelper {
                                        millis,
                                        xml match {
                                          case Full(x) => xml
-                                         case _ => Box({new Atom(S.param("metadata") openOr "")})
+                                         case _ => Full(new Atom(S.param("metadata").openOr("")))
                                        },
                                        from,
                                        S.param("replyto").map(toLong),

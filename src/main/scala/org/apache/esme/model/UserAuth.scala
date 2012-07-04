@@ -49,8 +49,10 @@ import provider.servlet.HTTPRequestServlet
 
 import scala.xml._
 
-import scalaz.{OptionW, Scalaz}
+import scalaz.{OptionW, Identity, IterV, Input, State, Scalaz}
+import scalaz.effects.{IO}
 import Scalaz._
+import IterV.{Empty => EmptyZ, Done => DoneZ, _}
 
 import org.apache.esme.actor._
 
@@ -126,7 +128,7 @@ trait FieldSet {
 object UserPwdAuthModule extends AuthModule {
   def loginPresentation: Box[NodeSeq] = {
     val ldapBind : CssBindFunc = "#ldapEnabled [value]" #> (Props.getBool("ldap.enabled") openOr false)
-    TemplateFinder.findAnyTemplate("templates-hidden" :: "upw_login_form" :: Nil) match {
+    Templates("templates-hidden" :: "upw_login_form" :: Nil) match {
       case Full(tpl) => Full(ldapBind(tpl))
       case _ => Empty
     }
@@ -175,7 +177,7 @@ object UserPwdAuthModule extends AuthModule {
     private var email = ""
 
     def toForm: NodeSeq =
-    TemplateFinder.findAnyTemplate("templates-hidden" :: "upw_signup_form" :: Nil).map(
+    Templates("templates-hidden" :: "upw_signup_form" :: Nil).map(
       xhtml =>
       bind("signup", xhtml,
            "email" -%> SHtml.text(email, s => email = s.trim.toLowerCase),
@@ -216,8 +218,7 @@ object UserPwdAuthModule extends AuthModule {
 }
 
 object OpenIDAuthModule extends AuthModule {
-  def loginPresentation: Box[NodeSeq] =
-  TemplateFinder.findAnyTemplate("templates-hidden" :: "openid_login_form" :: Nil)
+  def loginPresentation: Box[NodeSeq] = Templates("templates-hidden" :: "openid_login_form" :: Nil)
 
   def moduleName: String = "openid"
 
@@ -326,12 +327,13 @@ trait LDAPBase {
     myLdapVendor
   }
 
+  @deprecated("Use getAttributesMap.","01-01-2012")
   def getAttrs(dn : String) : Map[String, List[String]] = {
     var attrsMap = Map.empty[String, List[String]]
-    val attrs : Attributes = myLdap.attributesFromDn(dn)
-    if (attrs != null) {
-      val allAttrs = attrs.getAll();
-      if (allAttrs != null) {
+    val attributes = getLDAPAttributes(dn)
+    attributes.foreach(attrs => {
+      val allAttributes = Option(attrs.getAll());
+      allAttributes.foreach(allAttrs => {
         while(allAttrs.hasMore()) {
           val attribute = allAttrs.next().asInstanceOf[Attr];
           debug("Attribute name: '%s', has following values:".format(attribute.getID()))
@@ -342,9 +344,69 @@ trait LDAPBase {
           }
           attrsMap += (attribute.getID() -> attrValues)
         }
+      })
+    })
+    attrsMap
+  }
+
+  def getLDAPAttributes(dn: String): Option[Attributes] = {
+    //TODO: it's probably better to return Either or Validation
+    try {
+      // Ugly, but following operation
+      // throws NamingException in case
+      // given DN doesn't exist in LDAP
+      Option(myLdap.attributesFromDn(dn))
+    } catch {
+      case ne: javax.naming.NamingException => {
+        info("Naming Exception was thrown: %s".format(ne))
+        none
       }
     }
-    attrsMap
+  }
+
+  // Scalaz Iteratee was used
+  // returns pairs name->list of values
+  def getAttributesMap(dn: String) : Option[Map[String, List[String]]] = {
+    val attributes = getLDAPAttributes(dn)
+    attributes.flatMap(attrs => {
+      val allAttributes = Option(attrs.getAll());
+      allAttributes.map(allAttrs  => {
+        val res = enumNamingEnumeration(allAttrs, accum, get) map (_.run)
+        res.unsafePerformIO ~> Map.empty[String, List[String]]
+      })
+    })
+  }
+
+
+  def enumNamingEnumeration[E, A, T <: Attr](ne: NamingEnumeration[T], iter: IterV[E, A], constr: NamingEnumeration[T] => IO[E]): IO[IterV[E, A]] = {
+    def loop(i: IterV[E, A]): IO[IterV[E, A]] =
+      i.fold(done = (_, _) => i.pure[IO],
+        cont = k => next(ne) >>= (hasMore =>
+          if (!hasMore) i.pure[IO]
+          else constr(ne) >>= (t => loop(k(El(t))))))
+    loop(iter)
+  }
+
+  def next: NamingEnumeration[_ <: Attr] => IO[Boolean] = _.hasMore().pure[IO]
+
+  def get: NamingEnumeration[_ <: Attr] => IO[(String, List[String])] = ne => {
+    val attribute = ne.next().asInstanceOf[Attr];
+    debug("Attribute name: '%s', has following values:".format(attribute.getID()))
+    var attrValues = List.empty[String]
+    for(i <- 0 until attribute.size()) {
+      debug("Attribute value: '%s'".format(attribute.get(i)))
+      attrValues ::= attribute.get(i).toString
+    }
+    (attribute.getID() -> attrValues).pure[IO]
+  }
+
+  def accum: IterV[(String, List[String]), State[Map[String, List[String]], Unit]] = {
+    def step(s: State[Map[String, List[String]], Unit]): Input[(String, List[String])] => IterV[(String, List[String]), State[Map[String, List[String]], Unit]] = {
+      case El(x1, x2) => Cont(step(s.withs((_: Map[String, List[String]]) + (x1 -> x2))))
+      case EmptyZ() => Cont(step(s))
+      case EOF() => DoneZ(s, EOF[(String, List[String])])
+    }
+    Cont(step(state[Map[String, List[String]], Unit](s => (s, ()))))
   }
 
   def constructDistinguishedName(who : String, isGroup : Boolean = false) = {
@@ -391,52 +453,55 @@ object ContainerManagedAuthModule extends AuthModule with LDAPBase {
             val httpRequest: HTTPRequest = req.request
             val hrs = httpRequest.asInstanceOf[HTTPRequestServlet]
             val hsr: HttpServletRequest = hrs.req
-            val username : String = hsr.getRemoteUser
+            val username = Option(hsr.getRemoteUser)
             debug("Username: '%s'".format(username))
-            if(username!=null){
-              val currentRoles = rolesToCheck.filter(hsr.isUserInRole(_))
-              debug("User from HTTP Request: %s has following roles=%s".format(username, currentRoles))
-              if(currentRoles.size == 0) {
-                debug("No roles have been found")
-                S.error(S.?("base_user_err_unknown_creds"))
-              } else {
-                currentRoles.map(cr => {
-                currentRole = cr
-                (for {
-                    user <- UserAuth.find(By(UserAuth.authKey, username),
-                                          By(UserAuth.authType, moduleName)).flatMap(_.user.obj) or
-                    User.find(By(User.nickname, username))
-                  } yield user) match {
-                    case Full(user) => {
-                      debug("User: '%s' has been found".format(user.niceName))
-                      logInUser(user)
-                    }
-                    case _ => {
-                      val usr = User.createAndPopulate.nickname(username).saveMe
-                      //find and save additional attributes in LDAP if it's enabled
-                      val ldapEnabled = Props.getBool("ldap.enabled") openOr false
-                      if(ldapEnabled) {
-                        val ldapAttrs = getAttrs(constructDistinguishedName(username))
-                        val firstName = ldapAttrs("givenName").head
-                        val lastName = ldapAttrs("sn").head
-                        val mail = ldapAttrs("mail").head
-                        debug("Attributes from LDAP for user '%s'. Firstname: '%s', lastname: '%s', email: '%s'".format(username, firstName, lastName, mail))
-                        usr.firstName(firstName).lastName(lastName).save
+            username.cata(uName => {
+              rolesToCheck.filter(hsr.isUserInRole(_)) match {
+                case Nil => {
+                  debug("No roles have been found")
+                  S.error(S.?("base_user_err_unknown_creds"))
+                }
+                case xs => {
+                  debug("User from HTTP Request: %s has following roles=%s".format(uName, xs))
+                  xs.map(cr => {
+                    currentRole = cr
+                    (for {
+                      user <- UserAuth.find(By(UserAuth.authKey, uName),
+                        By(UserAuth.authType, moduleName)).flatMap(_.user.obj) or
+                        User.find(By(User.nickname, uName))
+                    } yield user) match {
+                      case Full(user) => {
+                        debug("User: '%s' has been found".format(user.niceName))
+                        logInUser(user)
                       }
-                      UserAuth.create.authType(moduleName).user(usr).authKey(username).save
-                      logInUser(usr)
+                      case _ => {
+                        val usr = User.createAndPopulate.nickname(uName).saveMe
+                        //find and save additional attributes in LDAP if it's enabled
+                        val ldapEnabled = Props.getBool("ldap.enabled") openOr false
+                        if(ldapEnabled) {
+                          getAttributesMap(constructDistinguishedName(uName)).map(ldapAttrs => {
+                            ldapAttrs.get("givenName").flatMap(_.headOption.map(usr.firstName(_)))
+                            ldapAttrs.get("sn").flatMap(_.headOption.map(usr.lastName(_)))
+                            //TODO: There's no corresponding property in User's Mapper
+                            //ldapAttrs.get("mail").flatMap(_.headOption.map(usr))
+                            debug("Attributes from LDAP for user '%s'. Firstname: '%s', lastname: '%s'".format(uName, usr.firstName, usr.lastName))
+                            usr.save
+                          })
+                        }
+                        UserAuth.create.authType(moduleName).user(usr).authKey(uName).save
+                        logInUser(usr)
+                      }
                     }
-                  }
-                })
+                  })
+                }
               }
-            } else {
-              S.error(S.?("base_user_err_unknown_creds"))
-            }
-
+            },
+            S.error(S.?("base_user_err_unknown_creds")))
           }
           case Empty => {
             S.error(S.?("base_user_err_unknown_creds"))
-          }
+          }         
+          case _ => {}  
         }
 
         S.redirectTo(from)
@@ -455,7 +520,7 @@ object LDAPAuthModule extends AuthModule with LDAPBase {
 
   override def isDefault = false
 
-  def loginPresentation: Box[NodeSeq] = TemplateFinder.findAnyTemplate("templates-hidden" :: "ldap_login_form" :: Nil)
+  def loginPresentation: Box[NodeSeq] = Templates("templates-hidden" :: "ldap_login_form" :: Nil)
 
   def moduleName: String = "ldap"
 
@@ -468,7 +533,7 @@ object LDAPAuthModule extends AuthModule with LDAPBase {
       if(ldapEnabled) {
         val name = S.param("username").map(_.trim.toLowerCase) openOr ""
         val pwd = S.param("password").map(_.trim) openOr ""
-        if(myLdap.bindUser(constructNameWithPrefix(name), pwd) && checkRoles(constructDistinguishedName(name))) {
+        if(myLdap.bindUser(constructNameWithPrefix(name), pwd) && !checkRoles(constructDistinguishedName(name)).isEmpty) {
           (for {
               user <- UserAuth.find(By(UserAuth.authKey, name),
                                     By(UserAuth.authType, moduleName)).flatMap(_.user.obj) or
@@ -480,14 +545,17 @@ object LDAPAuthModule extends AuthModule with LDAPBase {
             case Empty =>
               val usr = User.createAndPopulate.nickname(name).saveMe
               //find and save additional attributes in LDAP if it's enabled
-              val ldapAttrs = getAttrs(constructDistinguishedName(name))
-              val firstName = ldapAttrs("givenName").head
-              val lastName = ldapAttrs("sn").head
-              val mail = ldapAttrs("mail").head
-              debug("Attributes from LDAP for user '%s'. Firstname: '%s', lastname: '%s', email: '%s'".format(name, firstName, lastName, mail))
-              usr.firstName(firstName).lastName(lastName).save
+              getAttributesMap(constructDistinguishedName(name)).map(ldapAttrs => {
+                ldapAttrs.get("givenName").flatMap(_.headOption.map(usr.firstName(_)))
+                ldapAttrs.get("sn").flatMap(_.headOption.map(usr.lastName(_)))
+                //TODO: There's no corresponding property in User's Mapper
+                //ldapAttrs.get("mail").flatMap(_.headOption.map(usr))
+                debug("Attributes from LDAP for user '%s'. Firstname: '%s', lastname: '%s'".format(name, usr.firstName, usr.lastName))
+                usr.save   
+              })
               UserAuth.create.authType(moduleName).user(usr).authKey(name).save
               logInUser(usr)
+            case _ => {}
           }
         } else {
           S.error(S.?("base_user_err_unknown_creds"))
@@ -498,18 +566,23 @@ object LDAPAuthModule extends AuthModule with LDAPBase {
     }
   }
 
-  def checkRoles(who : String) : Boolean = {
-    for (role <-rolesToCheck) {
-      val ldapAttrs = getAttrs(constructDistinguishedName(role, true))
-      val uniqueMember = ldapAttrs("uniqueMember").head
-      debug("'uniqueMember' attribute value: '%s'".format(uniqueMember))
-      if(who == uniqueMember) {
-        currentRole = role
-        return true
-      }
+  def checkRoles(who : String) : Option[String] = {
+    var matchedRoles: List[Option[String]] = Nil
+    for (role <- rolesToCheck) {
+        matchedRoles ::= getAttributesMap(constructDistinguishedName(role, true)).flatMap(ldapAttrs => {
+          ldapAttrs.get("uniqueMember").flatMap(_.headOption.flatMap(uniqueMember => {
+            if(who ≟ uniqueMember) {
+              currentRole = role
+              some(role)
+            } else {
+              none
+            }
+          }))
+      })
     }
-    debug("No roles have been found")
-    return false;
+    // At the moment only one (first matched) role is taken into account
+    // therefore First Option Monoid was used
+    matchedRoles.map(_.fst).asMA.sum.value
   }
 
   def createHolder(): FieldSet = new FieldSet {

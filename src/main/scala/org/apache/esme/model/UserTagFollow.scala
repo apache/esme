@@ -27,6 +27,6 @@ object UserTagFollow extends UserTagFollow with LongKeyedMetaMapper[UserTagFollo
 class UserTagFollow extends LongKeyedMapper[UserTagFollow] with IdPK {  
   def getSingleton = UserTagFollow
 
-  object user extends LongMappedMapper(this, User)
-  object tag extends LongMappedMapper(this, Tag)
+  object user extends MappedLongForeignKey(this, User)
+  object tag extends MappedLongForeignKey(this, Tag)
 }

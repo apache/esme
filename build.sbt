@@ -8,7 +8,10 @@ version := "1.4"
 
 organization := "Apache Software Foundation"
 
-scalaVersion := "2.9.1"      
+scalaVersion := "2.9.1"    
+
+//scalacOptions ++= Seq("-unchecked", "-deprecation")  
+scalacOptions ++= Seq("-deprecation") 
 
 seq(webSettings :_*)
 
@@ -21,13 +24,13 @@ ivyXML :=
 
 libraryDependencies ++= {
   val scalaVersion = "2.9.1"
-  val liftVersion = "2.4-M4"
+  val liftVersion = "2.4"
   val compassVersion = "2.1.1"
   val luceneVersion = "2.4.0"
-  val scalazVersion = "6.0.3" 
+  val scalazVersion = "6.0.4"
   val eclipsejettyVersion = "7.3.1.v20110307"    
-  val mortbayjettyVersion = "[6.1.6,)"
-  val slf4jVersion = "1.6.1" 
+  val mortbayjettyVersion = "6.1.22"
+  val slf4jVersion = "1.6.4" 
   val scalatestVersion = "1.6.9"   
   Seq(
     "net.liftweb" %% "lift-util" % liftVersion % "compile->default",
@@ -70,10 +73,10 @@ resolvers += "Compass Repository" at "http://repo.compass-project.org"
 
 resolvers += "Twitter Repository" at "http://maven.twttr.com"
 
-resolvers +=  "Java.net Maven2 Repository" at "http://download.java.net/maven/2/"   
+resolvers += "Java.net Maven2 Repository" at "http://download.java.net/maven/2/"   
+
+resolvers += "Maven central" at "http://repo1.maven.org/maven2/"
 
 // Execute tests in the current project serially.
 // Tests from other projects may still run concurrently.
-//parallelExecution in Test := false
-
-//scalacOptions += "-Xprint:typer"
+parallelExecution in Test := false 
