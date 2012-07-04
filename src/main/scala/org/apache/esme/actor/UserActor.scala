@@ -30,6 +30,9 @@ import org.apache.esme._
 import model._
 import lib._
 
+import akka.actor.{Props => AkkaProps, ActorSystem}
+import XmppSender._
+
 import java.util.{TimeZone, Calendar}
 import scala.xml.{Node, Elem}
 //import com.twitter.stats.Stats
@@ -55,6 +58,13 @@ object UserActor {
   case class MessageReceived(msg: Message, reason: MailboxReason)
   
   val logger: Logger = Logger("org.apache.esme.actor")
+
+  val xmppHost = Props.get("xmpp.host") openOr ""
+  val xmppPort = Props.get("xmpp.port") openOr ""
+  val xmppUsr = Props.get("xmpp.user") openOr ""
+  val xmppPwd = Props.get("xmpp.password") openOr ""
+  lazy val sys = ActorSystem("camel")
+  lazy val XmppSender = sys.actorOf(AkkaProps(new XmppSender(xmppHost, xmppPort.toInt, xmppUsr, xmppPwd)))
 }
 
 
@@ -267,6 +277,11 @@ class UserActor extends LiftActor {
               User.find(userId).foreach( u =>
                 HttpSender ! HttpSender.SendAMessage(h, msg, u, reason, td.uniqueId))
                 Stats incr "messagesSentViaHTTP"
+            case x @ XmppTo(_, _) =>
+              User.find(userId).foreach( u => {
+                XmppSender ! XMPPMsg(x, msg, u, reason, td.uniqueId)
+              })
+              Stats incr "messagesSentViaXMPP"
             case PerformResend =>
               if (! msg.saved_?) msg.save
               for (id <- followers)

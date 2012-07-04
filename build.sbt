@@ -28,7 +28,8 @@ libraryDependencies ++= {
   val compassVersion = "2.1.1"
   val luceneVersion = "2.4.0"
   val scalazVersion = "6.0.4"
-  val eclipsejettyVersion = "7.3.1.v20110307"    
+  val akkaVersion = "2.0.2"
+  val eclipsejettyVersion = "7.3.1.v20110307"
   val mortbayjettyVersion = "6.1.22"
   val slf4jVersion = "1.6.4" 
   val scalatestVersion = "1.6.9"   
@@ -45,6 +46,9 @@ libraryDependencies ++= {
     "net.liftweb" %% "lift-ldap" % liftVersion % "compile->default",
     "net.liftweb" %% "lift-textile" % liftVersion % "compile->default",
     "org.scalaz" %% "scalaz-core" % scalazVersion % "compile->default",
+    "com.typesafe.akka" % "akka-actor" % akkaVersion % "compile->default",
+    "com.typesafe.akka" % "akka-camel" % "2.1-SNAPSHOT" % "compile->default",
+    "org.apache.camel" % "camel-xmpp" % "2.8.0" % "compile->default",
     "javax.servlet" % "servlet-api" % "2.5" % "provided->default",
     "org.compass-project" % "compass" % compassVersion % "compile->default",
     "org.apache.lucene" % "lucene-core" % luceneVersion % "compile->default",
@@ -66,6 +70,10 @@ libraryDependencies ++= {
 }
 
 resolvers += "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository"
+
+resolvers += "Typesafe Repository Releases" at "http://repo.typesafe.com/typesafe/releases"
+
+resolvers += "Typesafe Repository Snapshots" at "http://repo.typesafe.com/typesafe/snapshots"
 
 resolvers += ScalaToolsSnapshots
 

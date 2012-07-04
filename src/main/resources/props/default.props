@@ -63,3 +63,12 @@ role.list=esme-users,monitoring-admin
 
 ;Path to resource secured by container-managed authentication
 cma.path=cm/login
+
+;Hostname or IP of XMPP server
+xmpp.host=jabber.org
+;Port of XMPP server
+xmpp.port=5222
+;User that has account on XMPP server to send messages from
+xmpp.user=esmeapp
+;Password for user above
+xmpp.password=talk_2_us

@@ -76,6 +76,7 @@
         <lift.version>2.4</lift.version>
         <scala.version>2.9.1</scala.version>
         <scalaz.version>6.0.4</scalaz.version>
+        <akka.version>2.1-SNAPSHOT</akka.version>
         <compass.version>2.1.1</compass.version>
         <lucene.version>2.4.0</lucene.version>
         <netbeans.hint.deploy.server>gfv3</netbeans.hint.deploy.server>
@@ -85,14 +86,9 @@
 
     <repositories>
          <repository>
-               <id>Base</id>
-              <name>http://repo2.maven.org/maven2/</name>
-              <url>http://repo2.maven.org/maven2/</url>
-          </repository> 
-           <repository>
-          <id>typesafe</id>
-          <name>Typesafe Repository</name>
-          <url>http://repo.typesafe.com/typesafe/releases/</url>
+            <id>Base</id>
+            <name>http://repo2.maven.org/maven2/</name>
+            <url>http://repo2.maven.org/maven2/</url>
         </repository>
         <repository>
             <id>scala-tools.org</id>
@@ -104,6 +100,16 @@
             <name>Scala-Tools Maven2 Repository for Snapshots</name>
             <url>http://scala-tools.org/repo-snapshots</url>
             <snapshots/>
+        </repository>
+        <repository>
+            <id>typesafe</id>
+            <name>Typesafe Repository Releases</name>
+            <url>http://repo.typesafe.com/typesafe/releases</url>
+        </repository>
+        <repository>
+            <id>typesafe.snapshots</id>
+            <name>Typesafe Repository Snapshots</name>
+            <url>http://repo.typesafe.com/typesafe/snapshots</url>
         </repository>
         <repository>
             <id>compass-project.org</id>
@@ -219,6 +225,21 @@
           <version>${scalaz.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-actor</artifactId>
+            <version>${akka.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-camel</artifactId>
+            <version>2.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-xmpp</artifactId>
+            <version>2.8.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.compass-project</groupId>
             <artifactId>compass</artifactId>
             <version>${compass.version}</version>
@@ -310,11 +331,6 @@
             <version>4.4</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-         <groupId>se.scalablesolutions.akka</groupId>
-         <artifactId>akka-actor</artifactId>
-         <version>1.2</version>
-         </dependency>
     </dependencies>
 
     <build>

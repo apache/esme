@@ -153,8 +153,13 @@ object MsgParser extends TextileParsers(None,false) with CombParserHelpers {
   lazy val password: Parser[String] = user
 
   lazy val mailtoUrl: Parser[String] = accept("mailto:") ~> emailAddr
+  lazy val xmppUrl: Parser[String] = accept("xmppto:") ~> xmppAddr
 
   lazy val emailAddr: Parser[String] = rep1(xchar) ^^ {
+    case xs => xs.mkString
+  }
+
+  lazy val xmppAddr: Parser[String] = rep1(xchar) ^^ {
     case xs => xs.mkString
   }
 
@@ -262,6 +267,9 @@ object MsgParser extends TextileParsers(None,false) with CombParserHelpers {
   (acceptCI("resend") ~ lineSpace ~ EOF ^^^ PerformResend) |
   (mailtoUrl ~ opt(rep1(not(EOF) ~ EOL) ~> rep1(anyChar)) <~ EOF ^^ {
     case mt ~ text => MailTo(mt, text.map(_ mkString))
+  }) |
+  (xmppUrl ~ opt(rep1(not(EOF) ~ EOL) ~> rep1(anyChar)) <~ EOF ^^ {
+    case mt ~ text => XmppTo(mt, text.map(_ mkString))
   }) |
   (scheme ~ userPass ~ urlpart ~ rep(httpHeader) ~ httpData <~ EOF ^^ {
       case protocol ~ userPass ~ urlpart ~ hdrs ~ data =>

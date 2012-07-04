@@ -568,6 +568,7 @@ case object MinuteDateType extends DateType {
 sealed trait Performances
 case class MailTo(who: String, text: Option[String]) extends Performances
 case class HttpTo(url: String, user: String, password: String, headers: List[(String, String)], data: Option[String]) extends Performances
+case class XmppTo(who: String, text: Option[String]) extends Performances
 case class FetchAtom(override val url: UrlStore, override val tags: List[String]) extends FetchFeed(url, tags)
 case class FetchRss(override val url: UrlStore, override val tags: List[String]) extends FetchFeed(url, tags)
 case object PerformResend extends Performances
