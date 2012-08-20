@@ -1,11 +1,5 @@
 package org.apache.esme.actor
 
-/**
- * User: vvivanov
- * Date: 7/2/12
- * Time: 8:16 PM
- */
-
 import org.apache.esme.model._
 
 import akka.actor.Actor

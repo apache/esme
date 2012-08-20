@@ -7,13 +7,6 @@ import collection.immutable.Queue
 import org.apache.esme.actor.Distributor.UserCreatedMessage
 import org.apache.esme.model.User
 
-/**
- * Created with IntelliJ IDEA.
- * User: lester
- * Date: 17.08.12
- * Time: 2:26
- */
-
 object XmppReceiver {
   val logger: Logger = Logger("org.apache.esme.actor")
   case class FetchMessages()

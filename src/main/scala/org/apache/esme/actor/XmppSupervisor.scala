@@ -6,13 +6,6 @@ import org.apache.esme.actor.XmppReceiver.FetchMessages
 import org.apache.esme.model.User
 import net.liftweb.common.Logger
 
-/**
- * Created with IntelliJ IDEA.
- * User: lester
- * Date: 17.08.12
- * Time: 4:21
- */
-
 object XmppSupervisor {
   val logger: Logger = Logger("org.apache.esme.actor")
 
