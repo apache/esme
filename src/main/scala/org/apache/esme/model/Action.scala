@@ -34,7 +34,15 @@ import java.util.Calendar
 import java.util.Date
 import scala.xml.{Text, Node, Elem => XmlElem}
 
-object Action extends Action with LongKeyedMetaMapper[Action] {
+import akka.actor.{Props => AkkaProps, ActorSystem}
+
+object Action extends Action with LongKeyedMetaMapper[Action] with Logger {
+
+  val logger: Logger = Logger("org.apache.esme.model")
+  val sys = ActorSystem("camel")
+  val xmppSupervisor = sys.actorFor("XmppSupervisor")
+
+
   override def afterCommit = notifyDistributor _ :: super.afterCommit
 
   private def notifyDistributor(in: Action) {
@@ -58,6 +66,7 @@ object Action extends Action with LongKeyedMetaMapper[Action] {
     } else {
       SchedulerActor ! SchedulerActor.StopRegular(in.id)
       MessagePullActor ! MessagePullActor.StopPullActor(in.id)
+      xmppSupervisor ! XmppSupervisor.Stop(in.id)
     }
   }
   
@@ -185,6 +194,9 @@ object Action extends Action with LongKeyedMetaMapper[Action] {
  */
 class Action extends LongKeyedMapper[Action] {
 
+  import Action.xmppSupervisor
+  import Action.logger
+
   /**
    * Actors related to regularly executed actions are started here
    * This is done when the action is activated or at the start of the application
@@ -212,7 +224,14 @@ class Action extends LongKeyedMapper[Action] {
               case FetchRss(_, _) => new RssFeed(u, url.url, urlSourcePrefix + url.uniqueId, 0, tags)
             }
             MessagePullActor ! MessagePullActor.StartPullActor(id.is, lastMsg, feed)
-          
+
+          case _ =>
+        }
+      }
+      case XmppFrom(who) => {
+        User.find(user) match {
+          case Full(u) =>
+            xmppSupervisor ! XmppSupervisor.Start(id.is, who, u)
           case _ =>
         }
       }
@@ -569,6 +588,7 @@ sealed trait Performances
 case class MailTo(who: String, text: Option[String]) extends Performances
 case class HttpTo(url: String, user: String, password: String, headers: List[(String, String)], data: Option[String]) extends Performances
 case class XmppTo(who: String, text: Option[String]) extends Performances
+case class XmppFrom(who: String) extends Performances
 case class FetchAtom(override val url: UrlStore, override val tags: List[String]) extends FetchFeed(url, tags)
 case class FetchRss(override val url: UrlStore, override val tags: List[String]) extends FetchFeed(url, tags)
 case object PerformResend extends Performances

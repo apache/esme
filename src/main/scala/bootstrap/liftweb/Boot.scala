@@ -27,6 +27,8 @@ import net.liftweb.http.auth._
 import net.liftweb.sitemap._
 import net.liftweb.sitemap.Loc._
 import Helpers._
+import akka.actor.{Props => AkkaProps, ActorSystem}
+
 //import TimeHelpers.intToTimeSpanBuilder
 //import net.liftweb.mapper.{DB, ConnectionManager, Schemifier, DefaultConnectionIdentifier, ConnectionIdentifier}
 import java.sql.{Connection, DriverManager}
@@ -249,6 +251,8 @@ class Boot extends Loggable {
     ConvDistributor.touch
     // ScalaInterpreter.touch
 
+    val sys = ActorSystem("camel")
+    val xmppSupervisor = sys.actorOf(AkkaProps(new XmppSupervisor()), "XmppSupervisor")
 
     // Initiating popular links and resent messages
     val resentPeriod = Props.getLong("stats.resent.period", 1 week)

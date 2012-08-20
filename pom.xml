@@ -76,7 +76,7 @@
         <lift.version>2.4</lift.version>
         <scala.version>2.9.1</scala.version>
         <scalaz.version>6.0.4</scalaz.version>
-        <akka.version>2.1-SNAPSHOT</akka.version>
+        <akka.version>2.1-20120701-002745</akka.version>
         <compass.version>2.1.1</compass.version>
         <lucene.version>2.4.0</lucene.version>
         <netbeans.hint.deploy.server>gfv3</netbeans.hint.deploy.server>
@@ -89,17 +89,6 @@
             <id>Base</id>
             <name>http://repo2.maven.org/maven2/</name>
             <url>http://repo2.maven.org/maven2/</url>
-        </repository>
-        <repository>
-            <id>scala-tools.org</id>
-            <name>Scala-Tools Maven2 Repository</name>
-            <url>http://scala-tools.org/repo-releases</url>
-        </repository>
-        <repository>
-            <id>scala-tools.org.snapshots</id>
-            <name>Scala-Tools Maven2 Repository for Snapshots</name>
-            <url>http://scala-tools.org/repo-snapshots</url>
-            <snapshots/>
         </repository>
         <repository>
             <id>typesafe</id>
@@ -135,9 +124,9 @@
 
     <pluginRepositories>
         <pluginRepository>
-            <id>scala-tools.org</id>
-            <name>Scala-Tools Maven2 Repository</name>
-            <url>http://scala-tools.org/repo-releases</url>
+            <id>typesafe</id>
+            <name>Typesafe Repository Releases</name>
+            <url>http://repo.typesafe.com/typesafe/releases</url>
         </pluginRepository>
     </pluginRepositories>
 
@@ -232,7 +221,7 @@
         <dependency>
             <groupId>com.typesafe.akka</groupId>
             <artifactId>akka-camel</artifactId>
-            <version>2.1-SNAPSHOT</version>
+            <version>${akka.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>

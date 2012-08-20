@@ -64,8 +64,8 @@ object UserActor {
   val xmppUsr = Props.get("xmpp.user") openOr ""
   val xmppPwd = Props.get("xmpp.password") openOr ""
   val xmppServiceName = Props.get("xmpp.serviceName") openOr ""
-  lazy val sys = ActorSystem("camel")
-  lazy val XmppSender = sys.actorOf(AkkaProps(new XmppSender(xmppHost, xmppPort.toInt, xmppUsr, xmppPwd, xmppServiceName)))
+  val sys = ActorSystem("camel")
+  val XmppSender = sys.actorOf(AkkaProps(new XmppSender(xmppHost, xmppPort.toInt, xmppUsr, xmppPwd, xmppServiceName)), "XmppSender")
 }
 
 
@@ -289,8 +289,14 @@ class UserActor extends LiftActor {
               Distributor !
               Distributor.AddMessageToMailbox(id, msg, ResendReason(userId))
 
-            case FetchFeed(_, _) => 
-              MessagePullActor ! MessagePullActor.Fetch(td.performId)    
+            case XmppFrom(_) => {
+              val sys = ActorSystem("camel")
+              sys.actorFor("XmppSupervisor") ! XmppSupervisor.Fetch(td.performId)
+            }
+
+
+            case FetchFeed(_, _) =>
+              MessagePullActor ! MessagePullActor.Fetch(td.performId)
 
             case ScalaInterpret => logger.info("Scala interpreter is disabled!")
             /*if (msg.source.is != "scala")
