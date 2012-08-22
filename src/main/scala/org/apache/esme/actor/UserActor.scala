@@ -31,6 +31,7 @@ import model._
 import lib._
 
 import akka.actor.{Props => AkkaProps, ActorSystem}
+import bootstrap.liftweb.AkkaActorSystem.sys
 import XmppSender._
 
 import java.util.{TimeZone, Calendar}
@@ -64,7 +65,6 @@ object UserActor {
   val xmppUsr = Props.get("xmpp.user") openOr ""
   val xmppPwd = Props.get("xmpp.password") openOr ""
   val xmppServiceName = Props.get("xmpp.serviceName") openOr ""
-  val sys = ActorSystem("camel")
   val XmppSender = sys.actorOf(AkkaProps(new XmppSender(xmppHost, xmppPort.toInt, xmppUsr, xmppPwd, xmppServiceName)), "XmppSender")
 }
 
@@ -290,8 +290,7 @@ class UserActor extends LiftActor {
               Distributor.AddMessageToMailbox(id, msg, ResendReason(userId))
 
             case XmppFrom(_) => {
-              val sys = ActorSystem("camel")
-              sys.actorFor("XmppSupervisor") ! XmppSupervisor.Fetch(td.performId)
+              sys.actorFor("akka://camel/user/XmppSupervisor") ! XmppSupervisor.Fetch(td.performId)
             }
 
 

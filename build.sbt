@@ -48,7 +48,7 @@ libraryDependencies ++= {
     "org.scalaz" %% "scalaz-core" % scalazVersion % "compile->default",
     "com.typesafe.akka" % "akka-actor" % akkaVersion % "compile->default",
     "com.typesafe.akka" % "akka-camel" % "2.1-20120701-002745" % "compile->default",
-    "org.apache.camel" % "camel-xmpp" % "2.8.0" % "compile->default",
+    "org.apache.camel" % "camel-xmpp" % "2.10.0" % "compile->default",
     "javax.servlet" % "servlet-api" % "2.5" % "provided->default",
     "org.compass-project" % "compass" % compassVersion % "compile->default",
     "org.apache.lucene" % "lucene-core" % luceneVersion % "compile->default",

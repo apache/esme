@@ -11,6 +11,7 @@ object XmppSupervisor {
 
 
   sealed trait XmppSupervisorActions
+  case class Init() extends XmppSupervisorActions
   case class Fetch(id: Long) extends XmppSupervisorActions
   case class Start(id: Long, who: String, usr: User) extends XmppSupervisorActions
   case class Stop(id: Long) extends XmppSupervisorActions
@@ -30,7 +31,7 @@ class XmppSupervisor extends Actor {
 
 
   override def preStart() {
-    logger.info("preStart() called")
+    logger.info("XmppSupervisor - preStart() called")
 
     xmppHost = Props.get("xmpp.host") openOr ""
     xmppPort = Props.get("xmpp.port") openOr ""
@@ -40,20 +41,22 @@ class XmppSupervisor extends Actor {
   }
 
   def receive = {
+    case Init() => logger.info("XmppSupervisor - Init message received")
     case Start(id, who, usr) => {
-      logger.info("Start message received. User: %s, who: %s".format(usr, who))
+      logger.info("XmppSupervisor - Start message received. User: %s, who: %s".format(usr, who))
       xmppPullActors += (id -> context.actorOf(AkkaProps(new XmppReceiver(xmppHost, xmppPort.toInt, xmppUsr, xmppPwd, xmppServiceName, who, usr))))
     }
     case Stop(id) => {
+      logger.info("XmppSupervisor - Stop message received")
       xmppPullActors.get(id).foreach { ref =>
         context.stop(ref)
         xmppPullActors -= id
       }
     }
     case Fetch(id) => {
-      logger.info("Fetch message received")
+      logger.info("XmppSupervisor - Fetch message received")
       xmppPullActors.get(id).foreach(ref => ref ! FetchMessages)
     }
-    case _ => logger.info("Unknown message received")
+    case _ => logger.info("XmppSupervisor - Unknown message received")
   }
 }

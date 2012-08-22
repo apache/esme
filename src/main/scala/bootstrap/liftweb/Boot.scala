@@ -251,8 +251,9 @@ class Boot extends Loggable {
     ConvDistributor.touch
     // ScalaInterpreter.touch
 
-    val sys = ActorSystem("camel")
-    val xmppSupervisor = sys.actorOf(AkkaProps(new XmppSupervisor()), "XmppSupervisor")
+
+    val xmppSupervisor = AkkaActorSystem.sys.actorOf(AkkaProps(new XmppSupervisor()), "XmppSupervisor")
+    xmppSupervisor ! XmppSupervisor.Init()
 
     // Initiating popular links and resent messages
     val resentPeriod = Props.getLong("stats.resent.period", 1 week)
@@ -298,6 +299,11 @@ class Boot extends Loggable {
   }
 
   private def makeUtf8(req: HTTPRequest) = {req.setCharacterEncoding("UTF-8")}
+}
+
+
+object AkkaActorSystem {
+  lazy val sys = ActorSystem("camel")
 }
 
 /*

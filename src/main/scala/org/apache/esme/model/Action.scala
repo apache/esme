@@ -35,13 +35,11 @@ import java.util.Date
 import scala.xml.{Text, Node, Elem => XmlElem}
 
 import akka.actor.{Props => AkkaProps, ActorSystem}
+import bootstrap.liftweb.AkkaActorSystem.sys
 
 object Action extends Action with LongKeyedMetaMapper[Action] with Logger {
 
   val logger: Logger = Logger("org.apache.esme.model")
-  val sys = ActorSystem("camel")
-  val xmppSupervisor = sys.actorFor("XmppSupervisor")
-
 
   override def afterCommit = notifyDistributor _ :: super.afterCommit
 
@@ -50,7 +48,7 @@ object Action extends Action with LongKeyedMetaMapper[Action] with Logger {
                                                 Distributor.PerformTrackingType)
   
   }
-  
+
   override def create: Action = {
     val ap = super.create
     ap.createdDate(new Date())
@@ -66,7 +64,7 @@ object Action extends Action with LongKeyedMetaMapper[Action] with Logger {
     } else {
       SchedulerActor ! SchedulerActor.StopRegular(in.id)
       MessagePullActor ! MessagePullActor.StopPullActor(in.id)
-      xmppSupervisor ! XmppSupervisor.Stop(in.id)
+      sys.actorFor("akka://camel/user/XmppSupervisor") ! XmppSupervisor.Stop(in.id)
     }
   }
   
@@ -194,7 +192,6 @@ object Action extends Action with LongKeyedMetaMapper[Action] with Logger {
  */
 class Action extends LongKeyedMapper[Action] {
 
-  import Action.xmppSupervisor
   import Action.logger
 
   /**
@@ -230,8 +227,9 @@ class Action extends LongKeyedMapper[Action] {
       }
       case XmppFrom(who) => {
         User.find(user) match {
-          case Full(u) =>
-            xmppSupervisor ! XmppSupervisor.Start(id.is, who, u)
+          case Full(u) => {
+            sys.actorFor("akka://camel/user/XmppSupervisor") ! XmppSupervisor.Start(id.is, who, u)
+          }
           case _ =>
         }
       }

@@ -20,6 +20,10 @@ class XmppReceiver(esmeSrv: String, esmePort: Int, esmeUsr: String, esmePwd: Str
 
   def endpointUri = {val uri = "xmpp://%s@%s:%s/%s?password=%s" format (esmeUsr, esmeSrv, esmePort, participant, esmePwd); logger.info("XMPP URI is: %s".format(uri)); uri}
 
+  override def preStart() {
+    logger.info("XmppReceiver - preStart() called")
+  }
+
   def receive = {
     case msg: CamelMessage => {
       messages = (msg.bodyAs[String], System.currentTimeMillis) :: messages
